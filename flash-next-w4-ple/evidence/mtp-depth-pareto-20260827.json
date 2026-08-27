@@ -1,0 +1,110 @@
+{
+  "schema": "qwen38.mtp-depth-pareto/v1",
+  "date_utc": "2026-08-27",
+  "hardware_class": "single RTX PRO 6000 Blackwell, SM120, 96 GiB-class",
+  "model": "qwen3.8-flash-next",
+  "context_length": 131072,
+  "selected_arm": "A0",
+  "arms": [
+    {
+      "arm": "A0",
+      "speculative_num_steps": 1,
+      "speculative_eagle_topk": 1,
+      "speculative_num_draft_tokens": 2,
+      "speculative_use_rejection_sampling": true,
+      "target_kv_cache_dtype": "bfloat16",
+      "draft_kv_cache_dtype": "bfloat16",
+      "campaign_resolved_target_tokens": 139072,
+      "campaign_resolved_draft_tokens": 139072,
+      "campaign": {
+        "passed": true,
+        "cases_passed": 34,
+        "cases_total": 34,
+        "eligible_missing_metrics": 0,
+        "receipt": "mtp-workload-a0-1-1-2-bf16kv-20260827.json",
+        "receipt_sha256": "f674da2a77dbbc3640b3a94820a3581d6a44f1c05dfe78e8599f8adec6dde9e8",
+        "corpus_sha256": "2ea70ef4ed96d81da649461c3bea8ea13d6fa8984b5410ab327d25c1f1006cbc"
+      },
+      "workload_summary": {
+        "chat": {
+          "measured_requests": 9,
+          "weighted_accept_length": 1.9041322314049587,
+          "weighted_accept_rate": 0.903305785123967,
+          "median_e2e_output_tokens_per_second": 151.38734855136747
+        },
+        "tool_json": {
+          "measured_requests": 10,
+          "weighted_accept_length": 2.02,
+          "weighted_accept_rate": 1.0,
+          "median_e2e_output_tokens_per_second": 99.83966685293511
+        },
+        "math": {
+          "measured_requests": 10,
+          "weighted_accept_length": 2.1666666666666665,
+          "weighted_accept_rate": 0.9444444444444444,
+          "median_e2e_output_tokens_per_second": 35.71312318005191
+        },
+        "long_retrieval": {
+          "metric_bearing_requests": 2,
+          "weighted_accept_length": 1.7740863787375416,
+          "weighted_accept_rate": 0.770764119601329,
+          "median_e2e_output_tokens_per_second": 14.81655411995388
+        }
+      },
+      "exact_gates": {
+        "tool_and_strict_json": true,
+        "math": true,
+        "leak_free_119735_prompt_plus_512_completion": true,
+        "blind_130831_prompt_retrieval": true,
+        "strict_overlimit_131491_http_400": true,
+        "runtime_identity_unchanged": true,
+        "fatal_or_xid_matches": 0
+      },
+      "disposition": "selected production control"
+    },
+    {
+      "arm": "A1",
+      "speculative_num_steps": 2,
+      "speculative_eagle_topk": 1,
+      "speculative_num_draft_tokens": 3,
+      "speculative_use_rejection_sampling": true,
+      "target_kv_cache_dtype": "bfloat16",
+      "draft_kv_cache_dtype": "bfloat16",
+      "resolved_target_tokens": 97664,
+      "resolved_draft_tokens": 97664,
+      "minimum_required_tokens": 131072,
+      "inference_requests_sent": 0,
+      "launcher_sha256": "7bede914454cddb23b64e40b19c6112f9e6ce09db749272d9502f230489ad995",
+      "readiness_sha256": "657e79965b9bcb957ce75994c7ef2e63b81a97ec929e19deade3c29d41dfadfe",
+      "archived_container_inspect_sha256": "b53150ed135fd1d3fcd3c7df18bc51666660954d274c2d21a486f7b2930f6170",
+      "archived_container_log_sha256": "92e31da457b2681e761e1a384c772fcd3dceb8f6ea7b23dcdf883885ca5a61d3",
+      "disposition": "rejected before readiness: KV capacity below configured context"
+    },
+    {
+      "arm": "A2",
+      "speculative_num_steps": 3,
+      "speculative_eagle_topk": 1,
+      "speculative_num_draft_tokens": 4,
+      "inference_requests_sent": 0,
+      "disposition": "not attempted: A1 already failed the memory/context gate"
+    }
+  ],
+  "final_production": {
+    "arm": "A0",
+    "launcher_sha256": "e656d69a8920aef81ba0cddd9b87a420bdf56014992da18d0045650837b55762",
+    "readiness_sha256": "cb69188dd5371488fe7aa238f2f418048c4bbef0327b4681a615004838324357",
+    "readiness_receipt_sha256": "18ec42991513448b2318f1a6df1ac0464a840a57fce60c6d770766d40cde710e",
+    "resolved_target_tokens": 146240,
+    "resolved_draft_tokens": 146240,
+    "ready_free_gpu_gb": 5.562,
+    "service_active": true,
+    "service_restarts": 0,
+    "container_oom_killed": false,
+    "post_readiness_fatal_matches": 0
+  },
+  "notes": [
+    "The A0 campaign and the final A0 cold boot have different resolved pools because desktop GPU residency changed between starts; all model/runtime arguments and hashes remained identical.",
+    "A1 never served traffic, so no A1 throughput or acceptance number is reported.",
+    "A2 is not a valid follow-up on this memory envelope because A1 could not preserve the configured context."
+  ]
+}
