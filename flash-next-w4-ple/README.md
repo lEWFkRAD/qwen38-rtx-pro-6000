@@ -198,7 +198,7 @@ story is in the
 | Sidecar public quality receipt | 11 / 11 passed |
 | Broader W4 qualification gate | 13 / 13 passed; 36 / 36 sustained requests |
 | Concurrent exact outputs | 4 / 4 passed |
-| Long retrieval | 119.5K and 130.5K prompt cases passed |
+| Long context | 119.5K + 512-token stability passed; blind 130.5K exact retrieval passed; see erratum below |
 | Boundary handling | Requests beyond 131,072 rejected |
 | Warm decode, concurrency 1 | about 81 tok/s |
 | Warm decode, concurrency 2 aggregate | about 144 tok/s |
@@ -223,10 +223,42 @@ Mamba dtype, context limit, and no-radix policy did not change.
 
 Post-promotion greedy medians were 133.545 tok/s c1, 233.049 aggregate tok/s
 c2, and 389.299 aggregate tok/s c4. The arm passed 18/18 behavior/tool/JSON
-checks, exact 119K and 130.5K retrieval, and over-limit rejection. See the
+checks, a 119K + 512-token stability run, blind exact 130.5K retrieval, and
+over-limit rejection. See the
 [`MTP/EAGLE production addendum`](docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md)
 and the `post-promotion-*.json` files under [`evidence/`](evidence/). The
 original PDF is intentionally preserved as a point-in-time field report.
+
+Evidence erratum: the historical 119K harness put the combined expected marker
+in its final instruction. That receipt proves the reported prompt/decode
+length, output reproduction, reasoning suppression, and runtime stability, but
+not blind early/middle/late retrieval. The 130.5K exact-only case did not reveal
+its codes. The workload campaign below replaces the 119K oracle with three
+independently planted codes and never prints their combined answer in the
+prompt. That stricter replacement subsequently passed, so it—not the
+historical receipt—is the qualified blind-119K retrieval evidence.
+
+Acceptance is workload dependent. The follow-up
+[`MTP workload/Pareto campaign`](docs/MTP-WORKLOAD-PARETO-CAMPAIGN.md) adds a
+small per-class acceptance histogram, defines the legal `1/1/2 -> 2/1/3 ->
+3/1/4` depth sweep, and records why FP8 KV is patch-gated rather than a safe
+flag-only experiment. A clean-chat c1 result is not a production promotion
+unless tool/JSON, math, long-retrieval, exact-output, and c4 veto gates survive.
+
+The campaign has now been executed. A0 passed 34/34 cases, including a
+leak-free 119,735-token prompt plus 512 completion tokens, blind exact
+130,831-token retrieval, strict tools/JSON/math, and the intended over-limit
+HTTP 400. Weighted accept length varied materially by class: chat `1.904`,
+tool/JSON `2.020`, math `2.167`, and long retrieval `1.774`. See the
+[`A0 workload receipt`](evidence/mtp-workload-a0-1-1-2-bf16kv-20260827.json)
+and [`running histogram`](evidence/mtp-workload-rolling-v2-20260827.json).
+
+A1 (`2 / 1 / 3`) was rejected before readiness or inference because both KV
+pools fell to 97,664 tokens, below the 131,072 configured context. A2 was not
+attempted. Exact A0 was restored; its final cold boot resolved 146,240 tokens
+per target/draft pool and passed readiness with zero restarts or fatal matches.
+The [`depth Pareto receipt`](evidence/mtp-depth-pareto-20260827.json) preserves
+the failed arm instead of reporting an invented throughput number.
 
 ## Run the validation scripts
 
@@ -242,6 +274,7 @@ python3 -m py_compile \
   flash-next-w4-ple/src/qwen4_ple_w4_sidecar.py \
   flash-next-w4-ple/scripts/*.py \
   flash-next-w4-ple/tests/*.py
+python3 flash-next-w4-ple/tests/test_mtp_workload_histogram.py
 
 docker run --rm --entrypoint python3 \
   -e PYTHONPATH=/release/src:/release/scripts \
@@ -264,11 +297,14 @@ success markers are respectively `PLE_W4_CPU_CUDA_PARITY_OK`,
 - `patches/`: the three pinned downstream patches;
 - `src/`: strict sidecar manifest/streaming loader;
 - `scripts/`: sidecar builder, overlay reproducer, patch installer, and safe
-  serving example;
+  serving example, plus the deterministic MTP corpus builder and serialized
+  workload histogram collector;
 - `tests/`: corruption tests and CPU/CUDA/class parity probes;
 - `evidence/`: sanitized benchmark and long-context receipts;
 - `docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md`: the later native-MTP
   promotion, comparable throughput, memory, validation, and caveats;
+- `docs/MTP-WORKLOAD-PARETO-CAMPAIGN.md`: workload-class acceptance, legal
+  draft-depth sweep, FP8-KV patch gate, and promotion/Pareto contract;
 - `provenance/`: the exact public HF tree receipt required by the sealed
   builder;
 - `docs/`: the publication-ready field report;

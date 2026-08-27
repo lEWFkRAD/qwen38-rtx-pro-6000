@@ -62,8 +62,11 @@ sampling was bypassed.
 
 - 18/18 exact behavior, arithmetic, tool-call, strict-JSON, and reasoning-off
   cases passed.
-- A 119,424-token prompt produced 512 completion tokens with exact planted
-  early/middle/late retrieval and zero reasoning tokens.
+- A 119,424-token prompt produced 512 completion tokens, reproduced the planted
+  marker string, and emitted zero reasoning tokens. Historical-oracle erratum:
+  its final instruction disclosed the combined marker, so this proves
+  long-context generation stability rather than blind early/middle/late
+  retrieval. The later workload campaign uses a leak-free replacement.
 - A 130,500-token prompt returned the exact planted retrieval marker.
 - A 131,272-token input was correctly rejected with HTTP 400 against the
   131,072-token limit.
@@ -76,6 +79,23 @@ sampling was bypassed.
 The stressed VRAM margin is deliberately narrow. Do not add another draft
 width, graph family, model, or GPU workload without a separate memory and
 correctness qualification.
+
+## Workload acceptance and depth-sweep follow-up
+
+The stricter workload campaign subsequently passed 34/34 on the promoted A0
+arm. Weighted accept length was content dependent: chat `1.904`, tool/strict
+JSON `2.020`, exact math `2.167`, and long retrieval `1.774`. The replacement
+119K oracle did not disclose its joined answer: a 119,735-token prompt plus 512
+completion tokens returned the independently planted codes, while a distinct
+130,831-token prompt returned its blind exact marker.
+
+The legal A1 depth arm (`steps=2`, `top-k=1`, `draft_tokens=3`) was tested only
+as a guarded c1 candidate. It resolved target and draft KV pools to 97,664
+tokens, below the 131,072 context, and was rejected before readiness or any
+inference. A2 was therefore not attempted. Exact A0 was restored and its final
+cold boot resolved both pools to 146,240 tokens with 5.562 GB reported ready
+headroom, zero restarts, and no post-readiness fatal match. The A0 workload and
+depth-Pareto receipts are linked below.
 
 ## Profiling result
 
@@ -91,6 +111,9 @@ why native MTP was tested before additional PLE-kernel tuning.
 | [`post-promotion-greedy-c124-3x.json`](../evidence/post-promotion-greedy-c124-3x.json) | `3ee661455cba9a8f48080d11a3c28b1c562b6f9db8f6c9ed2c7cfd996a324821` |
 | [`post-promotion-quality-gate.json`](../evidence/post-promotion-quality-gate.json) | `3e0503cd83fecc2c758bdcc7159be61c5a86f19613b6578375d6ca159a2799e5` |
 | [`post-promotion-longctx-gate.json`](../evidence/post-promotion-longctx-gate.json) | `d2094c0da402cd1edff574de6d876e0d754291d7d236924927b52b8f7c254c74` |
+| [`mtp-workload-a0-1-1-2-bf16kv-20260827.json`](../evidence/mtp-workload-a0-1-1-2-bf16kv-20260827.json) | `f674da2a77dbbc3640b3a94820a3581d6a44f1c05dfe78e8599f8adec6dde9e8` |
+| [`mtp-workload-rolling-v2-20260827.json`](../evidence/mtp-workload-rolling-v2-20260827.json) | `2e065a0d33cd1c0da5a8287fbbcc772d17b9d5693c5c6a2396257f67c637f6bc` |
+| [`mtp-depth-pareto-20260827.json`](../evidence/mtp-depth-pareto-20260827.json) | `78d9c88025a0b0fb9f70329ff81bd434c7a28da3d4a481422f79f358f3e0f5c3` |
 
 ## Operational boundary
 
