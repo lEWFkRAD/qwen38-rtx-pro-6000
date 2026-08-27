@@ -212,6 +212,22 @@ The roughly 320 tok/s figure observed during an earlier 8K-pool experiment is
 not comparable to this 131K-context production profile. Mixed long/short
 prefill fairness also remains an upstream scheduler limitation.
 
+### Later native-MTP production promotion
+
+The table above remains the reproducible, non-speculative baseline captured by
+the original field report and `serve.example.sh`. On 2026-08-27, a controlled
+production arm added native EAGLE 1-1-2 speculative decoding with rejection
+sampling, raised `mem-fraction-static` to `0.955`, and added BS3 to the decode
+graph buckets. The W4 PLE representation, model revision, image, KV dtype,
+Mamba dtype, context limit, and no-radix policy did not change.
+
+Post-promotion greedy medians were 133.545 tok/s c1, 233.049 aggregate tok/s
+c2, and 389.299 aggregate tok/s c4. The arm passed 18/18 behavior/tool/JSON
+checks, exact 119K and 130.5K retrieval, and over-limit rejection. See the
+[`MTP/EAGLE production addendum`](docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md)
+and the `post-promotion-*.json` files under [`evidence/`](evidence/). The
+original PDF is intentionally preserved as a point-in-time field report.
+
 ## Run the validation scripts
 
 The files under `tests/` are executable validation scripts, not a pytest suite.
@@ -251,6 +267,8 @@ success markers are respectively `PLE_W4_CPU_CUDA_PARITY_OK`,
   serving example;
 - `tests/`: corruption tests and CPU/CUDA/class parity probes;
 - `evidence/`: sanitized benchmark and long-context receipts;
+- `docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md`: the later native-MTP
+  promotion, comparable throughput, memory, validation, and caveats;
 - `provenance/`: the exact public HF tree receipt required by the sealed
   builder;
 - `docs/`: the publication-ready field report;

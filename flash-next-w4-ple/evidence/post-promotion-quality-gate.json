@@ -1,0 +1,156 @@
+{
+  "passed": 18,
+  "total": 18,
+  "rows": [
+    {
+      "case": "bs3_exact_0",
+      "passed": true,
+      "expected": "SIDECAR_BS3_00_OK",
+      "answer": "SIDECAR_BS3_00_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.8335
+    },
+    {
+      "case": "bs3_exact_1",
+      "passed": true,
+      "expected": "SIDECAR_BS3_01_OK",
+      "answer": "SIDECAR_BS3_01_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.8341
+    },
+    {
+      "case": "bs3_exact_2",
+      "passed": true,
+      "expected": "SIDECAR_BS3_02_OK",
+      "answer": "SIDECAR_BS3_02_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.8345
+    },
+    {
+      "case": "bs3_exact_3",
+      "passed": true,
+      "expected": "SIDECAR_BS3_03_OK",
+      "answer": "SIDECAR_BS3_03_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.2238
+    },
+    {
+      "case": "bs3_exact_4",
+      "passed": true,
+      "expected": "SIDECAR_BS3_04_OK",
+      "answer": "SIDECAR_BS3_04_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.314
+    },
+    {
+      "case": "bs3_exact_5",
+      "passed": true,
+      "expected": "SIDECAR_BS3_05_OK",
+      "answer": "SIDECAR_BS3_05_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.3125
+    },
+    {
+      "case": "bs3_exact_6",
+      "passed": true,
+      "expected": "SIDECAR_BS3_06_OK",
+      "answer": "SIDECAR_BS3_06_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.2281
+    },
+    {
+      "case": "bs3_exact_7",
+      "passed": true,
+      "expected": "SIDECAR_BS3_07_OK",
+      "answer": "SIDECAR_BS3_07_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.1643
+    },
+    {
+      "case": "bs3_exact_8",
+      "passed": true,
+      "expected": "SIDECAR_BS3_08_OK",
+      "answer": "SIDECAR_BS3_08_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.1641
+    },
+    {
+      "case": "bs3_exact_9",
+      "passed": true,
+      "expected": "SIDECAR_BS3_09_OK",
+      "answer": "SIDECAR_BS3_09_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.2551
+    },
+    {
+      "case": "bs3_exact_10",
+      "passed": true,
+      "expected": "SIDECAR_BS3_10_OK",
+      "answer": "SIDECAR_BS3_10_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.2285
+    },
+    {
+      "case": "bs3_exact_11",
+      "passed": true,
+      "expected": "SIDECAR_BS3_11_OK",
+      "answer": "SIDECAR_BS3_11_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.3198
+    },
+    {
+      "case": "bs3_exact_12",
+      "passed": true,
+      "expected": "SIDECAR_BS3_12_OK",
+      "answer": "SIDECAR_BS3_12_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.3304
+    },
+    {
+      "case": "bs3_exact_13",
+      "passed": true,
+      "expected": "SIDECAR_BS3_13_OK",
+      "answer": "SIDECAR_BS3_13_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.3141
+    },
+    {
+      "case": "bs3_exact_14",
+      "passed": true,
+      "expected": "SIDECAR_BS3_14_OK",
+      "answer": "SIDECAR_BS3_14_OK",
+      "reasoning_content": null,
+      "elapsed_s": 0.238
+    },
+    {
+      "case": "math_exact",
+      "passed": true,
+      "answer": "703",
+      "reasoning_content": null,
+      "elapsed_s": 0.1257
+    },
+    {
+      "case": "tool_exact",
+      "passed": true,
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_e30bb0010bc74f7c9b49df36",
+          "index": 0,
+          "type": "function",
+          "function": {
+            "name": "multiply",
+            "arguments": "{\"a\": 37, \"b\": 19}"
+          }
+        }
+      ],
+      "elapsed_s": 0.8334
+    },
+    {
+      "case": "strict_json",
+      "passed": true,
+      "answer": "{\"status\": \"ok\", \"value\": 73}",
+      "elapsed_s": 0.1803
+    }
+  ]
+}

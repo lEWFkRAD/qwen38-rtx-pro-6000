@@ -8,7 +8,7 @@ Workstation Edition.
 
 | Deployment | Result | Report and artifacts |
 | --- | --- | --- |
-| Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context | [Implementation, source, receipts, and PDF](flash-next-w4-ple/) |
+| Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context; later promoted with native MTP/EAGLE | [Implementation, source, receipts, PDF, and production addendum](flash-next-w4-ple/) |
 | Qwen3.8-27B NVFP4 with DSpark | 119.19 output tok/s over the validated 8x workload | [Eight-page PDF](Qwen3.8-27B-NVFP4-DSpark-RTX-PRO-6000-Full-Report.pdf) |
 
 The Flash-Next package is the current, more demanding deployment. It includes
@@ -22,6 +22,22 @@ with the complete verified artifact and final attribution card at Hub revision
 Independent contributors can use the
 [`portable review handoff`](flash-next-w4-ple/NICHO-HANDOFF.md) to work from
 their own GitHub and Codex accounts without access to the live deployment.
+
+### 2026-08-27 production addendum
+
+The original publication captured the conservative non-speculative 131K
+profile. A later controlled promotion enabled the checkpoint's native
+one-layer MTP head with EAGLE 1-1-2 and rejection sampling. Post-promotion
+greedy medians were 133.545 tok/s at c1, 233.049 aggregate tok/s at c2, and
+389.299 aggregate tok/s at c4. The complete flags, memory envelope, quality and
+long-context results, caveats, and new raw receipts are in the
+[`MTP/EAGLE production addendum`](flash-next-w4-ple/docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md).
+
+For future model bring-ups, we are evaluating
+[`SouthpawIN/turbofit`](https://github.com/SouthpawIN/turbofit) as an isolated
+hardware-inventory, engine-audition, and evidence-campaign framework. It is not
+part of this runtime or fleet, and its stock routing/catalog policy must not be
+treated as a production configuration without a separate review.
 
 ## Qwen3.8-27B NVFP4 + DSpark report
 

@@ -1,0 +1,70 @@
+{
+  "model": "qwen3.8-flash-next",
+  "filler_tokens": 110,
+  "rows": [
+    {
+      "case": "long119k_decode512",
+      "target_prompt_tokens": 119500,
+      "estimated_prompt_tokens": 119424,
+      "expected": "MTP119E7|MTP119M9|MTP119L3",
+      "http": 200,
+      "elapsed_s": 18.651,
+      "usage": {
+        "prompt_tokens": 119424,
+        "total_tokens": 119936,
+        "completion_tokens": 512,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "finish_reason": "length",
+      "content_prefix": "MTP119E7|MTP119M9|MTP119L3\n\nThe management of archival records is a discipline that requires meticulous attention to detail, a deep understanding of information",
+      "reasoning_chars": 0,
+      "passed": true
+    },
+    {
+      "case": "boundary130k_exact",
+      "target_prompt_tokens": 130500,
+      "estimated_prompt_tokens": 130500,
+      "expected": "MTP130E7|MTP130M9|MTP130L3",
+      "http": 200,
+      "elapsed_s": 15.931,
+      "usage": {
+        "prompt_tokens": 130500,
+        "total_tokens": 130522,
+        "completion_tokens": 22,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "finish_reason": "stop",
+      "content_prefix": "MTP130E7|MTP130M9|MTP130L3",
+      "reasoning_chars": 0,
+      "passed": true
+    },
+    {
+      "case": "overlimit_rejection",
+      "target_prompt_tokens": 131300,
+      "estimated_prompt_tokens": 131270,
+      "expected": "MTP131E7|MTP131M9|MTP131L3",
+      "http": 400,
+      "elapsed_s": 0.421,
+      "response": {
+        "object": "error",
+        "message": "The input (131272 tokens) is longer than the model's context length (131072 tokens).",
+        "type": "BadRequestError",
+        "param": null,
+        "code": 400
+      },
+      "passed": true
+    }
+  ],
+  "gpu": {
+    "samples": 70,
+    "max_util_pct": 100.0,
+    "max_used_mib": 94987.0,
+    "min_free_mib": 2257.0,
+    "max_temp_c": 68.0,
+    "max_power_w": 454.61
+  },
+  "passed": 3,
+  "total": 3
+}

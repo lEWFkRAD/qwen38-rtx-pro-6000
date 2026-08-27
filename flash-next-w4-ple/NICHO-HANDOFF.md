@@ -42,6 +42,18 @@ The sidecar is lossy relative to the source FP8 PLE. “Bit-exact” in this
 repository means parity between the CPU builder and CUDA runtime for the same
 W4 representation, not lossless equivalence to FP8.
 
+### Current production comparison point
+
+The public baseline above remains the artifact and source-review contract. The
+live deployment later added native EAGLE 1-1-2 speculative decoding with
+rejection sampling, BS3 to the existing decode graph buckets, and
+`mem-fraction-static=0.955`. Its comparable post-promotion greedy medians are
+133.545/233.049/389.299 aggregate tok/s at c1/c2/c4. Reviewers should use the
+exact flags and receipts in
+[`docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md`](docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md)
+for new performance comparisons. This does not broaden the no-production-access
+boundary below.
+
 ## Start here
 
 ```bash
