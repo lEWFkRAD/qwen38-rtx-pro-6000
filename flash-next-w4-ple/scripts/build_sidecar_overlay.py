@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -45,30 +46,37 @@ def main() -> None:
     require_digest(base, EXPECTED_BASE_SHA256, "base overlay")
     require_digest(patch, EXPECTED_PATCH_SHA256, "sidecar patch")
 
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{output.name}.", suffix=".tmp", dir=output.parent
-    )
-    os.close(descriptor)
-    temporary = Path(temporary_name)
-    temporary.unlink()
-    try:
+    with tempfile.TemporaryDirectory(
+        prefix=f".{output.name}.", dir=output.parent
+    ) as temporary_name:
+        temporary_dir = Path(temporary_name)
+        staged_base = temporary_dir / "qwen4_exp.w4-base.py"
+        generated = temporary_dir / "qwen4_exp.sidecar.py"
+        normalized_patch = temporary_dir / "sidecar.patch"
+        shutil.copy2(base, staged_base)
+        shutil.copy2(base, generated)
+        patch_lines = patch.read_bytes().splitlines(keepends=True)
+        if patch_lines[:2] != [
+            b"--- qwen4_exp.w4-base.py\n",
+            b"+++ qwen4_exp.sidecar.py\n",
+        ]:
+            raise RuntimeError("sidecar patch has unexpected file headers")
+        patch_lines[0] = b"--- a/qwen4_exp.w4-base.py\n"
+        patch_lines[1] = b"+++ b/qwen4_exp.sidecar.py\n"
+        normalized_patch.write_bytes(b"".join(patch_lines))
         subprocess.run(
             [
-                "patch",
-                "--batch",
-                "--fuzz=0",
-                "--posix",
-                "--output",
-                str(temporary),
-                str(base),
-                str(patch),
+                "git",
+                "apply",
+                "--unsafe-paths",
+                f"--directory={temporary_dir}",
+                "--whitespace=nowarn",
+                str(normalized_patch),
             ],
             check=True,
         )
-        require_digest(temporary, EXPECTED_OUTPUT_SHA256, "generated overlay")
-        os.replace(temporary, output)
-    finally:
-        temporary.unlink(missing_ok=True)
+        require_digest(generated, EXPECTED_OUTPUT_SHA256, "generated overlay")
+        os.replace(generated, output)
     print(f"SIDECAR_OVERLAY_REPRODUCED {EXPECTED_OUTPUT_SHA256} {output}")
 
 

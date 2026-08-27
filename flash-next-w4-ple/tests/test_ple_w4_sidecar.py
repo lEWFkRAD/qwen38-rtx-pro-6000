@@ -5,10 +5,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 import tempfile
 from pathlib import Path
 
 import torch
+
+RELEASE_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RELEASE_DIR / "src"))
+sys.path.insert(0, str(RELEASE_DIR / "scripts"))
 
 from build_ple_w4_sidecar import quantize_fp8_rows
 from qwen4_ple_w4_sidecar import (
