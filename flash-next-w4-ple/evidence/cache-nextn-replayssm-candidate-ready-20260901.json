@@ -1,0 +1,111 @@
+{
+  "publication": {
+    "content_policy": "synthetic benchmark data; no prompts, response bodies, production counters, container IDs, private network data, or operator paths",
+    "removed_fields": [
+      "container_id",
+      "speculative_draft_model_path"
+    ],
+    "schema": "qwen38.public-receipt-wrapper/v1",
+    "source_receipt": "candidate-ready.json",
+    "source_sha256": "ccfe4ee70460691bcd5df7ded4c0a4d30eee516bdf5d19a081f9539c3c28cc17"
+  },
+  "receipt": {
+    "api_response_sha256": "8900a60134fa936bce886e81faa320f8a69b03304f2aa51f1cd2c48704ae52f7",
+    "cache_probe_cached_tokens": 53248,
+    "cache_probe_prompt_tokens": 53276,
+    "cuda_graph_config": {
+      "decode": {
+        "backend": "full",
+        "bs": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "full_prefill_max_req": null,
+        "full_prefill_prefix_chunk_tokens": null,
+        "max_bs": 4,
+        "tc_compiler": "eager"
+      },
+      "prefill": {
+        "backend": "disabled",
+        "bs": [
+          4,
+          8,
+          12,
+          16,
+          20,
+          24,
+          28,
+          32,
+          48,
+          64,
+          80,
+          96,
+          112,
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256,
+          288,
+          320,
+          352,
+          384,
+          416,
+          448,
+          480,
+          512,
+          576,
+          640,
+          704,
+          768,
+          832,
+          896,
+          960,
+          1024
+        ],
+        "full_prefill_max_req": null,
+        "full_prefill_prefix_chunk_tokens": null,
+        "max_bs": 1024,
+        "tc_compiler": "eager"
+      }
+    },
+    "disable_overlap_schedule": false,
+    "disable_radix_cache": false,
+    "enable_cache_report": true,
+    "enable_linear_replayssm": false,
+    "enable_linear_replayssm_spec": true,
+    "image_id": "sha256:59f06adce6f91401adf443bd168d45fdb2044d77671fd591c7c57a29d851cbae",
+    "kv_cache_token_pools": [
+      151040,
+      151040
+    ],
+    "linear_replayssm_cache_len": 16,
+    "mamba_max_states_per_path": 1,
+    "mamba_radix_cache_strategy": "extra_buffer",
+    "manifest_sha256": "a11028a945bac40c7a2d5f41f21c829a08f5d531c39184dda2a7c8731d7e1691",
+    "max_mamba_cache_size": 28,
+    "model": "qwen3.8-flash-next",
+    "ready_at": "2026-09-01T11:25:38.754057+00:00",
+    "required_markers": [
+      "Loaded verified packed PLE sidecar: manifest=a11028a945bac40c7a2d5f41f21c829a08f5d531c39184dda2a7c8731d7e1691",
+      "sidecar=True",
+      "Verified all 128 source shard descriptors against the packed PLE sidecar",
+      "GDN ReplaySSM ring buffers allocated (record_len=2, fold=True)"
+    ],
+    "resolved_max_total_num_tokens": 151040,
+    "speculative_adaptive": false,
+    "speculative_algorithm": "EAGLE",
+    "speculative_attention_mode": "prefill",
+    "speculative_eagle_topk": 1,
+    "speculative_num_draft_tokens": 2,
+    "speculative_num_steps": 1,
+    "speculative_use_rejection_sampling": true,
+    "uses_mamba_radix_cache": true
+  }
+}

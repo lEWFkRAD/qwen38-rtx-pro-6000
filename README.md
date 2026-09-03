@@ -8,7 +8,7 @@ Workstation Edition.
 
 | Deployment | Result | Report and artifacts |
 | --- | --- | --- |
-| Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context; later promoted with native MTP/EAGLE | [Implementation, source, receipts, PDF, and production addendum](flash-next-w4-ple/) |
+| Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context; later combined device caching, native MTP/EAGLE, and ReplaySSM | [Implementation, source, receipts, PDF, and production addenda](flash-next-w4-ple/) |
 | Qwen3.8-27B NVFP4 with DSpark | 119.19 output tok/s over the validated 8x workload | [Eight-page PDF](Qwen3.8-27B-NVFP4-DSpark-RTX-PRO-6000-Full-Report.pdf) |
 
 The Flash-Next package is the current, more demanding deployment. It includes
@@ -22,6 +22,26 @@ with the complete verified artifact and final attribution card at Hub revision
 Independent contributors can use the
 [`portable review handoff`](flash-next-w4-ple/NICHO-HANDOFF.md) to work from
 their own GitHub and Codex accounts without access to the live deployment.
+
+### 2026-09-01 cached NEXTN + ReplaySSM addendum
+
+The September 1 qualified field profile combines device radix caching with the
+checkpoint's native shallow NEXTN/MTP path, ReplaySSM speculative-state
+management, and full decode graphs for batch sizes 1-4. Against a fresh
+same-day cached/no-speculation control, forced-512 decode medians improved from
+97.882 to 144.563 tok/s at c1, 185.666 to 255.986 aggregate tok/s at c2, and
+332.794 to 434.883 aggregate tok/s at c4.
+
+The
+[`September 1 production addendum`](flash-next-w4-ple/docs/CACHED-NEXTN-REPLAYSSM-PRODUCTION-ADDENDUM-2026-09-01.md)
+contains the exact profile, paired performance table, cache/branch/workload
+gates, minimized public receipts, and causal limits. Promotion requalified the
+profile but did not rerun throughput, and the release remains probationary.
+
+On September 2, the live deployment advanced from EAGLE/NEXTN `1/1/2` to a
+guarded `2/1/3` depth after a separate depth-only A/B. That later operational
+change is not part of this September 1 evidence bundle; the measurements and
+receipts here remain date-bounded to the qualified `1/1/2` profile.
 
 ### 2026-08-27 production addendum
 
