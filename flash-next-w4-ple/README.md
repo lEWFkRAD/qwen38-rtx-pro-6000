@@ -17,6 +17,27 @@ the model and cannot be used by itself.
 > SM120 RTX PRO 6000. Keep the model and artifacts read-only, verify every
 > digest, and leave sidecar fallback disabled.
 
+## September 1 field profile
+
+The September 1 published field evidence is the
+[`September 1 cached NEXTN + ReplaySSM addendum`](docs/CACHED-NEXTN-REPLAYSSM-PRODUCTION-ADDENDUM-2026-09-01.md).
+That profile keeps the 131,072-token contract while combining device radix
+caching, one retained Mamba state per path, native EAGLE 1-1-2, ReplaySSM, and
+full decode graphs for batch sizes 1-4. Its paired same-day medians were
+144.563 / 255.986 / 434.883 aggregate decode tok/s at c1/c2/c4, versus
+97.882 / 185.666 / 332.794 for the cached/no-speculation control.
+
+The live deployment advanced to guarded EAGLE/NEXTN `2/1/3` on September 2
+after a separate depth-only A/B. That later operational change is not included
+in this evidence bundle; the addendum and public receipts below document the
+date-bounded September 1 `1/1/2` qualification.
+
+The addendum publishes minimized synthetic receipts and the exact evidence
+limits. It does not turn the private production service wrapper into a public
+turnkey launcher. The `serve.example.sh` file remains the conservative,
+non-speculative public reproduction baseline captured by the original field
+report.
+
 ## What fits
 
 The base checkpoint already uses ModelOpt NVFP4 for routed experts, but its PLE
@@ -147,7 +168,7 @@ manifest.
 Every changed or fine-tuned checkpoint requires a newly built sidecar. Never
 reuse a sidecar merely because tensor shapes match.
 
-## Run the qualified profile
+## Run the conservative public baseline
 
 Set `MODEL_DIR`, `SIDECAR_DIR`, and `SGLANG_CHECKOUT`, then run:
 
@@ -260,6 +281,20 @@ per target/draft pool and passed readiness with zero restarts or fatal matches.
 The [`depth Pareto receipt`](evidence/mtp-depth-pareto-20260827.json) preserves
 the failed arm instead of reporting an invented throughput number.
 
+### Cached NEXTN + ReplaySSM follow-up
+
+On September 1, a later qualification combined the cached August 29 profile
+with native shallow NEXTN/MTP, ReplaySSM speculative state, and full decode
+graphs. It passed a realistic 54K repeat, five retained 11K branches, all nine
+branch-matrix scenarios, the 34-attempt workload, the 119K/130K/over-limit
+gates, and a separate promotion requalification. See the
+[`cached NEXTN + ReplaySSM production addendum`](docs/CACHED-NEXTN-REPLAYSSM-PRODUCTION-ADDENDUM-2026-09-01.md)
+and the `cache-nextn-*-20260901.json` files under [`evidence/`](evidence/).
+
+That result is a combined qualification, not a ReplaySSM-only causal claim.
+The control and candidate also exposed different token-pool capacities, and
+promotion did not rerun TPS.
+
 ## Run the validation scripts
 
 The files under `tests/` are executable validation scripts, not a pytest suite.
@@ -275,6 +310,7 @@ python3 -m py_compile \
   flash-next-w4-ple/scripts/*.py \
   flash-next-w4-ple/tests/*.py
 python3 flash-next-w4-ple/tests/test_mtp_workload_histogram.py
+python3 flash-next-w4-ple/tests/test_public_cache_nextn_receipts.py
 
 docker run --rm --entrypoint python3 \
   -e PYTHONPATH=/release/src:/release/scripts \
@@ -299,12 +335,16 @@ success markers are respectively `PLE_W4_CPU_CUDA_PARITY_OK`,
 - `scripts/`: sidecar builder, overlay reproducer, patch installer, and safe
   serving example, plus the deterministic MTP corpus builder and serialized
   workload histogram collector;
-- `tests/`: corruption tests and CPU/CUDA/class parity probes;
+- `tests/`: corruption tests, public-receipt integrity checks, and
+  CPU/CUDA/class parity probes;
 - `evidence/`: sanitized benchmark and long-context receipts;
 - `docs/MTP-EAGLE-PRODUCTION-ADDENDUM-2026-08-27.md`: the later native-MTP
   promotion, comparable throughput, memory, validation, and caveats;
 - `docs/MTP-WORKLOAD-PARETO-CAMPAIGN.md`: workload-class acceptance, legal
   draft-depth sweep, FP8-KV patch gate, and promotion/Pareto contract;
+- `docs/CACHED-NEXTN-REPLAYSSM-PRODUCTION-ADDENDUM-2026-09-01.md`: the later
+  cached NEXTN + ReplaySSM profile, paired measurements, qualification gates,
+  public receipts, and causal limits;
 - `provenance/`: the exact public HF tree receipt required by the sealed
   builder;
 - `docs/`: the publication-ready field report;
