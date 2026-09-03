@@ -1,5 +1,7 @@
 # Qwen3.8 on a single RTX PRO 6000
 
+![Abstract visualization of a single workstation GPU processing luminous AI data streams](assets/qwen38-pro6000-hero.png)
+
 Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models on one NVIDIA RTX PRO 6000 Blackwell
 Workstation Edition.
