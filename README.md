@@ -12,6 +12,7 @@ Workstation Edition.
 | --- | --- | --- |
 | Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context; later combined device caching, native MTP/EAGLE, and ReplaySSM | [Implementation, source, receipts, PDF, and production addenda](flash-next-w4-ple/) |
 | Qwen3.8-27B NVFP4 with DSpark | 119.19 output tok/s over the validated 8x workload | [Eight-page PDF](Qwen3.8-27B-NVFP4-DSpark-RTX-PRO-6000-Full-Report.pdf) |
+| GLM-5.3-Flash AJ IQ2 GGUF, experimental llama.cpp runtime | Best 36.1237 generated tok/s per user at four concurrent ~90K contexts; 60 tok/s/user target and useful-answer acceptance remain unmet | [September 4 progress report and minimized evidence](glm53-flash/) |
 
 The Flash-Next package is the current, more demanding deployment. It includes
 the exact downstream SGLang patches, sidecar builder and loader, safe serving
