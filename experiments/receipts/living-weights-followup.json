@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 11 later GEMV compile-only notebook",
+    "filename": "README.md",
+    "sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## 2026-10-11 TensorFold isolated GEMV CPU/compile receipt — Hermes",
+        "excerpt": "## 2026-10-11 TensorFold isolated GEMV CPU/compile receipt — Hermes\nCanonical Onyx isolated repo clean at 6a8f9d1a55acddcd0d9de28598bb97931825b5b6. Q4/Q6 group-32 affine GEMV kernel, validated dispatch, independent host-oracle fixtures and negative/mock launch tests committed; production registry/fatbin unchanged. Final post-commit fresh host suite 399/399, 34/34 steps; GEMV Debug/ReleaseSafe 20/20 each; existing nvcc 13.3 compiled sm_120 object, NOT device-executed. Bias-zero mutation was caught. CPU work bounded nice15/CPUs0,1/-j1. Receipt: repo FLASHNEXT_GEMV_RECEIPT.md; durable Onyx sibling gemv-evidence-20261011/{results.json,final-host.log,final-attestation.json}; pre-edit backup gemv-backup-20261011T144900Z. No GPU runtime/allocation, model/training, production Strata/service/config or cron changes. Q4 admission blocker remains. Next CPU step: validated unregistered tensor-binding/projection adapter for full forward; GPU launch/numerical parity needs separate authorization. Full forward and full-model Living Weights trainer remain absent. Cron 7dab6b75e4e1 remains paused."
+      }
+    ]
+  }
+}

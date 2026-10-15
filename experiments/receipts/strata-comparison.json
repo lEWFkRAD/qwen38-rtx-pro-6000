@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 5 saved TensorFold/Strata workload comparison",
+    "filename": "plotted-results.json",
+    "sha256": "5abd258adc5a889eaea2c197b2a62267c2848059a7ee0d18cce7d71822e369a9",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "date",
+    "hardware",
+    "comparison",
+    "workloads",
+    "live_sustained",
+    "full_context"
+  ],
+  "data": {
+    "date": "2026-10-05",
+    "hardware": "RTX PRO 6000 Blackwell 96 GB",
+    "comparison": {
+      "active_slots": {
+        "TensorFold": 4,
+        "Strata": 8
+      },
+      "throughput": {
+        "TensorFold": {
+          "median": 384.92422963351413,
+          "minimum": 375.8242958021536,
+          "maximum": 389.8181665918251,
+          "rounds": 3
+        },
+        "Strata": {
+          "median": 268.1219562937683,
+          "minimum": 265.4055021573744,
+          "maximum": 270.47472885211715,
+          "rounds": 3
+        }
+      },
+      "last_first_token": {
+        "TensorFold": {
+          "median": 5.55640110198874,
+          "minimum": 5.220621679036412,
+          "maximum": 5.5741873100050725,
+          "rounds": 3
+        },
+        "Strata": {
+          "median": 2.4932421990088187,
+          "minimum": 2.447358496952802,
+          "maximum": 2.655615416006185,
+          "rounds": 3
+        }
+      }
+    },
+    "workloads": [
+      {
+        "label": "One request",
+        "workload": "Short prompt · 512 output tokens",
+        "median": 179.0719007445547,
+        "minimum": 166.28354294426438,
+        "maximum": 181.29372662270856,
+        "rounds": 3
+      },
+      {
+        "label": "Eight requests",
+        "workload": "Short prompts · 512 output tokens each",
+        "median": 268.1219562937683,
+        "minimum": 265.4055021573744,
+        "maximum": 270.47472885211715,
+        "rounds": 3
+      },
+      {
+        "label": "Eight requests, sustained",
+        "workload": "Short prompts · 2,048-token output cap each",
+        "median": 296.0281925785035,
+        "minimum": 293.5091332414354,
+        "maximum": 298.32572882039636,
+        "rounds": 3
+      },
+      {
+        "label": "Eight requests, longer prompts",
+        "workload": "~10K input tokens each · 512 output tokens each",
+        "median": 148.61763199746417,
+        "minimum": 147.6938998376987,
+        "maximum": 149.54136415722962,
+        "rounds": 2
+      }
+    ],
+    "live_sustained": {
+      "median": 297.90975881278735,
+      "minimum": 297.90975881278735,
+      "maximum": 297.90975881278735,
+      "rounds": 1
+    },
+    "full_context": {
+      "maximum_simultaneous_decoding": 8,
+      "followup_seconds": [
+        35.87966311199125,
+        35.8959878750029,
+        35.93069785699481,
+        35.811678920988925,
+        35.844529947964475,
+        35.24443116498878,
+        35.924611846974585,
+        35.94788501900621
+      ],
+      "completion_tokens_per_followup": 512,
+      "rounds": 1,
+      "initial_retrieval_passed": 8,
+      "followups_passed": 8
+    }
+  }
+}

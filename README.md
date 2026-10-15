@@ -3,8 +3,27 @@
 ![Abstract visualization of a single workstation GPU processing luminous AI data streams](assets/qwen38-pro6000-hero.png)
 
 Independent deployment reports, reproducibility artifacts, and benchmark
-receipts for running large Qwen3.8 models on one NVIDIA RTX PRO 6000 Blackwell
-Workstation Edition.
+receipts for running large Qwen3.8 models and related inference experiments on one
+NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
+
+## Recent experiments — updated October 15, 2026
+
+The [experiment archive](experiments/README.md) covers the work since the
+September release: SGLang/NVIDIA checkpoint tuning, LoRA and recurrent-memory
+research, TensorFold, eight-slot Strata, batched MTP, KV streaming, d1
+decisions, and LFM2.5 smoke/accounting tests. It includes failed and interrupted
+trials, selected source receipts, exact scope limits, and an offline validator.
+
+| Finding | Evidence |
+| --- | --- |
+| KV streaming freed 10.37 GiB startup VRAM while retaining 128K context | [Memory profiles](experiments/MEMORY-PROFILES.md) |
+| Batched MTP passed parity but its best matched pair remained 4.83% slower | [Strata and MTP](experiments/STRATA-AND-MTP.md) |
+| LFM passed 14/14 short checks; initial long accounting suite had 0/16 exact passes; corrected rerun was partial | [LFM2.5](experiments/LFM25.md) |
+| d1 direct visual worker passed 10/10; the capture/tool bridge remained unresolved | [Decision models](experiments/D1-DECISIONS.md) |
+
+Results are dated observations, not a current deployment prescription or a
+cross-model leaderboard. [Provenance and limitations](experiments/PROVENANCE.md)
+distinguish selected machine receipts from historical notebook records.
 
 ## Reports
 
@@ -13,7 +32,7 @@ Workstation Edition.
 | Qwen3.8-Flash-Next NVFP4 with a signed-W4 host PLE sidecar | 125B main model plus a 51.2 GB PLE table reduced to 28.8 GB; qualified at 131K context; later combined device caching, native MTP/EAGLE, and ReplaySSM | [Implementation, source, receipts, PDF, and production addenda](flash-next-w4-ple/) |
 | Qwen3.8-27B NVFP4 with DSpark | 119.19 output tok/s over the validated 8x workload | [Eight-page PDF](Qwen3.8-27B-NVFP4-DSpark-RTX-PRO-6000-Full-Report.pdf) |
 
-The Flash-Next package is the current, more demanding deployment. It includes
+The Flash-Next package preserves the earlier SGLang deployment. It includes
 the exact downstream SGLang patches, sidecar builder and loader, safe serving
 example, validation evidence, scoped licenses, and the long-form PDF. Its
 28.8 GB binary companion is published at
@@ -38,7 +57,7 @@ The
 [`September 1 production addendum`](flash-next-w4-ple/docs/CACHED-NEXTN-REPLAYSSM-PRODUCTION-ADDENDUM-2026-09-01.md)
 contains the exact profile, paired performance table, cache/branch/workload
 gates, minimized public receipts, and causal limits. Promotion requalified the
-profile but did not rerun throughput, and the release remains probationary.
+profile but did not rerun throughput; it was probationary at publication.
 
 On September 2, the live deployment advanced from EAGLE/NEXTN `1/1/2` to a
 guarded `2/1/3` depth after a separate depth-only A/B. That later operational

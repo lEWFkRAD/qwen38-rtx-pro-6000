@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 11 CPU-only integration verification",
+    "filename": "FINAL_VERIFICATION.md",
+    "sha256": "9b8322d45b09b7a2757012a45aa7684c766a53ede4387e853923aef9f20971f4",
+    "evidence_level": "local-text-receipt"
+  },
+  "selection": "Complete local text receipt with private absolute paths redacted",
+  "data": {
+    "text": "# Final integration verification — 2026-10-11\n\nCanonical Onyx repo: [private-path]\nFinal clean revision: 5792b4fbedf5cf97bbc4d45da2f4a9ab01f78907.\nProjection 3611cb3; admission 6d98eb839b661d1e00d4b80a2a80a6dfd3d96418, cherry-picked from 7f95d07dbdd36c80a7750eb88a5a4e32c6083193.\n\nAfter the final receipt commit, executed actual Linux CPU suite with Zig 0.17.0:\n`timeout 300 nice -n 15 taskset -c 0,1 ../tools/zig/zig build test-cuda-host -j1 --summary all --cache-dir ../integration-evidence-20261011/final-cache`\nExit 0: 32/32 build steps and 379/379 tests passed with all test runs fresh (final-host.log). Includes admission 26, packing 8, projection Debug 20 and fail-closed scaffold checks.\nAlso reran final projection ReleaseSafe: `timeout 180 nice -n 15 taskset -c 0,1 ../tools/zig/zig test zig/flashnext_cuda_proj_cases.zig -lc -O ReleaseSafe`; exit 0, 20/20 (final-projection-release-safe.log).\nFinal git status --porcelain empty. git diff --check passed before commits. Verified all six backup files against ../integration-backup-20261011T143749Z/manifest.json. Logs copied to this Shatner directory from durable Onyx sibling integration-evidence-20261011.\n\nInitial combined invocation only ran 54 tests and reused other cached suites; not used as evidence of fresh full coverage. A fresh-cache run at source integration commit also passed 379/379. Initial compatibility patch dry-run failed due to CRLF patch context; newline normalization resolved it without source arithmetic changes.\n\nNo GPU execution, full CUDA forward or Living Weights trainer qualification. All production settings/services, four-slot gaming-mode deployment and paused cron unchanged by this task. Next implementation: isolated Q4/Q6 affine CUDA GEMV and dispatch seam against CPU oracle; device parity only after GPU work authorized. Keep Q4 checkpoint blocker and family readiness gates intact. Full-model forward/backward/optimizer/resume/evaluation remain later requirements, not output-head substitution.\n"
+  }
+}

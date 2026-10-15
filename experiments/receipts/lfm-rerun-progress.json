@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "Available local bank rerun progress snapshot; not final suite closeout",
+    "filename": "bank-progress.json",
+    "sha256": "3fcf0137756ebe9f8f4aca9fabed548ca47b2bf29acef106466f740e697f18b1",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "id",
+    "kind",
+    "seed",
+    "seconds",
+    "turns",
+    "tool_calls",
+    "compactions",
+    "continuations",
+    "finish",
+    "grade"
+  ],
+  "data": {
+    "id": "bank_reconciliation-137",
+    "kind": "bank_reconciliation",
+    "seed": 137,
+    "seconds": 1115.3789126889315,
+    "turns": 41,
+    "tool_calls": 41,
+    "compactions": 0,
+    "continuations": 0,
+    "finish": "budget",
+    "grade": {
+      "exact": false,
+      "correct": 0,
+      "total": 29,
+      "differences": [
+        "No structured final result"
+      ]
+    }
+  }
+}

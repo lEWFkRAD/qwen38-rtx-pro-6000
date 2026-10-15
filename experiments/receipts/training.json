@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "September LoRA execution and evaluation notebook",
+    "filename": "README.md",
+    "sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## [2026-09-07 01:05] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "All 41 baseline failures occurred while parsing final JSON after correct tool arguments. Examples included Markdown fences and explanatory commentary. Prompt1's explicit exact-JSON/no-Markdown instruction passed every development case. Paired comparison: 41 gained, zero regressed, zero candidate failures. Retain prompt1 for development. Do not treat this as release acceptance, evidence of trained-weight improvement or a general accounting accuracy estimate."
+      },
+      {
+        "section": "## [2026-09-07 21:06] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "The attended experiment-v5-resume-128-v1 completed 128 NEW optimizer updates, from global step128 to256. All128 gradient checks passed and all456 adapter tensors changed. Together with the preserved1,32 and128-step runs, cumulative actual updates are289. The strict newer-receipt subtotal is288; the original1-step receipt remains separately documented legacy evidence."
+      },
+      {
+        "section": "## [2026-09-07 20:01] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "All456 parent adapter tensors matched before training and initial optimizer state was empty. All128 gradient steps passed finite/nonzero checks; all456 adapter tensors changed.128 loss samples, mean0.2835795183; training runtime345seconds;7595 supervised tokens/34944 total at step128. These are execution metrics, not quality gains. Journal peak active GPU memory79.84GiB and reserved80.16GiB exceeds the callback's final reset-counter readings; use the journal peak."
+      },
+      {
+        "section": "## [2026-09-07 21:06] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "The resume-start receipt confirms all456 parent adapter tensors matched exactly,456 AdamW state entries were restored at step128, and the scheduler last_epoch was128. The same registered v5 corpus and seed remained bound. The actual journal begins resumed losses at epoch0.4031 and ends0.8, consistent with continuing the320-example epoch at batch129 through256. Pinned trainer source restores optimizer/scheduler/RNG and skips128 consumed batches with ignore_data_skip false. The default log level did not emit an explicit fast-forward message; this is framework cursor evidence, not a separately captured per-example batch-identity trace."
+      },
+      {
+        "section": "## [2026-09-07 22:18] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "| Development screen | Base | Checkpoint 128 | Checkpoint 256 |\n|---|---:|---:|---:|\n| Paired questions | 20/24 | 21/24 | 22/24 |\n| Free-response accounting | 3/4 | 2/4 | 3/4 |\n| Free-response math | 1/4 | 2/4 | 2/4 |\n| General instructions | 4/4 | 4/4 | 4/4 |\n| Executed synthetic Hermes workflows | 10/10 | 10/10 | 10/10 |"
+      },
+      {
+        "section": "## [2026-09-07 22:18] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "The first and last rows come from the separately preserved earlier evaluations; they were not rerun by this free-only evaluation. Free response totals 8/12 for base, 8/12 for checkpoint 128 and 9/12 for checkpoint 256. Checkpoint 128 gains reverse percentages but loses deferred revenue against base. Checkpoint 256 fixes that deferred-revenue answer against checkpoint 128, with no free-response correct-to-incorrect changes. However, its wrong rational-equation answer also introduces malformed JSON; checkpoint 128's wrong answer had valid JSON. The earlier paired retained-earnings regression remains."
+      },
+      {
+        "section": "## [2026-09-07 22:18] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "Keep checkpoint 128 as the provisional development incumbent while preserving every checkpoint. Neither adapter dominates all measured base capabilities or qualifies for production. The next proposed optimizer experiment branches from checkpoint 128 with the same 128-step exposure and a fourfold lower constant learning rate, preserving optimizer moments, RNG and data position. This tests update size as a hypothesis; it is not an established cause or fix for the observed regressions. Exact evaluation examples remain excluded from training."
+      },
+      {
+        "section": "## [2026-09-08 10:01] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "- The actual-source CPU adapter audit completed all 228 base matrices, 456 adapter tensors and 1,824 independent scalar checks. It observed no source stat changes and the same healthy production invocation before/after. BF16 merging changed 829,815,611 of 2,682,716,160 target elements (30.93%); every matrix retained some change. This does not establish PEFT numerical equivalence or serving quality. The complete receipt is `static-attention-actual-cpu-20260907-final.json`."
+      },
+      {
+        "section": "## [2026-09-08 10:01] Overnight accounting/Hermes development receipt | codex",
+        "excerpt": "The overnight schedule did not produce a new optimizer run. The training-unit journal has no entries between September 8 00:30 and 09:50 Eastern, and the latest optimizer receipt remains September 7 20:55. Actual pipeline updates remain 289 across the four preserved successful runs. The active Codex heartbeat is a coordination schedule, not proof of reliable overnight training execution. The specific reason no heartbeat dispatched an overnight run is not established."
+      }
+    ]
+  }
+}

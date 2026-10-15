@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "September recurrent PLE and real-feature readout notebook",
+    "filename": "README.md",
+    "sha256": "c093028c47f334797236049f10b7fa5ebb6445da55dcb8d4c9865976eb6b5741",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## Strict frozen score",
+        "excerpt": "| Category | Qwen alone | Zero bridge | Trained bridge |\n| --- | ---: | ---: | ---: |\n| Arithmetic | 4/8 | 4/8 | 5/8 |\n| Symbolic state | 1/8 | 1/8 | 3/8 |\n| Copy / compact JSON | 8/8 | 8/8 | 5/8 |\n| General retention | 8/8 | 8/8 | 8/8 |\n| **Total** | **21/32** | **21/32** | **21/32** |"
+      },
+      {
+        "section": "## Strict frozen score",
+        "excerpt": "Three strict gains and three strict losses: no net gain. The losses were\n`retention-05`, `retention-07`, and `retention-08`: correct JSON values but\nunrequested spaces. The frozen compact-format criterion is retained. One\nsymbolic gain (`state-05`) likewise fixed formatting rather than values.\nThe other gains were `arithmetic-06` and `state-06`."
+      },
+      {
+        "section": "## Observed cost, not a production benchmark",
+        "excerpt": "- Warm forced-continuation decode: approximately 47.4 ms baseline versus\n  49.8 ms trained (about +2.4 ms / +5.1%). Serial, short context, eager path;\n  different runtime options from production, no native MTP or batching."
+      },
+      {
+        "section": "## PLE read-path recurrent bridge strength — 2026-09-13",
+        "excerpt": "| Bridge strength | Strict correct | Gains / losses vs Qwen | Format valid | Stopped within limit |\n| --- | ---: | ---: | ---: | ---: |\n| 0% (baseline-equivalent) | 21/32 | 0 / 0 | 30/32 | 32/32 |\n| **25%** | **22/32** | **1 / 0** | **31/32** | **32/32** |\n| 50% | 21/32 | 3 / 3 | 29/32 | 32/32 |\n| 75% | 21/32 | 2 / 2 | 29/32 | 32/32 |\n| 100% | 21/32 | 3 / 3 | 27/32 | 31/32 |"
+      },
+      {
+        "section": "## PLE read-path recurrent bridge strength — 2026-09-13",
+        "excerpt": "At 25%, the extra correct case is `arithmetic-06`. All baseline-correct cases\nwere preserved. This is **one additional correct answer (+3.125 percentage\npoints)**, not statistical proof or an established general reasoning gain.\nThe five-way choice used these same cases, so it cannot count as unseen validation."
+      },
+      {
+        "section": "## Frozen data and real tokenizer admission",
+        "excerpt": "960 independent histories: 256 training, 64 development, and 128 each for IID,\nnew rules, new names, new wording and longer histories. Training lengths are\n4/6/8 events; long tests are 16/24. There are **7,556 supervised event states**.\nNo balancing claim: do not assume uniform chance accuracy for the generated data."
+      },
+      {
+        "section": "## SoggyBones reservation closed - Qwen restored 2026-09-14",
+        "excerpt": "Real hidden-state capture completed all960 histories, three layers, and21 identical-prefix audits (all max_abs=0), in4073seconds. All36 CPU training arms completed300updates each. RLT mean final exact-pair accuracy was1.91% IID and1.82% long; linear1.91/1.74%, GRU2.34/1.82%, MLP1.22/2.00%. Uniform random pair guesses score1.5625%; no reliable transfer or RLT advantage established. All features and checkpoints remain preserved for offline research. Do not restart research or recreate the closed HOLD from historical notes. (codex)\n"
+      }
+    ]
+  }
+}

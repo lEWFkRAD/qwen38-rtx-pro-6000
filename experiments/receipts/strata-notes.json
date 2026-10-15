@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October Strata and batched MTP notebook",
+    "filename": "README.md",
+    "sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## [2026-10-05 12:49] [operator]-approved retained Strata primary; eight requests qualified | codex",
+        "excerpt": "|- Eight approximately128K retrievals plus matched-format cached followups previously passed with8slots simultaneously decoding;512output tokens each completed in35.2-35.95s (~114total tokens/sec at full context). Native batch parity8x150 and39K interleave/preemption/resume parity passed. Synthetic tests do not establish broad model quality or every staff workflow."
+      },
+      {
+        "section": "## [2026-10-05 15:02] Strata batched MTP attended qualification 20261005-277c8d41 | codex",
+        "excerpt": "|- First full-model candidate afb0895d failed all eight greedy output comparisons. Identified concrete PLE history defect: ngram_rows expects two predecessors per row, while the speculative span supplied only two total and let its second row read beyond that buffer. Corrected with explicit per-row causal history. New 41,472-case scalar-hash regression passed including ASan+UBSan; six offline suites passed."
+      },
+      {
+        "section": "## [2026-10-05 16:01] Strata wide batched MTP experiments 20261005-26144ccc | codex",
+        "excerpt": "|- Default-threshold wide result: greedy off275.11/on249.48t/s, sampled off272.28/on243.64. Every8x512 output stream matched independent solo and matchingflag-off streams. Greedy windows fell620to325 with the same4480rows/4088post-admission tokens, but graph time rose0.62to1.23s; drafting~1.21s andcommit~0.87s persisted. A wider graph alone did not establish a speedup."
+      },
+      {
+        "section": "## [2026-10-07 19:21] [operator] requested gaming mode; four slots now active | codex",
+        "excerpt": "|- Activated tested four-slot profile on retained Strata: parallel4,max_streams4,pinnedengine--batch4. Preserved128Kcontext,KVresident32768,uncensoredmodel/vector,all24576GPUexperts,PLE RAM,GPUvision. Enabled/active,exactcanary/readiness/processpins passed,ownedHOLDreleased; native recoveryhealthy. Live snapshot~20GiBRAMavailable/27.7GiBVRAMfree."
+      },
+      {
+        "section": "## [2026-10-13 09:20] NVIDIA 615 staged and Local Inference Lab comparison | codex",
+        "excerpt": "|- Live primary is qwen38-flash-next-strata.service with [private-path] commit c23fd928f2c4225766075146222b601605a10216, FOUR slots and131072context. This supersedes the October5 eight-slot snapshot for this comparison. [private-path] is the recovery contract and strata-server.json contains credentials (never print whole file). Existing uncensored model and vision remain. Readiness contract check passes; telemetry strata_up1. No model/config/service changes, no HOLD created."
+      }
+    ]
+  }
+}

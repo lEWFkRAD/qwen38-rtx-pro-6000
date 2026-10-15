@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "September 4 GLM quality closeout notebook",
+    "filename": "README.md",
+    "sha256": "8c2ede1937f384956edeb9955f4141a431f140d9a2aecd102090b6f4d5487952",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## 2026-09-04 GLM stopped for failed answer quality (codex)",
+        "excerpt": "Completed d results: four 89,400-token prefixes plus sampled seed and 512 measured outputs each. No-spec Low: 34.3605159041 generated tokens/s each; Q8 DFlash depth 3 Low: 42.9185939037 each. Independent raw-event accounting passes both. Original prompt/source/token hashes match across all four, but slot 3 sampled prefill seed differs, so this is not an exact four-slot continuation comparison. Q8 used all 512 tokens in reasoning on every slot and produced zero final-answer tokens. No-spec produced final text only for slots 1/2, with substantive release/hold errors. Both fail combined acceptance. Audit artifacts are under artifacts/g20260904d."
+      },
+      {
+        "section": "## 2026-09-04 Colibri final GLM findings published (codex)",
+        "excerpt": "Companion PRO 6000 report PR6 was verified open:\nhttps://github.com/lEWFkRAD/qwen38-rtx-pro-6000/pull/6\nIts earlier pinned evidence snapshot does not contain the final d comparison.\nLocal receipt: output/glm-pr-report-20260904/colibri-publication-receipt.json.\n"
+      }
+    ]
+  }
+}

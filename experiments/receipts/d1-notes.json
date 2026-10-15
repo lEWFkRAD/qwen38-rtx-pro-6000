@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October d1 decision and live-control notebook",
+    "filename": "README.md",
+    "sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## [2026-10-07 16:00] d1-3B downloaded and bounded coexistence/reranking test completed | codex",
+        "excerpt": "|- Small authored synthetic test:12/12expected top1 across30candidates per query, versus10/12simple term overlap. Median30-passage ranking0.86s including guards; meanwarm individualinference12ms;2243-tokenpassage54.2ms. Not an independent benchmark, production accuracy, or general injection-resistance proof. Model loading3.16s inside existing Python process; CLI startup adds overhead."
+      },
+      {
+        "section": "## [2026-10-07 16:00] d1-3B downloaded and bounded coexistence/reranking test completed | codex",
+        "excerpt": "|- Before GPU82724MiBused/14532free; loaded89309used/7947free; lowestfree7543MiB(7.37GiB). Torchpeakallocated6174.73MiB/reserved6288MiB. Three warmed192-token Qwen samples percondition: median284.67t/sbaseline,284.52d1idle,256.46d1active,280.18aftertensorrelease. Active~9.9percent slowdown; no material measured idle effect. Short single-client window only; eightbusyfullcontexts/vision notqualified. Same productionPID4771before/after, zero test errors."
+      },
+      {
+        "section": "## [2026-10-07 18:01] Paired Hermes decision benchmark with persistent d1 | codex",
+        "excerpt": "|- Comparable full decision-path timers: Qwen median 0.939s, hybrid 0.660s (29.7% lower observed median); sums 36.527s vs20.197s. Round totals Qwen19.756/8.768/8.003s vs hybrid9.628/4.360/6.209s; uncontrolled Qwen latency varied, so no general speedup claim. d1 persistent RPC median127ms, internal inference20.53ms. Cold d1 request4.423s plusSSH setup0.553s; idle unload30s remains, so short isolated tasks may lose the benefit."
+      },
+      {
+        "section": "## [2026-10-07 18:14] Live Hermes versus d1 clicking comparison completed | codex",
+        "excerpt": "|- Hermes-only decision7.707s, clicks2.751s, post-clickcapture3.737s: active14.194s, supervisedwall58.501s. Hybrid decision8.001s, clicks2.526s,capture3.859s:active14.386s,wall59.092s. Only1/8d1accepted,7actualHermes/Qwenfallbacks at0.70. Prior replay speedup did NOT carry over. Singlepair andvariableUI/ordering: no general speedclaim."
+      },
+      {
+        "section": "## [2026-10-07 18:20] Deterministic live execution with d1 checkpoints | codex",
+        "excerpt": "|- Active work7.269s vs prior Hermes-per-click14.194s (48.8%lower observed): mapping0.00056s, clicks3.103s,captures3.661s,3d1checks0.504s. Supervised elapsed39.572s vs58.501s. One live trial vs earlier baseline; not a general speedup claim. Main saving is removing redundant Qwen calls. Cold d1warmup4.594s separate."
+      },
+      {
+        "section": "## [2026-10-07 18:56] [client-host] Hermes independent Calculator test completed | hermes",
+        "excerpt": "|- Important failure found: two d1 checkpoint requests reused the same stale zero screenshot; one stale answer was accepted at0.7242. Freshness must be enforced by capture ID/hash outside d1. Timing was not benchmark-valid due stale PID recovery, foreground approval timeout, auxiliary-vision outage and local CUA daemon recovery. Cold requests4.97-8.20s; warm requests0.250-0.263s (inference42.83-54.07ms). Evidence: [private-path] and results.json. No Qwen/d1 service, route, plugin or staff-rollout changes."
+      },
+      {
+        "section": "## [2026-10-07 21:35] Dedicated Snake choice policy | codex",
+        "excerpt": "|- Verification: previous uncertain state chose left; starting state right; forced and trapped fixtures passed. Seed17 rollout 60 legal moves,8 apples,0 forced decisions. Median warm end-to-end115.11ms and GPU13.24ms. Live server API verification39moves,7apples,stillrunning. Strategy may still trap itself; no perfect-play claim."
+      },
+      {
+        "section": "## [2026-10-07 21:01] Four Snake/d1 optimizations verified | codex",
+        "excerpt": "|- Dedicated Snake policy now opt-in snake_compile:true uses cached torch.compile(model.forward,mode=reduce-overhead) via engine._one_pass only within Snake inference, restores original pass in finally; ordinary Hermes visual/retrieval paths unchanged. Shared allocator9.5%,12GiBstartup/4.5GiBrequestfree guards,singletonlock,serializedhelper,24stimeout,30sidleunload retained. First fixedboard comparison12.43->9.14ms; final matched warmfixture comparison12.525->9.215ms (~26.4% lower). Changingboard seeded60moves/8apples, median44.49ms localdecision, maximum66.75ms afterwarmup. Original uncachedgraphwarmup8.87s; diskcache subsequent~2.1s. One extra benchmark refused because sharedHermesworkerloaded; no competing GPU copy or forcedstop. Retryafteridle passed."
+      },
+      {
+        "section": "## [2026-10-07 21:50] Recorded Excel timing rerun | codex",
+        "excerpt": "|- Task from first clean blank checkpoint to saved screenshot: wall 166.002s, timed tool operations 64.204s, coordinator/dispatch gaps 101.798s. 21 input actions. All d1 requests 6.658s, GPU inference 0.545s (nested, not additive). Not autonomous d1/Hermes execution."
+      },
+      {
+        "section": "## [2026-10-07 21:50] Recorded Excel timing rerun | codex",
+        "excerpt": "|- d1 accepted blank89.92%,table88.77%; total correct label35.98% rejected after one busy/fresh retry; chart correct label69.91% rejected. Threshold0.70 unchanged; native visual and read-only saved OOXML/chart AX evidence used to verify $1125 total and300/450/375 revenue."
+      }
+    ]
+  }
+}

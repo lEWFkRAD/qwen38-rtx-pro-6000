@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 7 eight-versus-four slot comparison",
+    "filename": "summary.json",
+    "sha256": "f0d7909ff3bad1fe103f76129acb7568dfff8d2f2443f5a672831b51edf0d948",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "passed",
+    "conditions",
+    "limitations",
+    "ram_saved_gib"
+  ],
+  "data": {
+    "passed": true,
+    "conditions": {
+      "eight_slots": {
+        "slots": 8,
+        "kv_resident": 32768,
+        "context": 131072,
+        "loaded_service_pss_gib": 43.51347541809082,
+        "loaded_available_ram_gib": 14.678733825683594,
+        "min_available_ram_during_tests_gib": 10.7406005859375,
+        "min_free_vram_during_tests_gib": 24.3984375,
+        "startup_free_vram_gib": 24.7998046875,
+        "median_tps": {
+          "1": 187.920739948259,
+          "4": 233.17091544881717,
+          "8": 271.05699181635674
+        },
+        "quality_cases": 32,
+        "quality_passed": true,
+        "long_passed": true,
+        "cached_passed": true,
+        "max_long_simultaneous_decoding": 4,
+        "last_cold_128k_seconds": 79.83888727601152,
+        "last_cached_128k_seconds": 17.307711097004358
+      },
+      "four_slots": {
+        "slots": 4,
+        "kv_resident": 32768,
+        "context": 131072,
+        "loaded_service_pss_gib": 37.365291595458984,
+        "loaded_available_ram_gib": 21.113208770751953,
+        "min_available_ram_during_tests_gib": 18.377601623535156,
+        "min_free_vram_during_tests_gib": 27.5234375,
+        "startup_free_vram_gib": 27.7373046875,
+        "median_tps": {
+          "1": 184.9528015676309,
+          "4": 232.63236406298935,
+          "8": 232.42475827583513
+        },
+        "quality_cases": 32,
+        "quality_passed": true,
+        "long_passed": true,
+        "cached_passed": true,
+        "max_long_simultaneous_decoding": 4,
+        "last_cold_128k_seconds": 82.05467464198591,
+        "last_cached_128k_seconds": 17.13932858998305
+      }
+    },
+    "limitations": "Three short-prompt rounds per request count in each condition; one four-by-128K trial each; sequential profiles, not randomized interleaving; Resident Evil Requiem not run.",
+    "ram_saved_gib": 6.148183822631836
+  }
+}

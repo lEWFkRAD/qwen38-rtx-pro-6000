@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 7 resident-KV comparison",
+    "filename": "summary.json",
+    "sha256": "142020af639485728c51d09f9af6ad5440ae2bce5e142c42a59e1b4755ab1d06",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "trial_passed",
+    "conditions",
+    "limitations"
+  ],
+  "data": {
+    "trial_passed": true,
+    "conditions": {
+      "baseline": {
+        "solo_tps_median": 182.74047709306745,
+        "eight_tps_median": 272.1864628069336,
+        "quality_passed": true,
+        "quality_cases": 32,
+        "long_passed": true,
+        "cache_passed": true,
+        "max_decoding": 8,
+        "cold_128k_last_finish_seconds": 159.55485206501908,
+        "cached_128k_last_finish_seconds": 36.014247519982746,
+        "min_host_available_gib": 23.59524917602539,
+        "max_gpu_used_mib": 89631,
+        "min_gpu_free_mib": 7625
+      },
+      "stream32768": {
+        "solo_tps_median": 185.97091012755274,
+        "eight_tps_median": 270.311095571556,
+        "quality_passed": true,
+        "quality_cases": 32,
+        "long_passed": true,
+        "cache_passed": true,
+        "max_decoding": 8,
+        "cold_128k_last_finish_seconds": 163.47034691899898,
+        "cached_128k_last_finish_seconds": 35.9861006999854,
+        "min_host_available_gib": 9.413848876953125,
+        "max_gpu_used_mib": 79009,
+        "min_gpu_free_mib": 18247
+      }
+    },
+    "limitations": "Three short-prompt rounds per condition, one eight-by-128K trial per condition; sequential rather than randomized interleaved conditions; not a broad model quality benchmark."
+  }
+}
