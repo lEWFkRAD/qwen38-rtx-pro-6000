@@ -1,0 +1,795 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 3 saved six-configuration comparison",
+    "filename": "benchmark-data.json",
+    "sha256": "fec8c85fd1766bd4788510f3e1f42991df4c2667db8139206f135c8ab7c84804",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "date",
+    "definitions_and_caveats",
+    "stages"
+  ],
+  "data": {
+    "date": "2026-10-03",
+    "definitions_and_caveats": [
+      "Saved measurements from October 3, 2026; no new benchmark load was sent.",
+      "Four-request bursts: sum of generated completion tokens divided by whole-burst wall time, including admission, prefill and decode. Three runs for TensorFold; one for SGLang. Dots are observed runs, not confidence intervals.",
+      "Single-request decode estimates: one first call and one identical repeat per workload, each 512 output tokens. TensorFold repeats report 47/48 prompt tokens cached; SGLang cache accounting is unavailable. Runtime/cache state can affect results.",
+      "Prompt latency is time to first token for uncached retrieval prompts of 8,205 / 32,782 / 122,892 actual tokens, labeled approximately 8K / 32K / 120K. One sample at each length.",
+      "Configurations differ: SGLang uses its prior signed-W4 checkpoint, TensorFold its supported 4-bit checkpoint. Vision, slot count, KV dtype and prefill settings changed. These are configuration comparisons, not isolated causal engine or INT8 tests.",
+      "The later two-slot baseline was copied from the earlier INT8 trial, not rerun immediately before the patched candidate. Original and later baseline sessions are shown separately to expose variability.",
+      "Current four-slot preset passed four ~66K prompts plus 4096 generated tokens each, with all four simultaneously decoding above 64K context. Six active generations and four full 128K histories remain unqualified.",
+      "Rejected stock four-slot INT8 trial omitted from deployed-stage plots: 388.08 / 396.57 / 395.41 t/s on short bursts, but failed long cache growth. Those rates are not a qualified alternative."
+    ],
+    "stages": [
+      {
+        "id": "sglang",
+        "label": "SGLang baseline",
+        "axis_label": "SGLang baseline",
+        "source": "results-v063.json",
+        "json_path": "$.baseline",
+        "config": "Original signed-W4 PLE / native EAGLE checkpoint",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.2805,
+            "decode_tps_estimate": 192.1,
+            "total_s": 2.9408,
+            "usage": {
+              "completion_tokens": 512,
+              "prompt_tokens": 48,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 560
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.0932,
+            "decode_tps_estimate": 190.0,
+            "total_s": 2.7827,
+            "usage": {
+              "completion_tokens": 512,
+              "prompt_tokens": 48,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 560
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0936,
+            "decode_tps_estimate": 155.44,
+            "total_s": 3.381,
+            "usage": {
+              "completion_tokens": 512,
+              "prompt_tokens": 48,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 560
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.0929,
+            "decode_tps_estimate": 159.8,
+            "total_s": 3.2907,
+            "usage": {
+              "completion_tokens": 512,
+              "prompt_tokens": 48,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 560
+            }
+          },
+          "8k": {
+            "ttft_s": 0.7272,
+            "decode_tps_estimate": 206.26,
+            "total_s": 0.8243,
+            "usage": {
+              "completion_tokens": 21,
+              "prompt_tokens": 8205,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 8226
+            }
+          },
+          "32k": {
+            "ttft_s": 2.7269,
+            "decode_tps_estimate": 204.01,
+            "total_s": 2.8251,
+            "usage": {
+              "completion_tokens": 21,
+              "prompt_tokens": 32782,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 32803
+            }
+          },
+          "120k": {
+            "ttft_s": 10.8462,
+            "decode_tps_estimate": 202.16,
+            "total_s": 10.9452,
+            "usage": {
+              "completion_tokens": 21,
+              "prompt_tokens": 122892,
+              "prompt_tokens_details": null,
+              "reasoning_tokens": 0,
+              "total_tokens": 122913
+            }
+          }
+        },
+        "burst_tps": [
+          200.28
+        ],
+        "burst_wall_s": [
+          5.1129
+        ],
+        "burst_median_tps": 200.28
+      },
+      {
+        "id": "tf063",
+        "label": "TF 0.6.3 | text only",
+        "axis_label": "TF 0.6.3\n4 slots / BF16 / text only",
+        "source": "results-v063.json",
+        "json_path": "$.live_validation",
+        "config": "4 slots; BF16 KV; prefill 4096; reserve 6 GiB; vision off",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.0685,
+            "decode_tps_estimate": 237.19,
+            "total_s": 2.2232,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.0435,
+            "decode_tps_estimate": 242.55,
+            "total_s": 2.1507,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0712,
+            "decode_tps_estimate": 132.77,
+            "total_s": 3.9204,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.0384,
+            "decode_tps_estimate": 135.0,
+            "total_s": 3.824,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "8k": {
+            "ttft_s": 0.927,
+            "decode_tps_estimate": 332.59,
+            "total_s": 0.9872,
+            "usage": {
+              "prompt_tokens": 8205,
+              "completion_tokens": 21,
+              "total_tokens": 8226,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "32k": {
+            "ttft_s": 3.6276,
+            "decode_tps_estimate": 348.48,
+            "total_s": 3.6851,
+            "usage": {
+              "prompt_tokens": 32782,
+              "completion_tokens": 21,
+              "total_tokens": 32803,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "120k": {
+            "ttft_s": 15.5602,
+            "decode_tps_estimate": 339.34,
+            "total_s": 15.6195,
+            "usage": {
+              "prompt_tokens": 122892,
+              "completion_tokens": 21,
+              "total_tokens": 122913,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          }
+        },
+        "burst_tps": [
+          417.49,
+          423.84,
+          423.53
+        ],
+        "burst_wall_s": [
+          2.4528,
+          2.416,
+          2.4178
+        ],
+        "burst_median_tps": 423.53
+      },
+      {
+        "id": "tf064text",
+        "label": "TF 0.6.4 | text only",
+        "axis_label": "TF 0.6.4\n4 slots / BF16 / text only",
+        "source": "results.json",
+        "json_path": "$.live_validation",
+        "config": "4 slots; BF16 KV; prefill 4096; reserve 6 GiB; vision off",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.0692,
+            "decode_tps_estimate": 366.19,
+            "total_s": 1.4651,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.0425,
+            "decode_tps_estimate": 375.67,
+            "total_s": 1.403,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0674,
+            "decode_tps_estimate": 218.33,
+            "total_s": 2.4083,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.044,
+            "decode_tps_estimate": 223.17,
+            "total_s": 2.3344,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "8k": {
+            "ttft_s": 0.9446,
+            "decode_tps_estimate": 89.38,
+            "total_s": 1.1684,
+            "usage": {
+              "prompt_tokens": 8205,
+              "completion_tokens": 21,
+              "total_tokens": 8226,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "32k": {
+            "ttft_s": 3.6985,
+            "decode_tps_estimate": 87.57,
+            "total_s": 3.9269,
+            "usage": {
+              "prompt_tokens": 32782,
+              "completion_tokens": 21,
+              "total_tokens": 32803,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "120k": {
+            "ttft_s": 15.8153,
+            "decode_tps_estimate": 81.85,
+            "total_s": 16.0603,
+            "usage": {
+              "prompt_tokens": 122892,
+              "completion_tokens": 21,
+              "total_tokens": 122913,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          }
+        },
+        "burst_tps": [
+          416.6,
+          429.41,
+          429.65
+        ],
+        "burst_wall_s": [
+          2.458,
+          2.3846,
+          2.3834
+        ],
+        "burst_median_tps": 429.41
+      },
+      {
+        "id": "vision2initial",
+        "label": "TF 0.6.4 | 2 slots, original",
+        "axis_label": "TF 0.6.4 + vision\n2 slots / BF16 / original run",
+        "source": "permanent-promotion.json",
+        "json_path": "$.performance",
+        "config": "2 slots; BF16 KV; prefill 1024; reserve 4 GiB; vision on",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.0683,
+            "decode_tps_estimate": 146.82,
+            "total_s": 3.549,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.043,
+            "decode_tps_estimate": 376.03,
+            "total_s": 1.4023,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0676,
+            "decode_tps_estimate": 117.26,
+            "total_s": 4.4258,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.0381,
+            "decode_tps_estimate": 224.13,
+            "total_s": 2.3185,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "8k": {
+            "ttft_s": 1.1209,
+            "decode_tps_estimate": 43.03,
+            "total_s": 1.5857,
+            "usage": {
+              "prompt_tokens": 8205,
+              "completion_tokens": 21,
+              "total_tokens": 8226,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "32k": {
+            "ttft_s": 4.4254,
+            "decode_tps_estimate": 41.91,
+            "total_s": 4.9027,
+            "usage": {
+              "prompt_tokens": 32782,
+              "completion_tokens": 21,
+              "total_tokens": 32803,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "120k": {
+            "ttft_s": 18.6701,
+            "decode_tps_estimate": 42.14,
+            "total_s": 19.1454,
+            "usage": {
+              "prompt_tokens": 122892,
+              "completion_tokens": 21,
+              "total_tokens": 122913,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          }
+        },
+        "burst_tps": [
+          284.3,
+          181.04,
+          287.09
+        ],
+        "burst_wall_s": [
+          3.6018,
+          5.6562,
+          3.5668
+        ],
+        "burst_median_tps": 284.3
+      },
+      {
+        "id": "vision2retest",
+        "label": "TF 0.6.4 | 2 slots, retest",
+        "axis_label": "TF 0.6.4 + vision\n2 slots / BF16 / later retest",
+        "source": "int8-growth-20261003/baseline.json",
+        "json_path": "$.performance",
+        "config": "Copied from int8-four baseline; not rerun for growth patch trial; same settings as original 2-slot vision",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.0644,
+            "decode_tps_estimate": 146.17,
+            "total_s": 3.5607,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.0418,
+            "decode_tps_estimate": 376.89,
+            "total_s": 1.398,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0646,
+            "decode_tps_estimate": 116.08,
+            "total_s": 4.4673,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.0382,
+            "decode_tps_estimate": 224.93,
+            "total_s": 2.3104,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "8k": {
+            "ttft_s": 1.106,
+            "decode_tps_estimate": 41.92,
+            "total_s": 1.5833,
+            "usage": {
+              "prompt_tokens": 8205,
+              "completion_tokens": 21,
+              "total_tokens": 8226,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "32k": {
+            "ttft_s": 4.3535,
+            "decode_tps_estimate": 42.52,
+            "total_s": 4.8242,
+            "usage": {
+              "prompt_tokens": 32782,
+              "completion_tokens": 21,
+              "total_tokens": 32803,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "120k": {
+            "ttft_s": 18.3481,
+            "decode_tps_estimate": 41.55,
+            "total_s": 18.8301,
+            "usage": {
+              "prompt_tokens": 122892,
+              "completion_tokens": 21,
+              "total_tokens": 122913,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          }
+        },
+        "burst_tps": [
+          177.77,
+          298.94,
+          167.94
+        ],
+        "burst_wall_s": [
+          5.7602,
+          3.4254,
+          6.0974
+        ],
+        "burst_median_tps": 177.77
+      },
+      {
+        "id": "current",
+        "label": "CURRENT | 4 slots, INT8",
+        "axis_label": "CURRENT: TF 0.6.4 + vision\n4 slots / INT8 / cache-growth fix",
+        "source": "int8-growth-20261003/candidate.json",
+        "json_path": "$.performance",
+        "config": "4 slots; INT8 KV; prefill 1024; reserve 4 GiB; vision on; cache-growth patch",
+        "samples": {
+          "code-0": {
+            "ttft_s": 0.0669,
+            "decode_tps_estimate": 133.55,
+            "total_s": 3.8935,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "code-1": {
+            "ttft_s": 0.0419,
+            "decode_tps_estimate": 305.7,
+            "total_s": 1.7139,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-0": {
+            "ttft_s": 0.0666,
+            "decode_tps_estimate": 111.29,
+            "total_s": 4.6588,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "prose-1": {
+            "ttft_s": 0.0393,
+            "decode_tps_estimate": 214.78,
+            "total_s": 2.419,
+            "usage": {
+              "prompt_tokens": 48,
+              "completion_tokens": 512,
+              "total_tokens": 560,
+              "prompt_tokens_details": {
+                "cached_tokens": 47
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "8k": {
+            "ttft_s": 1.1429,
+            "decode_tps_estimate": 41.51,
+            "total_s": 1.6248,
+            "usage": {
+              "prompt_tokens": 8205,
+              "completion_tokens": 21,
+              "total_tokens": 8226,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "32k": {
+            "ttft_s": 4.5212,
+            "decode_tps_estimate": 33.43,
+            "total_s": 5.1198,
+            "usage": {
+              "prompt_tokens": 32782,
+              "completion_tokens": 21,
+              "total_tokens": 32803,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          },
+          "120k": {
+            "ttft_s": 18.9659,
+            "decode_tps_estimate": 38.27,
+            "total_s": 19.4892,
+            "usage": {
+              "prompt_tokens": 122892,
+              "completion_tokens": 21,
+              "total_tokens": 122913,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0
+              }
+            }
+          }
+        },
+        "burst_tps": [
+          378.76,
+          383.08,
+          386.42
+        ],
+        "burst_wall_s": [
+          2.7036,
+          2.6731,
+          2.65
+        ],
+        "burst_median_tps": 383.08
+      }
+    ]
+  }
+}

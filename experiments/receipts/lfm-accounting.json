@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 14 initial long accounting comparison",
+    "filename": "comparison.json",
+    "sha256": "4f2cea072edda29063776f085418b1959a0c7cec54ab9c4547613a13a8339bb5",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "arms",
+    "attempts",
+    "submitted",
+    "exact",
+    "turns",
+    "tool_calls",
+    "generated_tokens",
+    "inference_job_seconds",
+    "finish_counts",
+    "without_compaction"
+  ],
+  "data": {
+    "arms": [
+      {
+        "arm": "baseline",
+        "attempts": 6,
+        "submitted": 0,
+        "exact": 0,
+        "context": 32768,
+        "max_response": 8192,
+        "seconds": 206.79953755089082,
+        "restored": "active",
+        "qwen_unchanged": true,
+        "fatal_error": null
+      },
+      {
+        "arm": "larger response control",
+        "attempts": 1,
+        "submitted": 0,
+        "exact": 0,
+        "context": 32768,
+        "max_response": 16384,
+        "seconds": 52.0049617420882,
+        "restored": "active",
+        "qwen_unchanged": true,
+        "fatal_error": null
+      },
+      {
+        "arm": "SQL assisted",
+        "attempts": 6,
+        "submitted": 0,
+        "exact": 0,
+        "context": 32768,
+        "max_response": 16384,
+        "seconds": 587.1371251100209,
+        "restored": "active",
+        "qwen_unchanged": true,
+        "fatal_error": null
+      },
+      {
+        "arm": "SQL large context control",
+        "attempts": 3,
+        "submitted": 1,
+        "exact": 0,
+        "context": 65536,
+        "max_response": 32768,
+        "seconds": 1304.3254947020905,
+        "restored": "active",
+        "qwen_unchanged": true,
+        "fatal_error": null
+      }
+    ],
+    "attempts": 16,
+    "submitted": 1,
+    "exact": 0,
+    "turns": 209,
+    "tool_calls": 308,
+    "generated_tokens": 541195,
+    "inference_job_seconds": 2150.2671191050904,
+    "finish_counts": {
+      "output_truncated": 14,
+      "submitted": 1,
+      "budget": 1
+    },
+    "without_compaction": {
+      "attempts": 13,
+      "submitted": 1,
+      "exact": 0
+    }
+  }
+}

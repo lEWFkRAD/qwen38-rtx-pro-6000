@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 7 synthetic d1 retrieval and memory qualification",
+    "filename": "qualification.json",
+    "sha256": "69be30ba20ccbdb5470d62a06e9a8d34b94f67eb314db86a70a67d9e634cee91",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": "Quality counts, expected/selected synthetic labels, load/memory metrics; passages and live process state removed",
+  "data": {
+    "load_seconds": 3.161960008990718,
+    "torch_max_allocated_mib": 6174.73095703125,
+    "torch_max_reserved_mib": 6288.0,
+    "minimum_free_mib": 7543,
+    "status": "completed",
+    "quality": {
+      "top1_correct": 12,
+      "top3_correct": 12,
+      "lexical_top1_correct": 10,
+      "mean_reciprocal_rank": 1.0
+    },
+    "cases": [
+      {
+        "expected": "travel",
+        "top1": "travel",
+        "rank": 1,
+        "lexical_top1": "parental"
+      },
+      {
+        "expected": "backup",
+        "top1": "backup",
+        "rank": 1,
+        "lexical_top1": "production"
+      },
+      {
+        "expected": "invoice",
+        "top1": "invoice",
+        "rank": 1,
+        "lexical_top1": "invoice"
+      },
+      {
+        "expected": "cache_flush",
+        "top1": "cache_flush",
+        "rank": 1,
+        "lexical_top1": "cache_flush"
+      },
+      {
+        "expected": "access",
+        "top1": "access",
+        "rank": 1,
+        "lexical_top1": "access"
+      },
+      {
+        "expected": "upload",
+        "top1": "upload",
+        "rank": 1,
+        "lexical_top1": "upload"
+      },
+      {
+        "expected": "timeout",
+        "top1": "timeout",
+        "rank": 1,
+        "lexical_top1": "timeout"
+      },
+      {
+        "expected": "priority",
+        "top1": "priority",
+        "rank": 1,
+        "lexical_top1": "priority"
+      },
+      {
+        "expected": "shipping",
+        "top1": "shipping",
+        "rank": 1,
+        "lexical_top1": "shipping"
+      },
+      {
+        "expected": "returns",
+        "top1": "returns",
+        "rank": 1,
+        "lexical_top1": "returns"
+      },
+      {
+        "expected": "production",
+        "top1": "production",
+        "rank": 1,
+        "lexical_top1": "production"
+      },
+      {
+        "expected": "leave",
+        "top1": "leave",
+        "rank": 1,
+        "lexical_top1": "leave"
+      }
+    ]
+  }
+}

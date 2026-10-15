@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 14 LFM short synthetic smoke and capped speed samples",
+    "filename": "results.json",
+    "sha256": "819d087dccb6eb84ca51b0f4cdfba99344c4f072a3e4f0e29b907a0765c07780",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": "Model pins/settings, summary, quality labels/outcomes/times, speed timing/usage; all messages removed",
+  "data": {
+    "model": "LiquidAI/LFM2.5-24B-A2B QAD Q4_0",
+    "revision": "0912d33141f77e10705345a6732bfd83f0252fdc",
+    "sha256": "d1c03f73ecaf61017d70419eec9e5dc0b05d50ae26c23d522829b934fbabf8a5",
+    "context": 8192,
+    "parallel": 1,
+    "sampling": {
+      "temperature": 0.1,
+      "top_k": 50,
+      "repeat_penalty": 1.05,
+      "seed": 42
+    },
+    "summary": {
+      "passed": 14,
+      "total": 14,
+      "errors": 0,
+      "truncated": 0
+    },
+    "quality": [
+      {
+        "name": "arithmetic",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 1.5533203219529241
+      },
+      {
+        "name": "invoice_json",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 1.5362128340639174
+      },
+      {
+        "name": "deduplicate",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 1.7615349610568956
+      },
+      {
+        "name": "instruction_format",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 0.504038208979182
+      },
+      {
+        "name": "logic",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 2.744647509069182
+      },
+      {
+        "name": "untrusted_document",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 2.275075535988435
+      },
+      {
+        "name": "missing_evidence",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 0.2950476820115
+      },
+      {
+        "name": "code_fix",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 3.1960172130493447
+      },
+      {
+        "name": "sorting",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 0.5714966669911519
+      },
+      {
+        "name": "dependency_plan",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 3.656135745928623
+      },
+      {
+        "name": "long_retrieval",
+        "passed": true,
+        "finish_reason": "stop",
+        "seconds": 1.5126758529804647
+      },
+      {
+        "name": "multi_turn_correction",
+        "passed": true,
+        "seconds": 0.26163311197888106
+      },
+      {
+        "name": "tool_selection_arguments",
+        "passed": true,
+        "seconds": 0.1847137730801478
+      },
+      {
+        "name": "tool_result_followthrough",
+        "passed": true,
+        "seconds": 0.11919793603010476
+      }
+    ],
+    "speed": [
+      {
+        "seconds": 1.450658857007511,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 33,
+          "prompt_ms": 17.35,
+          "prompt_per_token_ms": 0.5257575757575758,
+          "prompt_per_second": 1902.0172910662823,
+          "predicted_n": 512,
+          "predicted_ms": 1428.155,
+          "predicted_per_token_ms": 2.7948238747553815,
+          "predicted_per_second": 357.80429995343644
+        },
+        "usage": {
+          "completion_tokens": 512,
+          "prompt_tokens": 33,
+          "total_tokens": 545,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length"
+      },
+      {
+        "seconds": 1.6273029580479488,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 33,
+          "prompt_ms": 22.709,
+          "prompt_per_token_ms": 0.6881515151515152,
+          "prompt_per_second": 1453.1683473512703,
+          "predicted_n": 512,
+          "predicted_ms": 1596.167,
+          "predicted_per_token_ms": 3.123614481409002,
+          "predicted_per_second": 320.14194003509664
+        },
+        "usage": {
+          "completion_tokens": 512,
+          "prompt_tokens": 33,
+          "total_tokens": 545,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length"
+      },
+      {
+        "seconds": 3.0890952959889546,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 33,
+          "prompt_ms": 17.589,
+          "prompt_per_token_ms": 0.5329999999999999,
+          "prompt_per_second": 1876.1726078799252,
+          "predicted_n": 512,
+          "predicted_ms": 3062.902,
+          "predicted_per_token_ms": 5.993937377690802,
+          "predicted_per_second": 166.8352431778751
+        },
+        "usage": {
+          "completion_tokens": 512,
+          "prompt_tokens": 33,
+          "total_tokens": 545,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length"
+      }
+    ]
+  }
+}

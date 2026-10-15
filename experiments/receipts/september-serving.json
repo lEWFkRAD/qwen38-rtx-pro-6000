@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "September serving campaign notebook",
+    "filename": "README.md",
+    "sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## [2026-09-05 05:46] NVIDIA Flash-Next candidate wired and serving | codex",
+        "excerpt": "|- Compatibility adaptations: modelopt_mixed plus legacy hf_quant_config file; explicit FP8 PLE dtype; 1536 NVIDIA FP8-block128 MTP expert weights expanded with stored scales into BF16 (1565 total tensors,5214492152 bytes) and scoped loader skips superseded raw FP8/scales. Explicit flashinfer_cutlass resolves mixed automatic unsupported TRTLLM choice. Context131072, requests4, BF16 KV, FP32 Mamba, EAGLE2/1/3 rejection, radix/ReplaySSM, chunk1024, mem.972 retained."
+      },
+      {
+        "section": "## 2026-09-12 Flash-Next dependency qualification (attributed to `codex`)",
+        "excerpt": "- Candidate functionality passed 34/34 deterministic cases, a cold 119,735-token retrieval/512-token generation, 163,072-token KV pools, and 53,248/53,276 prefix-cache reuse. No newer compatible official Flash-Next checkpoint was available; DFlash2 remains 27B-only and retired for this lane."
+      },
+      {
+        "section": "## 2026-09-12 admission/scheduler optimization follow-up (codex)",
+        "excerpt": "Source correction to the earlier upgrade report: the candidate did NOT lose the custom SM120/XQA fast path. Its upstream QSA supports SM120 and FlashInfer 0.6.18 auto-selects XQA on this GPU. Reapplying the explicit XQA override is redundant. Both images had roughly90/160ms modes; client-barrier data alone does not establish a runtime-specific regression."
+      },
+      {
+        "section": "## 2026-09-12 attended overlap outcome 20260912T164643Z-fbd62771a7a6 (codex)",
+        "excerpt": "A1/B1/A2 median earliest response: c2 155.38/80.09/156.83ms; c4 159.22/80.33/158.26ms. All eight matched c2 and eight matched c4 cells reproduced the benefit and reversal. The flag SGLANG_DISABLE_CONSECUTIVE_PREFILL_OVERLAP=1 delivers the first completed prefill result before waiting on the next prefill. Batch shapes remain1+1 and1+3; this is earlier first-request delivery, not faster GPU decode, coalescing, or a tail-latency improvement. End-to-end throughput remains within baseline variation. Small c2p95 increase6.6-8.8ms remains descriptive, not a demonstrated regression. All cells remain in the evidence; no-detected-interference is not isolation."
+      },
+      {
+        "section": "## 2026-09-12 attended overlap outcome 20260912T164643Z-fbd62771a7a6 (codex)",
+        "excerpt": "The one-setting optimization is now retained in the ordinary managed Flash-Next service after all qualification gates passed. Exactly launch.sh, wait-ready.py and the recovery controller launcher/readiness SHA pins changed. Image/model/argv/mounts, W4 PLE, native EAGLE2/1/3, BF16 KV, FP32 SSM,131072 context and163072 token pools remain unchanged."
+      },
+      {
+        "section": "## 2026-09-21 v0.5.20 attended canary — cancelled (codex)",
+        "excerpt": "- [operator] cancelled the retry after real production client traffic resumed. No valid B1 result exists, no candidate was promoted, and no installed service, route, model, overlay, or serving setting changed."
+      },
+      {
+        "section": "## [2026-09-23 19:37] Onyx personal 27B loaded, benchmarked, selectable in llama-swap | codex",
+        "excerpt": "|- Measured short-prompt512-token streaming: solo121.6t/s; initial three-session102.1/122.3/114.0t/s,293.9aggregate inclprefill. Final warm-cache run through llama-swap: solo121.2t/s; three-session122.8/127.4/119.4t/s;350.2aggregate inclprefill. Prefix reuse contributes; no long-context speed claim."
+      },
+      {
+        "section": "## Qwen recovery EAGLE213 mem972 — 20260904",
+        "excerpt": "Production recovery completed **2026-09-04T08:38:42Z**, transaction g20260904d,\ncontainer fcc283e1e64e6a0812b562dd2911c9fc6a3a7d16ee719b70dcaaa9635bf06424.\nOld mem965 cold starts had only 113408/112640 tokens per pool under current\ndesktop VRAM use. The new immutable release is\n`[private-path]`.\nIt restores 2/1/3 with memory fraction 0.972, matching the qualified September 2\nlauncher except memory budget. Both BF16 pools now hold 136704; context 131072,\nmaximum requests 4, power 450W. Exact-answer smoke passed; repeated-prompt cache\nreuse was 53248/53276. Service active/running, zero restarts, same-container\nhealth/OOM finalization passed, markers cleared, recovery services inactive.\nOld 213 guard remains disabled/inactive; no GLM containers running. Desktop\napps were preserved."
+      }
+    ]
+  }
+}

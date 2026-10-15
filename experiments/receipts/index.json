@@ -1,0 +1,125 @@
+{
+  "compiled": "2026-10-15",
+  "receipts": [
+    {
+      "file": "tensorfold-comparison.json",
+      "description": "October 3 saved six-configuration comparison",
+      "source_sha256": "fec8c85fd1766bd4788510f3e1f42991df4c2667db8139206f135c8ab7c84804",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "tensorfold-four-stream.json",
+      "description": "October 3 patched four-stream INT8 qualification",
+      "source_sha256": "a4c5ce73d91a256b617fb47cac2b9bde72d6208c63cf2c35cacb994a4cc3b69c",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "strata-comparison.json",
+      "description": "October 5 saved TensorFold/Strata workload comparison",
+      "source_sha256": "5abd258adc5a889eaea2c197b2a62267c2848059a7ee0d18cce7d71822e369a9",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "batched-mtp.json",
+      "description": "October 5 corrected 16-row candidate matched pairs",
+      "source_sha256": "2970cfd2b0a1b22e08ac6c20b6ba3bf331cd2a31156ba1d08f213c5c0afd365b",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "kv-streaming.json",
+      "description": "October 7 resident-KV comparison",
+      "source_sha256": "142020af639485728c51d09f9af6ad5440ae2bce5e142c42a59e1b4755ab1d06",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "four-slot.json",
+      "description": "October 7 eight-versus-four slot comparison",
+      "source_sha256": "f0d7909ff3bad1fe103f76129acb7568dfff8d2f2443f5a672831b51edf0d948",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "lfm-smoke.json",
+      "description": "October 14 LFM short synthetic smoke and capped speed samples",
+      "source_sha256": "819d087dccb6eb84ca51b0f4cdfba99344c4f072a3e4f0e29b907a0765c07780",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "lfm-accounting.json",
+      "description": "October 14 initial long accounting comparison",
+      "source_sha256": "4f2cea072edda29063776f085418b1959a0c7cec54ab9c4547613a13a8339bb5",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "lfm-rerun-progress.json",
+      "description": "Available local bank rerun progress snapshot; not final suite closeout",
+      "source_sha256": "3fcf0137756ebe9f8f4aca9fabed548ca47b2bf29acef106466f740e697f18b1",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "d1-reranking.json",
+      "description": "October 7 synthetic d1 retrieval and memory qualification",
+      "source_sha256": "69be30ba20ccbdb5470d62a06e9a8d34b94f67eb314db86a70a67d9e634cee91",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "d1-visual.json",
+      "description": "October 15 direct resident-worker visual smoke",
+      "source_sha256": "7b8a2067c94d9209909a3ebb81038638b6a40a54b68d91c9a6a2183390a4e98c",
+      "evidence_level": "selected-local-receipt"
+    },
+    {
+      "file": "september-serving.json",
+      "description": "September serving campaign notebook",
+      "source_sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "glm.json",
+      "description": "September 4 GLM quality closeout notebook",
+      "source_sha256": "8c2ede1937f384956edeb9955f4141a431f140d9a2aecd102090b6f4d5487952",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "training.json",
+      "description": "September LoRA execution and evaluation notebook",
+      "source_sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "recurrent-memory.json",
+      "description": "September recurrent PLE and real-feature readout notebook",
+      "source_sha256": "c093028c47f334797236049f10b7fa5ebb6445da55dcb8d4c9865976eb6b5741",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "strata-notes.json",
+      "description": "October Strata and batched MTP notebook",
+      "source_sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "d1-notes.json",
+      "description": "October d1 decision and live-control notebook",
+      "source_sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "lfm-notes.json",
+      "description": "October 14 later corrected-rerun and resident-pair notebook",
+      "source_sha256": "79ab7f6a03e68766a6b26c885a66368c97ea208be4688d84f3f681d3e8df5578",
+      "evidence_level": "contemporaneous-notebook"
+    },
+    {
+      "file": "living-weights.json",
+      "description": "October 11 CPU-only integration verification",
+      "source_sha256": "9b8322d45b09b7a2757012a45aa7684c766a53ede4387e853923aef9f20971f4",
+      "evidence_level": "local-text-receipt"
+    },
+    {
+      "file": "living-weights-followup.json",
+      "description": "October 11 later GEMV compile-only notebook",
+      "source_sha256": "5ab84f96c4d91e9991b8ed79a5878c32866497bb84e6c4df4f9f81134df78782",
+      "evidence_level": "contemporaneous-notebook"
+    }
+  ]
+}

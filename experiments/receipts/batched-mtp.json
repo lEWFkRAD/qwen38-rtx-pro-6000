@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 5 corrected 16-row candidate matched pairs",
+    "filename": "qualification-wide-summary.json",
+    "sha256": "2970cfd2b0a1b22e08ac6c20b6ba3bf331cd2a31156ba1d08f213c5c0afd365b",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "created_utc",
+    "candidate_sha256",
+    "production_promoted",
+    "full_model_qualified",
+    "matched_comparisons",
+    "limitations"
+  ],
+  "data": {
+    "created_utc": "2026-10-05T20:00:57.161932+00:00",
+    "candidate_sha256": "26144cccc4635e78e464c858971b3f7ee164cb58d9062d82e172a14180f0845d",
+    "production_promoted": false,
+    "full_model_qualified": false,
+    "matched_comparisons": {
+      "greedy": {
+        "passed": true,
+        "slots": [
+          {
+            "slot": 0,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 1,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 2,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 3,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 4,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 5,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 6,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 7,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          }
+        ],
+        "baseline_tokens_per_second": 275.1135662555624,
+        "candidate_tokens_per_second": 249.47701763139338,
+        "scope": "One matched pair; does not establish repeatable speed or broad model quality"
+      },
+      "sampled": {
+        "passed": true,
+        "slots": [
+          {
+            "slot": 0,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 1,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 2,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 3,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 4,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 5,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 6,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 7,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          }
+        ],
+        "baseline_tokens_per_second": 272.27880270115577,
+        "candidate_tokens_per_second": 243.63709225386174,
+        "scope": "One matched pair; does not establish repeatable speed or broad model quality"
+      },
+      "greedy-draft-min-p-0": {
+        "passed": true,
+        "slots": [
+          {
+            "slot": 0,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 1,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 2,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 3,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 4,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 5,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 6,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          },
+          {
+            "slot": 7,
+            "identical": true,
+            "first_difference": null,
+            "baseline_tokens": 512,
+            "candidate_tokens": 512
+          }
+        ],
+        "baseline_tokens_per_second": 274.5315933293857,
+        "candidate_tokens_per_second": 261.26312801285354,
+        "scope": "One matched pair; does not establish repeatable speed or broad model quality"
+      }
+    },
+    "limitations": [
+      "Single round per condition; native-protocol throughput, not HTTP",
+      "Long context, interleave, cancellation, mixed vectors, boundary and broad quality qualification incomplete"
+    ]
+  }
+}

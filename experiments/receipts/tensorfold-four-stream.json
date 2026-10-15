@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 3 patched four-stream INT8 qualification",
+    "filename": "summary.json",
+    "sha256": "a4c5ce73d91a256b617fb47cac2b9bde72d6208c63cf2c35cacb994a4cc3b69c",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": [
+    "context",
+    "streams",
+    "kv",
+    "vision",
+    "mtp_drafts",
+    "prefill_rows",
+    "reserve_gib",
+    "decode_share",
+    "baseline_aggregate_tps",
+    "selected_aggregate_tps",
+    "baseline_median_tps",
+    "selected_median_tps",
+    "limitations"
+  ],
+  "data": {
+    "context": 131072,
+    "streams": 4,
+    "kv": "int8",
+    "vision": true,
+    "mtp_drafts": 6,
+    "prefill_rows": 1024,
+    "reserve_gib": 4,
+    "decode_share": 0.25,
+    "baseline_aggregate_tps": [
+      177.77,
+      298.94,
+      167.94
+    ],
+    "selected_aggregate_tps": [
+      378.76,
+      383.08,
+      386.42
+    ],
+    "baseline_median_tps": 177.77,
+    "selected_median_tps": 383.08,
+    "limitations": [
+      "Four simultaneous full128K histories not qualified",
+      "Six simultaneous generations not tested",
+      "INT8 changes numeric precision; six bounded cases do not establish universal quality equivalence",
+      "No machine reboot tested"
+    ]
+  }
+}

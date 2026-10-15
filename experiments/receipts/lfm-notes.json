@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 14 later corrected-rerun and resident-pair notebook",
+    "filename": "README.md",
+    "sha256": "79ab7f6a03e68766a6b26c885a66368c97ea208be4688d84f3f681d3e8df5578",
+    "evidence_level": "contemporaneous-notebook"
+  },
+  "selection": "Selected exact notebook paragraphs or lines; private paths, endpoints and operator names redacted",
+  "data": {
+    "excerpts": [
+      {
+        "section": "## [2026-10-14 08:23] Corrected LFM accounting rerun in progress | codex",
+        "excerpt": "|- Revised harness strips completed reasoning from subsequent requests, retains visible/tool history without compaction, provides real persistent Python with source-only Docker isolation, callable data helpers, direct JSON artifact submission and source-based consistency gates. Full131072 context,65536 output cap,16384 reasoning budget;30minute/100turn/250tool job budgets."
+      },
+      {
+        "section": "## [2026-10-14 10:10] [operator]-authorized resident LFM worker and Qwen Heretic reviewer; rollout partial | codex",
+        "excerpt": "|- Accounting rerun stopped at[operator] request: APseed137 exactpass84.1s/13turns; bankseed137 timebudget1800.9s/99turns, noacceptedsubmission; close interruptednotfailure. d1 restored. Do not restart broadbenchmark. Deployment scripts [private-path] rerun evidence under lfm25-accounting-rerun-20261014/final."
+      },
+      {
+        "section": "## [2026-10-14 10:10] [operator]-authorized resident LFM worker and Qwen Heretic reviewer; rollout partial | codex",
+        "excerpt": "|- Onyx promotion succeeded at08:52 Eastern: enabled onyx-lfm.service, onyx-qwen27b-reviewer.service, onyx-duo-router.service. Both real READY canaries passed. LFM QAD Q4_0 on llama.cpp b11559:4 slots,131072 per slot,ngram-simple speculation. Native LFM MTP/DSpark NOT enabled; draft download unavailable. Qwen Heretic NVFP4 revision98b34bd9:262144 max context,270336 shared KV tokens,2 running requests,FP8 KV,native EAGLE MTP2/1/3 with ReplaySSM. Both resident; no full-context load proof claimed."
+      },
+      {
+        "section": "## [2026-10-14 10:10] [operator]-authorized resident LFM worker and Qwen Heretic reviewer; rollout partial | codex",
+        "excerpt": "|- Last verified GPU97887MiB total,77621MiB used,19635MiB free (~19.2GiB). LFM24468MiB,Qwen scheduler32528MiB plus676MiB frontend,d1-assist6752MiB,games5076+950MiB. Free memory fluctuates. [operator] requests an18GB use limit; clarification pending whether games/non-model use, free-memory floor, or one model. NO cap applied."
+      },
+      {
+        "section": "## [2026-10-14 10:10] [operator]-authorized resident LFM worker and Qwen Heretic reviewer; rollout partial | codex",
+        "excerpt": "|- [client-host] config and [private-path] plus [private-path] changed:onyx-lfm default;onyx-reviewer for background_review/review/vision/goal_judge/approval. Native [client-host] resolver confirmed separate routed reviewer. Maintained merge/health contract updated to preserve reviewer routes; full regression verification still pending. Fleet-targets registry updated. Remote staff and Onyx Hermes profiles NOT yet changed. Gateway restarts NOT done. No claim of completed fleet rollout."
+      }
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "source": {
+    "description": "October 15 direct resident-worker visual smoke",
+    "filename": "results.json",
+    "sha256": "7b8a2067c94d9209909a3ebb81038638b6a40a54b68d91c9a6a2183390a4e98c",
+    "evidence_level": "selected-local-receipt"
+  },
+  "selection": "Synthetic case outcomes, confidence, latency and revision; GPU process inventory removed",
+  "data": {
+    "suite": "d1-liquid-visual-decision-smoke",
+    "timestamp_local": "2026-10-15 09:44:18",
+    "cases": 5,
+    "repeats": 2,
+    "attempts": 10,
+    "passes": 10,
+    "results": [
+      {
+        "case": "payment_target",
+        "repeat": 1,
+        "expected": "4",
+        "selection": "4",
+        "passed": true,
+        "elapsed_seconds": 2.08,
+        "confidence": 0.9741004846478617,
+        "inference_ms": 27.1,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "success_state",
+        "repeat": 1,
+        "expected": "success",
+        "selection": "success",
+        "passed": true,
+        "elapsed_seconds": 1.558,
+        "confidence": 0.9803723947315601,
+        "inference_ms": 37.13,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "spanish_retry",
+        "repeat": 1,
+        "expected": "3",
+        "selection": "3",
+        "passed": true,
+        "elapsed_seconds": 1.316,
+        "confidence": 0.9688331781784587,
+        "inference_ms": 27.28,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "safe_delete_modal",
+        "repeat": 1,
+        "expected": "7",
+        "selection": "7",
+        "passed": true,
+        "elapsed_seconds": 1.49,
+        "confidence": 0.9800859490495591,
+        "inference_ms": 28.75,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "enabled_button",
+        "repeat": 1,
+        "expected": "10",
+        "selection": "10",
+        "passed": true,
+        "elapsed_seconds": 1.82,
+        "confidence": 0.7893977985726682,
+        "inference_ms": 28.1,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "payment_target",
+        "repeat": 2,
+        "expected": "4",
+        "selection": "4",
+        "passed": true,
+        "elapsed_seconds": 1.703,
+        "confidence": 0.9741004846478617,
+        "inference_ms": 28.26,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "success_state",
+        "repeat": 2,
+        "expected": "success",
+        "selection": "success",
+        "passed": true,
+        "elapsed_seconds": 1.652,
+        "confidence": 0.9803723947315601,
+        "inference_ms": 26.03,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "spanish_retry",
+        "repeat": 2,
+        "expected": "3",
+        "selection": "3",
+        "passed": true,
+        "elapsed_seconds": 1.382,
+        "confidence": 0.9688331781784587,
+        "inference_ms": 25.71,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "safe_delete_modal",
+        "repeat": 2,
+        "expected": "7",
+        "selection": "7",
+        "passed": true,
+        "elapsed_seconds": 1.538,
+        "confidence": 0.9800859490495591,
+        "inference_ms": 26.13,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      },
+      {
+        "case": "enabled_button",
+        "repeat": 2,
+        "expected": "10",
+        "selection": "10",
+        "passed": true,
+        "elapsed_seconds": 1.301,
+        "confidence": 0.7893977985726682,
+        "inference_ms": 37.23,
+        "revision": "da1fe36a861f24690f27f622dca1d8688503d113"
+      }
+    ]
+  }
+}
