@@ -1,0 +1,205 @@
+--- a/serve/server.py
++++ b/serve/server.py
+@@ -1178,6 +1178,7 @@
+         return freed
+ 
+     YIELDS_MAX = 2   # #656: how often one request's prompt read gives way to a shorter waiting one
++    YIELDS_ROTATE_MAX = 64   # admission rotation: the yield cap with STRATA_ADMIT_ROTATE=1 (a sanity bound, not a policy)
+ 
+     def _take_control(self, cancel, plen: int, after_epoch: int | None = None):
+         """Waits for the control lines (one prompt read at a time), yielding None heartbeats; False when cancelled.
+@@ -1237,6 +1238,32 @@
+         with self.slot_cv:
+             return any(e[0] * 2 <= plen for e in self.wait_lens)
+ 
++    def _any_waiting(self) -> bool:
++        """Someone waits for the control lines, whatever its prompt's length: the rotation trigger."""
++        with self.slot_cv:
++            return bool(self.wait_lens)
++
++    def _yield_due(self, plen: int, yields: int, leg_from: int) -> bool:
++        """Whether the prompt read on the control lines gives way at this chunk boundary.
++        #656 (always, the fast path): a waiting prompt under half this one's, at most YIELDS_MAX times.
++        Admission rotation (STRATA_ADMIT_ROTATE=1): any admission waiting, once this leg has read a
++        quantum (STRATA_ADMIT_ROTATE_QUANTUM tokens, default 16384 = one chunk) since it (re)started
++        or last gave way, up to YIELDS_ROTATE_MAX times - comparable lengths take turns instead of
++        queueing behind each other.  A park+resume cycle costs ~0.3 s at a 16K park (~0.73 s at 35K),
++        so the quantum floor keeps it a small part of the leg it interrupts.  `leg_from`: the tokens
++        of this prompt read before this leg (the last yield's count; progress counts from 0)."""
++        if yields < self.YIELDS_MAX and self._shorter_waiting(plen):
++            return True
++        if os.environ.get("STRATA_ADMIT_ROTATE") != "1" or yields >= self.YIELDS_ROTATE_MAX:
++            return False
++        if not self._any_waiting():
++            return False
++        try:
++            quantum = max(1, int(os.environ.get("STRATA_ADMIT_ROTATE_QUANTUM", "16384")))
++        except ValueError:
++            quantum = 16384
++        return self.progress is not None and self.progress[0] - leg_from >= quantum
++
+     def generate_batched(self, ids, max_new, sampling, cancel, embeddings=None):
+         """--batch.  Alone (no slot busy, nobody waiting): the solo path (GEN, with drafts: the fastest stream)
+         - and when another request arrives meanwhile, this one is STOPped and continues in a batch slot (BGEN with
+@@ -1244,6 +1271,7 @@
+         slot's own BT lines until BDONE.  Several requests run at once; the control lines (prompt reading, admission)
+         are taken one request at a time - and a long prompt read gives way at a chunk boundary to a waiting request
+         with a much shorter prompt (#656: `BYIELD <slot>`; the part read waits in a slot and the read goes on after).
++        With STRATA_ADMIT_ROTATE=1 it gives way to any waiting admission once it has read a quantum (see _yield_due).
+         A consumer that stops early leaves the engine in step: the solo request is STOPped and read to its DONE, an
+         admission to its BADM, a slot is BSTOPped and freed at its BDONE."""
+         if not self.alive():
+@@ -1263,7 +1291,7 @@
+         slot, gen0, reserved = None, None, None
+         phase = "none"            # solo -> (admit -> slot) ; "done" once the engine has finished with this request
+         stop_sent = False
+-        yields, solo_again = 0, 0
++        yields, solo_again, leg_from = 0, 0, 0    # leg_from: this prompt's tokens read before this leg
+         admit_wait, admit_since, admit_said = False, 0.0, False   # #1603: waiting for a slot, since when, said
+         try:
+             while True:   # a request in a slot that is left alone goes back to the solo path
+@@ -1289,8 +1317,8 @@
+                             out.append(t)
+                             yield t
+                         if x is None:                       # a heartbeat (False: a token, flushed above)
+-                            if (reserved is None and not out and not embeddings and yields < self.YIELDS_MAX and
+-                                    self._shorter_waiting(len(prompt))):
++                            if (reserved is None and not out and not embeddings and
++                                    self._yield_due(len(prompt), yields, leg_from)):
+                                 with self.slot_cv:          # the slot the part read will wait in
+                                     reserved = self.pick_slot(prompt)
+                                     if reserved is not None:
+@@ -1320,6 +1348,7 @@
+                         if reused0 is None:
+                             reused0 = (self.last or {}).get("reused")
+                         prompt = list(ids) + out            # promoted: it continues in a batch slot from here
++                        leg_from = 0
+                 while True:
+                     if slot is None:
+                         # a free slot (they free themselves at BDONE, which needs no control lines): the one that holds
+@@ -1366,6 +1395,7 @@
+                                 holding, born = True, self.gen
+                     if self._yielded is not None:           # it gave way: the others waiting then go first
+                         self.slot_held[slot] = list(prompt[:self._yielded[1]])
++                        leg_from = self._yielded[1]         # the next leg's quantum counts from here
+                         self._yielded = None
+                         yields += 1
+                         self.ctl.release()
+@@ -1394,8 +1424,8 @@
+                             out.append(t)
+                             yield t
+                         if x is None:
+-                            if (not asked and not embeddings and yields < self.YIELDS_MAX and
+-                                    self._shorter_waiting(len(prompt))):
++                            if (not asked and not embeddings and
++                                    self._yield_due(len(prompt), yields, leg_from)):
+                                 self._send(f"BYIELD {slot}")
+                                 asked = True
+                             yield None
+@@ -1463,6 +1493,7 @@
+                             if reused0 is None:
+                                 reused0 = (self.last or {}).get("reused")
+                             prompt, left = list(ids) + out, int(max_new) - len(out)
++                            leg_from = 0
+                             solo_again += 1
+                             btrace("back to the solo path")
+                             break
+@@ -2739,6 +2770,14 @@
+         self.config_effort = None                     # #1641: the config's "reasoning_effort": the level for requests with none
+         self.keep_awake = None                        # #1727 (opt-in): serve.keepawake.KeepAwake, the config's "prevent_sleep"
+         self.fifo = threading.Lock()
++        # Slot queue (opt-in, STRATA_SLOT_QUEUE=1): in parallel mode, requests beyond the engine's batch slots
++        # wait at a Service-level gate (see _slot_gate_for) instead of all entering generate_batched at once.
++        # Over-subscribed admissions there can be refused by the engine with "BGEN: no such free slot" - the
++        # refusal reaches the client as a 400 although the model is up and a slot would have freed shortly.
++        # Gated requests wait (with the usual queue keep-alives) and run in turn: queue, not reject.
++        self._slot_gate_lock = threading.Lock()
++        self._slot_gate = None            # (batch, BoundedSemaphore) for the current engine, made lazily
++        self.slot_gate_waiting = 0        # requests held at the gate right now (read by tests / status)
+         self.slot_save_path = None                    # --slot-save-path: /slots/0?action=save|restore (off when None)
+         self.embeddings = threading.local()           # the current request's image embeddings file (GENI)
+         self.api_key = ""                              # when set, /v1/* needs it (Bearer or x-api-key)
+@@ -3592,6 +3631,22 @@
+                   f"{el:.0f} s", flush=True)
+         return now
+ 
++    def _slot_queue_batch(self) -> int:
++        """The batch-slot count the slot queue gates at, or 0 (off): STRATA_SLOT_QUEUE=1 and a parallel engine.
++        Read per request, so an engine restart with a different slot count re-gates on the next request, and
++        unsetting the env var restores the pristine behaviour exactly (no gate at all)."""
++        if os.environ.get("STRATA_SLOT_QUEUE") != "1":
++            return 0
++        return int(getattr(self.engine, "batch", 0) or 0)
++
++    def _slot_gate_for(self, batch: int) -> threading.BoundedSemaphore:
++        """The gate for `batch` slots, made (or remade, when the engine's slot count changed) under a lock.
++        Requests already admitted hold the gate object they took, so a remake never strands their release."""
++        with self._slot_gate_lock:
++            if self._slot_gate is None or self._slot_gate[0] != batch:
++                self._slot_gate = (batch, threading.BoundedSemaphore(batch))
++            return self._slot_gate[1]
++
+     def run(self, ids, thinking, tools, max_new, sampling, cancel, force=None) -> Iterator[tuple[str, object]]:
+         """The request's events (see _run); with "prevent_sleep" in the config, the PC stays awake while it runs or waits."""
+         ka = self.keep_awake
+@@ -3672,6 +3727,40 @@
+         try:
+             # --batch: the engine runs several requests at once (StrataEngine.generate_batched orders them)
+             turn = contextlib.ExitStack()
++            gate_batch = self._slot_queue_batch()
++            if gate_batch:
++                # Slot queue (STRATA_SLOT_QUEUE=1): at most one running request per engine batch slot; the
++                # rest wait here, with the same keep-alive the single-turn queue sends (#1619), instead of
++                # entering generate_batched together - over-subscribed admissions there can be refused by
++                # the engine ("BGEN: no such free slot") and the client sees a 400 from a healthy model.
++                # The wait is before the request registers as running below, while status["queued"] counts
++                # it; a request cancelled while queued gives its place up and never takes a slot.
++                gate = self._slot_gate_for(gate_batch)
++                got_gate = False
++                with self.status_lock:
++                    self.slot_gate_waiting += 1
++                try:
++                    while not got_gate:
++                        got_gate = gate.acquire(timeout=QUEUE_BEAT_S)
++                        if got_gate:
++                            turn.callback(gate.release)
++                        elif cancel.is_set():
++                            break
++                        else:
++                            yield "ping", None
++                except BaseException:                    # the consumer closed us at a ping: no longer queued
++                    with self.status_lock:
++                        self.status["queued"] -= 1
++                    raise
++                finally:
++                    with self.status_lock:
++                        self.slot_gate_waiting -= 1
++                if not got_gate:                         # cancelled while queued at the gate
++                    with self.status_lock:
++                        self.status["queued"] -= 1
++                    yield "done", {"finish": "cancel", "completion_tokens": 0, "reused": 0, "timings": None,
++                                   "reasoning_tokens": 0, "reasoning_recoveries": 0}
++                    return
+             if not getattr(self.engine, "batch", 0):
+                 # #1619: a request waiting for the single turn sends a keep-alive every QUEUE_BEAT_S, so a client with
+                 # a stream idle timeout does not abort a healthy queued request (and its retry read the prompt again);
+@@ -4710,7 +4799,7 @@
+                 return True
+             auth = self.headers.get("Authorization", "")
+             given = auth[7:].strip() if auth.lower().startswith("bearer ") else self.headers.get("x-api-key", "")
+-            if key_matches(given, svc.api_key):
++            if any(key_matches(given, k) for k in (getattr(svc, 'api_keys', None) or [svc.api_key])):
+                 return True
+             self._json(401, {"error": {"type": "authentication_error", "message": "missing or wrong API key"}})
+             return False
+@@ -6183,6 +6272,10 @@
+         return 2
+     try:
+         svc.api_key = api_key_of(a.api_key or cfg.get("api_key", ""))
++        # Local compatibility: accept only additional API key aliases configured by the operator.
++        svc.api_keys = list(dict.fromkeys([svc.api_key, *cfg.get("compatibility_api_keys", [])]))
++        if any(not isinstance(key, str) or not key for key in svc.api_keys) and svc.api_key:
++            raise SystemExit("Invalid API credential allowlist")
+     except ValueError as e:
+         print(f'[strata] {e}: set a key, or leave --api-key / STRATA_API_KEY / "api_key" out', file=sys.stderr)
+         return 2

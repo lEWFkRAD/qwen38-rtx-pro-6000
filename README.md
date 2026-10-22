@@ -1,10 +1,35 @@
 # Qwen3.8 on a single RTX PRO 6000
 
-![Abstract visualization of a single workstation GPU processing luminous AI data streams](assets/qwen38-pro6000-hero.png)
+<img src="strata-c8/assets/qwen-c8-firm-throughput-v2.png" alt="One GPU, eight workflows: measured aggregate and per-session Qwen throughput with the resident-memory architecture" width="640">
 
 Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
+
+## Current recipe — October 22, 2026
+
+The [eight-session Strata recipe](strata-c8/README.md) records the saved
+Qwen3.8-Flash-Next IQ3_S profile: one 96 GB GPU, eight resident conversation
+slots, 131,072-token context per slot, full INT8 KV residency, and Strata
+engine 0.1.46. It includes the exact settings, model/runtime dependencies,
+selected benchmark receipts, an HTTP benchmark harness, and the schematic.
+
+| Short-prompt C8 measurement | Result |
+| --- | ---: |
+| Aggregate output throughput while all eight sessions generate | 493.7 tok/s |
+| Output throughput per session over the same common window | 61.7 tok/s |
+| Matched steady-decode improvement over engine 0.1.42 profile | +48.0% |
+| Current-profile aggregate whole-request output throughput, admission included | 421.4 tok/s |
+
+Eight distinct synthetic counting prompts, 512 output tokens per session,
+two common decode windows per engine. Steady rates exclude admission; the
+whole-request result is the median of two clean current-profile rounds.
+The +48% applies to matched steady decode only. The configured context capacity
+is separate from this short-prompt speed test; real workloads vary.
+
+For shared firm infrastructure, report aggregate capacity together with
+per-session responsiveness and prompt-admission behavior. This recipe measures
+eight actual concurrent streams rather than multiplying a single-stream result.
 
 ## Recent experiments — updated October 15, 2026
 
