@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "title": "Qwen3.8-Flash-Next IQ3_S on one RTX PRO 6000 Blackwell: matched C8 result",
+  "measurement_date": "2026-10-22",
+  "units": {
+    "throughput": "output tokens per second",
+    "context": "tokens per session",
+    "power_limit": "watts"
+  },
+  "hardware": {
+    "gpu_count": 1,
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell",
+    "gpu_memory_gb": 96,
+    "gpu_power_limit_w": 450
+  },
+  "current_saved_recipe": {
+    "model": "Qwen3.8-Flash-Next",
+    "weight_quantization": "IQ3_S",
+    "engine_version": "0.1.46",
+    "vision_engine_version": "0.1.46",
+    "api_runtime_version": "0.1.42",
+    "engine_cuda_version": "13.0",
+    "resident_batch_slots": 8,
+    "context_tokens_per_slot": 131072,
+    "kv_precision": "INT8",
+    "full_main_and_batch_kv_gpu_residency": true,
+    "gpu_resident_expert_slots": 24576,
+    "environment": {
+      "STRATA_BATCH_DECODE_SHARE": "0.75",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_BATCH_SELF_COMMIT": "1",
+      "STRATA_QSA_SLOTS": "1",
+      "STRATA_SLOT_COPY_DIRECT": "1",
+      "STRATA_SLOT_COPY_BATCHSYNC": "1"
+    },
+    "variant": "GSQ-RCO IQ3_S with per-layer runtime projection, strength 1.0, layers 4\u201344; projection enabled in measured requests"
+  },
+  "steady_c8": {
+    "label": "Common interval with all eight sessions generating",
+    "dataset": "Eight distinct synthetic counting prompts starting at 1, 101, 201, 301, 401, 501, 601, and 701",
+    "concurrency": 8,
+    "output_token_limit_per_request": 512,
+    "temperature": 0,
+    "qualified_common_windows_per_arm": 2,
+    "baseline": {
+      "engine_version": "0.1.42",
+      "rounds": [
+        {
+          "round": 1,
+          "window_duration_s": 11.674217,
+          "output_tokens_per_session_in_window": 487,
+          "aggregate_output_tokens_per_s": 333.727,
+          "per_session_output_tokens_per_s": 41.716
+        },
+        {
+          "round": 2,
+          "window_duration_s": 11.69106,
+          "output_tokens_per_session_in_window": 487,
+          "aggregate_output_tokens_per_s": 333.246,
+          "per_session_output_tokens_per_s": 41.656
+        }
+      ],
+      "median_aggregate_output_tokens_per_s": 333.4865,
+      "median_per_session_output_tokens_per_s": 41.686
+    },
+    "candidate": {
+      "engine_version": "0.1.46",
+      "rounds": [
+        {
+          "round": 1,
+          "window_duration_s": 7.725106,
+          "output_tokens_per_session_in_window": 476,
+          "aggregate_output_tokens_per_s": 492.938,
+          "per_session_output_tokens_per_s": 61.617
+        },
+        {
+          "round": 2,
+          "window_duration_s": 7.685821,
+          "output_tokens_per_session_in_window": 475,
+          "aggregate_output_tokens_per_s": 494.417,
+          "per_session_output_tokens_per_s": 61.802
+        }
+      ],
+      "median_aggregate_output_tokens_per_s": 493.6775,
+      "median_per_session_output_tokens_per_s": 61.7095
+    },
+    "matched_steady_c8_gain_percent": 48.034,
+    "full_generated_outputs_compared": 16,
+    "full_generated_output_sha256_matches": 16,
+    "telemetry": {
+      "sample_target_s": 0.1,
+      "common_window_max_sample_gap_s": 0.104305,
+      "observed_competing_work_in_accepted_windows": false
+    },
+    "definition": "For each round, start 250 ms after the latest first-content event and stop 250 ms before the earliest last-content event. Count each stream directly within that common interval; divide by its duration. Summaries are medians across the two round rates, not independent samples from sixteen sessions.",
+    "prompt_tokens_per_request_range": [
+      51,
+      53
+    ],
+    "draft_tokens_each_measured_request": 0,
+    "accepted_draft_tokens_each_measured_request": 0,
+    "cache_note": "First round cold; second round had limited prompt-cache reuse (six baseline streams, five candidate streams). This is a steady-window comparison, not a uniformly cold request comparison.",
+    "change_scope": "Engine/vision/CUDA bundle and selected batch environment changed together; no isolated causal claim for an individual flag.",
+    "paired_output_sha256": [
+      {
+        "round": 1,
+        "request": 0,
+        "completion_tokens": 512,
+        "baseline_sha256": "a38cb2c719623ff17b870e83cbe2f8690a35fc0610c5160c42ea98e31dc24a3e",
+        "candidate_sha256": "a38cb2c719623ff17b870e83cbe2f8690a35fc0610c5160c42ea98e31dc24a3e"
+      },
+      {
+        "round": 1,
+        "request": 1,
+        "completion_tokens": 512,
+        "baseline_sha256": "b543f20e33ea5933a25391f0dd393f47df3fe7e699694c0418751058af0f207f",
+        "candidate_sha256": "b543f20e33ea5933a25391f0dd393f47df3fe7e699694c0418751058af0f207f"
+      },
+      {
+        "round": 1,
+        "request": 2,
+        "completion_tokens": 512,
+        "baseline_sha256": "126ffa4a1d753ffb857c9bbb2d8b7dfa3b2df90e3e9e942914d286de41a77287",
+        "candidate_sha256": "126ffa4a1d753ffb857c9bbb2d8b7dfa3b2df90e3e9e942914d286de41a77287"
+      },
+      {
+        "round": 1,
+        "request": 3,
+        "completion_tokens": 512,
+        "baseline_sha256": "797342932add3633f099ddaca6261bc23a43878945f39114d9cc7e2c0aff5a8a",
+        "candidate_sha256": "797342932add3633f099ddaca6261bc23a43878945f39114d9cc7e2c0aff5a8a"
+      },
+      {
+        "round": 1,
+        "request": 4,
+        "completion_tokens": 512,
+        "baseline_sha256": "baaa20a0e00aa00e442316e307fde63758102bc36e62679fdfc8e2d7c53a0a18",
+        "candidate_sha256": "baaa20a0e00aa00e442316e307fde63758102bc36e62679fdfc8e2d7c53a0a18"
+      },
+      {
+        "round": 1,
+        "request": 5,
+        "completion_tokens": 512,
+        "baseline_sha256": "395408505fb1d1a75dcbe1f47d6b8d28309ced2739575cce4849e3f4828e01a9",
+        "candidate_sha256": "395408505fb1d1a75dcbe1f47d6b8d28309ced2739575cce4849e3f4828e01a9"
+      },
+      {
+        "round": 1,
+        "request": 6,
+        "completion_tokens": 512,
+        "baseline_sha256": "fe8d223dcfacb20a5124fbd9f2ec22bf4be9166a67e90620fc16ec5293b6ef73",
+        "candidate_sha256": "fe8d223dcfacb20a5124fbd9f2ec22bf4be9166a67e90620fc16ec5293b6ef73"
+      },
+      {
+        "round": 1,
+        "request": 7,
+        "completion_tokens": 512,
+        "baseline_sha256": "005571fb80845473ad9d3d2bfc545b3239e6cbccfb0956d33660c5b509bfac8c",
+        "candidate_sha256": "005571fb80845473ad9d3d2bfc545b3239e6cbccfb0956d33660c5b509bfac8c"
+      },
+      {
+        "round": 2,
+        "request": 0,
+        "completion_tokens": 512,
+        "baseline_sha256": "a38cb2c719623ff17b870e83cbe2f8690a35fc0610c5160c42ea98e31dc24a3e",
+        "candidate_sha256": "a38cb2c719623ff17b870e83cbe2f8690a35fc0610c5160c42ea98e31dc24a3e"
+      },
+      {
+        "round": 2,
+        "request": 1,
+        "completion_tokens": 512,
+        "baseline_sha256": "b543f20e33ea5933a25391f0dd393f47df3fe7e699694c0418751058af0f207f",
+        "candidate_sha256": "b543f20e33ea5933a25391f0dd393f47df3fe7e699694c0418751058af0f207f"
+      },
+      {
+        "round": 2,
+        "request": 2,
+        "completion_tokens": 512,
+        "baseline_sha256": "126ffa4a1d753ffb857c9bbb2d8b7dfa3b2df90e3e9e942914d286de41a77287",
+        "candidate_sha256": "126ffa4a1d753ffb857c9bbb2d8b7dfa3b2df90e3e9e942914d286de41a77287"
+      },
+      {
+        "round": 2,
+        "request": 3,
+        "completion_tokens": 512,
+        "baseline_sha256": "797342932add3633f099ddaca6261bc23a43878945f39114d9cc7e2c0aff5a8a",
+        "candidate_sha256": "797342932add3633f099ddaca6261bc23a43878945f39114d9cc7e2c0aff5a8a"
+      },
+      {
+        "round": 2,
+        "request": 4,
+        "completion_tokens": 512,
+        "baseline_sha256": "baaa20a0e00aa00e442316e307fde63758102bc36e62679fdfc8e2d7c53a0a18",
+        "candidate_sha256": "baaa20a0e00aa00e442316e307fde63758102bc36e62679fdfc8e2d7c53a0a18"
+      },
+      {
+        "round": 2,
+        "request": 5,
+        "completion_tokens": 512,
+        "baseline_sha256": "395408505fb1d1a75dcbe1f47d6b8d28309ced2739575cce4849e3f4828e01a9",
+        "candidate_sha256": "395408505fb1d1a75dcbe1f47d6b8d28309ced2739575cce4849e3f4828e01a9"
+      },
+      {
+        "round": 2,
+        "request": 6,
+        "completion_tokens": 512,
+        "baseline_sha256": "fe8d223dcfacb20a5124fbd9f2ec22bf4be9166a67e90620fc16ec5293b6ef73",
+        "candidate_sha256": "fe8d223dcfacb20a5124fbd9f2ec22bf4be9166a67e90620fc16ec5293b6ef73"
+      },
+      {
+        "round": 2,
+        "request": 7,
+        "completion_tokens": 512,
+        "baseline_sha256": "005571fb80845473ad9d3d2bfc545b3239e6cbccfb0956d33660c5b509bfac8c",
+        "candidate_sha256": "005571fb80845473ad9d3d2bfc545b3239e6cbccfb0956d33660c5b509bfac8c"
+      }
+    ]
+  },
+  "candidate_request_throughput": {
+    "label": "Aggregate request throughput including prompt admission, streaming, and HTTP overhead",
+    "scope": "Candidate only; not the metric used for the 48.034% improvement",
+    "fully_clean_rounds": 2,
+    "output_tokens_per_round": 4096,
+    "rounds": [
+      {
+        "round": 1,
+        "request_wall_elapsed_s": 9.99993,
+        "aggregate_output_tokens_per_s": 409.603
+      },
+      {
+        "round": 2,
+        "request_wall_elapsed_s": 9.456676,
+        "aggregate_output_tokens_per_s": 433.133
+      }
+    ],
+    "median_aggregate_output_tokens_per_s": 421.368,
+    "excludes": "Server startup, model loading, and idle waiting before request launch",
+    "comparison_limit": "Only one baseline whole run was fully clean. Its other run had newly arriving external work at the final snapshot, after the accepted steady interval. No controlled whole-request percentage improvement is claimed."
+  },
+  "optional_separate_mixed_workload": {
+    "label": "Seven generating sessions while an eighth request prefills a cold long prompt",
+    "generating_sessions": 7,
+    "decode_output_limit_each": 1024,
+    "cold_prompt_tokens": 64993,
+    "cold_prompt_cached_tokens": 0,
+    "qualified_intervals_per_arm": 1,
+    "baseline_engine_version": "0.1.42",
+    "candidate_engine_version": "0.1.46",
+    "baseline_combined_output_tokens_per_s_during_cold_prefill": 117.493,
+    "candidate_combined_output_tokens_per_s_during_cold_prefill": 178.23,
+    "gain_percent": 51.69414348088821,
+    "baseline_cold_request_time_to_first_token_s": 13.643391,
+    "candidate_cold_request_time_to_first_token_s": 13.824827,
+    "limit": "Distinct workload from steady C8. Throughput is across seven generating sessions; do not divide by eight or combine with the steady C8 headline."
+  },
+  "finite_smoke_checks": {
+    "six_additional_baseline_output_hash_matches": true,
+    "additional_checks": [
+      "Arithmetic",
+      "Code",
+      "JSON",
+      "Exact marker",
+      "Long-context retrieval",
+      "Cached continuation"
+    ],
+    "protocol_confirmation": [
+      "Eight simultaneous forced tool calls",
+      "Vision with speed projection disabled and enabled",
+      "Own-stream disconnect and release",
+      "Exact recovery request"
+    ],
+    "batch_cancellation_confirmation": "Close only the eighth canary stream while all eight are active; seven survivors finish with baseline-exact full hashes; clean drain and exact recovery request pass",
+    "scope_limit": "Finite synthetic regression checks do not establish general model quality, every-workload speed, or long-term crash stability."
+  },
+  "reproduction": {
+    "harness": "scripts/benchmark_c8.py",
+    "harness_sha256": "cd546fff693224ea9809a080ee342c962574e422d40c24d919ed7310d1463978",
+    "note": "BENCHMARK.md",
+    "public_harness_status": "Sanitized derivative with nine focused offline comparison/privacy tests passed. Not executed against a live GPU server; not the original measurement artifact."
+  },
+  "rounding_note": "Rates are retained from the original measurement reports. Medians of independently rounded per-session and aggregate rates can differ slightly from multiplying a displayed per-session value by eight.",
+  "source_receipts": [
+    {
+      "name": "c8-session-base-gated.json",
+      "sha256": "6f1a87888a76e05b1f71f33645552e21fb2568f2f733a60bee4b0d9b189522c2"
+    },
+    {
+      "name": "c8-session-0146-fast.json",
+      "sha256": "98237fd3e1b30b5c19d02cd2a49479f7e38fb1a5ac6c971cf095becc6207bb5a"
+    },
+    {
+      "name": "c8-session-q6packed.json",
+      "sha256": "109e6922789fc1db57fa2c11352547aa1bb8954c7ae4f3b30a7fbd918cfd7df7"
+    },
+    {
+      "name": "c8-session-pdl2.json",
+      "sha256": "bd1ce0bebfc66594ae2a779930b0359f24e1ae96e1d03c21bb7ec5ce65a8150f"
+    },
+    {
+      "name": "kernel-canaries-base.json",
+      "sha256": "3cf20d837a6056480c7163a2d4463dcbbd345bffd9f212ae06d0d423a146094e"
+    },
+    {
+      "name": "kernel-canaries-0146.json",
+      "sha256": "d791c037cf3021fdbb15deeef4321878f064cac10a7aa31a8f2d12493003a128"
+    },
+    {
+      "name": "protocol-canaries-0146.json",
+      "sha256": "3b5b67671e8d3556cd042ae29738b51d59557b40e5f232dd5534c8aadd5e9452"
+    },
+    {
+      "name": "protocol-canaries-0146-confirm.json",
+      "sha256": "90f7c75acf7df9ae7c0c45d388611a58291f2ef8cce679ff91bdd55893451d4e"
+    },
+    {
+      "name": "mixed-share075-confirm.json",
+      "sha256": "76ef26e610fad9e476d874aca471101ca80cca7d88d5e9a4f4dce98b40b167b6"
+    },
+    {
+      "name": "mixed-engine0146.json",
+      "sha256": "d810cfe8df67b874e87bb7f58db2db4c35dcfe70a3d0f0bde811a68f3cab7601"
+    },
+    {
+      "name": "batch-cancel-0146.json",
+      "sha256": "588721338901067c1dce1ad9cc403d68902280b3e03e0cfd367e0f798bcbaccc"
+    },
+    {
+      "name": "batch-cancel-0146-confirm.json",
+      "sha256": "7b9add6bdff00c630030c462f907b5dfd9c93a4bb9ad5d38a8028960dee9e3d0"
+    }
+  ],
+  "source_receipts_note": "Hashes identify retained original local artifacts. They do not make the unpublished complete operational snapshots public; this file selects numeric fields and scope boundaries, omitting process identities and generated text.",
+  "excluded_or_rejected_attempts": [
+    {
+      "trial": "Initial protocol smoke attempt",
+      "disposition": "Excluded from isolation qualification: one additional external request; functional checks passed. A clean finite confirmation passed."
+    },
+    {
+      "trial": "Initial batch-cancellation attempt",
+      "disposition": "Not accepted: client read timeout of 3 seconds expired during external long-prompt work; partial prefixes matched. Repeated with 20-second client read timeout; all seven survivors matched and clean accounting passed."
+    },
+    {
+      "trial": "STRATA_Q6_PACKED=1",
+      "steady_gain_percent": -1.005,
+      "disposition": "Reverted; not in saved recipe."
+    },
+    {
+      "trial": "STRATA_DF_PDL=2",
+      "steady_gain_percent": 0.799,
+      "disposition": "Reverted as a noise-scale gain; not in saved recipe."
+    }
+  ]
+}

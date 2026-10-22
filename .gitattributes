@@ -8,3 +8,6 @@
 *.txt text eol=lf
 *SUMS text eol=lf
 flash-next-w4-ple/LICENSES/*.txt -text
+# Preserve the signed upstream manifest bytes and valid blank patch context.
+strata-c8/evidence/engine-component.json binary
+strata-c8/patches/*.patch -whitespace

@@ -1,0 +1,25 @@
+{
+  "upstream_repository": "https://github.com/Niko1221/Strata",
+  "upstream_tag": "v0.1.42",
+  "verified_public_base_commit": "61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406",
+  "base_server_path": "serve/server.py",
+  "base_server_sha256": "ce9266730b632e919ff93809ea6f9ecd6f91f12da19597a2d95a7edb29700dfa",
+  "installed_server_sha256": "2caf3ec9bfb97ef7b881268c14104a3ae84abed6ca90c1ed6fd8cfa9bd007a9a",
+  "sanitized_patched_server_sha256": "2e2a550736db9fba698c341aeb9267e9788f9768c24cec7b8b2d3b80135181a2",
+  "patch_sha256": "5eb142732e01be77f5070aaf2326e7e5f6f5d430d910cb1aad48cf67e9ba5e39",
+  "only_sanitization": "One local deployment comment replaced; executable Python code unchanged. No credentials or deployment-specific paths included.",
+  "pinned_runtime_text_comparison": {
+    "unchanged_python_or_jinja_files": 160,
+    "changed_files": [
+      "serve/server.py"
+    ],
+    "unmatched_paths": []
+  },
+  "patch_features": [
+    "Bounded service-level slot gate under STRATA_SLOT_QUEUE=1; excess requests wait with keepalive/cancellation support.",
+    "Admission rotation under STRATA_ADMIT_ROTATE=1 with STRATA_ADMIT_ROTATE_QUANTUM; supports comparable-length prompts yielding at chunk boundaries.",
+    "Operator-configured compatibility_api_keys allowlist; public example has no aliases."
+  ],
+  "provenance_limitation": "Historical local recovery metadata recorded c23fd928f2c4225766075146222b601605a10216, which did not resolve locally or on public GitHub. This artifact instead verifies the actual retained runtime text against public v0.1.42 commit 61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406.",
+  "redistribution_license": "MIT; see ../LICENSES/Strata-MIT.txt"
+}

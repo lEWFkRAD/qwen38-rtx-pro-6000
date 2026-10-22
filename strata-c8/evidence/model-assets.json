@@ -1,0 +1,37 @@
+{
+  "model_card_source": "https://huggingface.co/alesha-pro/Qwen3.8-Flash-Next-abliterated-GSQ-RCO-Strata-GGUF",
+  "quantized_weight_origin": "https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+  "origin_revision_recorded_by_model_card": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+  "variant": "IQ3_S GSQ-RCO weights with separate Huihui refusal-direction projection at scale1.0, layers4-44, project/per-layer",
+  "publisher_manifest_sha256": {
+    "IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3",
+    "IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113",
+    "mmproj-Qwen3.8-Flash-Next-BF16.gguf": "b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0",
+    "Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": "59f9ae8b4372107ae79044278a4406bdfe8f8861fe599aa5848515f0d072be38"
+  },
+  "hash_scope": "Hashes and sizes match the retained verified-download record (all four match Hugging Face LFS) and publisher SHA256SUMS. No fresh large-file rehash was performed during this documentation task. Pack/tokenizer/MTP generated-artifact hashes are not supplied here.",
+  "weight_license": "Qwen Community License1.0 per retained model card; engine/runtime MIT does not grant model rights.",
+  "model_package_revision": "d4af3be5701549435e0770d625f79dd2def1358f",
+  "verified_download_files": {
+    "IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+      "bytes": 54817524224,
+      "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3",
+      "matches_hf_lfs": true
+    },
+    "IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+      "bytes": 28800138432,
+      "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113",
+      "matches_hf_lfs": true
+    },
+    "mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+      "bytes": 907543008,
+      "sha256": "b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0",
+      "matches_hf_lfs": true
+    },
+    "Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": {
+      "bytes": 483520,
+      "sha256": "59f9ae8b4372107ae79044278a4406bdfe8f8861fe599aa5848515f0d072be38",
+      "matches_hf_lfs": true
+    }
+  }
+}
