@@ -1,19 +1,38 @@
 # Qwen3.8 on a single RTX PRO 6000
 
-<img src="strata-c8/assets/qwen-c8-firm-throughput-v2.png" alt="One GPU, eight workflows: measured aggregate and per-session Qwen throughput with the resident-memory architecture" width="640">
-
 Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
-## Current configuration and Strata Lens — October 25, 2026
+## Featured release — Strata Lens 0.1.0-preview.1
 
-[Strata Lens](research/strata-lens/README.md) is an experimental capture tool
-for native-prefill final residuals and expert routing. It includes a portable
-operator-profile template, validators and CPU-only tests. No live GPU capture
-or causal steering result has been established. See its
-[credits](research/strata-lens/CREDITS.md) for the people and projects behind
-the method, engine, model, quantization and control vector.
+Strata Lens adds a local, live view of capture runs to this repository's
+experimental Qwen3.8 residual and expert-routing harness. Follow run status,
+inspect artifact metadata and see the recorded provenance without starting a
+model from the browser. The dashboard uses Python's standard library, binds to
+loopback and refreshes every two seconds.
+
+[GitHub prerelease](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/tag/strata-lens-v0.1.0-preview.1) ·
+[Full release write-up](research/strata-lens/RELEASE.md) ·
+[Quickstart and capture guide](research/strata-lens/README.md) ·
+[Credits and provenance](research/strata-lens/CREDITS.md)
+
+Try the explicitly synthetic demo from the repository root:
+
+```bash
+python3 research/strata-lens/lens_ui.py --demo
+```
+
+Open **http://127.0.0.1:8765**. To watch your own capture directory instead,
+run `python3 research/strata-lens/lens_ui.py --runs-dir /path/to/runs`.
+Neither command launches Strata, uses the GPU or changes a model service.
+
+This is an **experimental prerelease**, not an upstream Strata release.
+The harness has offline and fake-engine tests; a real GPU capture remains
+pending. The UI displays recorded success and metadata, not independently
+validated model behavior. It is not a neuron visualizer or a steering console.
+
+### Current saved configuration — October 25, 2026
 
 The [October 25 configuration snapshot](strata-c8/CURRENT-CONFIG-2026-10-25.md)
 publishes the current saved settings separately from the measured recipe below:
@@ -22,6 +41,8 @@ failing readiness when inspected; this snapshot is not a new qualification or
 speed result.
 
 ## Qualified recipe — October 22, 2026
+
+<img src="strata-c8/assets/qwen-c8-firm-throughput-v2.png" alt="One GPU, eight workflows: measured aggregate and per-session Qwen throughput with the resident-memory architecture" width="640">
 
 The [eight-session Strata recipe](strata-c8/README.md) records the saved
 Qwen3.8-Flash-Next IQ3_S profile: one 96 GB GPU, eight resident conversation
