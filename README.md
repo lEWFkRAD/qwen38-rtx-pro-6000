@@ -6,7 +6,22 @@ Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
-## Current recipe — October 22, 2026
+## Current configuration and Strata Lens — October 25, 2026
+
+[Strata Lens](research/strata-lens/README.md) is an experimental capture tool
+for native-prefill final residuals and expert routing. It includes a portable
+operator-profile template, validators and CPU-only tests. No live GPU capture
+or causal steering result has been established. See its
+[credits](research/strata-lens/CREDITS.md) for the people and projects behind
+the method, engine, model, quantization and control vector.
+
+The [October 25 configuration snapshot](strata-c8/CURRENT-CONFIG-2026-10-25.md)
+publishes the current saved settings separately from the measured recipe below:
+prefill 32,768 and output-budget fitting enabled. The source service was
+failing readiness when inspected; this snapshot is not a new qualification or
+speed result.
+
+## Qualified recipe — October 22, 2026
 
 The [eight-session Strata recipe](strata-c8/README.md) records the saved
 Qwen3.8-Flash-Next IQ3_S profile: one 96 GB GPU, eight resident conversation

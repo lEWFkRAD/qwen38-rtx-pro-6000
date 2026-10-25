@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "state": "template",
+  "deployment_id": "operator-provisioned-strata-0146",
+  "paths": {
+    "engine": "/srv/qwen/engine-0.1.46/strata",
+    "build": "/srv/qwen/engine-0.1.46/BUILD.json",
+    "pack": "/srv/qwen/data/packs/iq3_s",
+    "native": "/srv/qwen/models/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "ple": "/srv/qwen/models/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+    "expert_profile": "/srv/qwen/runtime-0.1.42/data/expert-profile.bin",
+    "mtp": "/srv/qwen/data/mtp/rt",
+    "control_vector": "/srv/qwen/models/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf",
+    "tokenizer_tools": "/srv/qwen/runtime-0.1.42/tools",
+    "production_config": "/srv/qwen/config/strata-server.json",
+    "recovery_hold": "/srv/qwen/maintenance/HOLD"
+  },
+  "production": {
+    "unit": "qwen-strata.service",
+    "port": 8002
+  },
+  "input_contract": {
+    "path": "/srv/qwen/config/strata-lens-input-contract.json",
+    "sha256": null
+  },
+  "maintenance_protocol": "owned-hold-inhibits-all-restart-paths"
+}
