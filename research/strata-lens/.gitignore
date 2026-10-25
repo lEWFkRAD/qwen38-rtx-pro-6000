@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+runs/
+local/
+*.partial/
+*.log
+*.bf16
+*.bin
+*.local.json

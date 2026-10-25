@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "purpose": "Single synthetic engineering smoke prompt; not a scientific evaluation set",
+    "created": "2026-10-25",
+    "provenance": "Onyx Hermes Phase 0 corpus; numbers_01 text retained verbatim. Factual text is a probe fixture, not endorsed reference data."
+  },
+  "prompts": [
+    {
+      "id": "numbers_01",
+      "cat": "numbers",
+      "text": "The population of China is about 1,425,000,000 people. The distance from Earth to the Moon is 384,400 kilometers. Water boils at 100 degrees Celsius and freezes at 0 degrees. The speed of light is 299,792,458 meters per second. Mount Everest rises to 8,849 meters above sea level. A day has 86,400 seconds. The human body contains roughly 37,200,000,000 cells."
+    }
+  ]
+}

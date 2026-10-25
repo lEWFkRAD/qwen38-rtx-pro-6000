@@ -86,6 +86,13 @@ def main():
               re.fullmatch(r"[0-9a-f]{64}", source["sha256"]), "Invalid source identity")
 
     cfg = read("config/strata-server.example.json")
+    # Preserve the measured October 22 inputs; keep later saved settings dated.
+    current = read("config/strata-server-2026-10-25.example.json")
+    expected_current = json.loads(json.dumps(cfg))
+    expected_current["args"][expected_current["args"].index("--prefill") + 1] = "32768"
+    expected_current["fit_max_tokens"] = True
+    check(current == expected_current, "October 25 config differs beyond the two documented settings")
+    check((ROOT / "CURRENT-CONFIG-2026-10-25.md").is_file(), "Missing dated configuration context")
     profile = result["current_saved_recipe"]
     check(cfg["parallel"] == profile["resident_batch_slots"] == 8, "Slot count mismatch")
     check(cfg["env"] == profile["environment"], "Child engine environment mismatch")

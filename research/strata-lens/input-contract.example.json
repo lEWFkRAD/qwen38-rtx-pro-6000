@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "contract_id": "REPLACE-WITH-INDEPENDENTLY-REVIEWED-INPUT-SET",
+  "notes": [
+    "Non-launchable schema example. Supply independently reviewed SHA-256, size and mtime_ns for EVERY required file. Never infer trust by hashing whatever happens to be installed.",
+    "Every PACK and MTP member must appear in files. Library/build/manifest/config/model/cvec/corpus/tokenizer inputs are also mandatory.",
+    "The harness rehashes every input before launch; large payloads may take minutes."
+  ],
+  "tokenizer_runtime": {
+    "python_major_minor": [
+      3,
+      12
+    ],
+    "regex_version": "2026.9.29"
+  },
+  "directories": [
+    {
+      "path": "/srv/qwen/data/packs/iq3_s",
+      "directories": [
+        "tokenizer"
+      ],
+      "files": [
+        "conversions.json",
+        "dense.bin",
+        "experts.bin",
+        "index.txt",
+        "native_experts.txt",
+        "tokenizer/chat_template.jinja",
+        "tokenizer/merges.txt",
+        "tokenizer/token_type.json",
+        "tokenizer/tokenizer.json",
+        "tokenizer/vocab.json"
+      ]
+    },
+    {
+      "path": "/srv/qwen/data/mtp/rt",
+      "directories": [],
+      "files": [
+        "dense.bin",
+        "dense.txt",
+        "draft_vocab.bin",
+        "experts.bin"
+      ]
+    }
+  ],
+  "files": []
+}

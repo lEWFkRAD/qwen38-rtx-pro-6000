@@ -1,5 +1,9 @@
 # One GPU, eight workflows: the October 22 Strata recipe
 
+For the later saved settings and observed readiness issue, see the
+[October 25 configuration snapshot](CURRENT-CONFIG-2026-10-25.md).
+The configuration and measurements on this page retain their October 22 scope.
+
 This dated field recipe runs eight concurrent Qwen3.8-Flash-Next sessions on one
 RTX PRO 6000 Blackwell 96 GB. The measured short-prompt common decode window
 delivered **493.7 aggregate output tokens/s**, or **61.7 output tokens/s per

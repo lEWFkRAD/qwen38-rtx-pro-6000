@@ -95,6 +95,14 @@ vector; a request setting it to `false` changes the served variant for that requ
   retained verified-download record and publisher manifest; this documentation
   update did not rehash the large weight files.
 
+The [Qwen team](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) created the
+base model. **alesha-pro** packaged the unchanged **ISTA-DASLab** quantized
+weights and extracted the separate control vector from
+[huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated](https://huggingface.co/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated).
+The extraction/packaging, underlying checkpoint, quantization and base model
+are distinct contributions. [Strata Lens credits](../research/strata-lens/CREDITS.md)
+also identify the interpretability-method inspiration and downstream work.
+
 The first GGUF shard supplies the native model; the second is supplied to
 `--ple-gguf` for the PLE/n-gram table. The example keeps `--ple-io ram`.
 Prepare the matching Strata pack, tokenizer and MTP runtime data, and keep the
@@ -139,6 +147,10 @@ A later live-config read showed an explicit `fit_max_tokens=true`; that API
 overflow policy was not part of the speed qualification and is not a speed
 setting. It fits requested output limits into remaining context space and
 does not change the 131,072-token context allocation.
+
+The [October 25 snapshot](CURRENT-CONFIG-2026-10-25.md) includes that policy
+and the then-current prefill cap of 32,768. The original benchmark example
+above remains unchanged.
 
 Eight full-context INT8 slots, full main KV, all 24,576 experts resident and a
 450 W GPU policy describe the qualified 96 GB card profile. `--kv-resident 131072`
