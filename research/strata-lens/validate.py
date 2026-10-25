@@ -47,6 +47,30 @@ def main() -> int:
     }
     if listed != public_files:
         errors.append(f"manifest membership mismatch: {sorted(listed ^ public_files)}")
+    repo = ROOT.parents[1]
+    for name in public_files:
+        path = ROOT / name
+        if path.suffix == ".py":
+            try:
+                compile(path.read_bytes(), str(path), "exec")
+            except (SyntaxError, ValueError) as exc:
+                errors.append(f"Python syntax: {name}: {exc}")
+        if path.suffix in {".md", ".py", ".json", ".html", ".css", ".js"}:
+            content = path.read_text(encoding="utf-8")
+            for pattern in (r"/home/[^ /]+", r"(?i)tail[0-9a-f]+\.ts\.net",
+                            r"\b100\.(?:\d{1,3}\.){2}\d{1,3}\b",
+                            r"-----BEGIN .*PRIVATE KEY-----", r"\bgh[pousr]_[A-Za-z0-9]{20,}",
+                            r"\bsk-[A-Za-z0-9]{20,}"):
+                # This scanner contains literal examples of its own patterns.
+                if name != "validate.py" and re.search(pattern, content):
+                    errors.append(f"private-data pattern: {name}")
+            if path.suffix == ".md":
+                for link in re.findall(r"\[[^\]]*\]\(([^)]+)\)", content):
+                    if "://" in link or link.startswith("#"):
+                        continue
+                    target = (path.parent / link.split("#", 1)[0]).resolve()
+                    if not target.is_relative_to(repo) or not target.exists():
+                        errors.append(f"broken local link: {name}: {link}")
     try:
         harness.configure_profile(harness.EXAMPLE_PROFILE)
         plan = harness.make_plan(harness.reference_prompt_tokens("numbers_01"), False)
@@ -62,7 +86,7 @@ def main() -> int:
         for error in errors:
             print(f"FAIL: {error}", file=sys.stderr)
         return 1
-    print(f"Strata Lens publication valid: {len(listed)} files; reference plan; non-launchable templates.")
+    print(f"Strata Lens publication valid: {len(listed)} files; reference plan; non-launchable templates; Python syntax; links; privacy.")
     return 0
 
 

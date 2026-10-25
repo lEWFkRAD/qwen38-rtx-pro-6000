@@ -1,9 +1,14 @@
-# Strata Lens — experimental capture harness
+# Strata Lens — capture harness and live run viewer
 
 Strata Lens inspects Qwen3.8-Flash-Next residual states and expert routing
 through Strata's existing native-prefill hooks. This first slice captures one
 prompt's final residual and routing trace, establishing measurement before
-interpretability or steering experiments.
+interpretability or steering experiments. A read-only local dashboard follows
+run manifests and artifact metadata as they change.
+
+**Preview release:** `0.1.0-preview.1` ·
+[Full release write-up](RELEASE.md) ·
+[Credits](CREDITS.md)
 
 **Status, October 25, 2026:** offline plans and unit/fake-engine tests pass.
 No real GPU capture has succeeded or been qualified for this harness. There
@@ -14,6 +19,35 @@ Onyx Hermes scoped the MoE adaptation and drafted the probe corpus; Codex
 developed and reviewed the harness and public packaging. See
 [credits](CREDITS.md) and [license scope](LICENSE.md). This is independent
 downstream tooling, not an upstream Strata release.
+
+## Open the live UI
+
+The UI needs only Python's standard library. From the repository root:
+
+```bash
+# Start with clearly labeled synthetic example runs.
+python3 research/strata-lens/lens_ui.py --demo
+
+# Or follow an existing capture directory.
+python3 research/strata-lens/lens_ui.py --runs-dir /path/to/runs
+```
+
+Open **http://127.0.0.1:8765**. Without either option, the viewer watches the
+ignored `research/strata-lens/runs/` directory. An empty directory is a normal
+starting state; the UI does not create a capture to populate it. Stop the
+server with Ctrl+C.
+
+The dashboard refreshes every two seconds and shows run state, provenance and
+artifact metadata. “Recorded success” comes from a run's manifest; the viewer
+does not rehash binary captures or replace the CLI validator. Demo data is
+synthetic and is never evidence of model activity. If the connection drops,
+the UI marks the view offline rather than presenting the last refresh as live.
+
+The server binds to `127.0.0.1`. Keep it local; this preview is not an
+authenticated multi-user service. It provides no browser action to launch
+Strata, stop production, edit profiles or write run files. It does not stream
+activation tensors or infer what an expert means. Point it only at experiment
+data you are comfortable viewing in the local browser.
 
 ## Try it without a model
 

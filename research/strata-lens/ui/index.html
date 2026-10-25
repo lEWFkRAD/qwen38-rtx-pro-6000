@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A local, read-only observatory for Strata Lens capture receipts. Experimental tooling, not scientific findings.">
+  <title>Strata Lens · Capture observatory</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to observatory</a>
+  <div class="app-shell">
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Strata Lens home">
+        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="m20 4 17 9-17 9L3 13l17-9Z"/><path d="m3 20 17 9 17-9M3 27l17 9 17-9"/></svg>
+        <span>STRATA<span class="brand-light">LENS</span></span>
+      </a>
+      <div class="masthead-meta"><span class="version" id="version">PREVIEW</span><span class="readonly"><span aria-hidden="true">↳</span> Read-only observatory</span></div>
+      <a class="repo-link" href="https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/tree/Cloud1/research/strata-lens" target="_blank" rel="noopener noreferrer">Source &amp; documentation <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow"><span class="tiny-square" aria-hidden="true"></span> PHASE 00 / MEASUREMENT FIRST</p>
+          <h1 id="page-title">Capture observatory<span class="heading-dot">.</span></h1>
+          <p class="intro-copy">A clear view of final residuals, expert routes, and the evidence behind each run.</p>
+        </div>
+        <div class="connection-panel">
+          <div class="connection-line"><span class="connection-dot" id="connection-dot" aria-hidden="true"></span><span id="connection-label" role="status" aria-live="polite">Connecting to local observer</span></div>
+          <p id="freshness">Waiting for first response</p>
+          <div class="toolbar"><button class="button button-subtle" id="pause-button" type="button" aria-pressed="false">Pause updates</button><button class="button" id="refresh-button" type="button"><span aria-hidden="true">↻</span> Refresh</button></div>
+        </div>
+      </section>
+
+      <div class="demo-banner" id="demo-banner" hidden><span class="banner-label">SYNTHETIC DEMO</span><span>Example records for exploring the interface. These are not model captures, measurements, or evidence.</span></div>
+      <div class="notice" id="connection-warning" role="status" hidden></div>
+      <div class="notice" id="server-warnings" hidden></div>
+
+      <section class="scope-banner" aria-label="Research qualification">
+        <div class="scope-icon" aria-hidden="true">◈</div>
+        <div><strong>Instrumentation is not interpretation.</strong><span> No qualified live GPU capture or scientific findings are published for this preview. A recorded success is a manifest claim, not independent validation.</span></div>
+        <span class="scope-tag">EXPERIMENTAL</span>
+      </section>
+
+      <section class="reference" aria-labelledby="reference-heading">
+        <div class="section-heading"><h2 id="reference-heading">Pinned reference plan</h2><span class="section-note">Expected geometry · not live telemetry</span></div>
+        <div class="reference-grid">
+          <div class="metric"><span class="metric-label">REAL PROMPT TOKENS</span><div class="metric-value" id="plan-tokens">126<span class="metric-unit">tokens</span></div><span class="metric-detail" id="plan-launch">127 at launch · includes sentinel</span></div>
+          <div class="metric"><span class="metric-label">ROUTING LAYERS</span><div class="metric-value" id="plan-layers">48<span class="metric-unit">layers</span></div><span class="metric-detail">Native-prefill routing records</span></div>
+          <div class="metric"><span class="metric-label">EXPERTS / TOKEN / LAYER</span><div class="metric-value" id="plan-experts">10<span class="metric-unit">of 512</span></div><span class="metric-detail">Selected expert IDs and weights</span></div>
+          <div class="metric metric-output"><span class="metric-label">EXPECTED FINAL RESIDUAL</span><div class="metric-value" id="plan-residual">2.46<span class="metric-unit">MiB</span></div><span class="metric-detail">BF16 · 126 × 10,240</span></div>
+        </div>
+        <div class="plan-flow" aria-label="Reference capture flow, not observed execution">
+          <span class="flow-item"><span class="flow-step">01</span><code id="plan-prompt">numbers_01</code></span><span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-item"><span class="flow-step">02</span>Strata 0.1.46 <span class="flow-muted">native prefill</span></span><span class="flow-arrow" aria-hidden="true">→</span>
+          <span class="flow-item"><span class="flow-step">03</span>Final residual <span class="flow-plus">+</span> expert routes</span>
+          <span class="flow-badge">PLAN ONLY</span>
+        </div>
+      </section>
+
+      <section class="evidence-section" aria-labelledby="evidence-heading">
+        <div class="section-heading"><h2 id="evidence-heading">Run evidence <span class="count" id="run-count">0</span></h2><span class="section-note">Local manifests · updates every 2s</span></div>
+        <div class="evidence-grid">
+          <aside class="run-panel" aria-label="Capture runs">
+            <div class="panel-heading"><h3>Capture runs</h3><span class="small-label" id="run-feed-label">AWAITING FEED</span></div>
+            <ul class="run-list" id="run-list" aria-label="Select a run"></ul>
+            <div class="run-empty" id="run-empty"><span class="empty-cross" aria-hidden="true">+</span><strong>No run receipts yet</strong><p>This observer reads the configured run directory. Completed and partial manifests appear here when available.</p></div>
+            <div class="run-panel-footer"><span class="tiny-square" aria-hidden="true"></span> Reads receipts. Never starts inference.</div>
+          </aside>
+          <div class="detail-panel" id="detail-panel" aria-label="Selected run evidence">
+            <div class="detail-placeholder" id="detail-placeholder">
+              <svg viewBox="0 0 160 104" class="empty-diagram" fill="none" aria-hidden="true"><path d="M16 52h29m70 0h29M80 18v17m0 34v17"/><rect x="45" y="35" width="70" height="34" rx="3"/><rect x="4" y="43" width="12" height="18" rx="2"/><rect x="144" y="43" width="12" height="18" rx="2"/><path d="M60 45h7v14h-7zM76 45h7v14h-7zM92 45h7v14h-7z"/><circle cx="80" cy="13" r="5"/><circle cx="80" cy="91" r="5"/></svg>
+              <p class="eyebrow">NO EVIDENCE LOADED</p><h3>Measurements belong here.</h3><p>Select a receipt to inspect its recorded checks and artifact hashes. Until then, the numbers above describe only the pinned plan.</p>
+              <div class="empty-guarantee"><span aria-hidden="true">◇</span> No model loaded. No GPU accessed. No service controls.</div>
+            </div>
+            <div id="run-detail" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="context-grid" aria-label="Capture boundaries and saved configuration">
+        <article class="context-card"><div class="section-heading"><h2>Bounded by design</h2><span class="small-label">CAPTURE CONTRACT</span></div><dl class="config-list"><div><dt>Research context / prefill</dt><dd>1,024 / 1,024 tokens</dd></div><div><dt>Generated output</dt><dd>1 token</dd></div><div><dt>Residual layout</dt><dd>Final only · 4 × 2,560 streams</dd></div><div><dt>Expected routes</dt><dd id="plan-routes">242,688 bytes</dd></div></dl><p class="context-footnote">No per-layer residual ladder, causal expert attribution, steering result, or serve-path log-probabilities.</p></article>
+        <article class="context-card"><div class="section-heading"><h2>Saved serving snapshot</h2><span class="small-label">OCT 25, 2026</span></div><dl class="config-list"><div><dt>Context / resident sessions</dt><dd>131,072 / 8</dd></div><div><dt>Prefill cap</dt><dd>32,768 tokens</dd></div><div><dt>Output-budget fitting</dt><dd><code>fit_max_tokens=true</code></dd></div><div><dt>Recorded readiness</dt><dd class="text-amber">Unqualified · start-post</dd></div></dl><p class="context-footnote">Historical saved configuration, not a health check. Separate from the capture plan. <a href="https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/strata-c8/CURRENT-CONFIG-2026-10-25.md" target="_blank" rel="noopener noreferrer">Read the snapshot ↗</a></p></article>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-top"><span class="footer-brand">STRATA LENS <span>/ independent downstream tooling</span></span><a href="https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/research/strata-lens/CREDITS.md" target="_blank" rel="noopener noreferrer">Full credits &amp; provenance ↗</a></div>
+      <p>Inspired by <a href="https://github.com/lyramakesmusic/neuron-explorer" target="_blank" rel="noopener noreferrer">Lyra C’s neuron-explorer</a>. Engine and hooks by <a href="https://github.com/Niko1221/Strata" target="_blank" rel="noopener noreferrer">Niko1221 &amp; Strata contributors</a>. Model by <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next" target="_blank" rel="noopener noreferrer">Qwen</a>; quantization by <a href="https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF" target="_blank" rel="noopener noreferrer">ISTA-DASLab</a>; packaging/vector extraction by <a href="https://huggingface.co/alesha-pro/Qwen3.8-Flash-Next-abliterated-GSQ-RCO-Strata-GGUF" target="_blank" rel="noopener noreferrer">alesha-pro</a>; underlying abliterated checkpoint by <a href="https://huggingface.co/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated" target="_blank" rel="noopener noreferrer">huihui-ai</a>. Local scoping by Onyx Hermes; harness, review, and UI by Codex.</p>
+      <span class="footer-note">No upstream endorsement implied. Software validation ≠ scientific validation.</span>
+    </footer>
+  </div>
+  <noscript><div class="noscript">JavaScript is required to read the local observer feed. The pinned reference above is not live data.</div></noscript>
+</body>
+</html>

@@ -78,8 +78,8 @@ ISTA-DASLab requests citation of both underlying methods:
 The repository maintainer supplied project direction and the RTX PRO 6000
 Onyx environment. **Onyx Hermes** prepared the initial adaptation scoping,
 probe corpus and first offline runner. **Codex** reviewed the execution
-assumptions and developed the capture harness, artifact validation, tests and
-publication documentation. These are agent work roles, not additional human
+assumptions and developed the capture harness, artifact validation, tests,
+local read-only viewer and release documentation. These are agent work roles, not additional human
 authors or claims of authorship over any upstream component.
 
 The scientific status remains experimental: synthetic tests validate the
