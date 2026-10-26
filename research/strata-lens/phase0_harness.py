@@ -18,6 +18,7 @@ from pathlib import Path
 import re
 import shutil
 import signal
+import stat
 import struct
 import subprocess
 import sys
@@ -1642,6 +1643,48 @@ def _parse_systemd_show(output: str) -> dict[str, str]:
     return properties
 
 
+def _read_maintenance_owner(hold_path: Path) -> str:
+    """Read an existing private structured lease without following links.
+
+    The external controller, not this observation, owns synchronization and
+    restoration.  Raw owner strings are not a substitute for its lease.
+    """
+    def unique_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate maintenance lease field")
+            result[key] = value
+        return result
+
+    try:
+        fd = os.open(hold_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if (not stat.S_ISREG(before.st_mode)
+                    or before.st_uid not in (0, os.geteuid())
+                    or stat.S_IMODE(before.st_mode) & 0o077
+                    or before.st_size > 4096):
+                raise ValueError("HOLD must be a private regular lease owned by root or this operator")
+            raw = stream.read(4097)
+            after = os.fstat(stream.fileno())
+            current = hold_path.stat(follow_symlinks=False)
+            identity = lambda value: (value.st_dev, value.st_ino, value.st_size,
+                                      value.st_mtime_ns, value.st_ctime_ns)
+            if len(raw) > 4096 or identity(before) != identity(after) or identity(after) != identity(current):
+                raise ValueError("HOLD changed while its owner was being read")
+        lease = json.loads(raw.decode("utf-8"), object_pairs_hook=unique_fields)
+        if (not isinstance(lease, dict)
+                or type(lease.get("version")) is not int or lease["version"] != 1
+                or lease.get("kind") != "owned-strata-maintenance"
+                or not isinstance(lease.get("owner"), str)
+                or not re.fullmatch(r"[A-Za-z0-9._:-]{1,100}", lease["owner"])):
+            raise ValueError("HOLD is not a version-1 owned Strata maintenance lease")
+        return lease["owner"]
+    except (OSError, ValueError) as exc:
+        raise HarnessError(f"cannot prove an owned maintenance window: {hold_path}: {exc}") from exc
+
+
 def _require_production_inactive(
     confirmed: bool,
     maintenance_owner: str | None,
@@ -1658,12 +1701,7 @@ def _require_production_inactive(
         raise HarnessError(
             "real execution also requires --maintenance-owner matching a pre-existing recovery HOLD"
         )
-    try:
-        hold_owner = hold_path.read_text(encoding="utf-8").strip()
-    except OSError as exc:
-        raise HarnessError(f"cannot prove an owned maintenance window: {hold_path}: {exc}") from exc
-    if not hold_owner or "\n" in hold_owner or "\r" in hold_owner:
-        raise HarnessError(f"cannot prove an owned maintenance window: invalid HOLD content in {hold_path}")
+    hold_owner = _read_maintenance_owner(hold_path)
     if hold_owner != maintenance_owner:
         raise HarnessError(
             f"maintenance HOLD owner mismatch: file has {hold_owner!r}, request has {maintenance_owner!r}"

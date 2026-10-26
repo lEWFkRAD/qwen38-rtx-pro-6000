@@ -141,7 +141,15 @@ After provisioning, the command shape is:
       --confirm-production-stopped \
       --maintenance-owner EXACT_EXISTING_HOLD_OWNER
 
-The gate requires a matching HOLD owner, successful systemctl show reporting
+The HOLD must be a private regular JSON file (at most 4096 bytes, no group or
+other permissions), owned by root or the invoking operator, with integer
+`"version": 1`, `"kind": "owned-strata-maintenance"`, and an `"owner"` matching
+the flag exactly. Owner names use 1–100 letters, digits, dots, underscores,
+colons or hyphens. Symlinks, duplicate JSON fields and legacy raw-owner text
+are refused. The harness only reads this lease; the maintenance controller
+must create and release it.
+
+The gate requires that matching HOLD owner, successful systemctl show reporting
 loaded/inactive/dead, MainPID=0, and successful ss with no listener. It repeats
 immediately before launch. Active, activating, failed, unknown, malformed,
 command-error and listener states are refused.
