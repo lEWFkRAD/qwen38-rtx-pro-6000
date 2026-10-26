@@ -1,14 +1,75 @@
 {
   "meta": {
-    "purpose": "Single synthetic engineering smoke prompt; not a scientific evaluation set",
+    "purpose": "Synthetic probe corpus for Strata Lens. numbers_01 is the original Phase 0 smoke prompt; the Phase 2 additions (2026-10-26) form designed comparison classes: numbers, arithmetic, prose, code, recall, reasoning, repetition, and one minimal pair (pair_a/pair_b differ by exactly one content word). Not a scientific evaluation set.",
     "created": "2026-10-25",
-    "provenance": "Onyx Hermes Phase 0 corpus; numbers_01 text retained verbatim. Factual text is a probe fixture, not endorsed reference data."
+    "provenance": "Onyx Hermes Phase 0 corpus; numbers_01 text retained verbatim. Factual text is a probe fixture, not endorsed reference data.",
+    "phase2": "Prompts added for Phase 2 corpus breadth: numbers_02, arith_01, arith_02 (near-pair to arith_01), prose_01, prose_02 (digit-free control class), code_01, code_02 (near-pair), recall_01, reason_01, repeat_01, pair_a, pair_b (minimal pair)."
   },
   "prompts": [
     {
       "id": "numbers_01",
       "cat": "numbers",
       "text": "The population of China is about 1,425,000,000 people. The distance from Earth to the Moon is 384,400 kilometers. Water boils at 100 degrees Celsius and freezes at 0 degrees. The speed of light is 299,792,458 meters per second. Mount Everest rises to 8,849 meters above sea level. A day has 86,400 seconds. The human body contains roughly 37,200,000,000 cells."
+    },
+    {
+      "id": "numbers_02",
+      "cat": "numbers",
+      "text": "The Amazon River discharges about 209,000 cubic meters of water per second. A Boeing 747 cruises at roughly 920 kilometers per hour at an altitude of 10,668 meters. The Great Wall of China stretches 21,196 kilometers. A single bolt of lightning reaches 27,760 degrees Celsius. The Pacific Ocean covers 165,250,000 square kilometers. A hummingbird beats its wings about 1,200 times per minute."
+    },
+    {
+      "id": "arith_01",
+      "cat": "arithmetic",
+      "text": "A warehouse holds 1,248 boxes. Each box contains 36 items. How many items are there in total? A second warehouse holds 975 boxes of 48 items each. Which warehouse holds more items, and by how much? If 15 percent of the first warehouse's items are shipped out, how many items remain?"
+    },
+    {
+      "id": "arith_02",
+      "cat": "arithmetic",
+      "text": "A warehouse holds 1,482 boxes. Each box contains 63 items. How many items are there in total? A second warehouse holds 795 boxes of 84 items each. Which warehouse holds more items, and by how much? If 25 percent of the first warehouse's items are shipped out, how many items remain?"
+    },
+    {
+      "id": "prose_01",
+      "cat": "prose",
+      "text": "The old lighthouse keeper climbed the spiral stairs each evening before dusk, carrying a brass lantern and a worn leather journal. From the gallery he watched fishing boats drift home across the darkening water, their lights swaying with the swell. He wrote down the weather, the mood of the sea, and the names of the vessels that passed, though nobody had asked him to keep such records for many years."
+    },
+    {
+      "id": "prose_02",
+      "cat": "prose",
+      "text": "A bicycle stays upright through a quiet partnership between rider and machine. The spinning wheels resist changes to their plane of rotation, while the steering geometry nudges the front wheel toward any lean. The rider makes constant small corrections without thinking, shifting weight and turning the bars by instinct, so balance feels less like a trick and more like a conversation the body learned long ago."
+    },
+    {
+      "id": "code_01",
+      "cat": "code",
+      "text": "def moving_average(values, window):\n    result = []\n    total = 0.0\n    for index, value in enumerate(values):\n        total += value\n        if index >= window:\n            total -= values[index - window]\n        count = min(index + 1, window)\n        result.append(total / count)\n    return result"
+    },
+    {
+      "id": "code_02",
+      "cat": "code",
+      "text": "def smoothed_series(samples, span):\n    output = []\n    running = 0.0\n    for position, sample in enumerate(samples):\n        running += sample\n        if position >= span:\n            running -= samples[position - span]\n        divisor = min(position + 1, span)\n        output.append(running / divisor)\n    return output"
+    },
+    {
+      "id": "recall_01",
+      "cat": "recall",
+      "text": "Here is a shopping list: oat milk, basil, copper wire, jasmine rice, thumb tacks, frozen peas, a brass hinge, and sandalwood soap. The hardware items on the list are the copper wire, the thumb tacks, and the brass hinge. Which items on the list are foods? Name them in the order they appeared."
+    },
+    {
+      "id": "reason_01",
+      "cat": "reasoning",
+      "text": "Three friends named Ana, Boris, and Cleo each own a different pet: a cat, a dog, and a parrot. Ana is allergic to feathers. Boris walks his pet every morning before breakfast. Cleo's pet can learn to repeat words. Work out which person owns which pet, and explain each step of the deduction."
+    },
+    {
+      "id": "repeat_01",
+      "cat": "repetition",
+      "text": "Count with me: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20. Again: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20. The pattern repeats, the pattern repeats, the pattern repeats. Every number in its place, every place with its number, again and again and again."
+    },
+    {
+      "id": "pair_a",
+      "cat": "pair",
+      "text": "The cat sat on the porch steps in the late afternoon sun. It watched a sparrow hop along the fence, tail twitching twice, then closed its eyes and settled into the warmth of the boards."
+    },
+    {
+      "id": "pair_b",
+      "cat": "pair",
+      "text": "The dog sat on the porch steps in the late afternoon sun. It watched a sparrow hop along the fence, tail twitching twice, then closed its eyes and settled into the warmth of the boards."
     }
   ]
 }
