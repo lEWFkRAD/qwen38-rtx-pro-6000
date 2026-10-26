@@ -62,6 +62,22 @@ If the answer is no, Phase 3 works with final residuals plus full
 routing, which is already a substantial analysis surface, and this
 item closes as not available rather than being faked.
 
+**Spike result (2026-10-26, from the upstream source of the same
+engine line, src/program/generate.cpp): YES.** The one-shot program
+has `--dump-layers PATH`: session_loop fills a per-position "ladder"
+of (n_layers + 1) x hc x n_embd f32 (layer 0 first, the +1 is the
+input stage), and the position loop writes it per position, about
+2.0 MB per position at this model's shape. Two caveats, both
+recorded rather than smoothed over: (a) the flag disables the fused
+gather/reduce path and the token-graph capture paths, so a
+dump-layers run is a different execution profile; comparison sets
+must stay homogeneous, never mixing dump-layers runs with plain
+runs; (b) the v2 artifact should convert f32 to BF16 at the harness
+boundary to match v1 conventions, which the format gains a field
+to declare. Presence of the flag in the pinned 0.1.46 binary (a
+later build of this line) is to be confirmed at provisioning time
+by the harness's existing pin checks.
+
 ### 2. Decode-side routing
 
 Today there is no decode artifact: the one-shot run generates at most
@@ -76,6 +92,20 @@ Open engine question: does the decode path make the same routing
 decisions observable anywhere? Until both answers exist, decode
 routing is designed here and built nowhere.
 
+**Spike result (2026-10-26, same source): PLAUSIBLE, UNPROVEN.**
+`--dump-routing` in the one-shot program records true ids and
+weights per layer per position (the zero-weight records in
+verifier_routing.bin come from the separate serve-path trace, not
+from this flag). The position loop that writes the final residual
+and the layer ladder processes generated positions as well as
+prefill positions, so decode positions flow through the same
+machinery; what source alone cannot prove is whether the
+speculative/MTP decode dispatch invokes the same routing callback
+for every generated token. The decider is empirical and cheap
+inside a provisioned capture: a `--max-new 4` run whose routing
+record count is checked against (prompt + generated) positions.
+Until that test runs, decode routing stays unclaimed.
+
 ### Versioning rules
 
 - A v2 manifest carries `"artifact_format": 2` and lists which
@@ -89,7 +119,9 @@ routing is designed here and built nowhere.
 
 1. Jeff's approval and an attended window for each capture (the
    repeatability pair for numbers_01 first, then the corpus set).
-2. An engine-instrumentation answer on the two open questions above
-   (a bounded spike for whoever owns the Strata hooks), which decides
-   whether format v2 ships in Phase 2 or the phase proceeds on v1
-   artifacts alone.
+2. ~~An engine-instrumentation answer on the two open questions
+   above.~~ Answered 2026-10-26 (see the spike results inline):
+   per-layer residuals are available via `--dump-layers` with a
+   changed-execution-profile caveat; decode routing is plausible
+   and gets its empirical proof inside the first provisioned
+   Phase 2 capture. Format v2 can ship in Phase 2.
