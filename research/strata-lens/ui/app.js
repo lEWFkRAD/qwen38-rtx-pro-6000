@@ -131,6 +131,7 @@
     byId("detail-placeholder").hidden = Boolean(run);
     detail.hidden = !run;
     if (!run) { state.detailFingerprint = ""; detail.replaceChildren(); return; }
+    window.dispatchEvent(new CustomEvent("lens:run-selected", { detail: { id: run.id, status: run.status, testFixture: run.test_fixture === true, mode: state.data?.mode } }));
     const fingerprint = JSON.stringify([state.data.mode, run]);
     if (fingerprint === state.detailFingerprint) return;
     state.detailFingerprint = fingerprint;

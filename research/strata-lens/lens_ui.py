@@ -4,10 +4,20 @@
 No engine commands, service inspection, log streaming, uploads or mutations.
 The browser sees a bounded whitelist, not the manifest or local file paths.
 Reported receipts are not independently revalidated by this observer.
+
+The /api/viz endpoint additionally parses one recorded run's router trace
+and final residual on the server, under the same structural rules the
+harness validator uses (exact sizes, per-layer headers, distinct in-range
+expert ids, finite normalized BF16 weights, finite nonzero residual rows),
+and serves only the parsed numbers: token positions, expert ids, routing
+weights and residual aggregates. Token ids, prompt text, file paths and the
+manifest itself never leave the server. Structural validity here is not a
+causal interpretation of any expert.
 """
 from __future__ import annotations
 
 import argparse
+import array
 from datetime import datetime, timezone
 import hashlib
 import hmac
@@ -20,19 +30,25 @@ from pathlib import Path
 import re
 import secrets
 import stat
+import struct
+import sys
 import time
+from urllib.parse import parse_qs, urlsplit
 
 import phase0_harness as harness
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "0.1.0-preview.1"
+VERSION = "0.2.0"
 MAX_MANIFEST_BYTES = 256 * 1024
 MAX_ENTRIES = 200
 ARTIFACTS = (harness.FINAL_R_NAME, harness.PREFILL_ROUTES_NAME, harness.VERIFIER_ROUTING_NAME)
 PROGRESS = {"created", "launching", "gated", "running", "cleaned", "validating", "validated_pending_finalize"}
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"),
           "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+          "/viz.js": ("viz.js", "text/javascript; charset=utf-8"),
           "/styles.css": ("styles.css", "text/css; charset=utf-8")}
+RESIDUAL_BUCKETS = 64
+MAX_VIZ_RESIDUAL_BYTES = 32 * 1024 * 1024
 
 
 def bounded_int(value, low=0, high=1024 ** 3):
@@ -185,6 +201,169 @@ class Observer:
         result["runs"].sort(key=lambda row: (row["started_at"] or "", row["id"]), reverse=True)
         return result
 
+    # ---- Capture visualization -------------------------------------------
+    # Parses the two binary artifacts of one recorded-success run, in the
+    # run directory, without following symlinks, and only when both files
+    # have the exact expected size for the manifest's token count and pass
+    # the harness's structural rules. Results are cached per artifact
+    # (mtime, size) pair so the 2s state poll never triggers a reparse;
+    # the viz payload is fetched once per selected run.
+
+    def _viz_unavailable(self, run_id, reason):
+        return {"available": False, "run_id": run_id, "reason": reason}
+
+    def viz(self, run_id):
+        if self.demo:
+            return self._viz_unavailable(run_id, "Synthetic demo mode has no capture artifacts to visualize.")
+        if not re.fullmatch(r"run-[0-9a-f]{12}", run_id or ""):
+            return self._viz_unavailable(run_id, "Unknown run id.")
+        try:
+            root_fd = os.open(self.runs_dir, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        except OSError:
+            return self._viz_unavailable(run_id, "Run directory unavailable.")
+        try:
+            with os.scandir(root_fd) as iterator:
+                names = [entry.name for entry in itertools.islice(iterator, MAX_ENTRIES)
+                         if entry.is_dir(follow_symlinks=False)]
+            name = next((n for n in names if self.opaque_id(n) == run_id), None)
+            if name is None or name.endswith(".partial"):
+                return self._viz_unavailable(run_id, "Run not found.")
+            directory_fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd)
+            try:
+                return self._viz_from_dir(directory_fd, run_id)
+            finally:
+                os.close(directory_fd)
+        except (OSError, ValueError, UnicodeError, RecursionError, OverflowError):
+            return self._viz_unavailable(run_id, "Capture artifacts could not be parsed under the structural rules. No visualization inferred.")
+        finally:
+            os.close(root_fd)
+
+    def _read_regular(self, directory_fd, filename, expected_bytes):
+        fd = os.open(filename, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory_fd)
+        with os.fdopen(fd, "rb") as handle:
+            info = os.fstat(handle.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_size != expected_bytes:
+                raise ValueError("Artifact size mismatch")
+            raw = handle.read(expected_bytes + 1)
+            if len(raw) != expected_bytes:
+                raise ValueError("Artifact size changed during read")
+            return raw, (info.st_mtime_ns, info.st_size)
+
+    def _viz_from_dir(self, directory_fd, run_id):
+        fd = os.open("manifest.json", os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory_fd)
+        with os.fdopen(fd, "rb") as handle:
+            info = os.fstat(handle.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_MANIFEST_BYTES:
+                raise ValueError("Unsupported manifest")
+            raw = handle.read(MAX_MANIFEST_BYTES + 1)
+            if len(raw) > MAX_MANIFEST_BYTES:
+                raise ValueError("Oversized manifest")
+        data = json.loads(raw, parse_constant=lambda _: None)
+        if not isinstance(data, dict) or data.get("schema") != 3 or data.get("status") != "complete" or data.get("success") is not True:
+            return self._viz_unavailable(run_id, "Only a recorded-success run can be visualized.")
+        if obj(data.get("engine")).get("test_override") is True or "test_command_prefix" in data:
+            return self._viz_unavailable(run_id, "Test fixtures are not visualized as captures.")
+        tokens = bounded_int(obj(data.get("prompt")).get("real_token_count"), 1, harness.MAX_REAL_TOKENS)
+        if tokens is None:
+            return self._viz_unavailable(run_id, "Run does not record a usable token count.")
+        routes_bytes = harness.N_LAYERS * harness.PREFILL_ROUTE_BYTES_PER_LAYER(tokens)
+        residual_bytes = tokens * harness.FINAL_R_BYTES_PER_TOKEN
+        if residual_bytes > MAX_VIZ_RESIDUAL_BYTES:
+            return self._viz_unavailable(run_id, "Capture is too large for the local visualization bound.")
+        routes_raw, routes_key = self._read_regular(directory_fd, harness.PREFILL_ROUTES_NAME, routes_bytes)
+        residual_raw, residual_key = self._read_regular(directory_fd, harness.FINAL_R_NAME, residual_bytes)
+        cache_key = (run_id, routes_key, residual_key)
+        if getattr(self, "_viz_cache_key", None) == cache_key:
+            return self._viz_cache_payload
+        payload = self._parse_viz(run_id, tokens, routes_raw, residual_raw)
+        self._viz_cache_key, self._viz_cache_payload = cache_key, payload
+        return payload
+
+    def _parse_viz(self, run_id, tokens, routes_raw, residual_raw):
+        top_k, n_layers, n_experts = harness.TOP_K, harness.N_LAYERS, harness.N_EXPERTS
+        per_layer_bytes = harness.PREFILL_ROUTE_BYTES_PER_LAYER(tokens)
+        layers, layer_stats, global_usage = [], [], [0] * n_experts
+        min_sum, max_sum = math.inf, -math.inf
+        for layer in range(n_layers):
+            record = memoryview(routes_raw)[layer * per_layer_bytes:(layer + 1) * per_layer_bytes]
+            header = struct.unpack_from("<4i", record, 0)
+            if header != (layer, 0, tokens, 0):
+                raise ValueError("Route record header mismatch")
+            count = tokens * top_k
+            ids = array.array("H"); ids.frombytes(record[16:16 + count * 2])
+            weights = array.array("H"); weights.frombytes(record[16 + count * 2:16 + count * 4])
+            if sys.byteorder != "little":
+                ids.byteswap(); weights.byteswap()
+            usage = [0] * n_experts
+            layer_ids, layer_weights, entropy_total, top1_total = [], [], 0.0, 0.0
+            for token_index in range(tokens):
+                start = token_index * top_k
+                token_ids = list(ids[start:start + top_k])
+                if len(set(token_ids)) != top_k or any(e >= n_experts for e in token_ids):
+                    raise ValueError("Invalid expert ids")
+                token_weights, total = [], 0.0
+                for rank in range(top_k):
+                    weight = harness.bf16_to_float(weights[start + rank])
+                    if not math.isfinite(weight) or weight < 0.0 or weight > 1.01:
+                        raise ValueError("Invalid routing weight")
+                    token_weights.append(weight)
+                    total += weight
+                if not 0.98 <= total <= 1.02:
+                    raise ValueError("Routing weights are not normalized")
+                min_sum, max_sum = min(min_sum, total), max(max_sum, total)
+                entropy = -sum((w / total) * math.log(w / total) for w in token_weights if w > 0.0)
+                entropy_total += entropy
+                top1_total += max(token_weights)
+                for expert in token_ids:
+                    usage[expert] += 1
+                    global_usage[expert] += 1
+                layer_ids.append(token_ids)
+                layer_weights.append([round(w, 4) for w in token_weights])
+            layers.append({"ids": layer_ids, "weights": layer_weights})
+            layer_stats.append({"entropy_mean": round(entropy_total / tokens, 4),
+                                "top1_mean": round(top1_total / tokens, 4),
+                                "distinct_experts": sum(1 for c in usage if c),
+                                "usage": usage})
+        words = array.array("H"); words.frombytes(residual_raw)
+        if sys.byteorder != "little":
+            words.byteswap()
+        width, streams = harness.FINAL_R_WIDTH, harness.HC
+        stream_width = width // streams
+        bucket_width = width // RESIDUAL_BUCKETS
+        per_token = []
+        for token_index in range(tokens):
+            row = words[token_index * width:(token_index + 1) * width]
+            if len(row) != width:
+                raise ValueError("Residual row truncated")
+            total, total_sq, max_abs, nonzero = 0.0, 0.0, 0.0, False
+            stream_sq = [0.0] * streams
+            bucket_sq = [0.0] * RESIDUAL_BUCKETS
+            for index, word in enumerate(row):
+                if word & 0x7F80 == 0x7F80:
+                    raise ValueError("Non-finite residual value")
+                if word & 0x7FFF:
+                    nonzero = True
+                value = harness.bf16_to_float(word)
+                total += value
+                total_sq += value * value
+                max_abs = max(max_abs, abs(value))
+                stream_sq[index // stream_width] += value * value
+                bucket_sq[index // bucket_width] += value * value
+            if not nonzero:
+                raise ValueError("All-zero residual row")
+            per_token.append({"norm": round(math.sqrt(total_sq), 3),
+                              "mean": round(total / width, 5),
+                              "max_abs": round(max_abs, 4),
+                              "stream_norms": [round(math.sqrt(s), 3) for s in stream_sq],
+                              "bucket_rms": [round(math.sqrt(s / bucket_width), 4) for s in bucket_sq]})
+        return {"available": True, "run_id": run_id, "version": VERSION,
+                "real_tokens": tokens, "layer_count": n_layers, "experts": n_experts, "top_k": top_k,
+                "validation": {"routes_weight_sum_range": [round(min_sum, 4), round(max_sum, 4)],
+                               "residual_all_finite": True, "residual_all_rows_nonzero": True,
+                               "parsed_by": "lens observer structural parse (same rules as the harness validator); CLI validation remains authoritative"},
+                "layers": layers, "layer_stats": layer_stats, "global_usage": global_usage,
+                "residual": {"width": width, "streams": streams, "buckets": RESIDUAL_BUCKETS, "per_token": per_token}}
+
 
 class LensServer(ThreadingHTTPServer):
     daemon_threads = True
@@ -215,7 +394,8 @@ class Handler(BaseHTTPRequestHandler):
         origins = self.headers.get_all("Origin", [])
         if origins and (len(origins) != 1 or origins[0] != "http://" + hosts[0]):
             return False
-        return self.path != "/api/state" or self.headers.get("Sec-Fetch-Site") != "cross-site"
+        api_path = urlsplit(self.path).path
+        return api_path not in ("/api/state", "/api/viz") or self.headers.get("Sec-Fetch-Site") != "cross-site"
 
     def send(self, code, payload, mime="text/plain; charset=utf-8"):
         self.send_response(code)
@@ -239,6 +419,17 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(200, payload, mime)
         if self.path == "/api/state":
             payload = json.dumps(self.server.observer.snapshot(), allow_nan=False).encode()
+            return self.send(200, payload, "application/json; charset=utf-8")
+        split = urlsplit(self.path)
+        if split.path == "/api/viz" and split.query:
+            try:
+                params = parse_qs(split.query, strict_parsing=True)
+            except ValueError:
+                return self.send(404, b"Not found\n")
+            ids = params.get("id", [])
+            if len(ids) != 1 or set(params) != {"id"}:
+                return self.send(404, b"Not found\n")
+            payload = json.dumps(self.server.observer.viz(ids[0]), allow_nan=False).encode()
             return self.send(200, payload, "application/json; charset=utf-8")
         return self.send(404, b"Not found\n")
 
