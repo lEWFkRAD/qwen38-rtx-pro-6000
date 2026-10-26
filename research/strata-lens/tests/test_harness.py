@@ -658,8 +658,63 @@ class HarnessTests(unittest.TestCase):
 
     def owned_hold(self, owner: str = "unit-test-owner") -> Path:
         path = Path(self.temporary.name) / "HOLD"
-        path.write_text(owner + "\n", encoding="utf-8")
+        path.write_text(json.dumps({"version": 1, "kind": "owned-strata-maintenance",
+                                    "owner": owner, "reason": "unit test"}) + "\n",
+                        encoding="utf-8")
+        path.chmod(0o600)
         return path
+
+    def test_owned_hold_rejects_malformed_legacy_and_wrong_schema(self) -> None:
+        valid = {"version": 1, "kind": "owned-strata-maintenance", "owner": "unit-test-owner"}
+        cases = ["unit-test-owner\n", "{", "[]", "null", json.dumps("unit-test-owner"),
+                 '{"version":1,"version":1,"kind":"owned-strata-maintenance","owner":"unit-test-owner"}']
+        for key, values in {"version": [None, True, "1", 2],
+                            "kind": [None, "another-maintenance"],
+                            "owner": [None, 1, "", " ", "bad owner", "bad\nowner", "a" * 101]}.items():
+            cases.extend(json.dumps({**valid, key: value}) for value in values)
+        hold = self.owned_hold()
+        for raw in cases:
+            with self.subTest(raw=raw):
+                hold.write_text(raw, encoding="utf-8")
+                with self.assertRaises(harness.HarnessError):
+                    harness._read_maintenance_owner(hold)
+
+    def test_owned_hold_rejects_links_nonregular_large_and_public_files(self) -> None:
+        hold = self.owned_hold()
+        link = Path(self.temporary.name) / "hold-link"
+        link.symlink_to(hold)
+        fifo = Path(self.temporary.name) / "hold-fifo"
+        os.mkfifo(fifo, 0o600)
+        for path in (link, fifo, Path(self.temporary.name)):
+            with self.subTest(path=path), self.assertRaises(harness.HarnessError):
+                harness._read_maintenance_owner(path)
+        for mode in (0o640, 0o644, 0o620, 0o606):
+            hold.chmod(mode)
+            with self.subTest(mode=mode), self.assertRaises(harness.HarnessError):
+                harness._read_maintenance_owner(hold)
+        hold.chmod(0o600)
+        hold.write_bytes(b" " * 4097)
+        with self.assertRaises(harness.HarnessError):
+            harness._read_maintenance_owner(hold)
+
+    def test_owned_hold_rejects_foreign_file_owner_and_concurrent_replacement(self) -> None:
+        hold = self.owned_hold()
+        real_fstat = os.fstat
+
+        def foreign_owner(fd):
+            value = list(real_fstat(fd))
+            value[4] = os.geteuid() + 1
+            return os.stat_result(value)
+
+        with mock.patch.object(harness.os, "fstat", side_effect=foreign_owner):
+            with self.assertRaises(harness.HarnessError):
+                harness._read_maintenance_owner(hold)
+        replacement = Path(self.temporary.name) / "replacement"
+        replacement.write_text(hold.read_text(), encoding="utf-8")
+        replacement.chmod(0o600)
+        with mock.patch.object(Path, "stat", return_value=replacement.stat()):
+            with self.assertRaises(harness.HarnessError):
+                harness._read_maintenance_owner(hold)
 
     def assert_gate_rejects(self, runner, *, owner: str = "unit-test-owner") -> None:
         with self.assertRaises(harness.HarnessError):
