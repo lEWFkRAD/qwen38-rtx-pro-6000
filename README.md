@@ -1,4 +1,6 @@
 <!-- project-home:start -->
+![qwen38-rtx-pro-6000 project banner](https://raw.githubusercontent.com/lEWFkRAD/qwen38-rtx-pro-6000/4dab99b278192df51555461843b7adeebac20668/assets/qwen38-pro6000-hero.png)
+
 **[Qwen3.8 · One RTX PRO 6000 project homepage](https://lewfkrad.github.io/qwen38-rtx-pro-6000/)** · [Documentation](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/README.md)
 
 Single-GPU inference reports, reproducibility artifacts, and experimental inspection tools.
