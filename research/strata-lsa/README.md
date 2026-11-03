@@ -32,6 +32,7 @@ general quality equivalence has not been established.
   [changed native source files](native/strata-src/)
 - [Native tests and all retained run receipts](native/)
 - [Earlier preparation, synthetic GPU experiments and failures](preparation/README.md)
+- [Historical SHATNER handoff notes](preparation/shatner-handoff/README.md) and [checkpoint receipt](preparation/shatner-handoff/flashnext-maps-README.md)
 - [Activation capture, map training and calibration](preparation/flashnext-maps/README.md)
 - [Pilot learned/PCA maps, temperatures, twelve training checkpoints and report](preparation/flashnext-maps/maps/pilot-v1/)
 - [Whole-document corpus and provenance](preparation/flashnext-maps/corpus/manifest.json)

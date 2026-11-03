@@ -3,7 +3,8 @@
   "description": "Source-to-public-file hashes. Text substitutions remove operator paths, private mesh addresses and the live maintenance owner. Tensor/map/source archive/executable bytes are unchanged. Public Git text uses LF line endings.",
   "source_roots": [
     "native experiment 2026-11-03",
-    "preparation and saved checkpoint 2026-11-03"
+    "preparation and saved checkpoint 2026-11-03",
+    "original SHATNER delivery-kit notes, November 3 morning"
   ],
   "exclusions": [
     "model weights, serving configuration and API credential files",
@@ -6085,6 +6086,24 @@
       "published_sha256": "af3386033e6ac4c11a002c23c5c282520f8a2aff813fb93c5ada08bc78973216",
       "bytes": 2056,
       "text_redacted": false
+    },
+    {
+      "group": "historical-shatner-handoff",
+      "source": "SHATNER-delivery-kit/README.md",
+      "published": "preparation/shatner-handoff/README.md",
+      "source_sha256": "a18a4f9c8d855a4d5bb82b71265fbb5d693b57286f6a69e74e5a8327a0197a2c",
+      "published_sha256": "1fa45e1683addc8fcc432faa08ca4e11fc9ed7f52561f59f8eaf7562d098a353",
+      "bytes": 12317,
+      "text_redacted": true
+    },
+    {
+      "group": "historical-shatner-handoff",
+      "source": "SHATNER-delivery-kit/flashnext-maps/README.md",
+      "published": "preparation/shatner-handoff/flashnext-maps-README.md",
+      "source_sha256": "a8ba09bc7b016acd86ce9d5c011da0a824884787020764ff5f67918db6a3d581",
+      "published_sha256": "0c2988a4f89cd07db498f05a35d6f0a09a90777ae8cd1a777e7aca5d11c0cf34",
+      "bytes": 7409,
+      "text_redacted": true
     }
   ]
 }
