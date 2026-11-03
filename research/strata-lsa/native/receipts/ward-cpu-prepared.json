@@ -1,0 +1,20 @@
+{
+  "status": "cpu_prepared",
+  "gpu_executed": false,
+  "cases": [
+    {
+      "case": "normal",
+      "rounds": 5,
+      "objective": 202.11947548554667
+    },
+    {
+      "case": "identical",
+      "rounds": 64,
+      "objective": 512.0
+    }
+  ],
+  "script_sha256": "1f18ab7dd8553561d1bbab2ffac5ba6300c534baaae2c1a9ffa742a629d73197",
+  "source_sha256": "be0f6239ff76c01906a4325e9a8ffb0d3a91562213f7096a783b12f054e15f88",
+  "pinned_upstream": "35b1bf9a10703b57da3eb073debfad6a66507269",
+  "api": "ward_close_step/range;16-byte sticky diagnostics;no external algorithm scratch"
+}

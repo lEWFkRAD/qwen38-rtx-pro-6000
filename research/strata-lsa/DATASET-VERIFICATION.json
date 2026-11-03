@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "method": "Streaming decompression and SHA-256 verification of every dataset payload against the public source-to-file manifest; no GPU execution.",
+  "archives": {
+    "lsa-captures-20261103.tar.zst": 112,
+    "lsa-prepared-compatible-20261103.tar.zst": 96,
+    "lsa-prepared-original-20261103.tar.zst": 200
+  },
+  "files_verified": 408
+}

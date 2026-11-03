@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "tag": "strata-lsa-2026-11-03",
+  "assets": [
+    {
+      "name": "lsa-captures-20261103.tar.zst",
+      "bytes": 1102653023,
+      "sha256": "8651b843f6de2836b4e15236c589a8ebfd3ccf9d94f23d0cd01abf3b938cde3b",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/lsa-captures-20261103.tar.zst"
+    },
+    {
+      "name": "lsa-original.tar.gz",
+      "bytes": 2676941,
+      "sha256": "2a417e019270a8f5b33e0b0e9e6698b5943a80f182350710847a537ab9f90e9f",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/lsa-original.tar.gz"
+    },
+    {
+      "name": "lsa-prepared-compatible-20261103.tar.zst",
+      "bytes": 652451348,
+      "sha256": "db6d601a5921fb415ea5379e029021f3537aaf958d57e66f2e3d99749750999e",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/lsa-prepared-compatible-20261103.tar.zst"
+    },
+    {
+      "name": "lsa-prepared-original-20261103.tar.zst",
+      "bytes": 652954934,
+      "sha256": "a7239ecc0d1bfad5c33e4e207ef69581c286d70ac30c45fa518d615c32682ac5",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/lsa-prepared-original-20261103.tar.zst"
+    },
+    {
+      "name": "lsa-research.tar.gz",
+      "bytes": 2677242,
+      "sha256": "8da582d28cfb005dbb9793f4721bb4d0b4cc9365cded2b951c5b76d6f91062b9",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/lsa-research.tar.gz"
+    },
+    {
+      "name": "strata-lsa-integrated-20261103.tar.gz",
+      "bytes": 41760922,
+      "sha256": "5ff999ecea55084a1eea99b3796944b3cdb39afb180b46fcf6291e0fbfa1057d",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/strata-lsa-integrated-20261103.tar.gz"
+    },
+    {
+      "name": "strata-lsa-plain-english.mp3",
+      "bytes": 976173,
+      "sha256": "e12d4f93ad05ebd63a8f11a5e0a315b0552212522fdb70a9934679fcefd345ef",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/strata-lsa-plain-english.mp3"
+    },
+    {
+      "name": "strata-lsa-runtime-tests-20261103.tar.gz",
+      "bytes": 38727075,
+      "sha256": "a243595510d1cc58afad83aba0bf4c295cee07ca6b98d14286807ca16e04a4c7",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/strata-lsa-runtime-tests-20261103.tar.gz"
+    },
+    {
+      "name": "strata-lsa-source-876307a.tar.gz",
+      "bytes": 25620704,
+      "sha256": "229b7da01955b3630f83d15aa947c1cae48dad13f05d9ab2b023bf1bc945853e",
+      "url": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/download/strata-lsa-2026-11-03/strata-lsa-source-876307a.tar.gz"
+    }
+  ]
+}

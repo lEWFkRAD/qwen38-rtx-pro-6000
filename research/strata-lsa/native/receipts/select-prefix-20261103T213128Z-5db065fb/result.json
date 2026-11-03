@@ -1,0 +1,444 @@
+{
+  "status": "passed",
+  "gpu_executed": true,
+  "capacity_buckets": 16384,
+  "capacity_tokens": 131072,
+  "cases": [
+    {
+      "position": 131071,
+      "visible_buckets": 16320,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 0,
+      "visible_buckets": 0,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": -1,
+      "visible_buckets": 0,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 511,
+      "visible_buckets": 0,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 512,
+      "visible_buckets": 64,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 513,
+      "visible_buckets": 64,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 1023,
+      "visible_buckets": 64,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 1024,
+      "visible_buckets": 128,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 1535,
+      "visible_buckets": 128,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 1536,
+      "visible_buckets": 192,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 4096,
+      "visible_buckets": 512,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 65535,
+      "visible_buckets": 8128,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 131071,
+      "visible_buckets": 16320,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 131072,
+      "visible_buckets": 0,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    },
+    {
+      "position": 0,
+      "visible_buckets": 0,
+      "exact_capacity_control": true,
+      "graph_direct_exact": true
+    }
+  ],
+  "zero_query_ties_exact": true,
+  "performance_claim": false,
+  "reference": "Unchanged multirow capacity-strided segmented sort with identical per-row inputs",
+  "timings": {
+    "scope": "Captured native lsa_select only",
+    "cuda_event_method": "External timing events inside captured graph",
+    "whole_model_speed_claim": false,
+    "elapsed_seconds": 0.045286106993444264,
+    "cases": [
+      {
+        "queries": 1,
+        "requested_bucket_count": 0,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 0,
+        "position": 0,
+        "warm_repeats": 12,
+        "median_ms": 0.015776000916957855,
+        "min_ms": 0.015744000673294067,
+        "max_ms": 0.01600000075995922,
+        "samples_ms": [
+          0.015936000272631645,
+          0.015776000916957855,
+          0.015744000673294067,
+          0.015776000916957855,
+          0.01583999954164028,
+          0.015744000673294067,
+          0.015807999297976494,
+          0.015776000916957855,
+          0.01600000075995922,
+          0.015776000916957855,
+          0.01600000075995922,
+          0.015776000916957855
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 1,
+        "requested_bucket_count": 192,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 192,
+        "position": 1536,
+        "warm_repeats": 12,
+        "median_ms": 0.21510399878025055,
+        "min_ms": 0.21433599293231964,
+        "max_ms": 0.22303999960422516,
+        "samples_ms": [
+          0.21459199488162994,
+          0.21510399878025055,
+          0.21439999341964722,
+          0.21452799439430237,
+          0.2152000069618225,
+          0.21513600647449493,
+          0.21516799926757812,
+          0.21513600647449493,
+          0.21433599293231964,
+          0.22303999960422516,
+          0.21436800062656403,
+          0.21510399878025055
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 1,
+        "requested_bucket_count": 1024,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 1024,
+        "position": 8192,
+        "warm_repeats": 12,
+        "median_ms": 0.1897760033607483,
+        "min_ms": 0.18783999979496002,
+        "max_ms": 0.19059200584888458,
+        "samples_ms": [
+          0.1900160014629364,
+          0.18982400000095367,
+          0.19059200584888458,
+          0.1886720061302185,
+          0.1897280067205429,
+          0.18851199746131897,
+          0.18854400515556335,
+          0.19059200584888458,
+          0.19040000438690186,
+          0.18783999979496002,
+          0.18803200125694275,
+          0.18985599279403687
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 1,
+        "requested_bucket_count": 4096,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 4096,
+        "position": 32768,
+        "warm_repeats": 12,
+        "median_ms": 0.2144639939069748,
+        "min_ms": 0.21433599293231964,
+        "max_ms": 0.21462400257587433,
+        "samples_ms": [
+          0.21433599293231964,
+          0.21436800062656403,
+          0.2144639939069748,
+          0.2144639939069748,
+          0.21462400257587433,
+          0.2144320011138916,
+          0.2144639939069748,
+          0.2144639939069748,
+          0.2144639939069748,
+          0.2144320011138916,
+          0.21462400257587433,
+          0.2144320011138916
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 1,
+        "requested_bucket_count": 16384,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 16320,
+        "position": 131071,
+        "warm_repeats": 12,
+        "median_ms": 0.30534400045871735,
+        "min_ms": 0.30451199412345886,
+        "max_ms": 0.30956798791885376,
+        "samples_ms": [
+          0.3067519962787628,
+          0.30451199412345886,
+          0.30451199412345886,
+          0.30694401264190674,
+          0.30956798791885376,
+          0.30527999997138977,
+          0.30451199412345886,
+          0.30665600299835205,
+          0.30643200874328613,
+          0.30527999997138977,
+          0.3054080009460449,
+          0.3052160143852234
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 8,
+        "requested_bucket_count": 0,
+        "capacity_buckets": 64,
+        "actual_visible_buckets_per_row": 0,
+        "position": 0,
+        "warm_repeats": 12,
+        "median_ms": 0.04315200075507164,
+        "min_ms": 0.04230400174856186,
+        "max_ms": 0.04444799944758415,
+        "samples_ms": [
+          0.043327998369932175,
+          0.04444799944758415,
+          0.04310400038957596,
+          0.043296001851558685,
+          0.044415999203920364,
+          0.043136000633239746,
+          0.043136000633239746,
+          0.043168000876903534,
+          0.04435199871659279,
+          0.04303999990224838,
+          0.04230400174856186,
+          0.04310400038957596
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 8,
+        "requested_bucket_count": 192,
+        "capacity_buckets": 192,
+        "actual_visible_buckets_per_row": 192,
+        "position": 1536,
+        "warm_repeats": 12,
+        "median_ms": 0.22313600033521652,
+        "min_ms": 0.22246399521827698,
+        "max_ms": 0.22463999688625336,
+        "samples_ms": [
+          0.2231999933719635,
+          0.22246399521827698,
+          0.22329600155353546,
+          0.22310400009155273,
+          0.2245119959115982,
+          0.22339199483394623,
+          0.2231680005788803,
+          0.2226240038871765,
+          0.22281600534915924,
+          0.22463999688625336,
+          0.22281600534915924,
+          0.22259199619293213
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 8,
+        "requested_bucket_count": 1024,
+        "capacity_buckets": 1024,
+        "actual_visible_buckets_per_row": 1024,
+        "position": 8192,
+        "warm_repeats": 12,
+        "median_ms": 0.2006240040063858,
+        "min_ms": 0.20006400346755981,
+        "max_ms": 0.20236800611019135,
+        "samples_ms": [
+          0.20032000541687012,
+          0.2006720006465912,
+          0.20006400346755981,
+          0.2009280025959015,
+          0.2001280039548874,
+          0.20211200416088104,
+          0.200095996260643,
+          0.20057600736618042,
+          0.2009280025959015,
+          0.20080000162124634,
+          0.20236800611019135,
+          0.20006400346755981
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 8,
+        "requested_bucket_count": 4096,
+        "capacity_buckets": 4096,
+        "actual_visible_buckets_per_row": 4096,
+        "position": 32768,
+        "warm_repeats": 12,
+        "median_ms": 0.23095999658107758,
+        "min_ms": 0.23014399409294128,
+        "max_ms": 0.23708799481391907,
+        "samples_ms": [
+          0.23104000091552734,
+          0.2306559979915619,
+          0.23078399896621704,
+          0.23071999847888947,
+          0.23097600042819977,
+          0.23708799481391907,
+          0.23014399409294128,
+          0.23094399273395538,
+          0.2306240051984787,
+          0.23148800432682037,
+          0.23161600530147552,
+          0.23123200237751007
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      },
+      {
+        "queries": 8,
+        "requested_bucket_count": 16384,
+        "capacity_buckets": 16384,
+        "actual_visible_buckets_per_row": 16320,
+        "position": 131071,
+        "warm_repeats": 12,
+        "median_ms": 0.3502400070428848,
+        "min_ms": 0.3494719862937927,
+        "max_ms": 0.3505600094795227,
+        "samples_ms": [
+          0.35020801424980164,
+          0.3503040075302124,
+          0.3503040075302124,
+          0.3505600094795227,
+          0.3494719862937927,
+          0.3503679931163788,
+          0.35040000081062317,
+          0.3500800132751465,
+          0.3498240113258362,
+          0.350271999835968,
+          0.34966400265693665,
+          0.3495999872684479
+        ],
+        "graph_replays_per_sample": 1,
+        "kernel_launches": 14,
+        "total_graph_nodes": 16,
+        "node_type_counts": {
+          "7": 2,
+          "0": 14
+        },
+        "kernel_node_count_source": "cudaGraphGetNodes/cudaGraphNodeGetType"
+      }
+    ],
+    "maximum_context_note": "Requested16384 capacity corresponds to16320 visible buckets at final validposition131071"
+  },
+  "started_at": "2026-11-03T21:31:28.904358+00:00",
+  "finished_at": "2026-11-03T21:31:29.912790+00:00",
+  "script_sha256": "cfcb546f390afe0cff7eb5adefffdd1c2a4a85647e3770f02d20bbbbd571108d",
+  "library_sha256": "75d8e410635fa1509263cfc8714fb46cb15d381fa544bee060ef535c92b236d7"
+}

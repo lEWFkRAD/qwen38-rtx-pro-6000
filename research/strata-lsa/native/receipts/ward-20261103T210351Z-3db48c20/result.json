@@ -1,0 +1,680 @@
+{
+  "status": "failed",
+  "started_at": "2026-11-03T21:03:51.924112+00:00",
+  "gpu_executed": true,
+  "cases": [
+    {
+      "case": "real-layer-3",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        4,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        379.2593230356661,
+        371.9886407387165,
+        361.77334359421064,
+        366.54003484343104,
+        363.1027040770524,
+        366.5230087851268,
+        373.6299629070919,
+        372.76965944266976,
+        364.67432680527446,
+        365.0283471365057,
+        359.78171921007333,
+        375.3529340329539
+      ],
+      "fp64_objective_upstream": [
+        379.2593230356661,
+        371.9886407387165,
+        361.77334359421064,
+        366.54003484343104,
+        363.1027040770524,
+        366.5230087851268,
+        373.6299629070919,
+        372.76965944266976,
+        364.67432680527446,
+        365.0283471365057,
+        359.78171921007333,
+        375.3529340329539
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "b00001e03ecbfe441f466bfebe5fa468f6c77a6eada00723f1aed4bba1fea739"
+    },
+    {
+      "case": "real-layer-7",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        380.6516031599601,
+        394.5446952903804,
+        381.7444872121186,
+        380.4479304649357,
+        385.2618583448215,
+        384.9796421435776,
+        392.6423185326498,
+        386.8970606506637,
+        382.3000042890783,
+        382.11271794025646,
+        382.4738199407067,
+        393.75154074796336
+      ],
+      "fp64_objective_upstream": [
+        380.6516031599601,
+        394.5446952903804,
+        381.7444872121186,
+        380.4479304649357,
+        385.2618583448215,
+        384.9796421435776,
+        392.6423185326498,
+        386.8970606506637,
+        382.3000042890783,
+        382.11271794025646,
+        382.4738199407067,
+        393.75154074796336
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.00048828125,
+      "centroid_bf16_different_coordinates": 1,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "2a268efac2a0492a624e44c48d73107ad2f21b92bbd7caeb66771ebc0832df6a"
+    },
+    {
+      "case": "real-layer-11",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        404.9827242892307,
+        412.5849758888065,
+        404.622888417731,
+        407.6862813816032,
+        408.8189585952562,
+        411.1715655848133,
+        411.35410985104085,
+        404.2254945494507,
+        401.4524133703501,
+        402.7749423382442,
+        406.4052980769864,
+        408.91671373013975
+      ],
+      "fp64_objective_upstream": [
+        404.9827242892307,
+        412.5849758888065,
+        404.622888417731,
+        407.6862813816032,
+        408.8189585952562,
+        411.1715655848133,
+        411.35410985104085,
+        404.2254945494507,
+        401.4524133703501,
+        402.7749423382442,
+        406.4052980769864,
+        408.91671373013975
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "6a054104678db21e7b4d7a6ccb0287ce6cdbd72758b656d201887c64d2830f26"
+    },
+    {
+      "case": "real-layer-15",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        410.0948741105624,
+        407.0038355458973,
+        413.46645780248053,
+        418.5076533290304,
+        424.17683215280476,
+        419.29437458276647,
+        419.50503946963244,
+        414.77348392391116,
+        408.5960276240312,
+        411.1978463534597,
+        414.85497568602784,
+        408.7860056441367
+      ],
+      "fp64_objective_upstream": [
+        410.0948741105624,
+        407.0038355458973,
+        413.46645780248053,
+        418.5076533290304,
+        424.17683215280476,
+        419.29437458276647,
+        419.50503946963244,
+        414.77348392391116,
+        408.5960276240312,
+        411.1978463534597,
+        414.85497568602784,
+        408.7860056441367
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "3a897f4c5dd88e4012b2b77786e976bf518f861501f140b36996323245d9ed17"
+    },
+    {
+      "case": "real-layer-19",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        418.49259901761286,
+        410.2212469038828,
+        419.1771968143865,
+        422.5062521385653,
+        432.2258003203516,
+        421.3364058179772,
+        423.51712872364016,
+        422.3869463245078,
+        416.0924559776303,
+        417.6502430253394,
+        420.75488000549007,
+        411.7912072165659
+      ],
+      "fp64_objective_upstream": [
+        418.49259901761286,
+        410.2212469038828,
+        419.1771968143865,
+        422.5062521385653,
+        432.2258003203516,
+        421.3364058179772,
+        423.51712872364016,
+        422.3869463245078,
+        416.0924559776303,
+        417.6502430253394,
+        420.75488000549007,
+        411.7912072165659
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "be33e01cdf904ac529e4016e987bd8037f0a17b899e3b44843af9ecf176b9187"
+    },
+    {
+      "case": "real-layer-23",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        405.4514837942612,
+        407.83397050232463,
+        412.5536659752473,
+        415.7899624554707,
+        421.36401620956633,
+        415.3992136214816,
+        418.43319118021,
+        414.06532521832423,
+        413.7124845412807,
+        418.7582811098473,
+        419.9215037205134,
+        407.08397034838583
+      ],
+      "fp64_objective_upstream": [
+        405.4514837942612,
+        407.83397050232463,
+        412.5536659752473,
+        415.7899624554707,
+        421.36401620956633,
+        415.3992136214816,
+        418.43319118021,
+        414.06532521832423,
+        413.7124845412807,
+        418.7582811098473,
+        419.9215037205134,
+        407.08397034838583
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "37a3b27aef1583f5349b89b98924c022b9d592fe9d3cc1915da2bac2e8ef93d0"
+    },
+    {
+      "case": "real-layer-27",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        428.01124328322413,
+        415.3549574536078,
+        423.3232403711512,
+        423.2389261760441,
+        435.6460629145712,
+        423.9420125700561,
+        421.25470755825745,
+        432.4497560900125,
+        422.10508597897376,
+        420.57738151141007,
+        422.52849388650685,
+        416.17921372709594
+      ],
+      "fp64_objective_upstream": [
+        428.01124328322413,
+        415.3549574536078,
+        423.3232403711512,
+        423.2389261760441,
+        435.6460629145712,
+        423.9420125700561,
+        421.25470755825745,
+        432.4497560900125,
+        422.10508597897376,
+        420.57738151141007,
+        422.52849388650685,
+        416.17921372709594
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.000244140625,
+      "centroid_bf16_different_coordinates": 1,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "2d2bf7fefc2b3cef2b0c28e582f1f2df5ce5cedf7fb12d1ba22eaa2654f764b9"
+    },
+    {
+      "case": "real-layer-31",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        437.43975247012423,
+        426.09842558502885,
+        434.6678533740485,
+        439.08415892127323,
+        449.0585730916782,
+        436.64993994069624,
+        438.659694851845,
+        440.4134822983209,
+        433.6385768755482,
+        434.2119823119658,
+        437.55674425962906,
+        433.93775520551276
+      ],
+      "fp64_objective_upstream": [
+        437.43975247012423,
+        426.09842558502885,
+        434.6678533740485,
+        439.08415892127323,
+        449.0585730916782,
+        436.64993994069624,
+        438.659694851845,
+        440.4134822983209,
+        433.6385768755482,
+        434.2119823119658,
+        437.55674425962906,
+        433.93775520551276
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.001953125,
+      "centroid_bf16_different_coordinates": 1,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "0dbe7e96ee9a1d6371c96ab774934e66970950e22550fc9b9864e7bea7348c59"
+    },
+    {
+      "case": "real-layer-35",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        3,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        434.1701369690138,
+        425.68656021703794,
+        432.8437250260592,
+        433.03511654867714,
+        447.22384923703606,
+        433.31795067465237,
+        434.0608765883305,
+        435.0158197581466,
+        426.52160757173516,
+        426.8863263259467,
+        429.5172026082249,
+        423.5909612488792
+      ],
+      "fp64_objective_upstream": [
+        434.1701369690138,
+        425.68656021703794,
+        432.8437250260592,
+        433.03511654867714,
+        447.22384923703606,
+        433.31795067465237,
+        434.0608765883305,
+        435.0158197581466,
+        426.52160757173516,
+        426.8863263259467,
+        429.5172026082249,
+        423.5909612488792
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "7935b46cd5ce76518e616b9eb3ed765e757266497641fa3ab470ac2a2a67379b"
+    },
+    {
+      "case": "real-layer-39",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        4,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        419.69756174772283,
+        421.28295903260675,
+        422.5781396959883,
+        424.72066751013864,
+        434.1410786308394,
+        423.82205967501744,
+        423.65517343850456,
+        428.1551533918333,
+        423.3565712752026,
+        420.67095050200356,
+        422.62035586543647,
+        413.6628413229306
+      ],
+      "fp64_objective_upstream": [
+        419.69756174772283,
+        421.28295903260675,
+        422.5781396959883,
+        424.72066751013864,
+        434.1410786308394,
+        423.82205967501744,
+        423.65517343850456,
+        428.1551533918333,
+        423.3565712752026,
+        420.67095050200356,
+        422.62035586543647,
+        413.6628413229306
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "5209dccaad4cbc8d419a827e73b8f23c0e6c609db5ce3fc2f6e888467bdea731"
+    },
+    {
+      "case": "real-layer-43",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        4,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        410.2447603129667,
+        408.9643881108783,
+        410.78841455012093,
+        412.7558643804426,
+        419.2238030510585,
+        412.4627282336253,
+        410.35171597359545,
+        418.12946388768125,
+        408.0275823916649,
+        409.21436956892904,
+        410.8699616146529,
+        400.6112856010862
+      ],
+      "fp64_objective_upstream": [
+        410.2447603129667,
+        408.9643881108783,
+        410.78841455012093,
+        412.7558643804426,
+        419.2238030510585,
+        412.4627282336253,
+        410.35171597359545,
+        418.12946388768125,
+        408.0275823916649,
+        409.21436956892904,
+        410.8699616146529,
+        400.6112856010862
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "749ee441b3e54eb9fbd82d8b00a19779b40d2072c19320ae3f2d308599cce7fc"
+    },
+    {
+      "case": "real-layer-47",
+      "blocks": 12,
+      "diagnostics": [
+        0,
+        12,
+        4,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        417.66727373164287,
+        400.79385543823497,
+        405.9740837448978,
+        405.52105798797385,
+        419.84611848801757,
+        403.56168411448135,
+        411.34824724952034,
+        407.5570136777761,
+        392.6164977136375,
+        394.6233687554449,
+        401.08559814439315,
+        393.0877093678501
+      ],
+      "fp64_objective_upstream": [
+        417.66727373164287,
+        400.79385543823497,
+        405.9740837448978,
+        405.52105798797385,
+        419.84611848801757,
+        403.56168411448135,
+        411.34824724952034,
+        407.5570136777761,
+        392.6164977136375,
+        394.6233687554449,
+        401.08559814439315,
+        393.0877093678501
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0009765625,
+      "centroid_bf16_different_coordinates": 1,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact",
+      "capture_sha256": "0b9b1e2d056c94a408a091a273e2b1a7c6e90db76c8c881f4578d5a521660209"
+    },
+    {
+      "case": "synthetic-random",
+      "blocks": 4,
+      "diagnostics": [
+        0,
+        4,
+        7,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        205.71020040683825,
+        206.14189610874723,
+        202.15537610857095,
+        204.26153111876422
+      ],
+      "fp64_objective_upstream": [
+        205.71020040683825,
+        206.14189610874723,
+        202.15537610857095,
+        204.26153111876422
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact"
+    },
+    {
+      "case": "synthetic-identical",
+      "blocks": 1,
+      "diagnostics": [
+        0,
+        1,
+        64,
+        0
+      ],
+      "partition_exact": true,
+      "changed_blocks": [],
+      "partition_complete_unique_and_capped": true,
+      "fp64_objective_native": [
+        512.0
+      ],
+      "fp64_objective_upstream": [
+        512.0
+      ],
+      "max_objective_abs_difference": 0.0,
+      "max_objective_relative_difference": 0.0,
+      "centroid_max_abs_difference": 0.0,
+      "centroid_bf16_different_coordinates": 0,
+      "near_tie_policy": "Only explicit --allow-near-ties: complete partition+FP64alignment abs<=2e-4 andrel<=5e-7; reported as alternative, never exact"
+    }
+  ],
+  "scope": "Native512-key spherical Ward block closure component qualification",
+  "source_sha256": "be0f6239ff76c01906a4325e9a8ffb0d3a91562213f7096a783b12f054e15f88",
+  "library_sha256": "df98ea34118cbf4c7ef5ebb5499aea189ee01f04e44ab7d1b8c43faf298fe5d6",
+  "map_sha256": "a5a69b217f23d9a2f7995516a91d1baa81e25b7733159ac5c9c1d0aa28c5342c",
+  "script_sha256": "dff8060cef9a0509c8b4b836a05f7622f609b55bcea283d91b0c3e63ca5c4ed4",
+  "allow_near_ties": false,
+  "upstream_commit": "35b1bf9a10703b57da3eb073debfad6a66507269",
+  "limitations": [
+    "No whole-model quality or speed claim",
+    "FP32Gram rounding may differ from Triton IEEE dot; different partitions are explicit"
+  ],
+  "graphs": {
+    "capture_passed": true,
+    "cases": [
+      {
+        "position": 510,
+        "closed": false,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 511,
+        "closed": true,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 512,
+        "closed": false,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 1023,
+        "closed": true,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 1024,
+        "closed": false,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 1535,
+        "closed": true,
+        "graph_direct_exact": true
+      },
+      {
+        "position": 2047,
+        "closed": true,
+        "graph_direct_exact": true
+      }
+    ],
+    "sticky_invalid_position_error": true
+  },
+  "error": "AssertionError: Partition differs insynthetic-near-copy blocks[0];FP64 alignment absdiff[5.583133656728023e-06];explicit tie review required",
+  "traceback": "Traceback (most recent call last):\n  File \"/path/to/strata-lsa-resume-20261103/test_ward.py\", line 268, in worker\n    result,_=compare(ward,F.normalize(near,dim=-1),'synthetic-near-copy',args.allow_near_ties);report['cases'].append(result)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/path/to/strata-lsa-resume-20261103/test_ward.py\", line 172, in compare\n    raise AssertionError(f'Partition differs in{name} blocks{changed_blocks};FP64 alignment absdiff{differences.tolist()};explicit tie review required')\nAssertionError: Partition differs insynthetic-near-copy blocks[0];FP64 alignment absdiff[5.583133656728023e-06];explicit tie review required\n",
+  "finished_at": "2026-11-03T21:03:56.221476+00:00"
+}

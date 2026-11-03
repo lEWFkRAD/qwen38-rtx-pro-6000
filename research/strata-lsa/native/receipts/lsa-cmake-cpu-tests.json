@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "build_directory": "/path/to/strata-lsa-resume-20261103/build-cpu",
+  "source_cmake": "/path/to/strata-lsa-resume-20261103/strata-src/src/lsa/CMakeLists.txt",
+  "source_cmake_sha256": "645ec3de12a29c809c5ce7eaf87bf3d6a6b577c672d36c1bb4c096652d54bd21",
+  "cuda_enabled": false,
+  "gpu_executed": false,
+  "native_map": "/path/to/strata-lsa-resume-20261103/receipts/flashnext-learned-native-v1.bin",
+  "tests": {
+    "lsa_maps": {
+      "checks": 38,
+      "status": "passed"
+    },
+    "lsa_cache_state": {
+      "checks": 69,
+      "status": "passed"
+    }
+  },
+  "ctest_log": "/path/to/strata-lsa-resume-20261103/build-cpu/Testing/Temporary/LastTest.log"
+}

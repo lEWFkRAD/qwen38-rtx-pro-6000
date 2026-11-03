@@ -1,0 +1,15 @@
+Resuming nvidia_cublas_cu12-12.9.1.4-py3-none-manylinux_2_27_x86_64.whl
+curl: (56) Recv failure: Connection reset by peer
+Hash verified nvidia_cublas_cu12-12.9.1.4-py3-none-manylinux_2_27_x86_64.whl
+Resuming nvidia_cudnn_cu12-9.20.0.48-py3-none-manylinux_2_27_x86_64.whl
+Hash verified nvidia_cudnn_cu12-9.20.0.48-py3-none-manylinux_2_27_x86_64.whl
+Resuming nvidia_nccl_cu12-2.29.7-py3-none-manylinux_2_18_x86_64.whl
+Hash verified nvidia_nccl_cu12-2.29.7-py3-none-manylinux_2_18_x86_64.whl
+Using Python 3.12.3 environment at: research/lsa-prep-20261103/.venv
+Resolved 3 packages in 1ms
+Prepared 3 packages in 1.97s
+Installed 3 packages in 4ms
+ + nvidia-cublas-cu12==12.9.1.4
+ + nvidia-cudnn-cu12==9.20.0.48
+ + nvidia-nccl-cu12==2.29.7
+Pinned wheels seeded; rerun prepare_env.sh to complete locked synchronization.

@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "scope": "pilot map distillation; no staff data; whole-document train/validation/test split",
+  "sentinel": 248046,
+  "tokenizer_source_sha256": "6db1ea62d3edbaa64dce139088146ccf370933998d5f997cd5f41a39300075a6",
+  "documents": [
+    {
+      "id": "train_technical",
+      "split": "train",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/train_technical.tokens",
+      "token_sha256": "e5a6d78d9dd24aeef643247a9256273eb4f34ff98e71909300a0f4a411afe6fa",
+      "text_sha256": "271f471833c2199d1948af1468f54b0062667c17a62926ade52226336df47904",
+      "source_tokens_before_truncation": 21162,
+      "sources": [
+        {
+          "path": "/path/to/lsa-prep-20261103/upstream/docs/reference/notation.md",
+          "sha256": "7714632321f646cdef706daf2085fb193e23fa10d4ec5c2e22ab4034b72911fa",
+          "kind": "pinned_public_project_source"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/upstream/docs/guide/training.md",
+          "sha256": "2c17e3f7f42ace8f80bdea44cd767a8c528c3b8955c5a0b3a847b505525234a7",
+          "kind": "pinned_public_project_source"
+        }
+      ]
+    },
+    {
+      "id": "train_code",
+      "split": "train",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/train_code.tokens",
+      "token_sha256": "a355946ddb2b3d0df4c9484eb58ce06d45a1f214cdeca1389cec94b308d60813",
+      "text_sha256": "9fe2db73c9ce8364c31066577b3f348edbfbbef33d2980795c448443e012b61a",
+      "source_tokens_before_truncation": 39013,
+      "sources": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/strata-src/src/core/layer.cpp",
+          "sha256": "f284c2ad8d48e82a658dbebfd24357943aba35e96237759d1765472dbe9bda2e",
+          "kind": "pinned_public_project_source"
+        }
+      ]
+    },
+    {
+      "id": "train_operations",
+      "split": "train",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/train_operations.tokens",
+      "token_sha256": "11d9a2e5b651ec87bda1a3a4e541b5895edbc252ea32d2e1f9ea2db872fe6671",
+      "text_sha256": "1ddec3aaea1ec842a7da8cdb972059b83006022b31c31982e434cb9fac0f7e65",
+      "source_tokens_before_truncation": 30630,
+      "sources": [
+        {
+          "kind": "self_authored_fictional_operations",
+          "seed": 4101
+        }
+      ]
+    },
+    {
+      "id": "train_narrative",
+      "split": "train",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/train_narrative.tokens",
+      "token_sha256": "7e37d785a286a19165f87f5489a10601efef8f6f81b6ac2298060b6864444d83",
+      "text_sha256": "1c4913c1171757613e3375886d70f23b1d32780d24655d5bca387e1e22c01c0d",
+      "source_tokens_before_truncation": 30307,
+      "sources": [
+        {
+          "kind": "self_authored_fictional_narrative",
+          "seed": 4102
+        }
+      ]
+    },
+    {
+      "id": "validation_technical",
+      "split": "validation",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/validation_technical.tokens",
+      "token_sha256": "34f8bd00a0d634ee0f71382319d6c04df3f80efd94cb6f74f7eb9350b2d050fb",
+      "text_sha256": "6bee09bb8f1a82a19e8df5e2936c71333d63baba223a9c0a2c8fec30ff409846",
+      "source_tokens_before_truncation": 12544,
+      "sources": [
+        {
+          "path": "/path/to/lsa-prep-20261103/upstream/docs/guide/evaluation.md",
+          "sha256": "5bd6edda13eae8d586fe60a3cfea785f20989873c8ea268e873b0520482e9508",
+          "kind": "pinned_public_project_source"
+        }
+      ]
+    },
+    {
+      "id": "validation_operations",
+      "split": "validation",
+      "tokens": 4096,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/validation_operations.tokens",
+      "token_sha256": "9b8934d32d649c4e06bf30a010fbca8a3575ead410df417e50dd023b6923be99",
+      "text_sha256": "3e20cf549c31b071c2debd8dc09af9d4fe58a6a7559f2d783a458d8ab334cd20",
+      "source_tokens_before_truncation": 30705,
+      "sources": [
+        {
+          "kind": "self_authored_fictional_operations",
+          "seed": 5201
+        }
+      ]
+    },
+    {
+      "id": "test_code",
+      "split": "test",
+      "tokens": 6144,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/test_code.tokens",
+      "token_sha256": "4923426fb79115d2f3b1a5ded41c70e57d81c5e0cc384cd364a3dfcc3f8e9635",
+      "text_sha256": "ecc25d961a508e4da6b6735defc3531850d96f4c95ab65592d6d99f7bcdc161f",
+      "source_tokens_before_truncation": 7635,
+      "sources": [
+        {
+          "path": "/path/to/lsa-prep-20261103/upstream/src/lsa/core/reference.py",
+          "sha256": "e562ac867b01a7f5d1715dc1fb5d831c0a41a2b706d109edf008d6246e1ddba9",
+          "kind": "pinned_public_project_source"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/upstream/src/lsa/core/kernels/scan_select.py",
+          "sha256": "36c64b4c7c8a629580fb535771c7cf79adfbd7fb639154f74ce5399a53602fa9",
+          "kind": "pinned_public_project_source"
+        }
+      ]
+    },
+    {
+      "id": "test_narrative",
+      "split": "test",
+      "tokens": 6144,
+      "token_path": "/path/to/lsa-prep-20261103/flashnext-maps/corpus/test_narrative.tokens",
+      "token_sha256": "875000f211ef5a06f367080c9cc242c6222fe9f65dca7990cad7115e0db4b023",
+      "text_sha256": "f22c971c853e3061132bb123b38c22d696440866a0b2b2c5120ad26d04495b46",
+      "source_tokens_before_truncation": 30315,
+      "sources": [
+        {
+          "kind": "self_authored_fictional_narrative",
+          "seed": 6301
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+Requirement already satisfied: uv==0.13.0 in ./research/lsa-prep-20261103/.bootstrap/lib/python3.12/site-packages (0.13.0)
+Resolved 281 packages in 9ms
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+ Downloaded nvidia-cusolver-cu12
+Downloading nvidia-nccl-cu12 (280.0MiB)
+ Downloaded nvidia-cusparse-cu12
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+error: Failed to download `nvidia-cudnn-cu12==9.20.0.48`
+  cause: Failed to write to the distribution cache
+  cause: error decoding response body
+  cause: request or response body error
+  cause: error reading a body from connection
+  cause: connection reset
+
+hint: `nvidia-cudnn-cu12` (v9.20.0.48) was included because `lsa` depends on `torch` (v2.13.0+cu129) which depends on `nvidia-cudnn-cu12`

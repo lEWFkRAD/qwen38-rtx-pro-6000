@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-03",
+  "failure_receipt": "receipts/ward-20261103T210351Z-3db48c20/receipt.json",
+  "evidence": "All144real-mapblocksand5random/identicalblocksmatchedpartitions;onlysyntheticnear-copydiffered",
+  "near_copy_fp64_alignment_abs_difference": 5.583133656728023e-06,
+  "root_cause": "NativeCUDA sqrtfRN differed from pinnedTriton sqrt.approx.ftz.f32 in Wardmergecost",
+  "pinned_ptx_sha256": "fc3dcfb99e9a98dcf36c2b15e8d00d30b885cb7cb35079f2e65b3b9616af27ca",
+  "ptx_lines": [
+    822,
+    3254,
+    3320
+  ],
+  "fix": "Use explicit sqrt.approx.ftz.f32 for Wardcost roots; algorithm and strictgatesunchanged",
+  "validation": "Individualnvccsm120compilepassed; coordinatedGPUrerunpending"
+}

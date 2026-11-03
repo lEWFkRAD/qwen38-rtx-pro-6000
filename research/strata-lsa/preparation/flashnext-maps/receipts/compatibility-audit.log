@@ -1,0 +1,9 @@
+{"event": "compatibility_checked", "document": "train_technical", "layers": 12}
+{"event": "compatibility_checked", "document": "train_code", "layers": 12}
+{"event": "compatibility_checked", "document": "train_operations", "layers": 12}
+{"event": "compatibility_checked", "document": "train_narrative", "layers": 12}
+{"event": "compatibility_checked", "document": "validation_technical", "layers": 12}
+{"event": "compatibility_checked", "document": "validation_operations", "layers": 12}
+{"event": "compatibility_checked", "document": "test_code", "layers": 12}
+{"event": "compatibility_checked", "document": "test_narrative", "layers": 12}
+{"event": "finished", "status": "passed", "captures": 96, "compatible_blobs": 96}

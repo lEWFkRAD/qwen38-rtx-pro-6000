@@ -1,0 +1,773 @@
+{
+  "status": "passed",
+  "started_at": "2026-11-03T20:46:55.149045+00:00",
+  "gpu_executed": true,
+  "scope": "Standalone native CUDA projection/selection/expansion and unchanged Strata attention parity",
+  "limitations": [
+    "No Strata engine call sites are wired",
+    "Ward cache construction uses pinned upstream Triton",
+    "No incremental native Ward cache, MTP, conversation cache, model quality or production promotion claim"
+  ],
+  "map_sha256": "4d8a606e0ddd33858cb662e7f82f723dd54ca96776f3c383af28b30935a85d02",
+  "library_sha256": "5125ff14286f8b5d1c216b8b514db78f969759930a3ec62623308c30d7065182",
+  "native_map_sha256": "a5a69b217f23d9a2f7995516a91d1baa81e25b7733159ac5c9c1d0aa28c5342c",
+  "script_sha256": "98b516d4eb984de7ba78625f06f3e2898dc533b6a38e63a9bcb4c8b63a0eff67",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+  "torch_version": "2.13.0+cu129",
+  "cases": [
+    {
+      "layer": 3,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "b00001e03ecbfe441f466bfebe5fa468f6c77a6eada00723f1aed4bba1fea739",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.470348358154297e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 5.027603037578893e-07,
+        "max_relative_l2": 2.0122862136247069e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      },
+      "graphs": {
+        "capture_succeeded": true,
+        "replays": [
+          {
+            "positions": [
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1535,
+              1536,
+              6143
+            ],
+            "direct_exact": true,
+            "future_centroids_masked": true,
+            "selection": {
+              "bucket_order_exact": true,
+              "expansion_exact": true,
+              "width_exact": true,
+              "max_score_abs_error": 5.960464477539063e-08,
+              "lengths": [
+                512,
+                513,
+                514,
+                1024,
+                1025,
+                1536,
+                1537,
+                1540
+              ]
+            }
+          },
+          {
+            "positions": [
+              0,
+              31,
+              1024,
+              2048,
+              4095,
+              4096,
+              6142,
+              6143
+            ],
+            "direct_exact": true,
+            "future_centroids_masked": true,
+            "selection": {
+              "bucket_order_exact": true,
+              "expansion_exact": true,
+              "width_exact": true,
+              "max_score_abs_error": 5.960464477539063e-08,
+              "lengths": [
+                1,
+                32,
+                1025,
+                1540,
+                1540,
+                1540,
+                1540,
+                1540
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "layer": 7,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "2a268efac2a0492a624e44c48d73107ad2f21b92bbd7caeb66771ebc0832df6a",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 3.8743019104003906e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 5.679119234424202e-07,
+        "max_relative_l2": 1.8232092876294615e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 11,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "6a054104678db21e7b4d7a6ccb0287ce6cdbd72758b656d201887c64d2830f26",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 3.5762786865234375e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 8.52269206736392e-07,
+        "max_relative_l2": 1.8922796490640303e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 15,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "3a897f4c5dd88e4012b2b77786e976bf518f861501f140b36996323245d9ed17",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.470348358154297e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 1.1920928955078125e-07,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 4.2326599267525247e-07,
+        "max_relative_l2": 1.5408425864497795e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 19,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "be33e01cdf904ac529e4016e987bd8037f0a17b899e3b44843af9ecf176b9187",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.172325134277344e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 7.122119350556147e-07,
+        "max_relative_l2": 1.7694583668437262e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 23,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "37a3b27aef1583f5349b89b98924c022b9d592fe9d3cc1915da2bac2e8ef93d0",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.470348358154297e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 1.1920928955078125e-07,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 6.154352928334803e-07,
+        "max_relative_l2": 1.9201434602765954e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 27,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "2d2bf7fefc2b3cef2b0c28e582f1f2df5ce5cedf7fb12d1ba22eaa2654f764b9",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.172325134277344e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 8.820052771750683e-07,
+        "max_relative_l2": 1.6450611151207672e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 31,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "0dbe7e96ee9a1d6371c96ab774934e66970950e22550fc9b9864e7bea7348c59",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 3.8743019104003906e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 3.8040379980205254e-07,
+        "max_relative_l2": 1.5884162225998924e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 35,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "7935b46cd5ce76518e616b9eb3ed765e757266497641fa3ab470ac2a2a67379b",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.76837158203125e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 1.1920928955078125e-07,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 5.011201525991214e-07,
+        "max_relative_l2": 2.2094641030806684e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 39,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "5209dccaad4cbc8d419a827e73b8f23c0e6c609db5ce3fc2f6e888467bdea731",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.172325134277344e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 6.792532043702145e-07,
+        "max_relative_l2": 2.573060804467168e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 43,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "749ee441b3e54eb9fbd82d8b00a19779b40d2072c19320ae3f2d308599cce7fc",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.172325134277344e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 5.026421043287746e-07,
+        "max_relative_l2": 2.130190507375134e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      }
+    },
+    {
+      "layer": 47,
+      "tokens": 6144,
+      "query_positions": [
+        1536,
+        2208,
+        2848,
+        3520,
+        4160,
+        4832,
+        5472,
+        6143
+      ],
+      "capture_sha256": "0b9b1e2d056c94a408a091a273e2b1a7c6e90db76c8c881f4578d5a521660209",
+      "physical_pages_permuted": true,
+      "projection": {
+        "key_max_abs_error": 4.172325134277344e-07,
+        "query_bf16_differing_coordinates": 0,
+        "query_bf16_max_abs_difference": 0.0,
+        "fp32_oracle": "torch FP32 matmul with TF32 disabled, then normalize",
+        "rounding_note": "Native serial FP32 dot and cuBLAS reduction may cross BF16 rounding boundaries"
+      },
+      "selection": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 5.960464477539063e-08,
+        "lengths": [
+          1537,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540,
+          1540
+        ]
+      },
+      "attention": {
+        "queries": 8,
+        "max_relative_max_scale": 4.375038272634393e-07,
+        "max_relative_l2": 1.4656039906178018e-07,
+        "oracle": "FP64 same selected set, original FP32 INT8-code times FP16-scale values",
+        "native_reader": "unchanged Strata qsa_decode_attn_batch"
+      },
+      "graphs": {
+        "capture_succeeded": true,
+        "replays": [
+          {
+            "positions": [
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1535,
+              1536,
+              6143
+            ],
+            "direct_exact": true,
+            "future_centroids_masked": true,
+            "selection": {
+              "bucket_order_exact": true,
+              "expansion_exact": true,
+              "width_exact": true,
+              "max_score_abs_error": 5.960464477539063e-08,
+              "lengths": [
+                512,
+                513,
+                514,
+                1024,
+                1025,
+                1536,
+                1537,
+                1540
+              ]
+            }
+          },
+          {
+            "positions": [
+              0,
+              31,
+              1024,
+              2048,
+              4095,
+              4096,
+              6142,
+              6143
+            ],
+            "direct_exact": true,
+            "future_centroids_masked": true,
+            "selection": {
+              "bucket_order_exact": true,
+              "expansion_exact": true,
+              "width_exact": true,
+              "max_score_abs_error": 5.960464477539063e-08,
+              "lengths": [
+                1,
+                32,
+                1025,
+                1540,
+                1540,
+                1540,
+                1540,
+                1540
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "native_map_loader": {
+    "loaded": true,
+    "path": "/path/to/strata-lsa-resume-20261103/receipts/flashnext-learned-native-v1.bin",
+    "temperatures": {
+      "3": 0.09695195406675339,
+      "7": 0.08556701987981796,
+      "11": 0.08442506939172745,
+      "15": 0.07232765108346939,
+      "19": 0.06995880603790283,
+      "23": 0.06008749455213547,
+      "27": 0.06413250416517258,
+      "31": 0.05179660767316818,
+      "35": 0.05893188714981079,
+      "39": 0.05585585534572601,
+      "43": 0.05472300574183464,
+      "47": 0.07345393300056458
+    }
+  },
+  "synthetic": [
+    {
+      "case": "zero_query_equal_scores",
+      "result": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 0.0,
+        "lengths": [
+          512,
+          513,
+          1537,
+          1540
+        ]
+      }
+    },
+    {
+      "case": "one_hot_equal_scores",
+      "result": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 0.0,
+        "lengths": [
+          512,
+          513,
+          1537,
+          1540
+        ]
+      }
+    },
+    {
+      "case": "signed_zero_scores",
+      "result": {
+        "bucket_order_exact": true,
+        "expansion_exact": true,
+        "width_exact": true,
+        "max_score_abs_error": 0.0,
+        "lengths": [
+          512,
+          513,
+          1537,
+          1540
+        ]
+      }
+    },
+    {
+      "case": "zero_and_invalid_projection",
+      "passed": true
+    }
+  ],
+  "peak_allocated_mib": 62.1025390625,
+  "peak_reserved_mib": 80.0,
+  "finished_at": "2026-11-03T20:47:14.902652+00:00"
+}

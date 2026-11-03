@@ -1,0 +1,2 @@
+{"at": "2026-11-03T14:07:15.561540+00:00", "epoch": 1793714835.561549, "kind": "RECOVERY_ATTEMPT", "incident": null, "reason": "persisted intent before managed stop/start"}
+{"attempt_budget_preserved": true, "reason": "managed service readiness and exact inference passed", "status": "healthy"}

@@ -1,0 +1,10 @@
+[1/6] Building CUDA object CMakeFiles/strata_kernels.dir/src/lsa/cuda_adapter.cu.o
+[2/6] Linking CXX static library libstrata_kernels.a
+[3/6] Building CXX object CMakeFiles/strata_engine.dir/src/core/verify.cpp.o
+/path/to/strata-lsa-resume-20261103/strata-src/src/core/verify.cpp: In static member function ‘static void strata::core::Verifier::raise_flag(uint32_t*, uint32_t)’:
+/path/to/strata-lsa-resume-20261103/strata-src/src/core/verify.cpp:3327:20: warning: unused variable ‘f’ [-Wunused-variable]
+ 3327 |     volatile long* f = (volatile long*) flag;
+      |                    ^
+[4/6] Linking CXX static library libstrata_engine.a
+[5/6] Linking CXX executable lsa_runtime_test
+[6/6] Linking CXX executable strata

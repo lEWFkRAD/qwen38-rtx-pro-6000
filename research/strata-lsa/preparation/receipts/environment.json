@@ -1,0 +1,17 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.17.0-1033-oem-x86_64-with-glibc2.39",
+  "cuda_visible_devices": "",
+  "torch": "2.13.0+cu129",
+  "torch_cuda_build": "12.9",
+  "packages": {
+    "torch": "2.13.0+cu129",
+    "triton": "3.7.1",
+    "nvidia-cutlass-dsl": "4.6.2",
+    "apache-tvm-ffi": "0.1.13.post3",
+    "pytest": "9.1.1",
+    "lsa": "0.1.0"
+  },
+  "cuda_workload_performed": false,
+  "compiled_cuda_arch_flags": "sm_75 sm_80 sm_86 sm_90 sm_100 sm_120"
+}

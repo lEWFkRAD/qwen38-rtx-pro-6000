@@ -1,0 +1,6 @@
+[1/6] Building CXX object CMakeFiles/strata_engine.dir/src/core/conversation_snapshot.cpp.o
+[2/6] Building CUDA object CMakeFiles/strata_kernels.dir/src/lsa/ward.cu.o
+[3/6] Building CUDA object CMakeFiles/strata_engine.dir/src/lsa/runtime.cu.o
+[4/6] Linking CXX static library libstrata_kernels.a
+[5/6] Linking CXX static library libstrata_engine.a
+[6/6] Linking CXX executable strata

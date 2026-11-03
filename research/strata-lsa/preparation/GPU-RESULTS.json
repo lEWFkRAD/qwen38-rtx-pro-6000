@@ -1,0 +1,926 @@
+{
+  "status": "gpu_trial_passed_not_promoted",
+  "recorded_at": "2026-11-03T07:55:25.0294361-05:00",
+  "original_upstream_commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+  "research_commit": "35b1bf9a10703b57da3eb073debfad6a66507269",
+  "research_change": "Symmetric Gram calculation in CPU Ward reference; GPU kernels unchanged",
+  "failures_retained": [
+    "Original CPU reference stopped short while GPU completed",
+    "Repaired reference and GPU differed in near-tie labels; replaced near-tie exact-label gate with upstream objective criterion plus structural and repeatability checks"
+  ],
+  "benchmark": {
+    "schema_version": 1,
+    "created_utc": "2026-11-03T07:32:08.052739-05:00",
+    "mode": "gpu",
+    "status": "passed",
+    "gpu_executed": true,
+    "qualification_claim": false,
+    "plan": {
+      "source_sha_expected": "35b1bf9a10703b57da3eb073debfad6a66507269",
+      "original_source_sha": "906be195c1052aaa74f95852ad1917ce1926ba64",
+      "backend": "triton",
+      "precision": "ieee",
+      "dtype": "fp32 keys / bf16 scoring",
+      "contexts": [
+        131072,
+        262144,
+        1048576
+      ],
+      "index_dim": 64,
+      "cluster_block": 512,
+      "pool_size": 4,
+      "bucket_size": 8,
+      "bucket_cap": 16,
+      "top_p": 512,
+      "top_k": 2048,
+      "sink": 4,
+      "window": 512,
+      "query_batches": [
+        1,
+        64
+      ],
+      "repeats": 3,
+      "warmups": 1,
+      "max_gpu_mib": 2048,
+      "max_seconds": 1785,
+      "largest_score_matrix_elements": 8388608,
+      "scope": "Synthetic flat index construction, selection and expansion",
+      "limitations": [
+        "No model accuracy, memory fit or serving compatibility claim",
+        "No full-context prefill or model speedup measured",
+        "External hard timeout and source verification required",
+        "Small CPU smoke is not a passing upstream baseline",
+        "Known upstream near-copy failures are retained separately"
+      ]
+    },
+    "torch_version": "2.13.0+cu129",
+    "gpu": {
+      "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "capability": [
+        12,
+        0
+      ],
+      "total_memory_bytes": 102045712384
+    },
+    "dependencies": {
+      "triton": "3.7.1",
+      "nvidia-cutlass-dsl": "4.6.2",
+      "apache-tvm-ffi": "0.1.13.post3"
+    },
+    "cases": [
+      {
+        "context": 131072,
+        "keys_shape": [
+          131072,
+          64
+        ],
+        "reads": [
+          {
+            "query_count": 1,
+            "selection": {
+              "first_call_ms_including_possible_jit": 2427.747420995729,
+              "warmup_ms": [
+                0.7895349990576506
+              ],
+              "samples_ms": [
+                0.42566400952637196,
+                0.40129199624061584,
+                0.39771400042809546
+              ],
+              "median_ms": 0.40129199624061584,
+              "min_ms": 0.39771400042809546,
+              "max_ms": 0.42566400952637196
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 104.36809599923436,
+              "warmup_ms": [
+                0.11363399971742183
+              ],
+              "samples_ms": [
+                0.042643005144782364,
+                0.03770001058001071,
+                0.03313799970783293
+              ],
+              "median_ms": 0.03770001058001071,
+              "min_ms": 0.03313799970783293,
+              "max_ms": 0.042643005144782364
+            },
+            "checks": {
+              "rows": 1,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          },
+          {
+            "query_count": 64,
+            "selection": {
+              "first_call_ms_including_possible_jit": 359.18802399828564,
+              "warmup_ms": [
+                0.5599809956038371
+              ],
+              "samples_ms": [
+                0.4275630053598434,
+                0.41554399649612606,
+                0.4007840034319088
+              ],
+              "median_ms": 0.41554399649612606,
+              "min_ms": 0.4007840034319088,
+              "max_ms": 0.4275630053598434
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 105.71639399859123,
+              "warmup_ms": [
+                0.18488398927729577
+              ],
+              "samples_ms": [
+                0.1305030018556863,
+                0.03628000558819622,
+                0.03610899148043245
+              ],
+              "median_ms": 0.03628000558819622,
+              "min_ms": 0.03610899148043245,
+              "max_ms": 0.1305030018556863
+            },
+            "checks": {
+              "rows": 64,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          }
+        ],
+        "build": {
+          "first_call_ms_including_possible_jit": 8422.320534009486,
+          "warmup_ms": [
+            4.64453300810419
+          ],
+          "samples_ms": [
+            3.614820001530461,
+            3.580085001885891,
+            3.6007419985253364
+          ],
+          "median_ms": 3.6007419985253364,
+          "min_ms": 3.580085001885891,
+          "max_ms": 3.614820001530461
+        },
+        "peak_allocated_bytes": 47072256,
+        "peak_reserved_bytes": 62914560
+      },
+      {
+        "context": 262144,
+        "keys_shape": [
+          262144,
+          64
+        ],
+        "reads": [
+          {
+            "query_count": 1,
+            "selection": {
+              "first_call_ms_including_possible_jit": 0.5916630034334958,
+              "warmup_ms": [
+                0.4287129995645955
+              ],
+              "samples_ms": [
+                0.40435300616081804,
+                0.401991987018846,
+                0.39418799860868603
+              ],
+              "median_ms": 0.401991987018846,
+              "min_ms": 0.39418799860868603,
+              "max_ms": 0.40435300616081804
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 0.08787799743004143,
+              "warmup_ms": [
+                0.03880499571096152
+              ],
+              "samples_ms": [
+                0.03560799814295024,
+                0.030881012207828462,
+                0.03165099769830704
+              ],
+              "median_ms": 0.03165099769830704,
+              "min_ms": 0.030881012207828462,
+              "max_ms": 0.03560799814295024
+            },
+            "checks": {
+              "rows": 1,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          },
+          {
+            "query_count": 64,
+            "selection": {
+              "first_call_ms_including_possible_jit": 0.5611469969153404,
+              "warmup_ms": [
+                0.43967700912617147
+              ],
+              "samples_ms": [
+                0.7994400075403973,
+                0.4202069976599887,
+                0.40974099829327315
+              ],
+              "median_ms": 0.4202069976599887,
+              "min_ms": 0.40974099829327315,
+              "max_ms": 0.7994400075403973
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 0.20032699103467166,
+              "warmup_ms": [
+                0.04365599306765944
+              ],
+              "samples_ms": [
+                0.03408400516491383,
+                0.029461996746249497,
+                0.033239994081668556
+              ],
+              "median_ms": 0.033239994081668556,
+              "min_ms": 0.029461996746249497,
+              "max_ms": 0.03408400516491383
+            },
+            "checks": {
+              "rows": 64,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          }
+        ],
+        "build": {
+          "first_call_ms_including_possible_jit": 8.198110008379444,
+          "warmup_ms": [
+            7.0869549963390455
+          ],
+          "samples_ms": [
+            7.241922008688562,
+            7.245132001116872,
+            7.287988002644852
+          ],
+          "median_ms": 7.245132001116872,
+          "min_ms": 7.241922008688562,
+          "max_ms": 7.287988002644852
+        },
+        "peak_allocated_bytes": 92161024,
+        "peak_reserved_bytes": 130023424
+      },
+      {
+        "context": 1048576,
+        "keys_shape": [
+          1048576,
+          64
+        ],
+        "reads": [
+          {
+            "query_count": 1,
+            "selection": {
+              "first_call_ms_including_possible_jit": 0.6636909965891391,
+              "warmup_ms": [
+                0.42755100002977997
+              ],
+              "samples_ms": [
+                0.4185770085314289,
+                0.40352299402002245,
+                0.39686700620222837
+              ],
+              "median_ms": 0.40352299402002245,
+              "min_ms": 0.39686700620222837,
+              "max_ms": 0.4185770085314289
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 0.0700819946359843,
+              "warmup_ms": [
+                0.03698799991980195
+              ],
+              "samples_ms": [
+                0.03370500053279102,
+                0.03677899076137692,
+                0.0323169952025637
+              ],
+              "median_ms": 0.03370500053279102,
+              "min_ms": 0.0323169952025637,
+              "max_ms": 0.03677899076137692
+            },
+            "checks": {
+              "rows": 1,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          },
+          {
+            "query_count": 64,
+            "selection": {
+              "first_call_ms_including_possible_jit": 0.49290999595541507,
+              "warmup_ms": [
+                0.4353459953563288
+              ],
+              "samples_ms": [
+                0.4140379896853119,
+                0.41865199455060065,
+                0.4108949942747131
+              ],
+              "median_ms": 0.4140379896853119,
+              "min_ms": 0.4108949942747131,
+              "max_ms": 0.41865199455060065
+            },
+            "expansion": {
+              "first_call_ms_including_possible_jit": 0.21184700017329305,
+              "warmup_ms": [
+                0.04895699385087937
+              ],
+              "samples_ms": [
+                0.03858900163322687,
+                0.03740099782589823,
+                0.031764007871970534
+              ],
+              "median_ms": 0.03740099782589823,
+              "min_ms": 0.031764007871970534,
+              "max_ms": 0.03858900163322687
+            },
+            "checks": {
+              "rows": 64,
+              "causal_unique_window_sink_padding": true,
+              "packed_score_oracle_exact": true,
+              "cpu_score_tolerance": 1E-05,
+              "cpu_score_min_margin": 0.0,
+              "expansion_reference_exact": true
+            }
+          }
+        ],
+        "build": {
+          "first_call_ms_including_possible_jit": 29.40451999893412,
+          "warmup_ms": [
+            28.67138599685859
+          ],
+          "samples_ms": [
+            27.96458499506116,
+            28.366279002511874,
+            28.803448993130587
+          ],
+          "median_ms": 28.366279002511874,
+          "min_ms": 27.96458499506116,
+          "max_ms": 28.803448993130587
+        },
+        "peak_allocated_bytes": 362693632,
+        "peak_reserved_bytes": 398458880
+      }
+    ],
+    "ward_smoke": {
+      "exact_labels": true,
+      "reached": true,
+      "first_call_ms_including_possible_jit": 204.73700799630024
+    },
+    "nearcopy_qualification": [
+      {
+        "pool_size": 1,
+        "seed": 1,
+        "index_dim": 16,
+        "target_buckets": 16,
+        "cap": 16,
+        "objective": "sum_of_bucket_resultant_lengths",
+        "objective_rtol": 1E-05,
+        "reference_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "kernel_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "exact_labels": false,
+        "moved_membership_fraction_per_block": [
+          1.0,
+          1.0,
+          0.9921875,
+          1.0,
+          0.984375,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "reference_resultant": [
+          128.00161189542783,
+          128.00005372082546,
+          127.99876774769223,
+          127.99618187336415,
+          128.00110827843042,
+          127.99341047791155,
+          128.00072870218827,
+          127.9937389351206
+        ],
+        "gpu_resultant": [
+          128.00161434919303,
+          128.00005487100432,
+          127.99876902508325,
+          127.99618272727764,
+          128.00110977630112,
+          127.99341282574257,
+          128.0007293687205,
+          127.9937404086577
+        ],
+        "reference_spherical_merge_loss": [
+          4.656117317836106E-05,
+          4.484701906903865E-05,
+          4.5392261185384086E-05,
+          4.5012469527705434E-05,
+          4.564769903936394E-05,
+          4.371840363148749E-05,
+          4.50557202498203E-05,
+          4.487499724348254E-05
+        ],
+        "gpu_spherical_merge_loss": [
+          4.410740797311519E-05,
+          4.3696840208440335E-05,
+          4.411487016398041E-05,
+          4.415855603667751E-05,
+          4.4149828340778186E-05,
+          4.1370572617438484E-05,
+          4.438918801952241E-05,
+          4.340146014669699E-05
+        ],
+        "resultant_relative_error_per_block": [
+          1.9169799261985075E-08,
+          8.98576857715165E-09,
+          9.97971342912951E-09,
+          6.6713981505539175E-09,
+          1.1702013511692106E-08,
+          1.8343374125921765E-08,
+          5.207253404382334E-09,
+          1.1512571701124206E-08
+        ],
+        "reference_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_repeat_exact": true,
+        "partition_count_cap_canonical": true,
+        "status": "passed"
+      },
+      {
+        "pool_size": 1,
+        "seed": 4,
+        "index_dim": 16,
+        "target_buckets": 16,
+        "cap": 16,
+        "objective": "sum_of_bucket_resultant_lengths",
+        "objective_rtol": 1E-05,
+        "reference_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "kernel_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "exact_labels": false,
+        "moved_membership_fraction_per_block": [
+          0.9921875,
+          1.0,
+          1.0,
+          0.9921875,
+          1.0,
+          1.0,
+          0.9921875,
+          1.0
+        ],
+        "reference_resultant": [
+          128.00615253772324,
+          128.00243382364357,
+          128.0032275935033,
+          127.99660559835874,
+          127.99885035154867,
+          127.99963347414118,
+          128.0006779329968,
+          127.99946643925867
+        ],
+        "gpu_resultant": [
+          128.00615303403617,
+          128.00243586073856,
+          128.003230129698,
+          127.9966074661795,
+          127.99885149359089,
+          127.9996339317793,
+          128.00067914036103,
+          127.99946633039909
+        ],
+        "reference_spherical_merge_loss": [
+          4.406556476510559E-05,
+          4.685786316827034E-05,
+          4.433576717133292E-05,
+          4.40425824592694E-05,
+          4.5638288668214955E-05,
+          4.312638782266731E-05,
+          4.4080822334535696E-05,
+          4.372316404044341E-05
+        ],
+        "gpu_spherical_merge_loss": [
+          4.356925182946725E-05,
+          4.482076818135283E-05,
+          4.1799572471745705E-05,
+          4.217476170254031E-05,
+          4.449624644564665E-05,
+          4.266874969971468E-05,
+          4.2873458113490415E-05,
+          4.3832023621348526E-05
+        ],
+        "resultant_relative_error_per_block": [
+          3.8772584426524386E-09,
+          1.5914501983018026E-08,
+          1.9813521481203147E-08,
+          1.4592736643267974E-08,
+          8.922285000464375E-09,
+          3.5753080734022865E-09,
+          9.432483019170322E-09,
+          8.504690209531233E-10
+        ],
+        "reference_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_repeat_exact": true,
+        "partition_count_cap_canonical": true,
+        "status": "passed"
+      },
+      {
+        "pool_size": 4,
+        "seed": 1,
+        "index_dim": 16,
+        "target_buckets": 64,
+        "cap": 16,
+        "objective": "sum_of_bucket_resultant_lengths",
+        "objective_rtol": 1E-05,
+        "reference_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "kernel_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "exact_labels": false,
+        "moved_membership_fraction_per_block": [
+          0.7890625,
+          0.8125,
+          0.8515625,
+          0.7734375,
+          0.765625,
+          0.8515625,
+          0.8515625,
+          0.84375
+        ],
+        "reference_resultant": [
+          230.6638041356784,
+          274.44511973666124,
+          245.05941880847908,
+          222.68716558075175,
+          156.33421748718987,
+          262.1042707857148,
+          228.9054703984169,
+          295.95265255951404
+        ],
+        "gpu_resultant": [
+          230.66380243817144,
+          274.4451180205444,
+          245.05941930433005,
+          222.687165867788,
+          156.33421695213943,
+          262.10427099563907,
+          228.9054712515526,
+          295.95265425066907
+        ],
+        "reference_spherical_merge_loss": [
+          3.3165102621524056E-05,
+          3.243420542275999E-05,
+          3.253395604474463E-05,
+          3.4157020877501054E-05,
+          4.415104316990437E-05,
+          3.551063559825707E-05,
+          3.437830631014549E-05,
+          3.4040749255837E-05
+        ],
+        "gpu_spherical_merge_loss": [
+          3.486260956719889E-05,
+          3.415032227849224E-05,
+          3.2038105075571366E-05,
+          3.386998463383861E-05,
+          4.468609361651943E-05,
+          3.5300711317631794E-05,
+          3.352517060761784E-05,
+          3.234959422115935E-05
+        ],
+        "resultant_relative_error_per_block": [
+          7.359225484187123E-09,
+          6.253041982961552E-09,
+          2.023390782464816E-09,
+          1.288966263115669E-09,
+          3.4224781702630263E-09,
+          8.009189625028977E-10,
+          3.7270219057794626E-09,
+          5.714275645282719E-09
+        ],
+        "reference_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_repeat_exact": true,
+        "partition_count_cap_canonical": true,
+        "status": "passed"
+      },
+      {
+        "pool_size": 4,
+        "seed": 4,
+        "index_dim": 16,
+        "target_buckets": 64,
+        "cap": 16,
+        "objective": "sum_of_bucket_resultant_lengths",
+        "objective_rtol": 1E-05,
+        "reference_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "kernel_reached": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "exact_labels": false,
+        "moved_membership_fraction_per_block": [
+          0.8359375,
+          0.8046875,
+          0.8125,
+          0.84375,
+          0.859375,
+          0.7890625,
+          0.8125,
+          0.7890625
+        ],
+        "reference_resultant": [
+          287.04318452336594,
+          278.34689658516777,
+          254.8558692336031,
+          260.99673251788994,
+          254.6822628323068,
+          258.58297406989783,
+          242.81723577934162,
+          286.1054537443183
+        ],
+        "gpu_resultant": [
+          287.04318446372326,
+          278.3468962167604,
+          254.85587088079478,
+          260.9967321446936,
+          254.6822635547285,
+          258.58297557002135,
+          242.81723275193139,
+          286.10545249455555
+        ],
+        "reference_spherical_merge_loss": [
+          3.336432308742587E-05,
+          3.722405796224848E-05,
+          2.97251367555873E-05,
+          3.678232627635225E-05,
+          3.111331318450539E-05,
+          3.644555130222216E-05,
+          3.201297857913232E-05,
+          3.719253038525494E-05
+        ],
+        "gpu_spherical_merge_loss": [
+          3.342396576044848E-05,
+          3.759246533263649E-05,
+          2.8077945074755917E-05,
+          3.715552259109245E-05,
+          3.039089148160201E-05,
+          3.494542778526011E-05,
+          3.5040388809193246E-05,
+          3.844229314609038E-05
+        ],
+        "resultant_relative_error_per_block": [
+          2.0778292688483417E-10,
+          1.3235547976562004E-09,
+          6.463228356422717E-09,
+          1.4298888386068888E-09,
+          2.836560720284817E-09,
+          5.80132362680827E-09,
+          1.2467855588357244E-08,
+          4.368189227012442E-09
+        ],
+        "reference_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_max_bucket_weight": [
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0,
+          16.0
+        ],
+        "gpu_repeat_exact": true,
+        "partition_count_cap_canonical": true,
+        "status": "passed"
+      }
+    ]
+  },
+  "attention_and_reference_tests": {
+    "passed": 12,
+    "skipped": 0,
+    "failed": 0,
+    "receipt": "results/attention-7855e7d5/receipt.json"
+  },
+  "integrated_cases": [
+    {
+      "status": "passed",
+      "tokens": 4096,
+      "query_heads": 1,
+      "kv_heads": 1,
+      "head_dim": 64,
+      "top_k": 512,
+      "partial_final_block": 0,
+      "selected_long_range": 1491163,
+      "relative_errors": {
+        "output": 0.0021092297974973917,
+        "dq": 0.002443179488182068,
+        "dk": 0.002407053019851446,
+        "dv": 0.002350604860112071
+      },
+      "lse_max_abs_error": 1.430511474609375E-06,
+      "peak_allocated_mib": 481.3173828125,
+      "scope": "Synthetic fixed-map selection to sparse read and QKV gradients; no model quality or Strata integration claim"
+    },
+    {
+      "status": "passed",
+      "tokens": 4103,
+      "query_heads": 1,
+      "kv_heads": 1,
+      "head_dim": 64,
+      "top_k": 512,
+      "partial_final_block": 7,
+      "selected_long_range": 1494407,
+      "relative_errors": {
+        "output": 0.002109540393576026,
+        "dq": 0.0024433969520032406,
+        "dk": 0.002422346267849207,
+        "dv": 0.0023751785047352314
+      },
+      "lse_max_abs_error": 1.430511474609375E-06,
+      "peak_allocated_mib": 520.10498046875,
+      "scope": "Synthetic fixed-map selection to sparse read and QKV gradients; no model quality or Strata integration claim"
+    },
+    {
+      "status": "passed",
+      "tokens": 4096,
+      "query_heads": 4,
+      "kv_heads": 1,
+      "head_dim": 64,
+      "top_k": 512,
+      "partial_final_block": 0,
+      "selected_long_range": 1489048,
+      "relative_errors": {
+        "output": 0.0020751331467181444,
+        "dq": 0.00242832419462502,
+        "dk": 0.0024199101608246565,
+        "dv": 0.0023142986465245485
+      },
+      "lse_max_abs_error": 1.430511474609375E-06,
+      "peak_allocated_mib": 1447.3642578125,
+      "scope": "Synthetic fixed-map selection to sparse read and QKV gradients; no model quality or Strata integration claim"
+    }
+  ],
+  "promotion": {
+    "approved_conditionally": true,
+    "reason": "No native Strata LSA implementation or Flash-Next-compatible maps; no model-level performance/quality A/B exists",
+    "map_input_features": {
+      "published_qwen27b": 768,
+      "flash_next": 384
+    },
+    "performed": false,
+    "current_model_already_sparse": true
+  },
+  "production": {
+    "pid": 2796678,
+    "restored": true,
+    "config_sha256": "f3d1b869d3d36733fa58686b73537092733bc52b9c9c06ba7d2789bfb17c16a4",
+    "verification": "Managed readiness and exact inference passed; subsequent foreground counters advanced",
+    "healthy": true,
+    "config_unchanged": true,
+    "api_secrets_copied_to_report": false,
+    "service": "qwen38-flash-next-strata.service"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "mode": "plan",
+  "gpu_work_started": false,
+  "upstream_commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+  "contexts": [
+    131072,
+    262144,
+    1048576
+  ],
+  "max_gpu_mib": 2048,
+  "hard_timeout_seconds": 900,
+  "query_batch": 64,
+  "repeats": 3,
+  "requirements": [
+    "coordinated maintenance/recovery window",
+    "qwen38-flash-next-strata.service already inactive",
+    "compute12.0",
+    "three samples <=5% GPU utilization",
+    "at least8192MiB free",
+    "isolated Python environment"
+  ],
+  "qualification_claim": false,
+  "next": "--check-window reads conditions; --execute also requires descriptive --window-label"
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T12:20:10.957274+00:00",
+  "mode": "gpu",
+  "status": "qualification_failed",
+  "gpu_executed": true,
+  "qualification_claim": false,
+  "plan": {
+    "source_sha_expected": "906be195c1052aaa74f95852ad1917ce1926ba64",
+    "backend": "triton",
+    "precision": "ieee",
+    "dtype": "fp32 keys / bf16 scoring",
+    "contexts": [
+      131072,
+      262144,
+      1048576
+    ],
+    "index_dim": 64,
+    "cluster_block": 512,
+    "pool_size": 4,
+    "bucket_size": 8,
+    "bucket_cap": 16,
+    "top_p": 512,
+    "top_k": 2048,
+    "sink": 4,
+    "window": 512,
+    "query_batches": [
+      1,
+      64
+    ],
+    "repeats": 3,
+    "warmups": 1,
+    "max_gpu_mib": 2048,
+    "max_seconds": 1785,
+    "largest_score_matrix_elements": 8388608,
+    "scope": "Synthetic flat index construction, selection and expansion",
+    "limitations": [
+      "No model accuracy, memory fit or serving compatibility claim",
+      "No full-context prefill or model speedup measured",
+      "External hard timeout and source verification required",
+      "Small CPU smoke is not a passing upstream baseline",
+      "Known upstream near-copy failures are retained separately"
+    ]
+  },
+  "torch_version": "2.13.0+cu129",
+  "gpu": {
+    "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "capability": [
+      12,
+      0
+    ],
+    "total_memory_bytes": 102045712384
+  },
+  "dependencies": {
+    "triton": "3.7.1",
+    "nvidia-cutlass-dsl": "4.6.2",
+    "apache-tvm-ffi": "0.1.13.post3"
+  },
+  "cases": [],
+  "ward_smoke": {
+    "exact_labels": true,
+    "reached": true,
+    "first_call_ms_including_possible_jit": 1942.3547170008533
+  },
+  "nearcopy_qualification": [
+    {
+      "pool_size": 1,
+      "seed": 1,
+      "index_dim": 16,
+      "target_buckets": 16,
+      "cap": 16,
+      "reference_reached": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "kernel_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": "reference_failed"
+    },
+    {
+      "pool_size": 4,
+      "seed": 1,
+      "index_dim": 16,
+      "target_buckets": 64,
+      "cap": 16,
+      "reference_reached": [
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "kernel_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": "reference_failed"
+    }
+  ],
+  "qualification_note": "Known near-copy reference/parity failure retained. Performance phase not started; review or repair reference in a separately versioned change."
+}

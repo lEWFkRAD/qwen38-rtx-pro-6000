@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-11-03T21:06:43.283298+00:00",
+  "status": "ward_component_passed",
+  "before": {
+    "status": "maintenance",
+    "owner": "example-lsa-maintenance-owner",
+    "service": "inactive"
+  },
+  "gpu": {
+    "uuid": "GPU-REDACTED",
+    "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "capability": "12.0",
+    "free_mib": 95144,
+    "utilization": 8
+  },
+  "timeout_seconds": 1200,
+  "argv": [
+    "/path/to/lsa-prep-20261103/.venv/bin/python",
+    "/path/to/strata-lsa-resume-20261103/test_ward.py",
+    "--worker",
+    "--owner",
+    "example-lsa-maintenance-owner",
+    "--output",
+    "/path/to/strata-lsa-resume-20261103/receipts/ward-20261103T210643Z-9fbfbb5e/result.json",
+    "--library",
+    "/path/to/strata-lsa-resume-20261103/build-cuda/libstrata_lsa_cuda.so"
+  ],
+  "desktop_load_allowed": true,
+  "preflight_utilization_limit": 20,
+  "compute_processes": [],
+  "performance_claim": false,
+  "pid": 4068930,
+  "after": {
+    "status": "maintenance",
+    "owner": "example-lsa-maintenance-owner",
+    "service": "inactive"
+  },
+  "returncode": 0,
+  "result_sha256": "83c8bb94eb40037056fd2c50270fba46b327f54b358c39f95387d013bbaaf307",
+  "finished_at": "2026-11-03T21:06:46.648613+00:00"
+}

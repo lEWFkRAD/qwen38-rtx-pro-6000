@@ -1,0 +1,11 @@
+Hey Jeff. What we did was turn a research experiment into a working, optional part of Strata. We now have another way for the same model to choose which parts of a long conversation to pay attention to.
+
+The context window is still one hundred and thirty one thousand tokens. That has not increased. We tested about one hundred and twenty five thousand tokens, with a fact buried in the middle, and retrieval worked. The original engine passed that test too. So we proved compatibility near our existing limit, rather than a new memory capability.
+
+Think of L S A as a different index for a very long book. It builds a learned index of older information, selects relevant pieces, and keeps recent text available. The goal is to reduce the work needed to handle long conversations.
+
+The new capability is that we can now start Strata with this method using our existing model. It handles long prompts, reused conversations, and the draft and check process used to speed up generation. We verified all eight conversation slots, tools, images, and high reasoning. Those features already existed; this work preserves them.
+
+Here is the honest performance result. This version is still slower, and it uses about four extra gigabytes of GPU working memory. The very long request took about eighteen seconds instead of seventeen. The eight conversation decode test was also slower. We have not demonstrated better general answer quality or added new knowledge to the model.
+
+So the benefit today is a complete, tested foundation that we can optimize and compare properly. It has not yet earned a place in production. We have not gained a longer context window or a faster live stack from it yet. Production remains paused as you requested, and Sunshine remains stopped.

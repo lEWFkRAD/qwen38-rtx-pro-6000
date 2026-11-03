@@ -1,0 +1,272 @@
+INFO logit_bias=1 context=131072 kv=int8 kv_resident=0 expert_slots=24576 expert_cache_mib=47962 expert_slots_primary=24576 expert_cache_primary_mib=47962 spec=8 mtp_max=6 lookup=3 vram_free_mib=11260 cvec=project:4-44 arena_mib=47962 pool_workers=12 pcie_frac=0.00 spec_min_p=0.50 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 conversation_cache_min_tokens=0 tail_role_token=-1 vram_elastic=0 prefill_cap=32768 prefill_stages=1 stream_all_min=1024 prefill_pipe=0 batch_slots=8 slot_cache=1 batch_groups=1 engine=0.1.50
+READY 131072 stop
+RESUME 0
+PP 33 40 111 296.4
+PP 39 40 195 200.5
+REUSED 0
+T 6457
+T 4337
+T 2275
+T 7532
+T 44083
+T 8378
+T 8116
+T 248046
+DONE 8 40 194.5 35.5 stop 9 10 0 0 0 0 0 0.0 40 0 chunk=0 experts_streamed=0
+RESUME 0
+PP 1580 1587 669 2360.6
+PP 1586 1587 737 2151.3
+REUSED 0
+T 1354
+T 9269
+T 62
+T 22
+T 18
+T 16
+T 24
+T 248046
+DONE 8 1587 737.2 32.7 stop 9 10 0 0 0 0 0 0.0 1587 0 chunk=1580 experts_streamed=0
+RESUME 1580
+PP 1586 1587 19 310.3
+REUSED 1580
+T 1354
+T 9269
+T 62
+T 22
+T 18
+T 16
+T 24
+T 248046
+DONE 8 1587 19.3 33.4 stop 9 10 1580 0 0 0 0 0.0 7 0 chunk=0 experts_streamed=0
+RESUME 0
+PP 7459 7466 1127 6619.6
+PP 7465 7466 1192 6261.5
+REUSED 0
+T 45
+T 16
+T 16
+T 20
+T 15
+T 21
+T 24
+T 20
+T 18
+T 248046
+DONE 10 7466 1192.2 33.0 stop 7 10 0 0 0 0 0 0.0 7466 0 chunk=7459 experts_streamed=0
+RESUME 0
+PP 66 73 96 687.8
+PP 72 73 161 447.9
+REUSED 0
+T 16
+T 23
+T 23
+T 248046
+DONE 4 73 160.7 26.6 stop 5 5 0 0 0 0 0 0.0 73 0 chunk=66 experts_streamed=0
+RESUME 0
+PP 125 132 103 1217.7
+PP 131 132 169 775.7
+REUSED 0
+T 16
+T 11
+T 17
+T 11
+T 18
+T 11
+T 19
+T 11
+T 20
+T 11
+T 21
+T 11
+T 22
+T 11
+T 23
+T 11
+T 24
+T 11
+T 16
+T 15
+T 11
+T 16
+T 16
+T 11
+T 16
+T 17
+T 11
+T 16
+T 18
+T 11
+T 16
+T 19
+T 11
+T 16
+T 20
+T 11
+T 16
+T 21
+T 11
+T 16
+T 22
+T 11
+T 16
+T 23
+T 11
+T 16
+T 24
+T 11
+T 17
+T 15
+T 11
+T 17
+T 16
+T 11
+T 17
+T 17
+T 11
+T 17
+T 18
+T 11
+T 17
+T 19
+T 11
+T 17
+T 20
+T 11
+T 17
+T 21
+T 11
+T 17
+T 22
+T 11
+T 17
+T 23
+T 11
+T 17
+T 24
+T 11
+T 18
+T 15
+T 11
+T 18
+T 16
+T 11
+T 18
+T 17
+T 248046
+DONE 87 132 168.9 175.7 stop 76 80 0 0 0 0 0 0.0 132 0 chunk=125 experts_streamed=0
+RESUME 0
+PP 32768 125076 4135 7924.4
+PP 65536 125076 8432 7772.2
+PP 98304 125076 12865 7641.2
+PP 125069 125076 16697 7490.4
+PP 125075 125076 16765 7460.5
+REUSED 0
+T 228601
+T 34643
+T 62
+T 20
+T 23
+T 17
+T 21
+T 16
+T 15
+T 80298
+T 84964
+T 248046
+DONE 12 125076 16765.0 78.7 stop 11 13 0 0 0 0 0 0.0 125076 0 chunk=32768 experts_streamed=0
+RESUME 0
+PP 1604 1611 403 3984.9
+PP 1610 1611 468 3439.2
+REUSED 0
+T 16
+DONE 1 1611 468.1 7.0 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 0 1
+RESUME 0
+PP 1604 1611 389 4125.6
+PP 1610 1611 454 3549.2
+REUSED 0
+T 16
+DONE 1 1611 453.6 7.0 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 1 1
+RESUME 0
+PP 1604 1611 385 4169.9
+PP 1610 1611 451 3571.5
+REUSED 0
+T 16
+DONE 1 1611 450.8 7.0 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 2 1
+RESUME 0
+PP 1604 1611 390 4114.2
+PP 1610 1611 454 3543.8
+REUSED 0
+T 16
+DONE 1 1611 454.3 7.0 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 3 1
+RESUME 0
+PP 1604 1611 390 4113.3
+PP 1610 1611 456 3532.5
+REUSED 0
+T 16
+DONE 1 1611 455.8 6.5 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 4 1
+RESUME 0
+PP 1604 1611 387 4147.4
+PP 1610 1611 453 3555.7
+REUSED 0
+T 16
+DONE 1 1611 452.8 6.5 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 5 1
+RESUME 0
+PP 1604 1611 387 4141.1
+PP 1610 1611 453 3557.4
+REUSED 0
+T 16
+DONE 1 1611 452.6 6.5 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 6 1
+RESUME 0
+PP 1604 1611 388 4136.8
+PP 1610 1611 454 3549.7
+REUSED 0
+T 16
+DONE 1 1611 453.6 6.5 length 0 0 0 0 0 0 0 0.0 1611 0 chunk=1604 experts_streamed=0
+BADM 7 1
+BT 0 11
+BT 1 11
+BT 2 11
+BT 3 11
+BT 4 11
+BT 5 11
+BT 6 11
+BT 7 11
+BT 0 220
+BT 1 17
+BT 2 220
+BT 3 220
+BT 4 220
+BT 5 220
+BT 6 17
+BT 7 220
+BT 0 17
+BT 1 11
+BT 2 17
+BT 3 17
+BT 4 17
+BT 5 17
+BT 6 11
+BT 7 17
+BT 0 11
+BDONE 0 5 cancel 3622.4
+BT 1 18
+BDONE 1 5 cancel 3121.9
+BT 2 11
+BDONE 2 5 cancel 2623.7
+BT 3 11
+BDONE 3 5 cancel 2119.9
+BT 4 11
+BDONE 4 5 cancel 1616.7
+BT 5 11
+BDONE 5 5 cancel 1116.6
+BT 6 18
+BDONE 6 5 cancel 616.7
+BT 7 11
+BDONE 7 5 cancel 115.9

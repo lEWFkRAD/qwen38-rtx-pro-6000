@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "gpu_executed": false,
+  "live_http_listener_started": false,
+  "checks": [
+    "private config preserves exact engine,vision,recovery,fitmax and concurrency fields; auth rotated and mode0600",
+    "wrapper environment matches all explicit unit settings except documented private admission gate",
+    "fresh synthetic image geometry/colors correct",
+    "all four response validators accept their declared exact contracts",
+    "all four response validators reject truncated completions",
+    "full API capacity gate accepts exact baseline and rejects reduced slots/experts/residency or changed MTP",
+    "mocked HTTP transport verifies request auth construction, background response handling and unauthenticated401 parsing"
+  ],
+  "test_count": 7,
+  "transport_note": "real CPU loopback listener attempt was denied by local execution permissions; HTTP transport regression uses a mock, actual API execution remains pending"
+}

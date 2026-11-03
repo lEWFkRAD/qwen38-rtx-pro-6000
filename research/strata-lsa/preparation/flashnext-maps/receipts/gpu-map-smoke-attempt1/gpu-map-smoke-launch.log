@@ -1,0 +1,9 @@
+{"started_at": "2026-11-03T14:04:45.181572+00:00", "script_sha256": "ca46d14f13c5116f44af4fa67c819f7cddcbba94ed59098b9b30081623743d5c", "preflight": [{"uuid": "GPU-REDACTED", "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition", "capability": "12.0", "total_mib": 97887, "free_mib": 95104, "utilization_percent": 4, "sampled_at": "2026-11-03T14:04:45.207429+00:00"}, {"uuid": "GPU-REDACTED", "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition", "capability": "12.0", "total_mib": 97887, "free_mib": 95104, "utilization_percent": 4, "sampled_at": "2026-11-03T14:04:47.229667+00:00"}, {"uuid": "GPU-REDACTED", "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition", "capability": "12.0", "total_mib": 97887, "free_mib": 95114, "utilization_percent": 4, "sampled_at": "2026-11-03T14:04:49.252859+00:00"}], "worker": {"returncode": 1, "timed_out": false, "pid": 2873867}, "finished_at": "2026-11-03T14:04:55.385136+00:00"}
+Traceback (most recent call last):
+  File "/path/to/lsa-prep-20261103/flashnext-maps/gpu_map_smoke.py", line 85, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/path/to/lsa-prep-20261103/flashnext-maps/gpu_map_smoke.py", line 84, in main
+    assert receipt['worker']['returncode']==0 and (ROOT/'receipts/gpu-map-smoke.json').exists()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

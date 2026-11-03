@@ -1,0 +1,23 @@
+{
+  "input": "key_and_query",
+  "query_heads": "all",
+  "tau": {
+    "3": 0.09695195406675339,
+    "7": 0.08556701987981796,
+    "11": 0.08442506939172745,
+    "15": 0.07232765108346939,
+    "19": 0.06995880603790283,
+    "23": 0.06008749455213547,
+    "27": 0.06413250416517258,
+    "31": 0.05179660767316818,
+    "35": 0.05893188714981079,
+    "39": 0.05585585534572601,
+    "43": 0.05472300574183464,
+    "47": 0.07345393300056458
+  },
+  "sha256": "4d8a606e0ddd33858cb662e7f82f723dd54ca96776f3c383af28b30935a85d02",
+  "run": "/path/to/lsa-prep-20261103/flashnext-maps/maps/pilot-v1",
+  "source_report_sha256": "668b6993758667678d45cea1db48eb5ad748a1e2be22dc579ea8130a6580397d",
+  "scope": "Flash-Next IQ3_S INT8-cache pilot maps; no model-quality/serving-promotion claim",
+  "input_precision": "FP32 dequantized INT8 K; FP32 Q group sums"
+}

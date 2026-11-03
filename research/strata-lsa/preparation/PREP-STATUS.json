@@ -1,0 +1,47 @@
+{
+  "status": "prepared_with_known_upstream_baseline_failures",
+  "created_utc": "2026-11-03T12:04:03.2995071Z",
+  "local_path": "C:/Users/OPERATOR\\output\\lsa-prep-20261103",
+  "onyx_path": "/path/to/lsa-prep-20261103",
+  "upstream_commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+  "upstream_clean": true,
+  "environment_installed": true,
+  "kit_cpu_tests": {
+    "receipt": "receipts/kit-tests-final.log",
+    "passed": 32,
+    "failed": 0
+  },
+  "harness_cpu_smoke": {
+    "status": "passed",
+    "receipt": "receipts/harness-cpu.json"
+  },
+  "real_cpu_process_cleanup": {
+    "receipt": "receipts/runner-process-smoke.json",
+    "timeout_elapsed_seconds": 0.20177187101216987,
+    "status": "passed"
+  },
+  "selected_upstream_cpu_tests": {
+    "receipt": "receipts/upstream-cpu-tests.xml",
+    "passed": 144,
+    "failed": 3
+  },
+  "gpu_runtime_tested": false,
+  "gpu_workload_started": false,
+  "performance_phase": "staged but gated by correctness; known Ward reference failure currently stops timing",
+  "model_support_qualified": false,
+  "service_changes_performed": false,
+  "primary_after_prep": {
+    "state": "active",
+    "receipt": "receipts/primary-after-prep.txt",
+    "pid": 891912
+  },
+  "blockers": [
+    "Unmodified upstream Ward near-copy reference fails for two pool sizes; retained repro and numeric diagnosis",
+    "GPU compile/runtime and Flash-Next/Strata integration are untested"
+  ],
+  "notes": [
+    "B300 serving image is not installed; the isolated cu129 upstream lock differs from its cu130 environment",
+    "No scheduler, watcher, automatic GPU run, or production model change was created",
+    "Window label is provenance, not an authorization token"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "build": "g++ -std=c++17 -O2 -Wall -Wextra -Werror -I include src/lsa/maps.cpp src/lsa/maps_test.cpp -o receipts/lsa_maps_test",
+  "checks": 38,
+  "failed": 0,
+  "gpu_executed": false,
+  "native_map_sha256": "a5a69b217f23d9a2f7995516a91d1baa81e25b7733159ac5c9c1d0aa28c5342c",
+  "source_sha256": {
+    "include/strata/lsa/maps.hpp": "d2888b993f2e5efbafc8b4336f3a836196766573e6bede2ac8b6b2d0b4c23a74",
+    "src/lsa/maps.cpp": "10e3e35f6e0afff2510d0557c8c2a6dabfb117693349787b9f4c5fc927d56668",
+    "src/lsa/maps_test.cpp": "66cab39cd694d9263a0f1d6395591da7b0d89ce2f7bfee617d26f42e9705270c",
+    "tools/export_lsa_maps.py": "bc67b1f81edfc75529a70715d7ed84bbd51c9b178c4aecc157c79c95e046e2ba"
+  }
+}

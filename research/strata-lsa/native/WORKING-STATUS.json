@@ -1,0 +1,9 @@
+{
+  "status": "complete_integration",
+  "checkpoint": "CHECKPOINT.json",
+  "report": "INTEGRATION-RESULTS.md",
+  "production": "paused by user request",
+  "candidate": "opt-in, not promoted; slower on measured workload",
+  "remaining_required_integration_work": [],
+  "future_research": "performance improvements if separately pursued; no automatic run"
+}

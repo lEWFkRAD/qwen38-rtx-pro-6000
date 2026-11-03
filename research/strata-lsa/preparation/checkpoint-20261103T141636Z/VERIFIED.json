@@ -1,0 +1,11 @@
+{
+  "status": "saved_and_verified",
+  "checkpoint": "/path/to/lsa-prep-20261103/checkpoints/flashnext-maps-20261103T141636Z",
+  "files": 487,
+  "bytes": 3421701608,
+  "verified_captures": 96,
+  "verified_prepared_blobs": 192,
+  "manifest_sha256": "00a4f1427fde02a73633b324cd9c8965faf3bcc91e4a7332a15f8e5cea0d1cc1",
+  "production_status": "healthy",
+  "hold": null
+}

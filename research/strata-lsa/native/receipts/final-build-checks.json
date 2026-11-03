@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-11-03T20:49:03.611421+00:00",
+  "cmake_cuda_build": "passed",
+  "cuda_architecture": "120",
+  "cuda_toolkit": "13.0.88",
+  "ctest": "2/2 passed",
+  "native_map_loader_checks": 38,
+  "cache_state_checks": 91,
+  "export_refusal_cases": 12,
+  "tracked_baseline_files_changed": false,
+  "native_library_sha256": "5125ff14286f8b5d1c216b8b514db78f969759930a3ec62623308c30d7065182",
+  "gpu_component_result": {
+    "status": "passed",
+    "cases": 12,
+    "key_max_abs_error": 4.76837158203125e-07,
+    "query_bf16_differing_coordinates": 0,
+    "attention_max_relative_l2": 2.573060804467168e-07,
+    "attention_max_relative_max_scale": 8.820052771750683e-07,
+    "peak_allocated_mib": 62.1025390625,
+    "peak_reserved_mib": 80.0,
+    "graph_layers": [
+      3,
+      47
+    ],
+    "synthetic": [
+      "zero_query_equal_scores",
+      "one_hot_equal_scores",
+      "signed_zero_scores",
+      "zero_and_invalid_projection"
+    ],
+    "finished_at": "2026-11-03T20:47:14.902652+00:00"
+  }
+}

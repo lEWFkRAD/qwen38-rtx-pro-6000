@@ -1,0 +1,236 @@
+{
+  "scope": "isolated native-LSA integration through the retained production API wrapper and matched vision encoder",
+  "production_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "production_contract_sha256": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+  "manifest": {
+    "retained_python": "/path/to/operator/model-tests/strata-20261005/Strata/.venv/bin/python",
+    "runtime": "/opt/onyx-strata-0142/runtime",
+    "sha256": {
+      "/etc/systemd/system/qwen38-flash-next-strata.service": "9130bd693453a67390850c3728b45a66d37dbda33b6a6422bcaa4b386cb00ab1",
+      "/opt/onyx-strata-0142/runtime/serve/server.py": "5d82438ee7619fcf0582c49ddd1c5c7b0c07abb7950cedf62cf0fa2806f2d9a0",
+      "/opt/onyx-strata-0142/runtime/serve/frontend.py": "b21f0413141f87bd08eb084420ddc597b8cbc008b64b14b916db3de365595b4d",
+      "/opt/onyx-strata-0142/runtime/serve/onyx_readiness.py": "bb0c48cd54bc8a6858b3e0358dc81fa23dcec04518734cebfc384f6c6558547c",
+      "/opt/onyx-strata-0150-candidate/strata-vision": "cebdf0f985fe5de5428993835f8d60efab4ecabbde8c723e0f64f47bc24ef0a0",
+      "/path/to/strata-lsa-resume-20261103/build-engine/strata": "de55ec40611992693c36be04b6811b5ec9a6c806a75af95730bb3266eb1fc408",
+      "/path/to/strata-lsa-resume-20261103/receipts/flashnext-learned-native-v1.bin": "a5a69b217f23d9a2f7995516a91d1baa81e25b7733159ac5c9c1d0aa28c5342c"
+    },
+    "vision": {
+      "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+      "gpu": true,
+      "max_tokens": 1024,
+      "mmproj": "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf"
+    },
+    "unit_exec_start_matched": true,
+    "production_pinned_model_metadata": {
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/mtp/rt/dense.bin": {
+        "size": 116099072,
+        "mtime_ns": 1791211801837496350
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/mtp/rt/dense.txt": {
+        "size": 1851,
+        "mtime_ns": 1791211801838417769
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/mtp/rt/draft_vocab.bin": {
+        "size": 425196,
+        "mtime_ns": 1791211802428405277
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/mtp/rt/experts.bin": {
+        "size": 707788800,
+        "mtime_ns": 1791211801251491699
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/conversions.json": {
+        "size": 306,
+        "mtime_ns": 1791211091407792730
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/dense.bin": {
+        "size": 1538035200,
+        "mtime_ns": 1791211091405258524
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/experts.bin": {
+        "size": 50294988800,
+        "mtime_ns": 1791215118532011987
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/index.txt": {
+        "size": 93685,
+        "mtime_ns": 1791211091407539031
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/native_experts.txt": {
+        "size": 3304,
+        "mtime_ns": 1791211091907551187
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/chat_template.jinja": {
+        "size": 9993,
+        "mtime_ns": 1791211091886110655
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/merges.txt": {
+        "size": 3353258,
+        "mtime_ns": 1791211091787261000
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/token_type.json": {
+        "size": 744960,
+        "mtime_ns": 1791211091793261039
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/tokenizer.json": {
+        "size": 541,
+        "mtime_ns": 1791211091794214177
+      },
+      "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/vocab.json": {
+        "size": 5737005,
+        "mtime_ns": 1791211091723260585
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/.gitignore": {
+        "size": 1,
+        "mtime_ns": 1791207414399304129
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/CACHEDIR.TAG": {
+        "size": 191,
+        "mtime_ns": 1791207414343035481
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791207416008614306
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791207416008972019
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208808377681460
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791208808377986391
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208206639771907
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.metadata": {
+        "size": 123,
+        "mtime_ns": 1791208206640132710
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.lock": {
+        "size": 0,
+        "mtime_ns": 1791208207963202676
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208207963560711
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.lock": {
+        "size": 0,
+        "mtime_ns": 1791208208285215868
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208208285554620
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.lock": {
+        "size": 0,
+        "mtime_ns": 1791208208616369199
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208208616726973
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208352887569986
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791208352887870334
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/.cache/huggingface/trees/d4af3be5701549435e0770d625f79dd2def1358f.json": {
+        "size": 4561,
+        "mtime_ns": 1791207414340962449
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": {
+        "size": 483520,
+        "mtime_ns": 1791207416006953386
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "size": 54817524224,
+        "mtime_ns": 1791208807889408739
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.done": {
+        "size": 48,
+        "mtime_ns": 1791211089925698653
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "size": 28800138432,
+        "mtime_ns": 1791208206532440542
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.done": {
+        "size": 48,
+        "mtime_ns": 1791211089926007030
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+        "size": 907543008,
+        "mtime_ns": 1791208352848419485
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/LICENSE": {
+        "size": 3235,
+        "mtime_ns": 1791208207961449518
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/README.md": {
+        "size": 13223,
+        "mtime_ns": 1791208208284451550
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/SHA256SUMS": {
+        "size": 1907,
+        "mtime_ns": 1791208208615453632
+      },
+      "/path/to/operator/model-tests/strata-20261005/model/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+        "size": 907543008,
+        "mtime_ns": 1791208352848419485
+      }
+    }
+  },
+  "private_bind": "127.0.0.1:18022",
+  "gpu_work_started": false,
+  "preserved_features": {
+    "parallel": 8,
+    "fit_max_tokens": true,
+    "reasoning_loop_recovery": "recover",
+    "reasoning_close_retry": true,
+    "sampling": {
+      "experimental_speed_projection": true
+    }
+  },
+  "private_configuration_changes": [
+    "candidate decoder executable",
+    "STRATA_LSA_MAPS",
+    "loopback host/private port",
+    "fresh random authentication; production compatibility keys excluded",
+    "private log destination",
+    "browser disabled"
+  ],
+  "admission": {
+    "private_wrapper_ONYX_STRATA_READINESS_GATE": "0",
+    "production_gate_unchanged": true,
+    "reason": "retained admission paths are deliberately fixed to production, whose owned HOLD remains present",
+    "replacement": [
+      "loopback-only listener and undisclosed random API key",
+      "exact owned production HOLD and inactive production throughout",
+      "exact wrapper/decoder/encoder PID, start ticks, executable and arguments",
+      "eight slots,131072 context,full resident INT8 and24576 experts before inference",
+      "production config/contract hashes unchanged",
+      "known synthetic requests only"
+    ]
+  },
+  "cases": [
+    "authentication rejection",
+    "authenticated health,status,metrics",
+    "plain exact marker",
+    "forced synthetic tool call with exact arguments",
+    "high reasoning arithmetic with a reasoning passage",
+    "fresh synthetic PNG color"
+  ],
+  "limitations": [
+    "standalone private test; no production-readiness receipt or promotion claim",
+    "finite API compatibility canaries; no statistical speed benchmark"
+  ]
+}

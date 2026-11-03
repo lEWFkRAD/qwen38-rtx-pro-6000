@@ -1,0 +1,951 @@
+Calibration document train_technical. Read the following document accurately.
+
+Source document: notation.md
+# Notation
+
+One name per concept, across the paper, the experiments and the code.
+
+A symbol is what prose and math use; a config key is what a yaml file and a command-line override use; a code name is what an identifier in `src/` is called.
+The three are different spellings of one concept and this document binds them.
+It is written from the terminology and knobs of [the paper](https://arxiv.org/abs/2610.42147), which win wherever the two disagree.
+What attention and the indexer both have carries $(attn)$ or $(idx)$.
+A level $\ell$ rides as a subscript - a size at level 0 counts keys, at $\ell \ge 1$ buckets of level $\ell - 1$.
+
+## Case
+
+**Lowercase is a vector or a constant, uppercase a tensor.**
+
+A single token's vector is lowercase, its position a subscript: $x_t$, $k_j^{(idx)}$, $q_i^{(idx)}$ - $i$ a query's position, $j$ a key's, $t$ any token's.
+The per-token matrix of them is uppercase: $X$ is `[T, model_dim]`, $K^{(idx)}$ is `[T, index_dim]` and $Q^{(idx)}$ is `[Tq, index_dim]`.
+A size, a count or a dim is a lowercase constant: $n_w$, $k$, $p$, $d^{(idx)}$, $d_{model}$.
+A term names one of a thing, so its symbol is the lowercase vector - the index key is $k^{(idx)}$ - and the tensor of every one of them is the same letter uppercase.
+A matrix of weights is uppercase too, $W_K^{(idx)}$.
+
+The extents $B$, $T$ and $T_q$ are the one exception: they are shape letters, uppercase by long use, and written as such in shapes.
+
+Python identifiers stay snake_case whatever the symbol's case - `x`, `index_keys`, `index_queries` - and a tensor of many is a plural.
+A docstring or a comment that writes a symbol rather than a code name writes it in its case.
+
+## Dims
+
+A dimension of a vector is a dim, never a width: the index dim $d^{(idx)}$ is `index_dim`, the model dim $d_{model}$ is `model_dim`, and a head's is `head_dim`.
+A term that counts things keeps the paper's word for it, so the beam width $p_\ell$ is a count of node buckets and stays `beam_width`.
+
+## Conventions
+
+A term is singular and a tensor of many is plural, so `index_key` is the term and `index_keys` the `[T, index_dim]` tensor of them.
+A config key is the term's code name, and a knob that varies by level takes one value a level under the same key.
+LSA's knobs are keys of `model.indexer`, and the choices about how a design is computed rather than what it is - `node_centroid_precision`, `decode`, `kernels`, `decode_context_limits`, `projections`, `prefix_reuse`, `spare_contexts` - are keys of `model.serving`.
+`run.name` is a run's label, and the only one.
+`run.host` is the node a run measured on and `run.gpu` the card model it ran on, read from the device, in every record of every kind.
+`across_hosts` is the join's opt-in to parts that differ in host but not in card model, and no join spans two card models.
+
+## Attention
+
+| term | symbol | code name | config key | shape |
+|---|---|---|---|---|
+| query - the attending tokens' queries | $Q^{(attn)}$, a token's $q_i^{(attn)}$ | `query` | - | - |
+| key - the cached tokens' keys, GLM's 512-dim latent | $K^{(attn)}$, a token's $k_j^{(attn)}$ | `key` | - | - |
+| attention input - the residual streams mixed by mHC and normed by the attention block's input norm, what GLM's own indexer reads | $X$, a token's $x_t$ | `x` | - | `[T, model_dim]` |
+| window - the most recent keys, always read | - | `window` | - | - |
+| window size | $n_w$ | `window_size` | `model.indexer.window_size` | - |
+| sink - the first keys, always read | - | `sink` | - | - |
+| sink size | $n_{sink}$ | `sink_size` | `model.indexer.sink_size` | - |
+| top-k - the long-range keys read besides the sink and the window | $k$ | `top_k` | `model.indexer.top_k` | - |
+| report depths - the extra exact reads a report scores beside `top_k`, each against the teacher's stored list | - | `depths` | `run.report.depths` | - |
+
+Attention reads $n_{sink} + k + n_w$ keys.
+`q`, `k` and `v` keep their names as the model's own attention tensors, wherever the code works on them.
+
+## Methods
+
+The names a comparison reports under, in the paper and on the evaluation board.
+
+| term | symbol | code name | config key | shape |
+|---|---|---|---|---|
+| Full Attention - every query reads every key, no indexer | - | `native` on a model without an indexer, `full` in the kernel harness and in Qwen3.8-27B's file and run names | `model.attention` | - |
+| Block Sparse (Flat) - the model's own learned indexer and its own top-k | - | `native` on GLM-5.3-Flash, the `qsa` checkpoint on Qwen3.8-27B | `model.attention` | - |
+| D-LSA (Flat) - the flat design, top level 0 | - | `flat` | `model.indexer.top_level` | - |
+| D-LSA (Tree) - the tree design, its levels growing with the context | - | `tree` | `model.indexer.top_level` | - |
+| Approximate selection - a method whose chosen keys differ from the exact top-k by design, as the Block Sparse (Flat) indexer's fp8 scores do on GLM-5.3-Flash | - | `approximate_selection` | `data.approximate_selection` in a kernel run | - |
+| Block Sparse (Tree) - PISA, a mean-pooled block pyramid searched coarse to fine, a list a key-value head | - | `pisa` | `model.attention` | - |
+| D-LSA (Training-Free) - the flat design reading a map set by PCA of the layer's keys before any distillation step | - | `lsa_flat_pca` in run names | `model.serving.projections` | - |
+
+The paper's D-LSA (Flat) on GLM-5.3-Flash is the flat design with the early budget, `lsa_flat_early_budget` in run names.
+The paper's Block Sparse (Tree) is `pisa` with 8-key leaf blocks and a keep count of 576, which run names spell `pisa_c8`; `pisa` alone is the stock 64-key blocks.
+Block Sparse Attention (Flat) and (Tree) are the full forms of the two rows above.
+The paper's tables shorten them to Block Sparse (Flat) and (Tree), and these docs may keep the short form.
+A record files a run under its attention kind, `attention.kind`: `full`, `block_sparse`, `lsa` or `pisa`.
+A run of `native` takes the kind its checkpoint ships, which the model card states as `attention`, so GLM-5.3-Flash's DSA and the QSA checkpoint are both `block_sparse` and Qwen3.8-27B's own is `full`.
+LSA's designs are told apart by the indexer settings, not the kind.
+The record of a natively trained model, which no server ran, files it under the arm it was trained with - `full`, `lsa`, `pisa`, `nsa` or `window`, where `window` is the sliding window with sinks that native training calls the same.
+Its `attention.config` states `sink_size`, `window_size` and `top_k` for every arm that has them, so the arms read as one set of sizes, beside the arm's own block sizes.
+
+The fixed design, one level, is not reported.
+The paper names how a query searches.
+The tree search is the tree design, in prefill and, decoded with `descend`, in decode.
+The fixed search is the fixed design, in prefill and decoded with `descend`.
+The flat search is the flat design, and any design decoded with `flat`.
+D-LSA (Tree) names the design, not the decode: the tree design may decode with `model.serving.decode` `flat` or `descend`, and `tree` only ever names the design.
+
+## Projections
+
+The index keys and index queries are projected from the indexer's input, `model.indexer.input`.
+The input of LSA, and the default, is the key and query: the key $K^{(attn)}$, GLM's 512-dim latent, for index keys, and every head's query $Q^{(attn)}$ summed for index queries.
+The attention input $X$, $d_{model}$ = 4,096 dims for GLM-5.3-Flash, is a research option.
+
+| input | config value | what is projected | the projections read |
+|---|---|---|---|
+| attention input | `attention_input` | $x_j$ for an index key, $x_i$ for an index query | $d_{model}$, `model_dim` |
+| key and query | `key_and_query` | the key $k_j^{(attn)}$ for an index key, the heads' queries $\sum_h q_{i,h}^{(attn)}$ for an index query | the key's dim, GLM's 512, `kv_lora_rank` |
+
+Under `key_and_query` an index key is $k_j^{(idx)} = \mathrm{normalize}(k_j^{(attn)} W_K^{(idx)})$ and an index query is $q_i^{(idx)} = \mathrm{normalize}(\sum_h q_{i,h}^{(attn)} W_Q^{(idx)})$, each head's query absorbed into the key's space.
+`query_heads` says which heads the sum is over: `all`, the default, every head of the layer, the ranks' sums added across the group, so every rank selects one list; `rank`, the heads a tensor-parallel rank holds, so each rank selects for its own.
+Context parallel serves `all` alone, since attention there is one GPU wide and a rank holds every head.
+Under `attention_input` there are no heads to sum, and `query_heads` stays unset.
+The value names the two terms it reads, each singular as a term is.
+
+| term | symbol | code name | config key | shape |
+|---|---|---|---|---|
+| model dim - dims of the attention input, the model's own | $d_{model}$ | `model_dim` | - | - |
+| key dim - dims of the key, GLM's 512 | - | `key_dim` | - | - |
+| index dim - dims of index keys and index queries alike | $d^{(idx)}$ | `index_dim` | `model.indexer.index_dim` | - |
+| key projection | $W_K^{(idx)}$ | `key_projection` | - | `[key_dim, index_dim]`, `[model_dim, index_dim]` on $X$ |
+| query projection | $W_Q^{(idx)}$ | `query_projection` | - | `[key_dim, index_dim]`, `[model_dim, index_dim]` on $X$ |
+| index key - a token's key projected and unit-normalized, what clustering and scoring see | $k_j^{(idx)}$, every one $K^{(idx)}$ | `index_key`, `index_keys` | - | `[T, index_dim]` |
+| index query - a token's heads' queries summed, projected and unit-normalized, what scores the buckets | $q_i^{(idx)}$, every one $Q^{(idx)}$ | `index_query`, `index_queries` | - | `[Tq, index_dim]` |
+| the file the projections are loaded from | - | `projections` | `model.serving.projections` | - |
+| indexer input - what the projections read, `key_and_query` (the default) or `attention_input` | - | `input` | `model.indexer.input` | - |
+| query heads - the heads an index query sums under `key_and_query`, `all` (the default) or `rank` | - | `query_heads` | `model.indexer.query_heads` | - |
+
+On the research option $X$, an index key is $k_j^{(idx)} = \mathrm{normalize}(x_j W_K^{(idx)})$ and an index query is $q_i^{(idx)} = \mathrm{normalize}(x_i W_Q^{(idx)})$.
+As tensors, $K^{(idx)} = \mathrm{normalize}(X W_K^{(idx)})$ and $Q^{(idx)} = \mathrm{normalize}(X_q W_Q^{(idx)})$, row by row, $X_q$ the rows of $X$ at the query positions.
+$X$ has no heads to sum, so the query projection reads one $x_i$ per position, as the key projection does.
+The projection file holds the two per layer as `<layer>.W_Q_idx` and `<layer>.W_K_idx`, and its `.json` sidecar names the input they read.
+Every GLM-5.3-Flash LSA configuration serves `models/maps/glm53_flash__long-16k-1M-heavy-d2048-lr3e-4-latent.pt`, set once in each evaluation tree's `_base.yaml`.
+`index_dim` is the dim the projections write and `key_dim` or `model_dim` the dim they read - a property of the model and never an index dim.
+
+## Pools
+
+| term | symbol | code name | config key |
+|---|---|---|---|
+| pool - consecutive keys clustered as one, never split across buckets, every key still read | - | `pool` | - |
+| pool size | $n_{pool}$ | `pool_size` | `model.indexer.pool_size` |
+| pool key - what clustering sees of a pool, the sum of its index keys | $k_{pool}^{(idx)}$, every one $K_{pool}^{(idx)}$ | `pool_key` | - |
+
+`pool_keys` is the `[pools, index_dim]` tensor of pool keys, $K_{pool}^{(idx)}$.
+
+## Buckets
+
+| term | symbol | code name | config key |
+|---|---|---|---|
+| bucket - pools read whole when picked | - | `bucket` | - |
+| bucket size - average keys in a bucket | $\bar{n}_b$ | `bucket_size` | `model.indexer.bucket_size` |
+| bucket cap - most keys in a bucket | $n_b^{max}$ | `bucket_cap` | `model.indexer.bucket_cap` |
+| bucket centroid - the normalized mean of its pool keys | $c_b$ | `bucket_centroid` | - |
+| bucket shape - optional spread about a bucket's centroid, a sketch of rank $r$ the score adds as $z$ deviations | $S_b$ | `bucket_shape` | `model.indexer.bucket_shape` |
+| shape rank - directions a shape keeps | $r$ | `rank` | `model.indexer.bucket_shape.rank` |
+| shape deviations - standard deviations a shaped score adds | $z$ | `deviations` | `model.indexer.bucket_shape.deviations` |
+| bucket cache - each bucket's centroid, index table and shape | $B_{cache}^{(idx)}$ | `BucketCache` | - |
+
+A bucket holds at least one pool.
+`bucket_centroids` is the `[m, index_dim]` tensor, `bucket_members` the index table, the `[m, bucket_cap]` int32 positions of each bucket's keys padded with `-1`, and `bucket_sizes` the `[m]` count of keys in each.
+A bucket's keys are its members, never its `slots`, which are the KV cache's.
+The bucket cache is paged by `PAGE_SIZE`, 8,192 keys' buckets to a page - where a prefill segment is cut and a hierarchy grows - which is a constant of the cache and no knob.
+A shape is a `Shape` of `rank` and `deviations` in the settings, or none, and its stored parts are `basis` - the sign directions packed a bit a dimension - `variances` and `floor`, a `ShapeTable` row for row with `bucket_centroids`.
+
+## Clustering
+
+| term | symbol | code name | config key |
+|---|---|---|---|
+| cluster block - consecutive keys whose pools become buckets once it closes | - | `cluster_block` | - |
+| cluster block size | $n_{cluster}$ | `cluster_block_size` | - |
+| cluster algorithm - how a block's pools become buckets | - | `cluster_algorithm` | - |
+
+The cluster block size is the window size, so a key in no bucket yet is in the window.
+It is one value with two names and has no key of its own - `window_size` sets it.
+The cluster algorithm is Ward, the only one a design takes, so it has no key either; `position`, runs of consecutive keys, is a research option of the torch reference.
+
+### Ward
+
+| symbol | meaning | code name |
+|---|---|---|
+| $m$ | buckets a block ends with, $n_{cluster} / \bar{n}_b$ | `bucket_count` |
+| $K^{(idx)}$ | the block's index keys, unit rows | `index_keys` |
+| $K_{pool}^{(idx)}$ | the block's pool keys | `pool_keys` |
+| $k_b^{sum}$ | key sum of bucket $b$ | `key_sums` |
+| $a_b$ | alignment of bucket $b$, $\lVert k_b^{sum} \rVert$ | `alignments` |
+| $\lvert b \rvert$ | keys in bucket $b$ | `bucket_sizes` |
+| $\Delta(b, b')$ | cost of merging buckets $b$ and $b'$ | `merge_costs` |
+| $G$ | the Gram matrix of the key sums | `gram` |
+| $\pi(b)$ | the partner of bucket $b$ with the lowest $\Delta(b, b')$ within the cap; a pair merges when each is the other's | - |
+
+## Hierarchy
+
+| term | symbol | code name | config key |
+|---|---|---|---|
+| level - a layer of buckets, 0 holds keys | $\ell$ | `level` | - |
+| top level - 0 flat, 1 fixed, grows with the context in tree | $\ell^{max}$ | `top_level` | `model.indexer.top_level` |
+| node bucket - a bucket at level $\ell \ge 1$, its centroid averaging every index key beneath it | - | `node_bucket` | - |
+| node bucket size - level $\ell - 1$ buckets a node bucket holds | $n_{b,\ell}$ | `node_bucket_size` | `model.indexer.node_bucket_size` |
+| node cluster block size - level $\ell - 1$ buckets node buckets are formed over, the paper's node block, which holds $n_{cluster,\ell}$ buckets | $n_{cluster,\ell}$ | `node_cluster_block_size` | `model.indexer.node_cluster_block_size` |
+| node bucket shape - a node bucket's shape, formed over every key beneath it | $S_{b,\ell}$ | `node_bucket_shape` | `model.indexer.node_bucket_shape` |
+| beam search - how a query descends the levels | - | `beam_search` | - |
+| node cluster algorithm - how a node cluster block's buckets become node buckets, Ward or, as a research option, `position` | - | `node_cluster_algorithm` | - |
+| node bucket score - how a query ranks a node bucket, by its centroid or, as a research option, `lse` | - | `node_bucket_score` | - |
+| beam width - node buckets a query keeps at level $\ell \ge 1$ | $p_\ell$ | `beam_width` | `model.indexer.beam_width` |
+| start level - the lowest level holding at most $n_{start}$ node buckets, where the beam begins | $n_{start}$ | `start_nodes` | `model.indexer.start_nodes` |
+| node centroid precision - `bf16` or `fp8` | - | `node_centroid_precision` | `model.serving.node_centroid_precision` |
+| the scale an fp8 node centroid is stored with | - | `NODE_CENTROID_SCALE` | - |
+| the hierarchy a cache holds | - | `Hierarchy` | - |
+| the pooled device copy of every request row's node buckets, which a captured decode step reads | - | `GraphTree` | - |
+| node bucket page - node buckets a pooled page of the graph tree holds | - | `NODE_BUCKET_PAGE` | - |
+
+The hierarchy's knobs each take a value a level - `node_bucket_size`, `node_cluster_block_size` and `beam_width` among them - indexed `[level]` in code.
+`node_bucket_shape` is one shape for every level.
+A node bucket not yet in a full node cluster block is scored directly, as the window's keys are read at level 0.
+A node bucket is never a parent, and the buckets it holds are its children.
+"Node" alone is not a name for a node bucket in code: `open_node_buckets`, `closed_node_buckets`, `node_bucket_scores`, `pair_into_node_buckets`.
+`start_nodes` and the node centroids keep the paper's own spelling.
+The start level is the level `start_nodes` names, which `Hierarchy.start_level()` returns.
+
+## Selection
+
+| term | symbol | code name | config key |
+|---|---|---|---|
+| top-p - buckets a query picks, best score first, for expansion | $p$ | `top_p` | `model.indexer.top_p` |
+| early budget - the top-k and top-p of queries before a position, smaller than the default budget, for the flat design | - | `early_budget` | `model.indexer.early_budget` |
+| early position - the first position that reads the default budget | - | `position` | `model.indexer.early_budget.position` |
+| early top-k and top-p - what a query before the early position reads | - | `top_k`, `top_p` | `model.indexer.early_budget.top_k`, `model.indexer.early_budget.top_p` |
+| expansion - the picked buckets read as their keys, best first, until the top-k is full, by threshold or in rank order | - | `expansion` | - |
+| bucket score - how a query ranks a bucket, by its centroid or, shaped, by its estimated max | $s_{i,b}$ | `bucket_score` | - |
+| index list - the key indices a query attends to, shared by all its query heads | $J_i$ | `selected_key_ids` | - |
+
+Query $i$'s score of bucket $b$ is $s_{i,b} = c_b \cdot q_i^{(idx)}$, a scalar, and its scores over every bucket it sees are a vector.
+`expansion` has two modes - by threshold (`expand_by_threshold`), where a bucket scan's listing is read by the score that fills the top-k, and in rank order (`expand_in_order`), where the picked buckets are read best first.
+The index list $J_i$ holds at most $n_{sink} + k + n_w$ key indices.
+Its length is the list width the attention kernels read, which GLM's own config calls `index_topk`.
+`early_budget` is a mapping of `position`, `top_k` and `top_p`, or null for none, and a query at a position below `position` reads its `top_k` and `top_p`, so the list width stays the default budget's.
+`top_p` is also the sampling key under `model.generation.<dataset>`, a different setting in a different block.
+
+## Kernel
+
+How a design is computed rather than what it is, set under `model.serving`.
+
+| term | code name | config key | options |
+|---|---|---|---|
+| node centroid precision | `node_centroid_precision` | `model.serving.node_centroid_precision` | `bf16`, `fp8` |
+| decode | `decode` | `model.serving.decode` | `flat`, `descend` - descend for fixed and tree only, a beam down the levels at every step |
+| shape basis | `shape_basis` | `model.serving.shape_basis` | `sign` |
+| kernels - the language of a kernel both languages have, the same read either way | `kernels` | `model.serving.kernels` | `triton`, `cutedsl` - triton by default; cutedsl runs flat's threshold estimate, bucket scan, candidate scoring and expansion by threshold for unshaped 64-dim bf16 rows, the dense scoring and expansion in rank order of a row the bucket scan may miss, a short prefill's short-context listing, a tree's beam steps - their node shapes too when of rank 2 - its start-level keep and its top-p pick, and a growth's node-bucket clustering and a cluster block's ward clustering of up to 512 pools - every one of them on an H200 or a B300, and any other GPU runs the Triton kernel |
+| decode context limits - contexts a flat decode captures a CUDA graph for besides the server's own | `decode_context_limits` | `model.serving.decode_context_limits` | ascending token counts of at least a page, or none |
+| prefix reuse - take a cached prefix's index where the server caches prefixes, rather than build it again | `prefix_reuse` | `model.serving.prefix_reuse` | true or false, false by default |
+| spare contexts - full contexts of bucket cache pages beyond what the pool and the request table call for, for requests that share a cached prefix in the pool but not in the index | `spare_contexts` | `model.serving.spare_contexts` | a whole number, 0 by default - the running requests when the server caches prefixes and `prefix_reuse` is off |
+| projection file | `projections` | `model.serving.projections` | a path |
+
+Bucket centroids are bf16 only.
+A bf16 cache keeps every centroid in bf16, except where a reader gathers its own per query and fp8 pays - the tree design's node centroids.
+
+## Server settings
+
+A served model carries its settings in one block of its model config, `lsa`, which sglang reads from its own `--json-model-override-args` or from a checkpoint's config.json.
+The block is named for the plugin that reads it, and holds LSA's keys flat - those of `model.indexer` and `model.serving`, without their prefixes - or PISA's, with `selector` set to `pisa`.
+A model config with no `lsa` block is the checkpoint's own indexer.
+A block with only `debug` is the checkpoint's own indexer with its checks.
+
+| term | code name | config key | options |
+|---|---|---|---|
+| settings block - every setting a server needs | `Plugin.BLOCK` | `lsa` | an object of LSA's keys, and `selector`, and `debug` |
+| selector - which design indexes | `selector` | `lsa.selector` | `pisa`, or absent for LSA |
+| debug - the checks and the dump, all off by default | `debug` | `lsa.debug` | an object of the keys below |
+| index check - after every forward, that every decode context-parallel rank holds the same index | `check_index` | `lsa.debug.check_index` | true or false, false by default |
+| PISA check rows - rows of each of a batch's first requests, on every PISA layer, held against the reference search | `rows` | `lsa.debug.check_pisa.rows` | a whole number, 0 for no check |
+| PISA check start - a request is checked once it holds this many keys | `from_keys` | `lsa.debug.check_pisa.from_keys` | a whole number, 0 by default |
+| PISA check steps - prefill forwards, and as many captured decode steps, each layer checks | `steps` | `lsa.debug.check_pisa.steps` | a whole number of at least 1, 6 by default |
+| dump directory - where rank 0 writes what the dumped layers read | `directory` | `lsa.debug.dump.directory` | a path, or null for no dump |
+| dump layers | `layers` | `lsa.debug.dump.layers` | layer numbers, 3, 23 and 43 by default |
+| dump stride - a prefill keeps every row at a multiple of this position | `stride` | `lsa.debug.dump.stride` | a whole number, 4,096 by default |
+| dump lists - whether a prefill writes its lists | `lists` | `lsa.debug.dump.lists` | true or false, true by default |
+| dump all ranks - every rank dumps, under `rank<r>/` | `all_ranks` | `lsa.debug.dump.all_ranks` | true or false, false by default |
+
+### Steps
+
+A step is one kernel of the read, and the name a `kernels` setting, the roofline and its page share for it.
+A step runs in either language; the code name is its CuTeDSL kernel, and the stage is where it sits in a read.
+
+| step | what it does | stage | code name |
+|---|---|---|---|
+| threshold estimate | estimates each row's score threshold from a sample of its bucket scores | prefill scan | `sample_thresholds` - `SamplePass`, `Prepare`, `Threshold` |
+| bucket scan | lists each row's buckets at or above its threshold, in one pass over the centroids | prefill scan | `BucketScan` |
+| candidate scoring | scores each row's listed buckets into keys | prefill scan | `CandidateScoring` |
+| dense scoring | scores every bucket for a row whose bucket scan may have missed one | prefill scan | `score_dense` |
+| short-context listing | lists each row's best buckets of a short prefill's dense scores | prefill scan | `RowListing` |
+| expansion by threshold | reads a listing as keys by the score that fills the top-k | expansion | `ExpansionByThreshold` |
+| expansion in rank order | reads the picked buckets as keys, best first | expansion | `ExpansionInRankOrder` |
+| start-level keep | keeps a tree's best node buckets at its start level and names their children | tree | `StartLevelKeep` |
+| beam step | scores the open node buckets and the carried children of a level and keeps the best | tree | `BeamStep` |
+| top-p pick | picks the top-p buckets from the last beam's children beside the uncovered buckets | tree | `TopPPick` |
+| decode select | scans the paged centroids of a decode step and lists the top-p | decode | `DecodeSelect` |
+| ward clustering | merges a cluster block's pools into buckets | growth | `WardClustering` |
+| node-bucket clustering | pairs each bucket of a node cluster block with its cheapest partner | growth | `NodeBucketClustering` |
+
+### Node-bucket clustering
+
+Node-bucket clustering is the name of the concept and of the step; pairing is one step of its round - pairing the mutual cheapest partners - and not a synonym.
+Growth is the paper's index maintenance, amortised over the tokens it serves.
+A growth runs it in one launch.
+
+| term | meaning | code name |
+|---|---|---|
+| leader | a block's first CTA, which pairs the mutual buckets and lists the rest | - |
+| wide rounds | the rounds searched by all of a block's CTAs | - |
+| tail | the rounds once 64 or fewer of a block's buckets are open, which the leader scans from a cost matrix it scores once | `TAIL` |
+| place | a bucket's position in a block's open list | - |
+| cost key | a merge cost made an ordered int32 with the column packed in, compared as an integer | `pack_cost_key` |
+
+### Ward clustering
+
+A cluster block's ward clustering shares the cost key; its own terms are below.
+
+| term | meaning | code name |
+|---|---|---|
+| merge order | a mutual pair's rank by cost within a round | `merge_order` |
+| cluster CTAs | the CTAs of a thread-block cluster that merge one cluster block | `cluster_ctas` |
+
+## Settings
+
+The code's names for the blocks a design is set by, which the terminology does not name.
+
+| name | holds | yaml |
+|---|---|---|
+| `IndexerConfig` | LSA's knobs - what a design is | `model.indexer` |
+| `ServingChoices` | the kernel knobs - how a design is computed | `model.serving` |
+| `DesignSettings` | a design, both blocks together, refused unless the kernels can serve it | both |
+| `PAGE_SIZE` | the bucket cache's paging unit, 8,192 keys | - |
+| `TOPK_LIMIT` | the most the engine's fused top-k picks, which bounds $p$ and $p_\ell$ | - |
+
+## Site
+
+The values that belong to one machine rather than to a run, kept in one file per site so that no config spells them.
+
+| term | code name | config key | options |
+|---|---|---|---|
+| site - the file of this machine's values, composed into every run | `site` | `site` | the default site, or any file of the site directory, which a process with no `--site` reads from `LSA_SITE` |
+| site root - the shared directory every large artifact lives under | `root` | `site.root` | an absolute path, or one relative to the working directory; `LSA_ROOT` overrides it |
+| site images - the server containers, by name | `images` | `site.images.<name>` | a squashfs path or a docker tag, one per name |
+| site datasets - where read-only datasets that are not ours sit | `datasets` | `site.datasets` | an absolute path; a card names a folder in it as `${datasets:<folder>}` |
+| site hub cache - the Hugging Face home | `hf_home` | `site.hf_home` | a path, `$USER` allowed; `HF_HOME` overrides it, and a site that omits it leaves Hugging Face's own default |
+| site mounts - what the serving container mounts besides the root and the checkout | `mounts` | `site.mounts` | a list of paths, `$USER` allowed, each mounted at its own path; empty for none |
+
+A config names an image as `${site.images.h200}` and a path under the root as `${root:models/maps/map.pt}`, and `site=local` on the command line picks another site for that run.
+The root is `LSA_ROOT` when it is set and the site's `root` otherwise, and a command that takes no config reads the default site, or the one `--site` selects.
+A process with no `--site` reads `LSA_SITE`, which every submitted job exports with its submitter's site.
+
+## Production record
+
+The keys a production record keeps of how many requests it ran together.
+
+| name | holds | where |
+|---|---|---|
+| `concurrency` | the requests the client was asked to keep in flight, 1 for the single-request protocol | `setup` |
+| `max_running_requests` | the request limit the server ran under, which may sit above `concurrency` | `setup` |
+| `wave_in_flight` | the most requests the server decoded together at one context | each point |
+| `wave_complete` | whether `wave_in_flight` equals `concurrency` - false is a short wave | each point |
+| `max_total_num_tokens` | the tokens the KV pool of a server was sized for, which differs between the records of a series | each server |
+| series | the records of one model, mesh, method and `concurrency` whose contexts are disjoint - a curve plotted as one line | - |
+
+## Hardware record
+
+The keys a performance record keeps of the cards a point was timed on, sampled over its timed window.
+A point of either kind holds them as `hardware`, a fact of the point and not of the `setup`, so parts timed on different hosts still join.
+
+| name | holds | where |
+|---|---|---|
+| `hardware` | where a point was timed and what its cards did meanwhile | each point |
+| `host` | the node a card sat on | `hardware`, each card of `telemetry.gpus` |
+| `telemetry` | the sampler's summary, a block per card keyed by its uuid - a kernel point wraps it under this key and a production point holds it as `hardware` itself | `hardware` |
+| `sm_mhz_min`, `sm_mhz_median` | the lowest and median SM clock over the window, in MHz | each card |
+| `power_w_max`, `power_limit_w` | the highest power drawn and the card's limit, in W | each card |
+| `temperature_c_max` | the highest temperature, in C | each card |
+| `power_capped_fraction` | the share of samples at the card's own power limit, which a power-bound kernel holds | each card |
+| `slowdown_fraction` | the share of samples with a reason set besides idle, the application-clocks setting and the power cap - the environment slowing the card | each card |
+| `slowdown_reasons` | each such reason seen, with its share of samples | each card |
+| `throttle_reasons` | every reason seen but idle and the application-clocks setting, the power cap included, with its share of samples | each card |
+
+## Run names
+
+A run's name ends in its card's token, and its id is the name, `__`, and the start's timestamp.
+
+| kind | name | example |
+|---|---|---|
+| production | `<model>_<method>_<mesh>_<gpu>` | `glm53_flash_lsa_flat_tp8_h200`, `qwen38_27b_qsa_dcp8_b300` |
+| kernels | `<model>_kernels_<method>_phase<phase>_<gpu>` | `qwen38_27b_kernels_qsa_phasedecode_b300` |
+| accuracy | `<configuration>_<gpu>` | `glm53_flash_lsa_flat_h200` |
+
+| name | holds | where |
+|---|---|---|
+| `gpu` | the card model as the device reports it, `NVIDIA H200` or `NVIDIA B300 SXM6 AC` - and in a config the card a pooled run is submitted for, as this or its token, since its directory is named before any node is reached | `run.gpu`, in every record and every config |
+| gpu token | the card's short lowercase name, `h200` or `b300`, which is last in a run's name | `gpu.TOKENS` |
+| mesh token | `tp<n>` for tensor parallel, `cp<n>` for context parallel, prefill and decode together, the paper's CP of PCP and DCP, `dcp<n>` for decode context parallel alone, with `pp<n>` after it for a pipeline of more than one stage - `tp8`, `cp8`, `dcp8`, `tp8pp2` | a production name |
+
+The launch reads the device and refuses a run submitted for another card.
+$N$ is the ranks of one parallel group, the `<n>` of a `tp`, `cp` or `dcp` token.
+A record from before `run.gpu` is read as the card its serving image's family was built for, and every record that does so says it in its edits.
+
+## Training
+
+Sparse training is the whole model trained under sparse attention after the distillation, which older entries call adapt, stage 2 or adaptation.
+It is not native training, which starts from random initialisation.
+
+| symbol | concept | config key |
+|---|---|---|
+| $\tau$ | loss temperature, calibrated per layer | `model.space.tau` |
+| $\mathcal{R}_i$ | every preceding key of query $i$ outside the sink and the window, the keys it can select | - |
+| $A_{i,j}$ | the frozen layer's attention of query $i$ on key $j$, each head's softmax over $\mathcal{R}_i$ averaged over its $n_h$ heads | - |
+| $\hat{A}_{i,j}$ | the softmax of $q_i^{(idx)} \cdot k_j^{(idx)} / \tau$ over $\mathcal{R}_i$, which the distillation fits to $A_{i,j}$ | - |
+| - | the file the map is loaded from | `model.space.init` |
+| $d^{(idx)}$ | the dim the map writes | `model.indexer.index_dim` |
+| - | what the loss measures the index score against, `dense` by default | `run.objective.target` |
+| - | the target `dense_full`, the teacher's attention over every readable key - each head's softmax over them, averaged over heads, never truncated, so `target_depth` is refused with it | `run.objective.target` |
+| - | the fp32 cells of one key chunk's logits when `dense_full` is computed, `CHUNK_CELLS` | - |
+
+`tau` is the loss temperature and nothing else.
+A run's `model.indexer.input` defaults to `key_and_query`, where the trainer computes the key and the summed query from $X$ and the map reads `key_dim`.
+Under `attention_input`, a research option, the map is of $X$ and reads $d_{model}$, `model_dim`.
+`lsa distill export --input key_and_query` re-exports, tensors untouched, a map trained on the key latent before the switch to $X$, its sidecar recording the input.
+
+| term | code name | config key | shape |
+|---|---|---|---|
+| what the dense target does with the mass beyond `target_depth`, `truncate` to drop it and renormalise or `rest_bucket` to keep it as one entry | `tail`, `Tail` | `run.objective.tail` | - |
+| a kept key's share of the teacher's whole attention - its head-summed mass over the query head count | `share` | - | `[R, T]` fp32 |
+| the share the kept keys do not hold, which the rest bucket is a target for | `rest` | - | `[R]` fp32 |
+| closed-block rule - a key is visible to a query, and carries target mass, only once the $n_{closed}$-key cluster block it sits in has closed before the query's own, past the sinks, and a query row with no closed block behind it is not trained on | `closed_block`, `closed_block_keys` | `run.objective.closed_block` | - |
+| index-vector cache - a target cache holding each position's index key and each query row's index query as unit rows in the latent bases, in place of $X$, written under the closed-block rule | `Cache.INDEX_FIELDS`, `index_keys`, `index_queries` | read when `data.root` names one | `[T, key_dim]`, `[Q, key_dim]` fp16 |
+
+The closed-block rule is the visibility a serving read has, since a query sees the sink, the window and the buckets of every cluster block that closed before its own.
+An index-vector cache carries the rule in its file and a run needs no key for it, while an $X$ cache or a key-and-query cache has it laid over by `closed_block`.
+It reads the cached top-k ranking, so it applies to the targets read off that ranking alone.
+
+## Native training
+
+Native training is training from random initialisation with the sparse attention in the model from step one.
+It is a training regime, and is not the native arm, a model's own sparse attention such as GLM's indexer, which the table of methods above lists as `native`.
+
+| symbol | concept | code name | config key |
+|---|---|---|---|
+| - | which attention the full-attention layers run - `dense`, `window` or `multires` | `kind` | `attention.kind` |
+| - | N-LSA - the flat design trained natively with no indexer, clustering the attention's own keys; the paper reports it beside D-LSA (Flat), which is distilled | `lsa` | `attention.kind` |
+| - | whether unselected buckets enter the softmax through their summaries | `coarse` | `attention.coarse` |
+| - | whether the summaries and the estimated mass carry the within-bucket variance | `variance` | `attention.variance` |
+| - | how a closed block is cut into buckets - `ward`, `chunks` or `random` | `partition` | `attention.partition` |
+| - | how a query orders the candidates - `mass`, `error` or `cosine` | `rank` | `attention.rank` |
+| - | the data-parallel degree that shards the parameters, `-1` for every rank the other degrees leave | `dp_shard` | `run.dp_shard` |
+| - | the data-parallel degree that replicates the sharded model | `dp_replicate` | `run.dp_replicate` |
+| $\mu_b$, $\bar{v}_b$ | the mean key and the mean value of bucket $b$ | `key_means`, `value_means` | - |
+| $\sigma_b^2$ | the variance of the bucket's keys per dimension | `variances` | - |
+| $\hat{s}_{ib}$ | the estimated log mass of bucket $b$ for query $i$ | `estimated_log_mass` | - |
+
+The sizes are LSA's own - `window_size`, `sink_size`, `top_k`, `top_p`, `pool_size`, `bucket_size`, `bucket_cap` - under `attention`, with the block the flat design clusters spelled `block_size` as the cluster block size.
+A bucket with a key in the window or the sinks is read in full, and is not a candidate.
+
+### The arms
+
+`attention.kind` takes `dense`, `window`, `multires`, `lsa`, and with the arms ported from the paper's trainer, `nsa`, `pisa` and `dsa`.
+A window with sinks is `window` with `sink_size` above zero.
+The paper's native-training methods are these arms: Full Attention is `dense`, SWA is `window`, NSA is `nsa`, PISA is `pisa` and N-LSA is `lsa`.
+The paper's trainer's QSA layer is not a lsa name, since QSA is Qwen3.8's own block sparse attention: its top-$k$ read is `dsa` and its bucket read is `lsa` with an indexer.
+
+| symbol | concept | code name | config key |
+|---|---|---|---|
+| - | what an arm's index vectors are - `none` the model's own position-free query and key, `key_and_query` a projection of the layer's query and key heads, `attention_input` a projection of the layer input, `sliced_key_and_query` a projection of each head's last index dims | `index_input` | `attention.index_input` |
+| - | how an indexer is trained - `none`, `kl` against the layer's attention, `ste` by the language-model loss through a straight-through score | `index_training` | `attention.index_training` |
+| $d^{(idx)}$ | the dim an indexer writes | `index_dim` | `attention.index_dim` |
+| - | the leading index dims that are rotated | `index_rotary_dim` | `attention.index_rotary_dim` |
+| - | how the index vectors are normalised - `rms` with a learned weight, `l2` to unit rows | `index_norm` | `attention.index_norm` |
+| - | how a learned LSA query projection reads heads - `sum` the heads before projection or `concat` their full concatenation | `index_query_heads` | `attention.index_query_heads` |
+| - | whether the straight-through bias includes recent keys outside the sinks | `ste_window` | `attention.ste_window` |
+| - | whether an LSA run opts into the sparse read kernel instead of the original read | `fast_read` | `attention.fast_read` |
+| - | whether unread LSA bucket members contribute summaries during training | `summaries` | `attention.summaries` |
+| - | how a bucket is ranked from the query heads of a group - `sum` into one index query, `max` the best score of any head | `query_head_reduction` | `attention.query_head_reduction` |
+| - | whether index inputs are detached from the language model; with bias, KL uses a separate detached reprojection | `index_detached` | `attention.index_detached` |
+| - | whether the attention query, key, value and output projections have additive biases | `attention_bias` | `model.attention_bias` |
+| - | whether the indexer's score is added to the attention logits | `index_bias` | `attention.index_bias` |
+| - | the initial learned multiplier of the indexer bias | `index_bias_scale_init` | `attention.index_bias_scale_init` |
+| - | whether each head's indexer score passes a rectifier | `index_relu` | `attention.index_relu` |
+| - | the heads an indexer scores with | `index_head_count` | `attention.index_head_count` |
+| - | the queries a KL is taken at, sampled per sequence | `kl_query_count` | `attention.kl_query_count` |
+| - | the weight of the indexer's loss | `index_loss_weight` | `attention.index_loss_weight` |
+| - | whether the KL covers the selected keys alone | `kl_on_selection` | `attention.kl_on_selection` |
+| - | the step a `dsa` read turns sparse, dense until then | `sparse_start_step` | `attention.sparse_start_step` |
+| - | the compression block, in keys, of `nsa` | `compress_block_size` | `attention.compress_block_size` |
+| - | the keys between compression blocks | `compress_stride` | `attention.compress_stride` |
+| - | the hidden dim of `nsa`'s compression network | `compress_hidden_dim` | `attention.compress_hidden_dim` |
+| - | the selection block of `nsa`, in keys | `select_block_size` | `attention.select_block_size` |
+| - | the blocks `nsa` selects for a key-value head | `select_block_count` | `attention.select_block_count` |
+| - | the keys of a `pisa` leaf block | `leaf_block_size` | `attention.leaf_block_size` |
+| - | the blocks of one `pisa` level pooled into one of the next | `branching` | `attention.branching` |
+| - | the blocks `pisa` keeps at every level | `level_block_count` | `attention.level_block_count` |
+| - | the newest `pisa` leaf blocks always read | `local_block_count` | `attention.local_block_count` |
+
+`block_size` stays the cluster block size, so the blocks of `nsa` and `pisa` carry their arm's own name.
+`window_size`, `sink_size`, `top_k`, `top_p` and `index_dim` keep their meanings, and `index_keys` and `index_queries` are the index space whichever way an arm builds it.
+The key budget of an arm is the keys a query reads at fine resolution, `top_k` for `dsa` and `lsa`, and `nsa`'s and `pisa`'s selected blocks times their size.
+
+### Data
+
+| term | concept | code name | config key |
+|---|---|---|---|
+| - | the corpus a run trains on, by its card - text, tokenized rows or token shards | `corpus` | `data.name` |
+| - | corpora a run draws from by weight, replacing `data.name` as what it trains on | `mixture` | `data.mixture` |
+| - | one corpus of a mixture and its weight | `MixtureChild` | `data.mixture[].name`, `data.mixture[].weight` |
+| - | how documents are laid into sequences - `concatenate` joins them with the end-of-document id, `span` cuts each alone | `packing` | `data.packing` |
+| - | the streams a rank reads a batch at a time in turn, as a data loader's workers do | `readers` | `data.readers` |
+| - | the random seed of the unit order and of the mixture's draws | `seed` | `data.seed` |
+| - | the share of documents held out by the hash of their id | `held_out_fraction` | `data.held_out_fraction` |
+| - | the ids after the sequence that its last label needs, so a window is `seq_len` plus one | `window` | - |
+| - | the independently readable piece of a corpus - a shard, a row group, a sample | `unit` | - |
+| - | what a unit yields at a time - a slab of ids, or a few documents' text | `record` | - |
+| - | the ids left at the end of a record that the next continues from | `carry` | - |
+
+LongDocs is the collection of long documents the distillation and the training draw from.
+It has four terms: a source is one collected set of documents, a domain a group of sources (books, academic, code, agentic, government, parliament, discussion), a document one text of a source, and a sequence a contiguous part of one document at one sequence length, never joining two documents.
+The mix is the tokens the distillation trains on.
+
+### The models
+
+| symbol | concept | code name | config key |
+|---|---|---|---|
+| - | which model - a Qwen3.5 size, `0.8B-gpt2` the 0.8B hybrid at the GPT-2 vocabulary with tied embeddings, or `340M-gpt2` nineteen blocks of plain attention | `flavor` | `model.flavor` |
+| $n_h$ | the query heads of a full-attention layer | `query_head_count` | `model.query_head_count` |
+| $n_{kv}$ | the key-value heads of a full-attention layer | `kv_head_count` | `model.kv_head_count` |
+| $d_h$ | a head's dim | `head_dim` | `model.head_dim` |
+| - | the leading head dims the model rotates, none for a position-free head | `rotary_dim` | `model.rotary_dim` |
+
+A head shape is the flavour's own until a run names one, and the arms read whichever shape the model gives them.
+The multi-query shape is eight query heads over one key-value head of 128 dims and `rotary_dim` 0, and is the `m8` of an arm's name.
+The GPT-2 vocabulary is 50,257 ids with its rows padded to a multiple of 64.
+
+### Schedule
+
+| term | concept | code name | config key |
+|---|---|---|---|
+| - | which parameters AdamW decays - every parameter, or matrices without an explicit exclusion | `weight_decay_scope` | `run.optim.weight_decay_scope` |
+| - | a parameter's explicit exclusion from matrix-only weight decay | `_no_weight_decay` | - |
+| schedule | the learning-rate trajectory: WSD, or warmup followed by cosine decay | `schedule` | `run.optim.schedule` |
+| WSD | warmup, a stable stage at the peak learning rate, then a decay | - | `run.optim` |
+| decay | the final stage of WSD, taken at the context a run is to be read at | `decay_ratio` | `run.optim.decay_ratio` |
+| - | the shape of the decay: linear, one minus the square root, or cosine | `decay_shape` | `run.optim.decay_shape` |
+| - | the final learning rate as a fraction of its peak | `min_lr_factor` | `run.optim.min_lr_factor` |
+| decay start | the checkpoint at the last step of the stable stage, which every decay branches from | `decay_start` | `run.checkpoint.decay_start` |
+| - | BF16 autocast compute with FP32 master parameters, norm gains, recurrent parameters and accumulated gradients | `autocast_bf16` | `run.runtime.autocast_bf16` |
+| - | the tokens of every rank in one optimiser step, made up by gradient accumulation when a pass of every rank reads fewer | `tokens_per_step` | `run.optim.tokens_per_step` |
+| - | the model card whose tokenizer a run uses, the corpus's own unless named | `tokenizer` | `model.tokenizer` |
+| - | the checkpoint a run's weights start from, the decay start of a trunk | `init_from` | `run.init_from` |
+
+A decay at the pretrain's own context is the control for a decay at a longer one.
+
+## Extents
+
+| symbol | concept | code name |
+|---|---|---|
+| $B$ | batch | `batch_size` |
+| $T$ | key count, the context | `key_count` |
+| $T_q$ | query count | `query_count` |
+| $n_h$ | query heads | `query_head_count` |
+| $n_{kv}$ | key-value heads | `kv_head_count` |
+| $d_h$ | a head's dim | `head_dim` |
+
+`B` also subscripts $B_{cache}^{(idx)}$, which is a name and not an extent.
+An `IndexerConfig` argument or attribute is `config`.
+In code a token position is a named index such as `positions` or `query_start`, never `t`; in math a token's subscript is $t$, a query's $i$ and a key's $j$.
+
+## Probes
+
+A probe is a query whose answer is known, so a selection is scored on the keys it was meant to find rather than on the teacher's mass.
+
+| term | code name | config key | shape |
+|---|---|---|---|
+| the mode that takes query positions and targets off a prepared prompt's row | `Probe.RULER` | `data.queries.targets` | - |
+| which kind of probe a query is - `question`, `answer` or `control` | `query_kind` | - | `[Q]` int8 |
+| the keys a probe is meant to find, `-1` padded | `target_key_ids` | - | `[Q, N]` int32 |
+| the keys of the line the needle sits on, `-1` padded | `line_key_ids` | - | `[Q, L]` int32 |
+| the rows of each task a prepared selection reads | `source_rows` | `data.prepared.source_rows` | - |
+| an offline arm - a reference read or PISA's selection, scored beside the served designs | `ArmConfig` | `run.report.served.arms` | - |
+| the share of a probe's long-range target keys a read holds | `target_held` | - | `[R]` fp32 |
+| the vectors an arm scored a query against | `scored_vectors` | - | `[R]` int64 |
+| the space a PISA arm reads - the model's own keys and queries, or a design's index space | - | `run.report.served.arms[].space`, `attention` or `index` | - |
+| the model's own rotated keys, which a probe extraction keeps under `data.queries.attention` | `attention_keys` | `data.queries.attention` | `[T, kv_head_count, head_dim]` bf16 |
+| each head's own rotated query at a probe | `attention_queries` | `data.queries.attention` | `[Q, query_head_count, head_dim]` bf16 |
+| the layer's softmax scale, recorded beside them, and beside `key` and `head_queries` for the `dense_full` target | `attention_scale` | - | - |
+
+A PaperTrail sample is read under four controls, named by the task suffix on disk.
+
+| control | task suffix | context |
+|---|---|---|
+| question alone | `C1` | the question alone |
+| hosts without insertions | `C2_hosts` | the host papers, nothing inserted |
+| fabricated papers and insertions | `C3_synthetic` | the fabricated papers with the insertions |
+| background alone | `C4_background` | the background papers only |
+
+The suffixes are task names on disk and stay as they are.
+
+## Dense mass
+
+The dense mass is what every head pays all causal keys, kept for the rows of a document's tail so that a selection's share of it can be read off afterwards.
+A dump of it is one file per window and layer, and its fields, shapes and layout are in the extraction module's docstring.
+
+| term | code name | config key | shape |
+|---|---|---|---|
+| the dump of it in place of the layer files | `Mass` | `data.mass` | - |
+| the keys a shared set keeps | `top` | `data.mass.top` | - |
+| the key counts each head's own mass is taken at | `head_tops` | `data.mass.head_tops` | - |
+| the keys of the largest all-causal mass, each head's softmax summed and divided by the head count | `shared_key_ids` | - | `[Q, top]` int32 |
+| their mass | `shared_key_mass` | - | `[Q, top]` fp32 |
+| which of them are sinks or window keys | `shared_key_flags` | - | `[Q, top]` uint8 |
+| the mass on the sinks, summed over heads and divided by the head count, and each head's own | `sink_mass`, `head_sink_mass` | - | `[Q]`, `[Q, query_head_count]` fp32 |
+| the mass on the window outside the sinks, the same | `window_mass`, `head_window_mass` | - | `[Q]`, `[Q, query_head_count]` fp32 |
+| the mass each head's own strongest keys hold | `head_top_mass` | - | `[Q, len(head_tops), query_head_count]` fp32 |
+| each head's log-sum-exp of its scaled logits over the causal keys | `head_lse` | - | `[Q, query_head_count]` fp32 |
+| the keys and mass the extraction's own target would keep, softmaxed per head over the readable keys and summed | `cache_key_ids`, `cache_key_mass` | - | `[Q, top]` int32, fp32 |
+| every head's query folded into the key's space | `head_queries` | - | `[Q, query_head_count, key_dim]` bf16 |
+| a document's windows read again at every shorter length from the same first token | - | `data.tokenized.nest` | - |
+
+## Kept
+
+The latent index space - `core/index_space.py`, `LatentMetric`, `regroup_latent` - stays: it reads the key and the heads' queries offline, the input of LSA.
+
+## Open
+
+Names the terminology leaves undecided:
+
+- the per-level knobs - `node_bucket_size`, `node_cluster_block_size`, `node_bucket_shape` here, `bucket_size[level]`, `cluster_block_size[level]`, `bucket_shape[level]` in the terminology's code column;
+- `model.serving` and `ServingChoices` against the terminology's "Kernel";
+- the extents $B$, $T$, $T_q$ as uppercase constants;
+- `PAGE_SIZE` beside sglang's own `page_size`.
+
+## Deferred
+
+These are in the paper and not in this implementation, and they come back as knobs later.
+
+An fp8 bucket cache stores every centroid in fp8.
+It has its own plan and brings `centroid_precision` back with it.
+
+
+Source document: training.md
+# Training
+
+Learned LSA distils the indexer while the language model is frozen, and this is how to run that.
+
+```bash
+uv sync --extra training
+eval "$(lsa env)"   # LSA_ROOT and the offline HuggingFace caches, as a job has them
+```
+
+One extra installs the whole training path, and B300 (Blackwell) nodes add `--extra blackwell` for the FlashAttention-4 kernels.
+Every command below submits slurm jobs and runs nothing where it is typed - `--dry-run` prints the runs and submits nothing, and `--gpus`, `--cpus`, `--mem-gb`, `--hours`, `--partition` and `--reservation` change what a job asks for.
+A `<partition>` or `<reservation>` in an example is a placeholder: your cluster's own values are the `slurm:` keys of its site file, `configs/site/<site>.yaml`, and the site's `launcher` decides whether a job is submitted through sbatch or runs on this machine.
+[development.md](development.md#torch) is what torch resolves from and why.
+
+Native attention needs none of this, and neither does anything that serves a map already trained; [evaluation.md](evaluation.md) is how to run those.
+
+## Distilling the indexer
+
+One linear map per layer, a key projection and a query projection, carries the key and query the indexer reads into the narrow space the indexer clusters and scores in.
+That narrow space is the whole index: Ward clusters it, the centroids are means of it and the scan scores against it.
+
+### On GLM-5.3-Flash
+
+GLM's recipe trains on a balanced dataset of lengths from 16k to 1M.
+Prepare the tokenized corpus, extract targets with its configured document selection, then train.
+
+```bash
+lsa data prepare glm53_flash
+lsa distill targets configs/data/targets/glm53_flash/long_16k_1m_heavy_key_and_query.yaml \
+    --reservation <reservation> --mem-gb 175 --workers 8
+lsa distill train configs/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048.yaml \
+    --shards 11 --mem-gb 300 --hours 12 --partition <partition>
+lsa distill export $LSA_ROOT/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048 \
+    $LSA_ROOT/models/maps/glm53_flash__long-16k-1M-heavy-key-and-query-d2048.pt
+```
+
+The indexer reads GLM's key latent and every head's query summed, which is what the server serves.
+The extraction keeps only those - `run.input: key_and_query`, a fifth of the attention input `x` on GLM - and the run trains a map of them, so `lsa distill export` writes the map the server reads.
+
+The extraction's `data.selection` declares which documents and windows it reads, balanced by length and domain.
+Extraction records the resolved selection as `selection.json` inside its target collection before loading weights.
+Every length bucket holds the same tokens, and inside a bucket every domain holds the same share wherever it has documents that long.
+`configs/data/targets/` holds extraction configs with their document allocation; `configs/training/distillation/` holds runs that train and score on those targets.
+`run.collection` names the extracted collection, and the trainer names the extraction cache root as `data.root`.
+Existing artifact directories retain their historical names even when a config has been renamed.
+
+An extraction that names `run.stages` runs one span of the stack per job, each on one card, and `lsa distill targets` submits every span, or the one `--stage s` names.
+`--workers` submits that many jobs per span, and several go faster, because each claims the documents it reads.
+An extraction without stages loads the whole stack, and `--device auto` with `--gpus` spreads it over the node as a transformers device map, each layer's vectors built where that layer's weights already are.
+`configs/data/targets/glm53_flash/published.yaml` is the older 64k-only extraction.
+
+The model does not fit one card, so GLM distils from a cache rather than online: one extraction pass, then any number of runs.
+
+The index space is the key and query the layers read: the key latent and the heads' queries summed on GLM, the position-free part of the logit on Qwen.
+`configs/data/targets/glm53_flash/long_16k_1m_heavy_key_and_query.yaml` extracts it, and `lsa distill targets` on that config is how the cache is reproduced.
+
+The attention input `x` is a research option: `model_dim` dims a token, with no heads to regroup and no rotary to undo.
+Its run is `configs/training/distillation/glm53_flash/long_16k_1m_heavy_x.yaml`, which reads a cache of `x` that no shipped extraction config writes any more, and no shipped evaluation config serves it.
+
+```bash
+lsa distill train configs/training/distillation/glm53_flash/long_16k_1m_heavy_x.yaml --shards 11 --mem-gb 300
+```
+
+### On Qwen3.8-27B - the teacher online
+
+A cache of `x` for Qwen3.8-27B over the heavy mix would be some 60 TiB, so its run reads none: `data.teacher` names the extraction config, and the frozen model reads the documents the run draws as it trains.
+
+```bash
+lsa data prepare qwen38_27b --sources <source>          # the heavy mix's corpus in Qwen's ids, a job a source
+lsa distill train configs/training/distillation/qwen38_27b/long_16k_1m_heavy_key_and_query_d2048.yaml \
+    --gpus 8 --cpus 64 --mem-gb 1200 --hours 24 --partition <partition>
+```
+
+The maps train on the first card and a copy of the model reads documents on each of the others, every layer of a document at once, into the same pool a cache feeds.
+The documents, their query positions and their targets are the extraction's own, so the targets are the ones `lsa distill targets` would have written.
+A run is one job rather than a shard a layer, because a shard would read every document again for its own layers.
+
+```bash
+lsa distill train configs/training/distillation/qwen38_27b/long_16k_1m_heavy_key_and_query_d2048.yaml \
+    --gpus 8 --nodes 2 --cpus 64 --mem-gb 1200 --hours 12 --partition <partition>
+```
+
+`--nodes n` spreads the teacher rather than the layers: the trainer stays on the first node's first card, and every other card of every node holds a copy of the model.
+A copy on any node takes the next document no other copy has claimed, so each node reads a disjoint share of the documents, and the copies on the other nodes leave what they read under the run directory's `teacher_staging/` for the trainer to load.
+The targets are the same whichever node reads a document, and the pools meet the documents in the same order.
+`data.teacher.staging_gb` bounds what waits on the shared disk; past it the other nodes stop claiming until the trainer catches up.
+The held-out sets are read once when the run starts and kept in host memory, which is why the long ones name a `limit`.
+
+```bash
+uv run python -c "from huggingface_hub import snapshot_download; snapshot_download('kernels-community/flash-attn3', repo_type='kernel', revision='3c1451f803c146c54222305a8c350f7f46bb5135')"
+```
+
+Qwen's full-attention layers read a prefill chunk through FlashAttention-3 off the kernel hub, its 4 key heads read by their groups of query heads as they are, at about twice the rate of one key head expanded a group - a 1M document in some 560 s on one card rather than 1,080.
+A job may have no network, so the kernel is fetched into the HF cache once, from a machine that has it, at the revision the code pins - the whole repository, 7.3 GB, because the hub loader offline resolves the whole snapshot before it picks the build for this torch.
+An extraction and the online teacher read through the same kernel and agree bit for bit; a cache written before the kernel changed does not.
+
+The model card carries the rotation the model is served under - YaRN to 10M as `rope_parameters` - and every load applies it, so the targets are the attention the served model pays.
+On Qwen the key and query input is the position-free part of the logit: each key head's unrotated dims side by side, and each group's query heads summed onto the slice of the key head they read.
+
+### The model is frozen
+
+One pass per document extracts what the objective and the metrics need - the key and query at every position (the attention input `x` for the research option), and the attention the teacher actually paid to the keys a whole-bucket read may see - so a run loads in minutes rather than holding a model for the whole of training.
+The extraction drives the model through its [adapter](adapters.md), so a checkpoint an adapter exists for is one this extracts from.
+
+The objective is per-key KL to the teacher.
+A loss aimed at the bucket score or the served read is a dead end.
+The loss shapes the space and Ward shapes the partition.
+What comes out is the indexer an injected checkpoint carries, not a trained language model.
+
+### Configuring a run
+
+A run is a yaml file with the same sweep and the same dotted overrides an experiment has.
+
+```bash
+lsa distill train configs/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048.yaml run.optim.steps=0  # the untrained report
+```
+
+```yaml
+sweep:
+  run.optim.lr: [0.0003, 0.001]     # one run per rate
+```
+
+A run is three blocks and nothing else: `model` is what is trained - the model card, the indexer and the learned space - `data` is which targets it reads and which of their documents train and score it, and `run` is how - the name, the output, the objective, the optimiser, the reports and wandb.
+`run.output` has no default, so a file that does not say where it writes is refused.
+Each model's `base.yaml` sets it once, `${root:training/distillation/<model card>}` under the shared root, the same directory names `configs/training/distillation` has, along with `model.name`, and every run in that directory names `base` first in its `defaults`.
+A run writes to `<run.output>/<run.name>`, so a config's run directory is its name - `long_16k_1m_heavy_key_and_query_d2048_seed1` for seed 1 of `long_16k_1m_heavy_key_and_query_d2048.yaml` - and never sits inside a checkout a worktree removal can take with it.
+Its `meta.json` names the config file, its point of the sweep and the command-line overrides, and the full commit with whether the checkout had uncommitted edits.
+A swept key pinned on the command line narrows the sweep to that value, so `run.optim.seed=1` is the one run named `_seed1`.
+
+### Training a run in shards
+
+```bash
+lsa distill train configs/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048.yaml --shards 11
+```
+
+A run's layers share nothing, so they can train in separate jobs, each holding only its own share of the targets.
+A shard keeps the run's step numbering and draws every step off the run's one generator, so it learns for its layers the maps the whole run would.
+`--shards n` submits the shards as an array job and a join that waits on it, which merges the maps and takes each report as the layer-weighted mean.
+A finished shard is skipped, so the same command after a failed join trains nothing and joins again.
+
+### Stopping and resuming a run
+
+```bash
+lsa distill train <config>            # again, into the same run.output - continues from the last resume state
+lsa distill train <config> --force    # starts it over
+```
+
+Every report writes `resume.pt` beside its `maps_step<N>.pt`: the maps, the optimiser, the RNG, each layer's pool plan and how far its steps are, and the wandb run.
+slurm warns a job 90 s before a preemption or its time limit, and the run then stops at the next step boundary, writes the same state at the step it reached, and is requeued to continue from it.
+A run that died without warning continues from its last report.
+
+A resumed run trains exactly the steps an uninterrupted one would - the same documents in the same order, the same query rows, the same maps bit for bit.
+Off the online teacher too: the order is the run's plan rather than the order the copies finished in, and a document some step had already trained on is read again and comes out the same.
+That re-read is the cost of a resume - every document a pool held, up to a window of 8 a layer.
+A state written under another configuration is refused rather than resumed, since the plan it holds is another run's.
+
+### Scoring a map at another read
+
+```bash
+lsa distill rescore configs/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048.yaml \
+    'model.space.init=${root:training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048/maps.pt}'
+```
+
+For the per-key objective, the read's settings - the bucket size, the top-k and the pool size - change what a report measures without changing what a map is.
+Rescoring scores maps that are already trained, named by `model.space.init`, over a grid of reads, with no gradient and no training document loaded.
+The targets' visibility rule is the one thing it cannot change, and the loader refuses a grid that disagrees with the targets.
+
+### Scoring an exported map's served read
+
+```bash
+lsa distill served-read configs/training/distillation/glm53_flash/long_16k_1m_heavy_x_dense_on_native_served.yaml \
+    --shards 8 --reservation <reservation>
+```
+
+The served read of every design the config lists, the exact read at each design's budget and GLM's own picks, on the same rows of every held-out document and layer, a GPU a shard.
+`model.space.init` names the exported map, and the picks are the `_native.pt` sidecars `lsa distill native-picks` writes.
+Each (document, layer) is a record, and the last shard writes the tables by read, layer and length beside them, with the cells where a design reads more than 0.02 of mass under native flagged; `--tables` rewrites them, and `--documents` narrows the documents to a list.
+
+### Scoring the RULER probe set
+
+```bash
+lsa distill served-read configs/training/distillation/glm53_flash/ruler_probes_served_512k.yaml --shards 8 --partition <partition>
+lsa distill served-read configs/training/distillation/glm53_flash/ruler_probes_served_512k.yaml --tables
+```
+
+The same command over a probe cache - `ruler_probes_128k`, `512k` or `1m`, written by `lsa distill targets` - scores what each read holds of the keys a probe was meant to find.
+A needle task's rows are its last 32 positions, aimed at the needle's value tokens and at its sentence.
+A cwe row's are its list's items, aimed at that word's earlier occurrences, and its last 32 positions, aimed at nothing.
+A target in the window or the sinks is left out of every count, because every read holds them, so `target_held`, `target_any` and `line_held` are over the long-range keys alone.
+
+`run.report.served.arms` names the offline arms read beside the served designs.
+A `reference` arm builds the buckets and node bucket levels of a served design with `lsa.core` at that design's sizes, with the research options, and `agrees_with` also scores how much of a served design's long-range read it holds.
+A `pisa` arm is [PISA](../../src/lsa/baselines/pisa.py) over GLM's own key latent and heads' queries at GLM's softmax scale, or over a design's index keys and index queries as one head at `1 / tau`.
+
+```yaml
+arms:
+  - {name: A0, design: tree, agrees_with: tree_bf16}
+  - {name: A2, design: tree, cluster_algorithm: position, node_cluster_algorithm: position}
+  - {name: A3, design: tree, node_bucket_score: lse}
+  - {name: B1, kind: pisa, space: attention, block_size: 64, keep_count: 64}
+  - {name: B3, kind: pisa, space: index, design: tree, block_size: 64, keep_count: 64}
+```
+
+An arm that reads at a temperature - a LogSumExp score, or B3 - takes the map's own from its sidecar, which `lsa distill export` writes and `lsa distill calibrate-tau <config> <map>` records for a map that has none, and the read refuses to start without it.
+`tau` fixes it on an arm, `tau_scale: [0.5, 1, 2]` reads the arm once at each multiple of the map's as arms named `A3@tau0.5`, `A3@tau1` and `A3@tau2`, and `taus: [0.05]` sweeps explicit ones as `A3@tau=0.05`.
+The torch reference runs on the host, so a 1M prompt's buckets are built once for the arms that group alike and each arm is read a row at a time.
+`report.md` then adds, beside the tables of every read, one table of a metric by task and length for each kind of query, and the cwe rows split by number of targets and by distance back.
+A cell is the mean over prompts of each prompt's mean, its rows first and its layers next, with its standard error.
+
+### Reading a report
+
+A report scores two reads of the held-out documents against the teacher's cached keys.
+The exact read is the top `top_k` keys by index score, the ceiling any bucketed read of the same space sits under.
+The served read is what a server reads - each design of `run.report.served` built over the whole document and read by the serving selector, Ward's buckets, the pick, the expansion and the beam included - on a GPU only, at `run.report.served.rows` rows a document, and it sits under `served` in the report.
+Flat is the default design; `designs: []` turns the served read off.
+The teacher's padding entries, of mass 0, are not teacher keys and count for neither.
+
+Attention-mass recall is the direct mechanistic measure of how much teacher probability the fixed-budget read retains.
+Recall16, recall64 and peak capture expose failures that the average mass can hide, and downstream tasks remain the final check because an offline gain does not predict a served one.
+
+### Serving a map
+
+```bash
+lsa distill inject --model glm53_flash --maps "$LSA_ROOT/training/distillation/glm53_flash/<run>/maps.pt" \
+    --out "$LSA_ROOT/models/glm53_flash_index"
+```
+
+The checkpoint's files are copied rather than linked, because a link would point into the injecting user's own HuggingFace cache, and its `lsa_index` block names the maps it was read from by path and sha256.
+
+A run's maps mean nothing without the checkpoint they belong to, and `lsa distill inject` writes the pair as one thing: the source checkpoint with the two index projections added per indexed layer, a `lsa_index` block in its `config.json`, and the flat projections file the serving plugin reads.
+The weight shards are symlinked rather than copied, so a 27B checkpoint costs megabytes.
+It refuses a map recorded against another model, a layer the checkpoint does not attend on, and two maps of one layer that disagree on shape.
+`--maps` takes several files when a rung was distilled in halves.
+Serving the result, and timing the layer, the rest of the model and the served model under it, are in [evaluation.md](evaluation.md#serving-a-distilled-space).
+
+## The corpus
+
+[data.md](data.md) is what the datasets hold, how to tokenize one and where the eval prompts come from.
+`prepare` does what a dataset card needs, and the agent traces are fed from outside the collected sources.
+Download the `edgebench` source from the `traces-v1` release as [data.md](data.md#sources) describes, then tokenize it:
+
+```bash
+lsa data prepare glm53_flash --sources edgebench
+```
+
+The release holds the agent sessions as documents the way a GLM teacher reads them.
+One session is one document - its longest main-thread call with that call's response as the final assistant turn, through the teacher's own chat template, reasoning kept.
+The command tokenizes the `edgebench` source into `glm53_flash` beside the collected ones.
+
+## A card is named, not pathed
+
+`data.name` and `model.name` are cards under [`src/lsa/assets`](../../src/lsa/assets), and a card carries where the thing is along with everything else about it.
+A tokenized dataset card names its directory; a model card names a hub repository and a pinned revision, resolved in the running user's own HuggingFace cache.
+
+```yaml
+data:
+  name: qwen3_5
+  split: train
+```
+
+| tokenized card | what it is |
+|---|---|
+| [qwen3_5](../../src/lsa/assets/datasets/tokenized/qwen3_5.yaml) | the nine collected sources, tokenized with Qwen3.5's tokenizer |
+| [glm53_flash](../../src/lsa/assets/datasets/tokenized/glm53_flash.yaml) | the same sources and the agent trajectories, tokenized with GLM-5.3-Flash's |
+
+| model card | what it is |
+|---|---|
+| [qwen35_4b](../../src/lsa/assets/models/qwen35_4b.yaml) | what the 4B distillation runs load |
+| [glm53_flash](../../src/lsa/assets/models/glm53_flash.yaml) | the target model, 45 layers and fp8 on disk |
+
+A path says where bytes are and nothing else.
+A tokenized card says which sources and which tokenizer, and how long a row is, and its manifest beside the bytes says how wide the vocabulary is and how many rows each source gave; a model card says which family builds the checkpoint, which flavour the published one is, and where its rotation sits.
+Those are the facts that decide whether a run is reading what it thinks it is, and none of them is in a path.
+`path` is still there for a thing that has no card yet, and a dataset read that way takes the card it was tokenized under off the manifest preparing it leaves beside the bytes.
+
+A tokenized row is token ids and nothing else, so a run that names the wrong corpus is naming the wrong vocabulary.
+
+## Native - a model trained under the multi-resolution attention
+
+```bash
+lsa native train configs/training/native/qwen35_0_8b/multires.yaml --gpus 8 --hours 4
+lsa native train configs/training/native/qwen35_0_8b/dense.yaml --dry-run run.optim.steps=20
+lsa native evaluate configs/training/native/qwen35_0_8b/multires.yaml --checkpoint ${LSA_ROOT}/training/native/qwen35_0_8b/b16k-multires/checkpoint/step-8000 attention.coarse=false run.name=evaluate-multires-coarse-false
+```
+
+One file is one arm: `base.yaml` holds the model from random initialisation, the corpus and the schedule, and each arm names it and sets `attention`.
+Dense, a sliding window of the same key budget, multi-resolution attention, the same selection with no summaries, the equal-chunk partition and the flat LSA read lsa serves are the six that ship.
+`data.name` names the corpus by card - `qwen3_5` or `gpt2` for tokenized rows, `fineweb_edu_100bt` for token shards, a source card for text tokenized as it is read - and `data.mixture` replaces it with weighted cards:
+
+```yaml
+data:
+  name: gpt2
+  seq_len: 4096
+  packing: concatenate
+  readers: 4
+  seed: 42
+  mixture:
+    - {name: fineweb_edu_100bt, weight: 0.9}
+    - {name: gpt2, weight: 0.1}
+```
+
+`packing` is `concatenate` for pretraining and `span` for a long-document decay, and defaults to what the corpus allows.
+The held-out pass reads a tokenized corpus, so a run on shards or text sets `run.evaluation.every: 0`.
+`evaluate` scores a checkpoint's weights on the held-out set, the default `--suite held-out`, with no optimiser and no training data, under the attention the file and its overrides name, so a trained model can be read with the summaries off.
+The held-out pass, in a run or an evaluation, writes a summary and the per-sequence scores under the run's `evaluation/` directory, with the loss in position buckets and the share of the softmax on coarse terms.
+`evaluate --suite benchmark` scores a checkpoint on standard pretraining tasks through lm-eval, in process, under the attention the file names:
+
+```bash
+lsa native evaluate --suite benchmark configs/training/native/qwen35_0_8b/multires.yaml --checkpoint ${LSA_ROOT}/training/native/qwen35_0_8b/b16k-multires/checkpoint/step-8000 --tasks core --gpus 8
+lsa native evaluate --suite benchmark configs/training/native/qwen35_0_8b/multires.yaml --checkpoint ${LSA_ROOT}/training/native/qwen35_0_8b/b16k-multires/checkpoint/step-8000 --tasks ruler --label b16k-multires-fine-only-read attention.coarse=false
+lsa native report ${LSA_ROOT}/training/native/benchmark --presets core,ruler
+```
+
+`--tasks` is a preset - `core`, `ruler` at 4,096, 8,192 and 16,384, and `ruler-32k` past the training length - or a comma-separated list of tasks, with a RULER cell spelled `ruler_<task>_<length>`.
+Every rank holds a full replica and lm-eval hands it a share of each task's requests.
+A run leaves `<records>/<label>/<tasks>/` with a `config.json` naming the checkpoint, its step and the attention, lm-eval's `results.json`, and one row per example under `samples/`, so two arms can be compared example by example with `lsa native report`.
+The RULER files are NVIDIA's generators' output sized by the model's own tokenizer, prepared into a root of their own once with `lsa data prepare ruler --root <root> --tokenizer <tokenizer snapshot> --tasks ... --lengths 4096 8192 16384 32768 --samples 100`, and the datasets of the core tasks are fetched once on the login node into the shared hub cache.

@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "device": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+  "native_map_device_load": true,
+  "layers": 12,
+  "positive_temperatures": true,
+  "zero_query_projection": true,
+  "invalid_layer_rejected": true
+}

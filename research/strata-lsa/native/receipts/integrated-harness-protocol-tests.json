@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "gpu_executed": false,
+  "cases": [
+    "actual process/pipe READY parsing",
+    "GEN token and DONE parsing",
+    "eight queued BGEN admission routing",
+    "interleaved BT and BDONE routing",
+    "BSTOP cancellation",
+    "owned process graceful cleanup"
+  ],
+  "checks": 6
+}

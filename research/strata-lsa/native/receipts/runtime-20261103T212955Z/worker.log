@@ -1,0 +1,1 @@
+{"status":"passed","scope":"native runtime state, rollback, copy, rebuild and graph correctness","layers":[3,47],"context":2048,"prefill":"batched and per-row bit-exact","checks":1315}

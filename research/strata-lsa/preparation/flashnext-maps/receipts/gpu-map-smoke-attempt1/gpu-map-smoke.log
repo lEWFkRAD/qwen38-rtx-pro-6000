@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/path/to/lsa-prep-20261103/flashnext-maps/gpu_map_smoke.py", line 85, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/path/to/lsa-prep-20261103/flashnext-maps/gpu_map_smoke.py", line 73, in main
+    if '--worker' in sys.argv:worker();return
+                              ^^^^^^^^
+  File "/path/to/lsa-prep-20261103/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/path/to/lsa-prep-20261103/flashnext-maps/gpu_map_smoke.py", line 62, in worker
+    got_lse=lse[0,position].cpu().double();torch.testing.assert_close(got_lse,want_lse,atol=1e-3,rtol=1e-4)
+            ~~~^^^^^^^^^^^^
+IndexError: index 1568 is out of bounds for dimension 1 with size 24

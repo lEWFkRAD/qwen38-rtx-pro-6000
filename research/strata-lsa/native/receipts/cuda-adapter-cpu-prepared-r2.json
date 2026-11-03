@@ -1,0 +1,82 @@
+{
+  "status": "cpu_prepared",
+  "gpu_executed": false,
+  "map_sha256": "4d8a606e0ddd33858cb662e7f82f723dd54ca96776f3c383af28b30935a85d02",
+  "captures": [
+    {
+      "layer": 3,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "b00001e03ecbfe441f466bfebe5fa468f6c77a6eada00723f1aed4bba1fea739"
+    },
+    {
+      "layer": 7,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "2a268efac2a0492a624e44c48d73107ad2f21b92bbd7caeb66771ebc0832df6a"
+    },
+    {
+      "layer": 11,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "6a054104678db21e7b4d7a6ccb0287ce6cdbd72758b656d201887c64d2830f26"
+    },
+    {
+      "layer": 15,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "3a897f4c5dd88e4012b2b77786e976bf518f861501f140b36996323245d9ed17"
+    },
+    {
+      "layer": 19,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "be33e01cdf904ac529e4016e987bd8037f0a17b899e3b44843af9ecf176b9187"
+    },
+    {
+      "layer": 23,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "37a3b27aef1583f5349b89b98924c022b9d592fe9d3cc1915da2bac2e8ef93d0"
+    },
+    {
+      "layer": 27,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "2d2bf7fefc2b3cef2b0c28e582f1f2df5ce5cedf7fb12d1ba22eaa2654f764b9"
+    },
+    {
+      "layer": 31,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "0dbe7e96ee9a1d6371c96ab774934e66970950e22550fc9b9864e7bea7348c59"
+    },
+    {
+      "layer": 35,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "7935b46cd5ce76518e616b9eb3ed765e757266497641fa3ab470ac2a2a67379b"
+    },
+    {
+      "layer": 39,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "5209dccaad4cbc8d419a827e73b8f23c0e6c609db5ce3fc2f6e888467bdea731"
+    },
+    {
+      "layer": 43,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "749ee441b3e54eb9fbd82d8b00a19779b40d2072c19320ae3f2d308599cce7fc"
+    },
+    {
+      "layer": 47,
+      "tokens": 6144,
+      "queries": 193,
+      "sha256": "0b9b1e2d056c94a408a091a273e2b1a7c6e90db76c8c881f4578d5a521660209"
+    }
+  ],
+  "boundary_reference_checks": 13,
+  "library_present": true,
+  "script_sha256": "abf56e6af2dcfd53b3908f4d9a78eddf05d7b9be9b6f235eefff41c37ac5c10a"
+}

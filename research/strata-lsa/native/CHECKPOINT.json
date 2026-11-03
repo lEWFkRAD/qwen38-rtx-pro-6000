@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-11-03T21:54:41.638190+00:00",
+  "objective": "Native Strata LSA integration completed and functionally validated",
+  "source_commit": "876307a9ded78bbca941189e63230b33cfdc6e2a",
+  "branch": "strata-lsa-integration-20261103",
+  "base_commit": "3f83801ea1862652806fc6ebddab7f6cf57f3af6",
+  "engine_sha256": "ce96085e004cd202f129f6a8ab9c788f5464b52b9c156f386b9fb05904459720",
+  "map_sha256": "a5a69b217f23d9a2f7995516a91d1baa81e25b7733159ac5c9c1d0aa28c5342c",
+  "default_output_parity": "receipts/default-output-parity.json",
+  "final_full_candidate": "receipts/integrated-full-candidate-r3/candidate/report.json",
+  "original_control": "receipts/integrated-full-r2/control/report.json",
+  "api": "receipts/api-canary-r1/report.json",
+  "native_bridge": "receipts/cuda-adapter-20261103T213916Z-6d0c549d/result.json",
+  "runtime": "receipts/runtime-20261103T213922Z/receipt.json",
+  "selector": "receipts/select-prefix-20261103T214007Z-54c6f0d4/result.json",
+  "infrastructure_compatibility": "passed",
+  "quality": "one arithmetic case failed in both control and candidate; preserved; no new failure in finite fixtures",
+  "promotion": "not performed; measured performance gate not met",
+  "production": "intentionally paused",
+  "owner": "example-lsa-maintenance-owner",
+  "sunshine": "stopped; startup remains enabled",
+  "production_files_unchanged": {
+    "/etc/onyx-inference/strata-server.json": true,
+    "/etc/onyx-inference/strata.json": true,
+    "/etc/onyx-inference/strata-server.shared-settings.json": true
+  },
+  "private_api_config_removed": true,
+  "wiki_sync": {
+    "commit": "f07eb85e4c578b19f9eff80518bf080bf0a47fdd",
+    "sha256": "7ef188466b88d3c9ed6b86dafefa4110ae5eaf3a7015995005d004a5ac4ece4e"
+  }
+}

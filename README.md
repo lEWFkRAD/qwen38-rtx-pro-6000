@@ -13,6 +13,15 @@ Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
+## November 3 research — native Strata LSA
+
+The [native LSA research package](research/strata-lsa/) includes the optional
+learned attention selector, source patches, calibration maps, training code,
+test receipts and complete source/data release downloads. Integration and
+bounded compatibility checks are complete; context remains 131,072 tokens.
+The candidate was **not promoted**: the eight-slot smoke measured 296.5 versus
+414.6 rows/s for the control. [Results and limitations](research/strata-lsa/native/INTEGRATION-RESULTS.md).
+
 ## Featured release — Strata Lens 0.1.0-preview.1
 
 Strata Lens adds a local, live view of capture runs to this repository's

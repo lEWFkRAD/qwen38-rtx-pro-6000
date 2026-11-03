@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "run_id": "20261103T122006Z-a52fe8b2",
+  "started_at": "2026-11-03T12:20:06.818684+00:00",
+  "window_label": "Jeff-authorized-LSA-20261103",
+  "status": "failed",
+  "gpu_work_started": true,
+  "qualification_claim": false,
+  "parameters": {
+    "plan": false,
+    "check_window": false,
+    "execute": true,
+    "window_label": "Jeff-authorized-LSA-20261103",
+    "contexts": [
+      131072,
+      262144,
+      1048576
+    ],
+    "max_gpu_mib": 2048,
+    "max_seconds": 1800,
+    "query_batch": 64,
+    "repeats": 3
+  },
+  "source": {
+    "upstream_commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+    "upstream_clean": true,
+    "sha256": {
+      "run_window.py": "780221117dcc274a682b0ef32125eb9c915c69b592f10f3d6cf306e856065b29",
+      "benchmark_lsa.py": "f1b0ecc1b8a8e681b5b20619220ae2de6accd1d1d82b0453dabb7a63dbc08a48"
+    }
+  },
+  "prep_status": {
+    "status": "prepared_with_known_upstream_baseline_failures",
+    "created_utc": "2026-11-03T12:04:03.2995071Z",
+    "local_path": "C:/Users/OPERATOR\\output\\lsa-prep-20261103",
+    "onyx_path": "/path/to/lsa-prep-20261103",
+    "upstream_commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+    "upstream_clean": true,
+    "environment_installed": true,
+    "kit_cpu_tests": {
+      "receipt": "receipts/kit-tests-final.log",
+      "passed": 32,
+      "failed": 0
+    },
+    "harness_cpu_smoke": {
+      "status": "passed",
+      "receipt": "receipts/harness-cpu.json"
+    },
+    "real_cpu_process_cleanup": {
+      "receipt": "receipts/runner-process-smoke.json",
+      "timeout_elapsed_seconds": 0.20177187101216987,
+      "status": "passed"
+    },
+    "selected_upstream_cpu_tests": {
+      "receipt": "receipts/upstream-cpu-tests.xml",
+      "passed": 144,
+      "failed": 3
+    },
+    "gpu_runtime_tested": false,
+    "gpu_workload_started": false,
+    "performance_phase": "staged but gated by correctness; known Ward reference failure currently stops timing",
+    "model_support_qualified": false,
+    "service_changes_performed": false,
+    "primary_after_prep": {
+      "state": "active",
+      "receipt": "receipts/primary-after-prep.txt",
+      "pid": 891912
+    },
+    "blockers": [
+      "Unmodified upstream Ward near-copy reference fails for two pool sizes; retained repro and numeric diagnosis",
+      "GPU compile/runtime and Flash-Next/Strata integration are untested"
+    ],
+    "notes": [
+      "B300 serving image is not installed; the isolated cu129 upstream lock differs from its cu130 environment",
+      "No scheduler, watcher, automatic GPU run, or production model change was created",
+      "Window label is provenance, not an authorization token"
+    ]
+  },
+  "prep_status_sha256": "d0a8b55255c9127f6617ef935130009f97557f06b76c8fc3d2c0501afc4abb4c",
+  "before": [
+    {
+      "uuid": "GPU-REDACTED",
+      "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "capability": "12.0",
+      "total_mib": 97887,
+      "free_mib": 95039,
+      "utilization_percent": 5,
+      "sampled_at": "2026-11-03T12:20:06.853333+00:00"
+    },
+    {
+      "uuid": "GPU-REDACTED",
+      "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "capability": "12.0",
+      "total_mib": 97887,
+      "free_mib": 95039,
+      "utilization_percent": 4,
+      "sampled_at": "2026-11-03T12:20:08.874103+00:00"
+    },
+    {
+      "uuid": "GPU-REDACTED",
+      "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "capability": "12.0",
+      "total_mib": 97887,
+      "free_mib": 95039,
+      "utilization_percent": 4,
+      "sampled_at": "2026-11-03T12:20:10.894899+00:00"
+    }
+  ],
+  "argv": [
+    "/path/to/lsa-prep-20261103/.venv/bin/python",
+    "/path/to/lsa-prep-20261103/benchmark_lsa.py",
+    "--mode",
+    "gpu",
+    "--allow-gpu",
+    "--contexts",
+    "131072",
+    "262144",
+    "1048576",
+    "--output",
+    "/path/to/lsa-prep-20261103/results/20261103T122006Z-a52fe8b2/benchmark.json",
+    "--max-gpu-mib",
+    "2048",
+    "--max-seconds",
+    "1785",
+    "--query-batch",
+    "64",
+    "--repeats",
+    "3",
+    "--upstream",
+    "/path/to/lsa-prep-20261103/upstream"
+  ],
+  "worker": {
+    "returncode": 1,
+    "timed_out": false,
+    "pid": 2773271
+  },
+  "after": {
+    "gpu": {
+      "uuid": "GPU-REDACTED",
+      "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "capability": "12.0",
+      "total_mib": 97887,
+      "free_mib": 95040,
+      "utilization_percent": 3,
+      "sampled_at": "2026-11-03T12:20:18.203778+00:00"
+    },
+    "primary": "inactive"
+  },
+  "finished_at": "2026-11-03T12:20:18.208160+00:00"
+}

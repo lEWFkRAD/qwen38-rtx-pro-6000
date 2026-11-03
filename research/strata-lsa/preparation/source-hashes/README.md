@@ -1,0 +1,1 @@
+These are historical source manifests, retained for provenance. Their entries describe original private-layout files, not this rearranged public package. Use the top-level SHA256SUMS and RELEASE-ASSETS.json to verify the files actually published. The earlier raw Strata capture source archive is superseded by the cleaned final source snapshot; see SOURCE-ARCHIVE-EXCLUSIONS.json.

@@ -1,0 +1,53 @@
+{
+  "created_at": "2026-11-03T14:16:36.670539+00:00",
+  "host": "Onyx-Linux",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, GPU-REDACTED",
+  "source_root": "/path/to/lsa-prep-20261103",
+  "checkpoint": "/path/to/lsa-prep-20261103/checkpoints/flashnext-maps-20261103T141636Z",
+  "maps_status": "pilot_qualified",
+  "gpu_smoke_status": "passed",
+  "next_work": "Native Strata LSA map loader/selector, INT8 cache and speculative-state integration, then same-model latency and quality comparison",
+  "deferred": "Jeff requested waiting until after work. Save only; no automatic run or service change.",
+  "production": {
+    "service": "MainPID=2876339\nNRestarts=0\nActiveState=active\nSubState=running",
+    "maintenance": {
+      "attempts": [
+        1793710099.7349627,
+        1793714835.5615344
+      ],
+      "capacity_block": null,
+      "hold": null,
+      "reason": "runtime readiness verified; foreground counters advanced; periodic canary deferred",
+      "status": "healthy"
+    },
+    "config_sha256": "f3d1b869d3d36733fa58686b73537092733bc52b9c9c06ba7d2789bfb17c16a4"
+  },
+  "sources": {
+    "strata-capture": {
+      "commit": "3f83801ea1862652806fc6ebddab7f6cf57f3af6",
+      "archive": "source-archives/strata-capture.tar.gz",
+      "sha256": "ed8aef013d933dfc37b56641bc7ed119cd4dde3ee830aff98f02b9f1be145c2f",
+      "extract_under": "/path/to/lsa-prep-20261103/checkpoints/flashnext-maps-20261103T141636Z"
+    },
+    "lsa-original": {
+      "commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+      "archive": "source-archives/lsa-original.tar.gz",
+      "sha256": "2a417e019270a8f5b33e0b0e9e6698b5943a80f182350710847a537ab9f90e9f",
+      "extract_under": "/path/to/lsa-prep-20261103/checkpoints/flashnext-maps-20261103T141636Z"
+    },
+    "lsa-research": {
+      "commit": "35b1bf9a10703b57da3eb073debfad6a66507269",
+      "archive": "source-archives/lsa-research.tar.gz",
+      "sha256": "8da582d28cfb005dbb9793f4721bb4d0b4cc9365cded2b951c5b76d6f91062b9",
+      "extract_under": "/path/to/lsa-prep-20261103/checkpoints/flashnext-maps-20261103T141636Z"
+    }
+  },
+  "external_dependencies": [
+    "Existing .venv and CUDA13/driver runtime",
+    "Model and MTP assets named in flashnext-maps/capture-plan.json",
+    "/opt/onyx-strata-0150-candidate runtime libraries"
+  ],
+  "training_resume_limit": "Map/model state_dict checkpoints saved; optimizer and RNG states are not saved. Exact continuation of the completed600-step trajectory is unavailable.",
+  "verified_captures": 96,
+  "verified_prepared_blobs": 192
+}

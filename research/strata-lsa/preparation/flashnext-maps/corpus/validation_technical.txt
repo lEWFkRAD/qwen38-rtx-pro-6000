@@ -1,0 +1,586 @@
+Calibration document validation_technical. Read the following document accurately.
+
+Source document: evaluation.md
+# Running an experiment
+
+An experiment is a yaml file, and the harness that runs it is behind the `evaluation` extra.
+
+```bash
+uv sync --extra evaluation                                                             # the suite's graders and the config layer
+eval "$(lsa env)"                                                                    # the shared root and the offline hub caches
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/native_tp8.yaml --dry-run  # print the experiment, launch nothing
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml          # one slurm job, on a node with 8 GPUs
+lsa evaluate kernels configs/evaluation/kernels/glm53_flash/lsa_flat.yaml            # one array task per phase
+```
+
+The LSA configs are named for the design they run, one file per design and kind under `glm53_flash/`:
+
+| design | accuracy | kernels | production |
+|---|---|---|---|
+| GLM's own indexer | [native](../../configs/evaluation/accuracy/glm53_flash/native_tp8.yaml) | [native](../../configs/evaluation/kernels/glm53_flash/native.yaml) | [native](../../configs/evaluation/production/glm53_flash/native_tp8.yaml) |
+| flat | [lsa_flat](../../configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml) | [lsa_flat](../../configs/evaluation/kernels/glm53_flash/lsa_flat.yaml) | [lsa_flat](../../configs/evaluation/production/glm53_flash/lsa_flat_tp8.yaml) |
+| fixed | [lsa_fixed](../../configs/evaluation/accuracy/glm53_flash/lsa_fixed_tp8.yaml) | - | [lsa_fixed](../../configs/evaluation/production/glm53_flash/lsa_fixed_tp8.yaml) |
+| tree | [lsa_tree](../../configs/evaluation/accuracy/glm53_flash/lsa_tree_tp8.yaml) | [lsa_tree](../../configs/evaluation/kernels/glm53_flash/lsa_tree.yaml) | [lsa_tree](../../configs/evaluation/production/glm53_flash/lsa_tree_tp8.yaml) |
+| flat, k=2048 | [lsa_flat_k2048](../../configs/evaluation/accuracy/glm53_flash/lsa_flat_k2048_tp8.yaml) | - | [lsa_flat_k2048](../../configs/evaluation/production/glm53_flash/lsa_flat_k2048_tp8.yaml) |
+| flat, early budget | [lsa_flat_early_budget](../../configs/evaluation/accuracy/glm53_flash/lsa_flat_early_budget_tp8.yaml) | - | - |
+| tree, descend | [lsa_tree_descend](../../configs/evaluation/accuracy/glm53_flash/lsa_tree_descend_tp8.yaml) | [lsa_tree_descend](../../configs/evaluation/kernels/glm53_flash/lsa_tree_descend.yaml) | - |
+
+Every LSA file reads the design's input - the key and every head's query summed, `model.indexer.input: key_and_query` with `query_heads: all`, the indexer's defaults - through one map, `${root:models/maps/glm53_flash__long-16k-1M-heavy-d2048-lr3e-4-latent.pt}`, set once in each tree's `_base.yaml`.
+The attention input `x` is a research option that no shipped config serves.
+A scored or served config's name is the model's then its file's stem, the method and the mesh - `glm53_flash_lsa_flat_tp8` for both - and a layer timing's is `glm53_flash_kernels_lsa_flat`, and a test holds every name within a kind distinct.
+A launch ends the name in the card it read from the device, as `glm53_flash_lsa_flat_tp8_h200`, and the run's record states the card as `run.gpu`.
+
+Every experiment is served.
+Accuracy scoring uses lm-eval task definitions for the cached hub benchmarks and fixed-prompt task adapters for RULER and LongBench v2.
+The evaluation extra runs the client and graders; SGLang runs separately in the configured container.
+The model runs as a stock sglang in a container with [`lsa.sglang`](../../src/lsa/sglang/plugin.py) installed beside it as a plugin, and the suite scores it over http.
+
+An experiment is one model read one way, asked one thing and run one way, and the file that spells those out is the artifact - a run reproduces because its config does.
+
+There are three kinds, and the tree a file sits in is its kind: `configs/evaluation/accuracy/<model>/` scores a served model, `kernels/<model>/` times one attention layer and `production/<model>/` times the whole served model.
+The command names the kind too - `lsa evaluate accuracy`, `lsa evaluate kernels` and `lsa evaluate production` - and reads the file through that kind's schema.
+Each kind has a schema of its own - `AccuracyConfig`, `KernelsConfig` and `ProductionConfig` - and all three are the same three blocks.
+
+| block | what it picks |
+|---|---|
+| `model` | the checkpoint, `attention` - `native`, `lsa` or `pisa` - the `indexer` settings `lsa` runs under, the `pisa` knobs `pisa` runs under, the `serving` knobs it is served with, and for accuracy the `generation` block that says how it is sampled |
+| `data` | what is asked - the suite and which of its tasks for accuracy, the contexts and the phase for kernels, the prompt ladder for production |
+| `run` | what the run is called, the records root it writes under, the container image and the server's own command line, and what the record is labelled with |
+
+Each tree's `_base.yaml` is what its configurations share - the checkpoint, the launch and the records root - and is not a run.
+A file whose name starts with an underscore is not a run.
+A config that names no model is refused, dry runs included, rather than served with a default one, and so is one that names no records root.
+So is a `data.tasks` or `data.lengths` entry the suite does not hold.
+
+`<records>/<run_id>/meta.json` is the pointer to the record the suite wrote, plus the resolved config that produced it and the commit that was scored.
+It sits in the run directory, beside the record it points at, so a run whose config file has since been deleted still says what it ran.
+
+## Rerunning one
+
+A run id is `<run.name>__<stamp>[-<tag>]`, where `run.name` is what the config calls the run - the design's name for an LSA run - and the stamp is the UTC second the run started, date and time as two fields, as `2026-09-23__15-37-53`.
+Every launch is therefore a run of its own, and an interrupted one is finished by pinning its id.
+A run whose record already scored every task and length it asks for is skipped, and a pinned id the suite already has a directory for is resumed - the samples on disk are kept and only what is missing is sent.
+
+```bash
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml run.id=lsa-flat__2026-09-23__15-37-53
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml run.id=lsa-flat__2026-09-23__15-37-53 --force
+```
+
+Runs named before 2026-09-23 close on the date alone, and pinning one of those resumes it the same way.
+
+`--force` scores every sample again in the directory named by `run.id`.
+Without a pinned id, the launch creates a fresh timestamped run.
+It reaches the suite as `--no-resume`, so the prior record is ignored and rewritten in place.
+
+## A full run to 10M
+
+One node holds GLM-5.3-Flash to 1M, so a `full` run is two launches into one run id: the configuration itself, then its `_ultralong` file for RULER and PaperTrail at 2M, 5M and 10M on two nodes.
+Pin the id on both, and submit the second once the first has finished - two jobs writing one record at once would each rewrite it from their own tasks.
+
+```bash
+RUN=lsa-flat__2026-09-26__09-00-00
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml run.id=$RUN --dry-run
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml run.id=$RUN            # one node: reasoning, PaperTrail and RULER to 1M
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_cp8_10m.yaml run.id=$RUN  # after the first: RULER and PaperTrail 2M-10M under context parallel
+```
+
+The first skips the lengths its server cannot hold and says so in the record, and the second is `full` restricted by `data.lengths`, which keeps the RULER and PaperTrail lengths alone and finds the rest already scored.
+Native took 5.3 hours for the first half and 61 on two nodes for the second, one request at a time past 1M.
+A configuration with no `_10m` file gets a short one that names it and then `_cp8_10m` under `defaults`, as `lsa_flat_cp8_10m.yaml` does.
+
+## Rerunning the paper's first GLM cells
+
+The GLM cells of the first battery were scored on builds of the fork that `_cp8.yaml` no longer serves, so each has a file that names its build and its flags.
+Run the file whose slice names the cells, and pin `run.id` to the method's record to land them beside it.
+
+```bash
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_tree_cp8_ruler10m.yaml --dry-run       # RULER 10M on the first server
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_tree_cp8_longbench.yaml --dry-run      # LongBench v2 at 163,840 tokens
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_tree_cp8_papertrail5m.yaml --dry-run   # PaperTrail 1M-5M on its build
+```
+
+Each method has a `longbench`, `papertrail5m` and `papertrail10m` file, and D-LSA (Tree) the two `ruler` files.
+The images are the fork's builds, named in your site and not in the file, and a file whose image its site leaves empty fails at launch.
+
+## Serving a distilled space
+
+A distillation writes `maps.pt`, keyed by layer so another run can warm-start from it.
+The server reads a flat file of `<layer>.W_Q_idx` and `<layer>.W_K_idx` instead, each `[model_dim, index_dim]`, and one command writes it.
+
+```bash
+lsa distill export "$LSA_ROOT/training/distillation/glm53_flash/<run>" \
+    "$LSA_ROOT/models/maps/<map>.pt"
+```
+
+Beside the map it writes `<map>.json`, which names the run directory and the checkpoint in it, the config with its sweep point and overrides, the commit and the date, from the run's own `meta.json`.
+A projection file is a flat tensor dict, so that sidecar is the only way from a map back to what trained it.
+
+Nothing is transformed on the way - the server normalises after projecting exactly as `project` does, so the space that was scored offline is the space selecting keys online.
+
+`model.serving.projections` then names that file.
+A run on the key and query writes the map the server reads, and `lsa distill export --input key_and_query` re-exports, tensors untouched, a map trained on the key latent before the trainer read `x`, its sidecar recording the input the server checks the map against.
+The sidecar also records `"tau": {"<layer>": <tau>}`, the loss temperature each layer was trained at, which an offline read that ranks by a LogSumExp needs; a map exported before that has none, and
+```bash
+lsa distill calibrate-tau configs/training/distillation/glm53_flash/long_16k_1m_heavy_key_and_query_d2048.yaml \
+    "$LSA_ROOT/models/maps/glm53_flash__long-16k-1M-heavy-d2048-lr3e-4-latent.pt" --partition <partition>
+```
+records one by the training's own grid search over the held-out documents of the config's cache.
+A map of `x` serves only under `model.indexer.input: attention_input`, the research option.
+Use the exact checkpoint whose targets trained the maps: a checkpoint with other weights cannot share projections.
+A one-layer smoke run does not contain the maps needed to serve a full checkpoint.
+A config names it under the shared root as `${root:models/maps/<map>.pt}`, so no file spells the root out.
+A layer the run never trained fails by name when the server loads it, and there is no index without a map to fall back to.
+
+Every LSA configuration names a map this way, so two designs differ in their knobs and in nothing else.
+
+## The two attention paths
+
+`model.attention: native` runs the model exactly as the checkpoint ships it, and `indexer` is ignored.
+Native is not a synonym for dense: a checkpoint that ships its own sparse attention keeps it here, so `native` on GLM-5.3-Flash is DSA rather than a dense read.
+Whatever it is, it is the ceiling the `lsa` run on the same checkpoint is read against.
+
+`model.attention: lsa` replaces the model's full-attention layers, and LSA then selects the keys each query reads.
+Everything else in the file is held equal, and the pair is a comparison because the two runs differ solely in which past tokens a query reads.
+
+`attention` and `indexer` sit in one block because they are one thing: `lsa` is what makes `indexer` mean anything, and under `native` it is dead config.
+The `indexer` block holds the design's knobs and `serving` the choices about how a design is computed, as [the glossary](../reference/notation.md#conventions) draws the line.
+They sit in the block that names the model because they are how that model is read, and the serving knobs and the sampling sit beside them for the same reason.
+
+## PISA
+
+`model.attention: pisa` serves the original PISA design in LSA's place, on the same server, attention backend and suite: [GLM's](../../configs/evaluation/accuracy/glm53_flash/pisa_tp8.yaml) and [Qwen's](../../configs/evaluation/accuracy/qwen38_27b/pisa_tp1.yaml) are `native` with the selector swapped, Qwen's a list a key-value head.
+Its knobs are the `model.pisa` block - `block_size`, `keep_count`, `branching`, `beam_width` and `forced_blocks`, named as [the reference](../../src/lsa/baselines/pisa.py) names them - and the defaults are the paper's pyramid at a keep count that matches LSA's list.
+It reads no map, serves tensor parallel - on Qwen up to its four key heads, or eight ranks with each key head on two that sum their block scores - with its decode in a CUDA graph and its prefill eager, and refuses context parallel and a kernel run.
+`lsa.debug.check_pisa.rows` on a server holds that many rows of each of a batch's first four requests, on every PISA layer, against the reference search, for the first `lsa.debug.check_pisa.steps` prefill forwards (6 when unset) and as many decode steps.
+`lsa.debug.check_pisa.from_keys` checks a request only once it holds that many keys.
+A run sets them through its own `--json-model-override-args '{"lsa": {"debug": {"check_pisa": {"rows": 8}}}}'` as the string value of `run.serve.json-model-override-args`, which the launcher merges with the settings block and the card's rotation into the one flag, and refuses where they name a key with different values.
+A decode step captured in a CUDA graph is checked after it ran, from a copy of its first rows the graph keeps, and its line says `captured decode`.
+The copy is read at the next forward, so a row whose request left the batch on that step is skipped and counted as `left-batch` - its table row may already hold another request's.
+Each row is `exact`, a `near-tie` - the lists differ, and the reference's search came within a thousandth of a tie at some level, which bf16 leaf means and another summation order can tip - or a `MISMATCH`.
+GLM's ranks also compare their lists on every check.
+After each check the first rank prints the run's tally, `lsa-lsa: pisa check tally ... verdict PASS|FAIL` - FAIL on any mismatch or any rank that differed - and the run's last tally line is its gate verdict.
+
+## The prompt files
+
+The suite scores fixed prompt files rather than samples synthesised per run, so two runs over different task sets see the same prompts.
+The RULER files out to 1M are 1.6G and 9.6G with the three lengths past it, which is not a thing to keep in git, so they are a cache root named the way `HF_HOME` is.
+The root is shared rather than per-user - `LSA_EVAL_DATA`, which defaults to `data/benchmarks` under the root, and `data.root` names another for one run.
+
+```bash
+lsa data prepare ruler --help    # what fills it - data.md has the rest
+```
+
+The hub datasets the suite also reads - MMLU-Pro, gpqa, aime25, math-500, LongBench v2 and GraphWalks - sit under `data/hf`, which is what `HF_DATASETS_CACHE` points at.
+
+A run against a root that does not hold a task's file fails on that task rather than quietly synthesising one.
+`accuracy/data/hashes.json` records what the prompts hashed to when they were made, and a mismatch stops the run - which is what makes two records comparable.
+Where those files come from, and what is and is not recorded about them, is [data.md](data.md#benchmarks).
+
+## Overrides
+
+Any field takes an override on the command line, by the same dotted path it has in the file.
+They apply after the file and after the sweep, so an override pins a swept key.
+
+```bash
+lsa evaluate accuracy configs/evaluation/accuracy/glm53_flash/lsa_flat_tp8.yaml model.indexer.top_k=2048 model.indexer.top_p=512 data.suite=smoke
+```
+
+List entries for command-line arguments must remain strings, including numeric values.
+Quote the entire override for the shell and quote the numeric entries inside it:
+
+```bash
+lsa evaluate accuracy configs/evaluation/accuracy/qwen38_27b/full_tp1.yaml 'run.args=["--max-tokens","512"]'
+```
+
+## Sweeps
+
+A `sweep` block turns one file into several experiments, one named experiment per point, each in its own directory.
+
+```yaml
+sweep:
+  model.indexer.top_k: [2048, 4096]   # -> ..._top_k2048, ..._top_k4096
+```
+
+## On slurm
+
+Every evaluation is submitted - nothing is served or scored where the command is typed.
+submitit sends the function rather than a script, so a job uses this checkout and this venv with nothing to activate, and a sweep becomes an array - one task per experiment.
+Its logs land under `$LSA_ROOT/logs`, on storage the submitting machine can read, and `--folder` names another.
+
+A job asks for what the experiments need, so there is no `--gpus`, `--cpus` or `--hours` to get right.
+`run.tp` is what the inner `srun` reserves with `--gres=gpu:{tp}` and the outer allocation reads the same number from the same place.
+The threads follow from it at `Server.CPUS_PER_GPU`, and that one is not a throughput choice: the server is an overlapping step, an overlapping step sees only the GPUs affine to the cores its job holds, and 8 threads put a `tp` of 8 on one socket and showed it four devices.
+The host memory is 64 GB a GPU, so a 4-GPU worker asks for 256 GB and leaves the rest of the node to other jobs - a worker's measured peak is 20-47 GB up to 5M tokens.
+A run that needs more passes `--mem-gb`.
+The hours come from the kind - `data.suite` through `Suite.HOURS`, the phase through `Kernels.HOURS`, and `Production.HOURS` - at about twice each one's measured cost.
+
+That limit is a ceiling rather than a reservation.
+The server is stopped when scoring ends - `run_accuracy` serves inside a `with` block and its `finally` tears the process down - so a job releases its node when the evaluation finishes and not when its limit runs out.
+Setting it high costs a little backfill priority and nothing else, and setting it low loses the run.
+
+A run slower than its kind usually is says so in the file, with `run.hours`.
+All three flags remain as overrides, and a sweep over `run.tp` needs `--gpus` because one array job reserves one mesh.
+
+Jobs read the hub caches offline, so the model and the datasets have to be in them already.
+`lsa evaluate` puts the environment into each job, and an sbatch file of your own needs the same lines, which `lsa env` prints: `LSA_ROOT`, which is the site's root unless you already set it, the site's `hf_home` as `HF_HOME` unless you already set it, when the site names one, `HF_DATASETS_CACHE` at `$LSA_ROOT/data/hf`, and the offline flags.
+
+```bash
+eval "$(lsa env)"
+```
+
+## What the server needs
+
+The model loads in a container and the suite runs here - it is [`lsa.evaluation.accuracy`](../../src/lsa/evaluation/accuracy/__main__.py), in this package.
+Scoring is http and graders - no torch and no GPU - so it needs the `evaluation` extra but not a machine with one, which is why `run.python` defaults to this interpreter.
+
+The run block names the image and the server's command line, and the model block the serving knobs.
+The mounts are the shared root, the user's own data root and this checkout, `HF_HOME` and the JIT caches come from the environment, and the checkpoint is `model.name` said once.
+
+| `model` key | what it is |
+|---|---|
+| `name`, `dtype`, `adapter`, `rotary_end`, `rotary_dim`, `layer_types` | the checkpoint - an asset name, a hub id or a path - and whatever about it the asset does not already pin |
+| `attention` | `native` or `lsa`, and for a kernel run `full`, `kda` or `gdn` as well |
+| `indexer` | the design's knobs an `lsa` read runs under - the window and sink sizes, the index dim, the pool and bucket sizes, the top level and the hierarchy's sizes, the beam and the start level, the top-k and the top-p |
+| `serving` | how the design is computed - `node_centroid_precision`, `decode` and `projections` |
+| `generation` | accuracy only - every sampling setting a request sends, one entry per dataset of the suite |
+
+| accuracy `data` key | what it is |
+|---|---|
+| `suite` | `full`, `ruler`, `papertrail` or `smoke` |
+| `tasks` | only these tasks of the suite, by name - one the suite does not hold is refused |
+| `lengths` | only these RULER lengths of the suite |
+| `root` | where the fixed RULER and LongBench files live - empty leaves the suite `LSA_EVAL_DATA` |
+
+| `run` key | what it is |
+|---|---|
+| `name` | what the console and a sweep point are called - it labels the run rather than naming a directory |
+| `output` | the records root every run directory lands in, under the kind's own directory - no default, each tree's base names it |
+| `id` | the run directory outright - empty derives one from the config |
+| `image` | the container the server runs in - a squashfs path or a docker tag, which a config names as `${site.images.<name>}` and has no default, so name the image in your site (`configs/site/<site>.yaml`) |
+| `tp`, `pp`, `port`, `runner`, `startup_minutes` | tensor parallel size, the nodes the server spans as pipeline stages, the port (`0`, the default, is a free one the host picks when the server starts, and the server log says which; a named port is used as given - a server on one node takes torch's rendezvous port the same way unless `serve` gives `nccl-port`), `srun` inside an allocation or `docker` on a node, and how long the server may take to come up |
+| `serve` | the server's flags, each under its sglang name without the dashes - the memory fraction, the running-request cap, and `disable-radix-cache` for a production timing, which measures a cold prefill (an accuracy run keeps the radix cache on) |
+| `hours` | the wall clock a submitted job may have - 0 means the ceiling the kind gives it |
+| `note`, `tag`, `args` | what the record is labelled with, and anything passed verbatim to what the run starts |
+| `python` | accuracy only - the interpreter that has the accuracy suite, lm-eval and the datasets - empty means this one |
+| `concurrency_scale` | accuracy only - scales the caps of the long-prompt tasks - the suite's total in flight is the server's `--max-running-requests` |
+| `request_timeout` | accuracy only - the seconds one request may take, 14400 by default - a reply that decodes longer is an error row, so set it above the longest answer a slow server will write |
+
+A scalar value is the flag's argument, `true` is the bare flag, a list is several arguments, and `null` or `false` leaves the flag out.
+A later config in the `defaults` list sets only the flags it changes, and `null` drops one an earlier config set, so a flag shared by a directory is written once in its base.
+On the command line a flag is one key, as `run.serve.mem-fraction-static=0.7` or `run.serve.disable-radix-cache=null`.
+
+### What the backend cannot run
+
+A combination of knobs that is not a design is refused before a model loads, and `--dry-run` says which: a window other than the one the cluster block is sized for, a bucket cap under twice the bucket size, a descending decode on a design with no tree.
+The server is handed `model.indexer` and `model.serving` side by side, each key under the name it has here, as the `lsa` block of its model config - see [the glossary](../reference/notation.md#server-settings).
+
+### How a run is scheduled
+
+A run goes in four phases, `Suite.PHASES`: MMLU-Pro, GPQA Diamond, MATH-500 and AIME25 first, then LongBench v2 and GraphWalks, then PaperTrail, then RULER, each once the last reply of the one before is in.
+A long prompt keeps sglang in chunked prefill, and a reasoning chain served beside it decodes only between chunks - with RULER at 512k and 1M in flight AIME25 chains ran past the client's timeout, and so did LongBench v2, which reasons over its long prompts.
+GraphWalks reasons over prompts to 1M as well, so it shares LongBench v2's phase rather than RULER's, though `full` no longer asks for it - PaperTrail took its place.
+PaperTrail has a phase of its own, because its questions share a context of up to 10M tokens: one context is prefilled at a time, by a request of one token, before its questions go.
+Within a phase every task and every repeat is in flight at once, drawing from one pool the size of the server's running-request cap, which the suite reads back from the server.
+A long-prompt task also holds a slot of its cap group - every RULER task of one length shares one cap, and LongBench v2 and each GraphWalks file have their own - so the KV the long prompts hold is what it was when tasks ran in turn.
+So the server never drains between two tasks, and a task's `seconds` is from when its prompts are ready to its last reply - tasks overlap, and the run's own `seconds` is the wall clock.
+A pooled worker whose task is capped at the server's own cap keeps one request more in flight, which waits in the server's queue - the server takes in a 10M prompt for about a minute, and that now happens while the request ahead decodes rather than with the GPUs idle.
+The server still runs no more requests at once, and a shared context's first question still goes alone, so no answer changes; a waiting row's `seconds` is its time in a slot, with the wait in `queued_seconds`.
+
+A run writes one directory under the records root, named by the run id the config derives, and both halves land in it: `indexer.json` with the settings block the server was given, `server.log`, `meta.json`, and the suite's own `record.json`, `samples/` and `server_info.json`.
+Every launch into it appends to `launches.jsonl`: a line with its slurm job, the user it ran as, its host and start before the runner begins, and a line saying `completed` or `failed`, with the error, when the runner returns or raises.
+A launch slurm stopped - cancelled, timed out, out of memory - writes no end line, and slurm's accounting says what happened to it.
+
+`run.name` labels the run rather than naming a directory.
+
+```bash
+lsa records show <records>/<run_id>/record.json                        # one record as a table
+lsa records show <records>/<run_a>/record.json <records>/<run_b>/record.json   # two side by side
+```
+
+`records show` reads the kind from each record, so the same command prints a kernel record or a production one, taking the run directory or its `record.json`, and refuses a call that mixes kinds.
+
+### What a record says it measured
+
+Each task of a record names the corpus file its prompts came from with that file's manifest entry, how the prompt was assembled, what the replies did - the share that reasoned and the share cut at the budget, and whether the server held the thinking budget - and which server answered it.
+The run keeps a dated history of every edit made after the fact, publishing included.
+`attention` is what a comparison varies: the indexer, its settings and label, and the map it loaded.
+Its `kind` files the run under a method - `full`, `block_sparse` or `lsa` - since a checkpoint's own sparse attention and full attention both serve `native`; it comes from the model card's `attention`.
+A task's `protocol` is a short hash of its prompt-set hash, its sample count and its sampling, and two tasks with the same one differ only in the attention and the serving.
+
+### How sure a score is
+
+A task asked more than once per problem - AIME25 runs 30 problems four times - gives answers that are not independent, so the binomial `stderr` over every sample is too small.
+Each task of a record carries three spreads:
+
+| field | what it is |
+|---|---|
+| `stderr` | binomial over every scored sample, kept for older readers |
+| `stderr_doc` | standard error over docs, each doc's repeats averaged first |
+| `ci95` | percentile bootstrap 95% interval of the mean over docs, 10,000 resamples of the docs from a fixed seed, so it is the same every time |
+
+Every design draws the same docs, so two runs pair by doc id, and a paired gap is far tighter than the two scores' errors suggest.
+`lsa records compare` prints the gap of each run to the first, over the docs both scored, with its standard error, bootstrap interval, the matched docs and the docs the run won, lost and tied,
+and the share of samples whose answer text is identical to the baseline's, with a rollup per RULER length.
+A gap whose interval holds no zero is marked `*`.
+A joined run reads the same way, since the record names where its samples are.
+Error bars are drawn from `stderr_doc`, and `ci95` is the interval to quote.
+
+```bash
+lsa records compare <baseline run> <run> [<run> ...] [--tasks 'ruler_cwe_*' aime25] [--json]
+```
+
+### The mesh a server ran on
+
+Every server a record names carries its `mesh`, and so does a kernel record's setup: each axis's size even at 1, whether prefill context parallel was on and how it split a chunk, the attention data parallel, the node count, the MoE runner and the image.
+The mesh is named by every axis, always in this order and always with its size:
+
+| axis | what it splits |
+|---|---|
+| `tp` | attention's heads - attention's own tensor parallel, the server's TP over its CP and attention DP |
+| `cp` | a prefill chunk's rows - prefill context parallel |
+| `dcp` | the KV pool's slots - decode context parallel, on attention's ranks |
+| `pp` | the layers - pipeline stages |
+| `ep` | the experts - expert parallel |
+
+So eight GPUs read `tp8-cp1-dcp1-pp1-ep8` under tensor parallel and `tp1-cp8-dcp8-pp1-ep8` under context parallel, though the server reports a TP of 8 for both.
+A production record keys its deployments by this label, and the record tables print it.
+
+### Whether a run finished
+
+A run's status is worked out where it is read - by `lsa evaluate publish` and the record tables - and never stored.
+The last launch in `launches.jsonl` decides: `in progress` while slurm runs or queues its job, `failed` when the runner raised or slurm says so, `cancelled` or `timed out` as slurm says.
+A launch that ended well is `complete` when the record holds everything the run set out to measure, and `partial` when it does not - a planned task with no result or fewer samples scored than planned, a kernel context that did not finish.
+A launch with no end line that slurm has no record of is `unknown`.
+A run with no launch log is `complete` once its `meta.json` is written, or `partial` with work left, and has no status without one.
+
+## Timing the kernels instead of scoring the model
+
+A config under `configs/evaluation/kernels/` times one attention layer through [the attention-layer harness](../../src/lsa/evaluation/performance/kernels/measure/layer.py) instead of serving the model and scoring it.
+The model and run blocks are the scored ones' - the same attention path and indexer settings, the same launch block - and `lsa evaluate kernels` submits it the way `lsa evaluate accuracy` submits a served one.
+
+```bash
+lsa evaluate kernels configs/evaluation/kernels/glm53_flash/native.yaml --dry-run
+lsa evaluate kernels configs/evaluation/kernels/glm53_flash/lsa_flat.yaml
+```
+
+The `data` block says what to measure.
+`checkpoint` is a five-layer cut of the model with real weights, which `lsa kernels cut` builds and which makes layer 3 the sparse one; the full checkpoint leaves an H200 nothing for a long KV pool.
+`phase` is `prefill` or `decode`, and the two derive different run ids - the phase sits where a served run's suite does - so they are two jobs and two records.
+`contexts` is the ladder, one harness process each, measured in the order given so an interrupted run keeps the short points it already has.
+
+A context whose samples are already on disk is kept, which is what makes a job that ran out of wall clock finishable rather than restartable - resubmitted with `run.id` pinned to its directory.
+The record is rewritten after every context, so a run that is still climbing is readable.
+
+```bash
+lsa records rebuild <records>/<run_id>   # rebuild the record from its samples, no GPU
+```
+
+### Every arm of a layer in one job
+
+`lsa evaluate isolated` is the driver behind the H200 layer timings of the paper's layer-performance and motivation figures.
+It times every arm of one model's layer, both phases, one after another on one GPU of a node nothing else runs on.
+The paper's GLM-5.3-Flash H200 records behind those figures carry its overrides - a 32,768 chunk where the GLM base config sets 8,192, and FlashMLA sparse prefill with FA3 decode on the sparse arms - and Qwen3.8-27B's configs set the same chunk themselves.
+
+```bash
+lsa evaluate isolated glm53_flash --output $LSA_ROOT/layer-perf/isolated --dry-run
+lsa evaluate isolated glm53_flash --output $LSA_ROOT/layer-perf/isolated --reservation <reservation>
+lsa evaluate isolated glm53_flash --phase decode --arm pisa_c8 --output $LSA_ROOT/layer-perf/isolated-pisa-c8
+lsa evaluate isolated glm53_flash --gpu b300 --output $LSA_ROOT/layer-perf/isolated-b300
+```
+
+A layer timing compares across arms only when the card behaved the same for all of them.
+One job per arm lands on whichever nodes are free, shares them with other users' jobs, and can be timed on a card another job is heating.
+This is one job that asks for a whole node and holds one of its GPUs for every arm and phase in turn, so the arms differ in what they are and not in where they ran.
+The telemetry each point keeps says what the card did.
+
+It runs the same measurement as `lsa evaluate kernels`, once per arm and phase, with the arms' configs under `configs/evaluation/kernels/<model>/` loaded and these overrides laid over them.
+
+| override | applies to | why |
+|---|---|---|
+| prefill chunk of 32,768 tokens | every arm, both phases | one chunk for every arm, so the arms differ in the attention and not in the chunking |
+| CuTeDSL kernels | the design's arms, flat and tree | the kernels the published design timings were taken with |
+| FlashMLA sparse prefill and FA3 decode | GLM-5.3-Flash on H200 | the backends the sparse arms of the published GLM records were timed with beyond the config |
+| the records root of `--output` | every arm | all arms of one timing land together |
+
+The arms of a model are its dense and native baselines, the two designs and PISA, in that order.
+`--arm` names others instead, such as the two PISA variants, and `--phase` keeps one phase.
+`--gpu b300` loads each arm's B300 config beside the H200 one, with that card's image and backends, and refuses an arm that has none rather than falling back to the H200 file.
+An arm that fails does not stop the ones after it, and the job lists the failed arms when the last is done.
+
+### What runs inside the container
+
+The experiment yaml is the way in, and everything below is what it runs, for debugging one measurement by hand.
+
+```bash
+lsa kernels cut --layers 5 --weights --out <checkpoint>                     # the cut, as a CPU job
+python -m lsa.evaluation.performance.kernels.measure.layer --help    # inside the image: one context of one attention layer
+python -m lsa.evaluation.performance.kernels.measure.modules --help  # inside the image: one phase of the modules beside it
+```
+
+The cut is the kernels' data - `data/` beside `measure/` - and is ported with it: it reads the snapshot's config and links its shards, so it needs neither a GPU nor sglang, and a measurement's source fingerprint covers it with the harness.
+`layer` and `modules` import sglang, so they run inside the serving image with the checkout installed beside it, from the checkout root - `cd <checkout> && pip install --no-deps --quiet .` first, which is what the harness does.
+
+### Where each CuTeDSL kernel sits on the roofline
+
+Every kernel of the read, in CuTeDSL and in Triton, can be profiled with Nsight Compute on one GPU, one call each on inputs shaped as a served chunk of 32,768 queries sees them, and written as one JSON a page plots against that GPU's peaks.
+The report names the GPU from the profile and takes its specification and anchors from its table - an H200 or a B300 - and the steps that run in CuTeDSL there from the dispatch table.
+The job holds one GPU of a shared partition, never a whole node.
+
+```bash
+lsa kernels roofline --output $LSA_ROOT/roofline --dry-run
+lsa kernels roofline --output $LSA_ROOT/roofline                                  # every step at 131072 to 10485760
+lsa kernels roofline --output $LSA_ROOT/roofline --contexts 262144 --steps "bucket scan" "expansion by threshold"
+```
+
+The output directory gets `roofline.ncu-rep` for Nsight Compute's own viewer, `timings.json` and `roofline.json`.
+Another GPU's `roofline.json` sets each step's time beside this one's, and the anchors a table holds are measured on the GPU itself:
+
+```bash
+python -m lsa.evaluation.performance.roofline.page DIR/roofline.json DIR/roofline.html --compare H200/roofline.json
+python -m lsa.evaluation.performance.roofline.anchors --output DIR/anchors.json
+```
+
+A reference bf16 GEMM through cuBLAS rides along as the anchor at the tensor-core peak, and a step that does not serve at a context - the short-context listing above 32,768 buckets - is left out of it.
+Each kernel's record holds its duration, FLOPs, bytes at DRAM and L2, intensities, speed-of-light percentages and launch shape, and each step's record holds its timings and the kernels it launched.
+
+### The rest of the layer, and the whole model
+
+A kernel record is one attention layer.
+The modules every layer runs besides its attention - the feed-forward, the mHC boundaries, the embedding, the final norm and the head - are timed by [the module timer](../../src/lsa/evaluation/performance/kernels/measure/modules.py) in the same container, as a one-GPU job of their own, into a `modules` run directory of their own.
+
+```bash
+lsa kernels modules configs/evaluation/kernels/glm53_flash/native.yaml --phase decode
+```
+
+Composing sums one layer of each kind and the modules between them into a whole-model prefill and decode, each weighted by how many of it the checkpoint config holds.
+It leaves out everything that is not a kernel - host gaps, communication and scheduling.
+
+```bash
+lsa kernels compose --config <checkpoint>/config.json \
+    --modules <prefill run>/modules.json <decode run>/modules.json \
+    --records <run>/record.json [more records...] --out composition.json
+lsa kernels compose --show composition.json
+```
+
+## Timing the served model
+
+A config under `configs/evaluation/production/` starts the server and times it one request at a time with sglang's own serving benchmark - time to first token and time per output token, per length.
+[_base.yaml](../../configs/evaluation/production/glm53_flash/_base.yaml) is the server and the ladder every timing of the model shares, `native_tp8.yaml` and `lsa_flat_tp8.yaml` name it with the model block of the scored configuration of the same method, and [_tp8pp2.yaml](../../configs/evaluation/production/glm53_flash/_tp8pp2.yaml) lays two nodes and the lengths past 1M over either, which `<design>_tp8pp2.yaml` does for each design.
+
+```bash
+lsa data prepare production   # wait for this CPU job before evaluating
+lsa evaluate production configs/evaluation/production/glm53_flash/lsa_flat_tp8.yaml
+```
+
+The prompts are the [production workload](../../src/lsa/assets/datasets/workloads/production.yaml) a run names as `data.workload` - real text, gutenberg rows of the GLM tokenized dataset, three entries a length, nested so entry i at every length is the first tokens of the same text - under `$LSA_ROOT/data/workloads/production`, with a manifest of each file's sha256.
+The lengths are climbed in order and stop at the first failure, and a length whose samples exist is kept once `run.id` is pinned, which is how one run spans the one-node and two-node deployments.
+
+## Where the records live
+
+One root per site, not one per clone, because comparing reads a root and two runs in two people's checkouts cannot be put side by side.
+
+The shared root is `$LSA_ROOT/evaluations`, and each kind of run has a directory of its own under it, nested as the package is:
+
+```
+evaluations/
+  accuracy/<run_id>/                what a served model scored
+  performance/kernels/<run_id>/     what one attention layer cost
+  performance/production/<run_id>/  what the whole served model took to answer
+```
+
+A run writes under `run.output`, and each tree's base sets that to `results`, under the directory the run was launched from.
+So a run lands in the working directory's `results/` while its name, tag and note are still being settled, and is published once they are - a decision rather than a default.
+A checkout is not somewhere a run can stay, though: a worktree is removed with everything under it.
+
+```bash
+lsa evaluate publish results/accuracy/<run_id> [<run_dir> ...]            # dry run
+lsa evaluate publish results/accuracy/<run_id> --apply
+```
+
+It copies each run whole into its kind's directory under the shared root, after checking all of them, so one refusal publishes nothing.
+Only a `complete` run is published, a `partial` one only when `--partial` says it is meant, and never over a run already there unless `--replace` says to refresh it.
+A run launched before there was a launch log is complete when it has a `meta.json` and its record holds everything it set out to measure.
+
+```bash
+lsa evaluate publish results/accuracy/<run_id> --in-progress --apply            # a snapshot of a run still going
+lsa evaluate publish results/accuracy/<run_id> --in-progress --replace --apply  # refresh it
+lsa evaluate publish --sync results [<results root> ...] --apply                # everything worth showing, kept current
+```
+
+A run still going is published with `--in-progress` as a snapshot - its record read once, its samples cut at their last whole line, and the record's `run.snapshot` saying when it was taken and what slurm said of the job.
+It reads as `in progress (snapshot HH:MM)`, the time in UTC, whatever slurm says by then, until a later publish replaces it.
+A run is built a level above its kind's directory and renamed into place, so a reader never meets one half copied, and `--replace` swaps the new copy in for the old.
+`--sync` publishes every run under the results roots it is given that is complete, partial or in progress, refreshes what changed, passes over what did not, and names each run it leaves out and why.
+
+### Joining a configuration's runs
+
+```bash
+lsa records join results/accuracy/<base id> results/accuracy/<5M id> results/accuracy/<10M id> --into results/joined/accuracy             # dry run
+lsa records join results/accuracy/<base id> results/accuracy/<5M id> results/accuracy/<10M id> --into results/joined/accuracy --apply
+lsa evaluate publish results/joined/accuracy/<base id> --replace --apply
+```
+
+A configuration scored by several runs - a `full` run to 2M beside runs at 5M and 10M on a server that holds them - is joined into one run that keeps the base's id, or takes the one `--id` gives it.
+Its parts share the model, the indexer and its settings and map, the mesh, the suite, the sampling and every server setting but the serving knobs, which are the context length, the requests at once, the token pool, the prefill chunk and the memory fraction.
+Those may differ, since they change how fast a prompt is served and whether it fits rather than what the answer is, and the joined record keeps each part's values under `run.parts`.
+Kernel and production parts measured on different nodes join only with `--across-hosts`, and only when the card model is the same - the joined record keeps each part's host under `run.parts`.
+Kernel and production parts that read different early budgets join with `--mixed-early-budget`, and parts built from different harness files or commits with `--across-harness`.
+`--contexts <run id>=<first>-<last>`, given for every part, picks the contexts each supplies - an early-budget run up to 1M and a plain run past it - and refuses when the ranges overlap or leave a held context uncovered.
+The joined record keeps each part's early budget, harness hashes, range and note under `run.parts`.
+No two parts hold one task, an extension scored at least one, and a task planned by two parts was planned the same way in both.
+
+```bash
+lsa records join <core run> <PaperTrail run> <MMLU-Pro run> <LongBench v2 rerun> --into results/joined/accuracy \
+    --assemble full --supersede longbench2 --drop graphwalks                                                   # dry run, then --apply
+```
+
+A table's accuracy is assembled with `--assemble <suite>` from sets that are not one measurement - a suite scored on one image and mesh, a benchmark added later on another.
+The image and the mesh may differ between sets, so an assembly lets the parts differ in mesh, suite and every server setting, and the joined record keeps each part's under `run.parts`.
+The model, the indexer and its settings and map, and the sampling and plan of every task still have to match.
+`--supersede <task or benchmark>` keeps a task from the last part that holds it, as a rerun at a larger budget replaces the first run's cell.
+`--drop <task or benchmark>` leaves a task out, as a benchmark the suite no longer holds.
+Either works in a plain join too, and a left-out task's samples stay under `parts/<part id>/`, named in the part's `left_out`.
+
+```bash
+lsa records join <paper run> <early budget run> [...] --into results/joined/accuracy \
+    --assemble full --supersede <benchmark> --mixed-early-budget --id <run id>                                 # dry run, then --apply
+```
+
+A record that holds a later arm's runs beside the earlier arm's, where the later arm reads a smaller budget before an early position, is joined with `--mixed-early-budget`.
+The parts may then differ in the early budget and in no other indexer setting - any other difference still refuses, and so does a pair of parts that both set an early budget but not the same one.
+Each task keeps the indexer settings of the server that scored it, the record's own indexer names the early budget of the last part that sets one, and `run.parts` keeps each part's.
+Say in the run's note which tasks ran under which budget and on which mesh, since the record's own indexer names the later arm alone.
+
+The joined directory holds every part's samples, each part's launch log, metadata, server info and log under `parts/<part id>/`, and a launch log of every part's launches with the join's own last, so its status is complete once every task any part planned is scored.
+A part still going is joined only with `--in-progress`, as a snapshot, and `--replace` rebuilds a join written before - so while a battery runs, joining again and syncing `results/joined` keeps one entry per configuration on the shared root.
+Publishing a joined run with `--replace` moves its base and its other parts, where they were published on their own, into `$LSA_ROOT/archive/evaluations/` - moved, never deleted - and a part a published joined run holds is not published on its own again.
+
+### Naming a production record
+
+```bash
+lsa records rename <run dir> --name glm53_flash_tp8_lsa_flat --note "Stock MoE, 16k-1M." --into results/renamed             # dry run
+lsa records rename <run dir> --name glm53_flash_tp8_lsa_flat --note "Stock MoE, 16k-1M." --into results/renamed --apply
+lsa evaluate publish results/renamed/<new id> --replace --apply
+```
+
+A production record is named model, mesh and method, so its config column says what was measured and not which launch batch it came from.
+The note is one plain sentence of what the name cannot carry - the lengths a joined record holds, or a setting that is not the default.
+The renamed run keeps the old id's timestamp, and publishing it with `--replace` moves the run it was renamed from into the archive, never deleting it.
+
+Every reader, the record tables included, takes the shared root when it exists and `results` under the working directory otherwise.
+A root that exists but cannot be written is the one broken state - every reader resolves there and every write fails.
+If several people publish to one root, give it a group they all belong to, group-writable with the setgid bit, so a run's files keep that group rather than the writer's.
+
+## Reading records as a table
+
+```bash
+lsa records show <records>/<run_id>/record.json                               # one record as a table
+lsa records show <records>/<native>/record.json <records>/<lsa>/record.json   # aligned, with speedups
+```
+
+A production table has a row per context and deployment, with the prefill chunk each run used and its median TTFT, and the median TPOT of decode.
+A compared run carries its speedup over the baseline beside the time, and a chunk that differs from the baseline's is marked, because a prefill time is only comparable at one chunk size.
+A layer table does the same for one attention layer, prefill and decode apart.
+A run whose output, state or scores did not match its reference is marked, and `n/a` stands where there was no selection to check.
+
+Which checkpoints a config may name is [models.md](models.md), and teaching the code a model it does not already drive is [adapters.md](adapters.md).

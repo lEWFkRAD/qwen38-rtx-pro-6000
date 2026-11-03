@@ -1,0 +1,112 @@
+{"event": "layer_start", "layer": 3}
+{"event": "training", "layer": 3, "step": 100, "train_kl": 0.2646331861615181}
+{"event": "training", "layer": 3, "step": 200, "train_kl": 0.23155532404780388}
+{"event": "training", "layer": 3, "step": 300, "train_kl": 0.21298761293292046}
+{"event": "training", "layer": 3, "step": 400, "train_kl": 0.1990576907992363}
+{"event": "training", "layer": 3, "step": 500, "train_kl": 0.1891389973461628}
+{"event": "training", "layer": 3, "step": 600, "train_kl": 0.181414682418108}
+{"event": "layer_start", "layer": 7}
+{"event": "training", "layer": 7, "step": 100, "train_kl": 0.28286775574088097}
+{"event": "training", "layer": 7, "step": 200, "train_kl": 0.23934942111372948}
+{"event": "training", "layer": 7, "step": 300, "train_kl": 0.21452782675623894}
+{"event": "training", "layer": 7, "step": 400, "train_kl": 0.19804206117987633}
+{"event": "training", "layer": 7, "step": 500, "train_kl": 0.18546834960579872}
+{"event": "training", "layer": 7, "step": 600, "train_kl": 0.17536587081849575}
+{"event": "layer_start", "layer": 11}
+{"event": "training", "layer": 11, "step": 100, "train_kl": 0.21957333013415337}
+{"event": "training", "layer": 11, "step": 200, "train_kl": 0.19516070187091827}
+{"event": "training", "layer": 11, "step": 300, "train_kl": 0.18112299963831902}
+{"event": "training", "layer": 11, "step": 400, "train_kl": 0.17083263024687767}
+{"event": "training", "layer": 11, "step": 500, "train_kl": 0.16323066130280495}
+{"event": "training", "layer": 11, "step": 600, "train_kl": 0.1568942703306675}
+{"event": "layer_start", "layer": 15}
+{"event": "training", "layer": 15, "step": 100, "train_kl": 0.15862023830413818}
+{"event": "training", "layer": 15, "step": 200, "train_kl": 0.13815299794077873}
+{"event": "training", "layer": 15, "step": 300, "train_kl": 0.1280129924416542}
+{"event": "training", "layer": 15, "step": 400, "train_kl": 0.11956032365560532}
+{"event": "training", "layer": 15, "step": 500, "train_kl": 0.11414013430476189}
+{"event": "training", "layer": 15, "step": 600, "train_kl": 0.11006498895585537}
+{"event": "layer_start", "layer": 19}
+{"event": "training", "layer": 19, "step": 100, "train_kl": 0.16226876713335514}
+{"event": "training", "layer": 19, "step": 200, "train_kl": 0.14121741615235806}
+{"event": "training", "layer": 19, "step": 300, "train_kl": 0.12978575564920902}
+{"event": "training", "layer": 19, "step": 400, "train_kl": 0.12185783311724663}
+{"event": "training", "layer": 19, "step": 500, "train_kl": 0.11570346914231777}
+{"event": "training", "layer": 19, "step": 600, "train_kl": 0.11094817519187927}
+{"event": "layer_start", "layer": 23}
+{"event": "training", "layer": 23, "step": 100, "train_kl": 0.15991635620594025}
+{"event": "training", "layer": 23, "step": 200, "train_kl": 0.13083546422421932}
+{"event": "training", "layer": 23, "step": 300, "train_kl": 0.11784660443663597}
+{"event": "training", "layer": 23, "step": 400, "train_kl": 0.10934841632843018}
+{"event": "training", "layer": 23, "step": 500, "train_kl": 0.10391619615256786}
+{"event": "training", "layer": 23, "step": 600, "train_kl": 0.09868444688618183}
+{"event": "layer_start", "layer": 27}
+{"event": "training", "layer": 27, "step": 100, "train_kl": 0.16661472246050835}
+{"event": "training", "layer": 27, "step": 200, "train_kl": 0.14718041196465492}
+{"event": "training", "layer": 27, "step": 300, "train_kl": 0.13553799130022526}
+{"event": "training", "layer": 27, "step": 400, "train_kl": 0.12761073000729084}
+{"event": "training", "layer": 27, "step": 500, "train_kl": 0.1216359194368124}
+{"event": "training", "layer": 27, "step": 600, "train_kl": 0.11708178743720055}
+{"event": "layer_start", "layer": 31}
+{"event": "training", "layer": 31, "step": 100, "train_kl": 0.14250564202666283}
+{"event": "training", "layer": 31, "step": 200, "train_kl": 0.117793720215559}
+{"event": "training", "layer": 31, "step": 300, "train_kl": 0.10523536987602711}
+{"event": "training", "layer": 31, "step": 400, "train_kl": 0.09681982733309269}
+{"event": "training", "layer": 31, "step": 500, "train_kl": 0.09157639183104038}
+{"event": "training", "layer": 31, "step": 600, "train_kl": 0.0871894545853138}
+{"event": "layer_start", "layer": 35}
+{"event": "training", "layer": 35, "step": 100, "train_kl": 0.1661566160619259}
+{"event": "training", "layer": 35, "step": 200, "train_kl": 0.14041483588516712}
+{"event": "training", "layer": 35, "step": 300, "train_kl": 0.12721479684114456}
+{"event": "training", "layer": 35, "step": 400, "train_kl": 0.11839036084711552}
+{"event": "training", "layer": 35, "step": 500, "train_kl": 0.11111756972968578}
+{"event": "training", "layer": 35, "step": 600, "train_kl": 0.10628226585686207}
+{"event": "layer_start", "layer": 39}
+{"event": "training", "layer": 39, "step": 100, "train_kl": 0.14360349625349045}
+{"event": "training", "layer": 39, "step": 200, "train_kl": 0.12015199474990368}
+{"event": "training", "layer": 39, "step": 300, "train_kl": 0.10885454528033733}
+{"event": "training", "layer": 39, "step": 400, "train_kl": 0.09907982125878334}
+{"event": "training", "layer": 39, "step": 500, "train_kl": 0.09333939664065838}
+{"event": "training", "layer": 39, "step": 600, "train_kl": 0.08888559974730015}
+{"event": "layer_start", "layer": 43}
+{"event": "training", "layer": 43, "step": 100, "train_kl": 0.14372023940086365}
+{"event": "training", "layer": 43, "step": 200, "train_kl": 0.11405543237924576}
+{"event": "training", "layer": 43, "step": 300, "train_kl": 0.1015859954059124}
+{"event": "training", "layer": 43, "step": 400, "train_kl": 0.09452366828918457}
+{"event": "training", "layer": 43, "step": 500, "train_kl": 0.08885900117456913}
+{"event": "training", "layer": 43, "step": 600, "train_kl": 0.08329318091273308}
+{"event": "layer_start", "layer": 47}
+{"event": "training", "layer": 47, "step": 100, "train_kl": 0.23057034984230995}
+{"event": "training", "layer": 47, "step": 200, "train_kl": 0.1959947533905506}
+{"event": "training", "layer": 47, "step": 300, "train_kl": 0.17582057043910027}
+{"event": "training", "layer": 47, "step": 400, "train_kl": 0.1633702553808689}
+{"event": "training", "layer": 47, "step": 500, "train_kl": 0.15342233330011368}
+{"event": "training", "layer": 47, "step": 600, "train_kl": 0.14628646709024906}
+{"event": "all_candidates_frozen", "layers": 12, "exported_maps": 2}
+{"event": "evaluated", "split": "validation", "layer": 3}
+{"event": "evaluated", "split": "validation", "layer": 7}
+{"event": "evaluated", "split": "validation", "layer": 11}
+{"event": "evaluated", "split": "validation", "layer": 15}
+{"event": "evaluated", "split": "validation", "layer": 19}
+{"event": "evaluated", "split": "validation", "layer": 23}
+{"event": "evaluated", "split": "validation", "layer": 27}
+{"event": "evaluated", "split": "validation", "layer": 31}
+{"event": "evaluated", "split": "validation", "layer": 35}
+{"event": "evaluated", "split": "validation", "layer": 39}
+{"event": "evaluated", "split": "validation", "layer": 43}
+{"event": "evaluated", "split": "validation", "layer": 47}
+{"event": "split_summary", "split": "validation", "result": {"pairs": 24, "mean_kl": {"pca": 0.37416266836225986, "learned": 0.22257406388719878}, "mean_conditional_mass": {"pca": {"512": 0.7449206536014875, "1024": 0.9031175499161085}, "learned": {"512": 0.7539839049180349, "1024": 0.9080401559670767}}, "worst_mass_delta": {"512": {"delta": -0.02824777364730835, "layer": "43", "document": "validation_technical"}, "1024": {"delta": -0.010754227638244629, "layer": "43", "document": "validation_technical"}}, "pilot_gate_passed": true}}
+{"event": "evaluated", "split": "test", "layer": 3}
+{"event": "evaluated", "split": "test", "layer": 7}
+{"event": "evaluated", "split": "test", "layer": 11}
+{"event": "evaluated", "split": "test", "layer": 15}
+{"event": "evaluated", "split": "test", "layer": 19}
+{"event": "evaluated", "split": "test", "layer": 23}
+{"event": "evaluated", "split": "test", "layer": 27}
+{"event": "evaluated", "split": "test", "layer": 31}
+{"event": "evaluated", "split": "test", "layer": 35}
+{"event": "evaluated", "split": "test", "layer": 39}
+{"event": "evaluated", "split": "test", "layer": 43}
+{"event": "evaluated", "split": "test", "layer": 47}
+{"event": "split_summary", "split": "test", "result": {"pairs": 24, "mean_kl": {"pca": 0.49265342205762863, "learned": 0.3098107986152172}, "mean_conditional_mass": {"pca": {"512": 0.7050403530399004, "1024": 0.8584674745798111}, "learned": {"512": 0.7216908062497774, "1024": 0.8689994985858599}}, "worst_mass_delta": {"512": {"delta": -0.012205362319946289, "layer": "43", "document": "test_code"}, "1024": {"delta": -0.005997598171234131, "layer": "43", "document": "test_code"}}, "pilot_gate_passed": true}}
+{"event": "finished", "status": "pilot_qualified", "report": "/path/to/lsa-prep-20261103/flashnext-maps/maps/pilot-v1/report.json"}

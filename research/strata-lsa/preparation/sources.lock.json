@@ -1,0 +1,29 @@
+{
+  "created_utc": "2026-11-03T10:58:00.1006455Z",
+  "lsa": {
+    "uv_lock_sha256": "a577ed7cdd5e0625395b818399ab0bc8af994dbd0f20bc6f389bd47172dd6853",
+    "license": "Apache-2.0",
+    "commit": "906be195c1052aaa74f95852ad1917ce1926ba64",
+    "url": "https://github.com/Prefrontal-AI/latent-sparse-attention"
+  },
+  "serving_fork": {
+    "use": "source reference only; not installed",
+    "tag": "lsa-v0.1.0",
+    "commit": "042d955ba31b962911f63b114c2fb245effa86f2",
+    "url": "https://github.com/Prefrontal-AI/sglang"
+  },
+  "paper": "https://arxiv.org/html/2610.42147v1",
+  "target": {
+    "host": "onyx-linux",
+    "prep_only": true,
+    "compute_capability": "12.0",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition"
+  },
+  "environment": {
+    "gpu_execution": "deferred to explicitly opened window",
+    "bootstrap_uv": "0.13.0",
+    "lock": "upstream/uv.lock",
+    "extras": [],
+    "python": "3.12"
+  }
+}

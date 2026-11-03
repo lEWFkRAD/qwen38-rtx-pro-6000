@@ -1,0 +1,269 @@
+{
+  "scope": "CPU diagnostics; no upstream patch and no GPU qualification",
+  "ward": [
+    {
+      "pool": 1,
+      "seed": 0,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 1,
+      "seed": 1,
+      "upstream_fp32_reached": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "fp32_trace": {
+        "reached": false,
+        "rounds": 29,
+        "remaining_counts": [
+          16,
+          18,
+          16,
+          16,
+          16,
+          16,
+          16,
+          16
+        ],
+        "target": 16,
+        "blocked_groups": [
+          1
+        ],
+        "allowed_pairs_in_blocked_groups": [
+          160
+        ],
+        "cost_asymmetry_at_stop": 1.9073486328125e-06,
+        "max_gram_asymmetry": 2.86102294921875e-06
+      },
+      "diagnostic_fp64_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 1,
+      "seed": 2,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 1,
+      "seed": 3,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 1,
+      "seed": 4,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 1,
+      "seed": 5,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 0,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 1,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "fp32_trace": {
+        "reached": false,
+        "rounds": 10,
+        "remaining_counts": [
+          64,
+          64,
+          68,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "target": 64,
+        "blocked_groups": [
+          2
+        ],
+        "allowed_pairs_in_blocked_groups": [
+          2760
+        ],
+        "cost_asymmetry_at_stop": 9.5367431640625e-07,
+        "max_gram_asymmetry": 3.814697265625e-06
+      },
+      "diagnostic_fp64_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 2,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 3,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 4,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "pool": 4,
+      "seed": 5,
+      "upstream_fp32_reached": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "attention": [
+    {
+      "seed": 0,
+      "bitwise_equal": false,
+      "max_abs_error": 3.5762786865234375e-07,
+      "allclose_atol_1e-6_rtol_1e-5": true,
+      "finite": true
+    },
+    {
+      "seed": 1,
+      "bitwise_equal": false,
+      "max_abs_error": 2.980232238769531e-07,
+      "allclose_atol_1e-6_rtol_1e-5": true,
+      "finite": true
+    },
+    {
+      "seed": 2,
+      "bitwise_equal": false,
+      "max_abs_error": 3.5762786865234375e-07,
+      "allclose_atol_1e-6_rtol_1e-5": true,
+      "finite": true
+    },
+    {
+      "seed": 3,
+      "bitwise_equal": false,
+      "max_abs_error": 2.5331974029541016e-07,
+      "allclose_atol_1e-6_rtol_1e-5": true,
+      "finite": true
+    }
+  ]
+}

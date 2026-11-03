@@ -1,0 +1,64 @@
+INFO logit_bias=1 context=131072 kv=int8 kv_resident=0 expert_slots=24576 expert_cache_mib=47962 expert_slots_primary=24576 expert_cache_primary_mib=47962 spec=8 mtp_max=6 lookup=3 vram_free_mib=11131 cvec=project:4-44 arena_mib=47962 pool_workers=12 pcie_frac=0.00 spec_min_p=0.50 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 conversation_cache_min_tokens=0 tail_role_token=-1 vram_elastic=0 prefill_cap=32768 prefill_stages=1 stream_all_min=1024 prefill_pipe=0 batch_slots=8 slot_cache=1 batch_groups=1 engine=0.1.50
+READY 131072 stop
+RESUME 0
+PP 33 40 110 299.3
+PP 39 40 195 200.0
+REUSED 0
+T 6457
+T 4337
+T 2275
+T 7532
+T 44083
+T 8378
+T 8116
+T 248046
+DONE 8 40 195.0 36.1 stop 9 10 0 0 0 0 0 0.0 40 0 chunk=0 experts_streamed=0
+RESUME 0
+PP 1580 1587 668 2366.8
+PP 1586 1587 736 2154.0
+REUSED 0
+T 1354
+T 9269
+T 62
+T 22
+T 18
+T 16
+T 24
+T 248046
+DONE 8 1587 736.3 33.6 stop 9 10 0 0 0 0 0 0.0 1587 0 chunk=1580 experts_streamed=0
+RESUME 1580
+PP 1586 1587 20 296.2
+REUSED 1580
+T 1354
+T 9269
+T 62
+T 22
+T 18
+T 16
+T 24
+T 248046
+DONE 8 1587 20.3 33.2 stop 9 10 1580 0 0 0 0 0.0 7 0 chunk=0 experts_streamed=0
+RESUME 0
+PP 7459 7466 1144 6517.7
+PP 7465 7466 1213 6153.6
+REUSED 0
+T 45
+T 16
+T 16
+T 20
+T 15
+T 21
+T 24
+T 20
+T 18
+T 248046
+DONE 10 7466 1213.1 33.3 stop 7 10 0 0 0 0 0 0.0 7466 0 chunk=7459 experts_streamed=0
+RESUME 0
+PP 66 73 94 700.1
+PP 72 73 162 445.4
+REUSED 0
+T 16
+T 23
+T 23
+T 248046
+DONE 4 73 161.7 28.1 stop 5 5 0 0 0 0 0 0.0 73 0 chunk=66 experts_streamed=0

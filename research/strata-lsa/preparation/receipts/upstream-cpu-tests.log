@@ -1,0 +1,152 @@
+.................................FF...F................................. [ 48%]
+........................................................................ [ 97%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size[1] _______
+
+pool_size = 1
+
+    @pytest.mark.parametrize("pool_size", [1, 4])
+    def test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size(pool_size):
+        # Random, near-copied and rounded pools, with and without pooling
+        for seed in range(6):
+            sums, sizes = pool_sums(8, 128, pool_size=pool_size, seed=seed)
+            if seed % 3 == 1:
+                sums = sums[:, :1].expand_as(sums) + 1e-3 * sums
+            if seed % 3 == 2:
+                sums = sums.round()
+>           labels = ward_merge(sums, sizes, 128 * pool_size // 8, 16)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/core/test_ward.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pool_keys = tensor([[[-4.0423e-01, -1.9879e-01, -1.7328e-01,  ...,  4.4703e-01,
+           6.0525e-02,  1.2391e-01],
+         [-4....8.4599e-02],
+         [-2.5130e-01,  1.3235e-01, -1.7533e-01,  ...,  3.5860e-01,
+          -5.9060e-02,  8.4987e-02]]])
+pool_sizes = tensor([[1., 1., 1.,  ..., 1., 1., 1.],
+        [1., 1., 1.,  ..., 1., 1., 1.],
+        [1., 1., 1.,  ..., 1., 1., 1.]...       [1., 1., 1.,  ..., 1., 1., 1.],
+        [1., 1., 1.,  ..., 1., 1., 1.],
+        [1., 1., 1.,  ..., 1., 1., 1.]])
+bucket_count = 16, bucket_cap = 16
+
+    def ward_merge(
+        pool_keys: torch.Tensor, pool_sizes: torch.Tensor, bucket_count: int, bucket_cap: int
+    ) -> torch.Tensor:
+        """Merge each block's pools down to exactly `bucket_count` buckets, or refuse.
+    
+        Ward never stops short at a cap of twice the bucket size: while more than `bucket_count` buckets remain
+        their mean size is under the average bucket size, and the two smallest sum to at most twice it, so an allowed
+        pair is always left. A cap under that can leave a block with none, and that is an error rather than a
+        fallback.
+    
+        Args:
+            pool_keys: Each block's pool keys [G, P, index_dim] fp32.
+            pool_sizes: Keys each pool holds [G, P] fp32.
+            bucket_count: Buckets a block ends with.
+            bucket_cap: Most keys a merged bucket may hold.
+    
+        Returns:
+            Labels [G, P] int64 - each pool's bucket, numbered from 0 within its block in the order of its first pool.
+    
+        Raises:
+            ValueError: If the cap is under twice the average bucket size, or a block stops short of its count.
+        """
+        bucket_size = pool_sizes.sum(1).max().item() / bucket_count
+        if bucket_cap < 2 * bucket_size:
+            raise ValueError(
+                f"the bucket cap must be at least twice the bucket size, {2 * bucket_size:g} - got {bucket_cap}"
+            )
+        labels, reached = ward_rounds(pool_keys, pool_sizes, bucket_count, bucket_cap)
+        if not reached.all():
+>           raise ValueError(
+                f"{int((~reached).sum())} blocks stopped short of {bucket_count} buckets under the cap"
+            )
+E           ValueError: 1 blocks stopped short of 16 buckets under the cap
+
+src/lsa/core/ward.py:122: ValueError
+_______ test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size[4] _______
+
+pool_size = 4
+
+    @pytest.mark.parametrize("pool_size", [1, 4])
+    def test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size(pool_size):
+        # Random, near-copied and rounded pools, with and without pooling
+        for seed in range(6):
+            sums, sizes = pool_sums(8, 128, pool_size=pool_size, seed=seed)
+            if seed % 3 == 1:
+                sums = sums[:, :1].expand_as(sums) + 1e-3 * sums
+            if seed % 3 == 2:
+                sums = sums.round()
+>           labels = ward_merge(sums, sizes, 128 * pool_size // 8, 16)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/core/test_ward.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pool_keys = tensor([[[-0.2823, -0.4200,  0.0717,  ..., -0.1757, -0.4206, -0.2336],
+         [-0.2819, -0.4198,  0.0717,  ..., -0.1...06,  0.2504,  ..., -0.3308,  0.2095,  0.3553],
+         [ 0.4051, -0.3999,  0.2492,  ..., -0.3304,  0.2099,  0.3544]]])
+pool_sizes = tensor([[4., 4., 4.,  ..., 4., 4., 4.],
+        [4., 4., 4.,  ..., 4., 4., 4.],
+        [4., 4., 4.,  ..., 4., 4., 4.]...       [4., 4., 4.,  ..., 4., 4., 4.],
+        [4., 4., 4.,  ..., 4., 4., 4.],
+        [4., 4., 4.,  ..., 4., 4., 4.]])
+bucket_count = 64, bucket_cap = 16
+
+    def ward_merge(
+        pool_keys: torch.Tensor, pool_sizes: torch.Tensor, bucket_count: int, bucket_cap: int
+    ) -> torch.Tensor:
+        """Merge each block's pools down to exactly `bucket_count` buckets, or refuse.
+    
+        Ward never stops short at a cap of twice the bucket size: while more than `bucket_count` buckets remain
+        their mean size is under the average bucket size, and the two smallest sum to at most twice it, so an allowed
+        pair is always left. A cap under that can leave a block with none, and that is an error rather than a
+        fallback.
+    
+        Args:
+            pool_keys: Each block's pool keys [G, P, index_dim] fp32.
+            pool_sizes: Keys each pool holds [G, P] fp32.
+            bucket_count: Buckets a block ends with.
+            bucket_cap: Most keys a merged bucket may hold.
+    
+        Returns:
+            Labels [G, P] int64 - each pool's bucket, numbered from 0 within its block in the order of its first pool.
+    
+        Raises:
+            ValueError: If the cap is under twice the average bucket size, or a block stops short of its count.
+        """
+        bucket_size = pool_sizes.sum(1).max().item() / bucket_count
+        if bucket_cap < 2 * bucket_size:
+            raise ValueError(
+                f"the bucket cap must be at least twice the bucket size, {2 * bucket_size:g} - got {bucket_cap}"
+            )
+        labels, reached = ward_rounds(pool_keys, pool_sizes, bucket_count, bucket_cap)
+        if not reached.all():
+>           raise ValueError(
+                f"{int((~reached).sum())} blocks stopped short of {bucket_count} buckets under the cap"
+            )
+E           ValueError: 1 blocks stopped short of 64 buckets under the cap
+
+src/lsa/core/ward.py:122: ValueError
+________________ test_query_blocking_does_not_change_the_answer ________________
+
+    def test_query_blocking_does_not_change_the_answer():
+        q, k, v = qkv()
+        sel = everything_selected()
+        whole = topk_attention(q, k, v, sel, window=0, sink=0, scale=SCALE, query_block_size=T)
+        split = topk_attention(q, k, v, sel, window=0, sink=0, scale=SCALE, query_block_size=7)
+>       assert torch.equal(whole, split)
+E       assert False
+E        +  where False = <built-in method equal of type object at 0x795aadda0f20>(tensor([[[[-8.4652e-01,  1.3559e-01, -3.1607e-01,  ...,  2.3973e-01,\n           -1.0482e+00, -1.6407e+00],\n          [...325e-01],\n          [ 1.6016e-03, -2.6014e-01,  1.4619e-01,  ...,  3.9905e-02,\n           -1.1568e-01,  3.3346e-02]]]]), tensor([[[[-8.4652e-01,  1.3559e-01, -3.1607e-01,  ...,  2.3973e-01,\n           -1.0482e+00, -1.6407e+00],\n          [...325e-01],\n          [ 1.6016e-03, -2.6014e-01,  1.4619e-01,  ...,  3.9905e-02,\n           -1.1568e-01,  3.3346e-02]]]]))
+E        +    where <built-in method equal of type object at 0x795aadda0f20> = torch.equal
+
+tests/unit/core/test_attention.py:57: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_ward.py::test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size[1]
+FAILED tests/unit/core/test_ward.py::test_ward_never_stops_short_at_a_cap_of_twice_the_bucket_size[4]
+FAILED tests/unit/core/test_attention.py::test_query_blocking_does_not_change_the_answer
+3 failed, 144 passed in 1.24s

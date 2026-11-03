@@ -1,0 +1,2975 @@
+From 876307a9ded78bbca941189e63230b33cfdc6e2a Mon Sep 17 00:00:00 2001
+From: Codex Onyx <codex-onyx@localhost>
+Date: Tue, 3 Nov 2026 16:47:15 -0500
+Subject: [PATCH] [Engine] Integrate opt-in learned LSA with native Ward cache
+
+---
+ CMakeLists.txt                     |  20 ++
+ include/strata/core/layer.hpp      |   8 +
+ include/strata/lsa/cache_state.hpp | 116 +++++++++
+ include/strata/lsa/cuda_adapter.h  |  66 ++++++
+ include/strata/lsa/maps.hpp        |  45 ++++
+ include/strata/lsa/runtime.hpp     |  93 ++++++++
+ include/strata/lsa/ward.hpp        |  41 ++++
+ src/core/conversation_snapshot.cpp |  39 +++-
+ src/core/layer.cpp                 |  29 +++
+ src/core/session.cpp               |   6 +-
+ src/core/verify.cpp                |  69 ++++++
+ src/lsa/CMakeLists.txt             |  60 +++++
+ src/lsa/cache_state.cpp            | 132 +++++++++++
+ src/lsa/cache_state_test.cpp       | 248 ++++++++++++++++++++
+ src/lsa/cuda_adapter.cu            | 273 ++++++++++++++++++++++
+ src/lsa/maps.cpp                   |  91 ++++++++
+ src/lsa/maps_test.cpp              | 140 +++++++++++
+ src/lsa/runtime.cu                 | 361 +++++++++++++++++++++++++++++
+ src/lsa/runtime_test.cu            | 303 ++++++++++++++++++++++++
+ src/lsa/ward.cu                    | 221 ++++++++++++++++++
+ src/prefill/prefill.cpp            |  51 +++-
+ src/program/generate.cpp           |  40 ++++
+ tools/export_lsa_maps.py           | 132 +++++++++++
+ 23 files changed, 2574 insertions(+), 10 deletions(-)
+ create mode 100644 include/strata/lsa/cache_state.hpp
+ create mode 100644 include/strata/lsa/cuda_adapter.h
+ create mode 100644 include/strata/lsa/maps.hpp
+ create mode 100644 include/strata/lsa/runtime.hpp
+ create mode 100644 include/strata/lsa/ward.hpp
+ create mode 100644 src/lsa/CMakeLists.txt
+ create mode 100644 src/lsa/cache_state.cpp
+ create mode 100644 src/lsa/cache_state_test.cpp
+ create mode 100644 src/lsa/cuda_adapter.cu
+ create mode 100644 src/lsa/maps.cpp
+ create mode 100644 src/lsa/maps_test.cpp
+ create mode 100644 src/lsa/runtime.cu
+ create mode 100644 src/lsa/runtime_test.cu
+ create mode 100644 src/lsa/ward.cu
+ create mode 100644 tools/export_lsa_maps.py
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 46ebf034..9feb09bf 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -122,6 +122,10 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt AND EXISTS ${CMAKE_CU
+ endif()
+ option(STRATA_BUILD_TESTS "Build the test suite" ${_strata_tests_default})
+ option(STRATA_BUILD_CONVERSATION_TESTS "Build standalone conversation cache tests" OFF)
++option(STRATA_ENABLE_LSA "Build the experimental native learned-map LSA engine integration (CUDA only)" OFF)
++if(STRATA_ENABLE_LSA AND (NOT STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP))
++  message(FATAL_ERROR "STRATA_ENABLE_LSA requires the CUDA backend")
++endif()
+ option(STRATA_WERROR "Treat compiler warnings as errors" OFF)
+ # #2027: defined here, before the GPU section reads it to register the native-expert tests (it was defined at the
+ # native-experts section far below, so a first configure registered four tests fewer than the second)
+@@ -426,6 +430,16 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
+                           src/ngram/ple_reader.cpp
+                           src/platform/direct_file.cpp)
+   target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
++  if(STRATA_ENABLE_LSA)
++    # Public from core so every translation unit agrees on QsaState's layout.
++    target_compile_definitions(strata_core PUBLIC STRATA_LSA_CUDA=1)
++    target_sources(strata_kernels PRIVATE src/lsa/maps.cpp src/lsa/cuda_adapter.cu src/lsa/ward.cu)
++    foreach(cuda_include IN LISTS CUDAToolkit_INCLUDE_DIRS CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES)
++      if(EXISTS "${cuda_include}/cccl/cub/device/device_segmented_radix_sort.cuh")
++        target_include_directories(strata_kernels PRIVATE "${cuda_include}/cccl")
++      endif()
++    endforeach()
++  endif()
+   # Exact gfx1100 prompt scorer (PR1825 method port): optional standalone test,
+   # also available where the published source omits tests/.
+   option(STRATA_PARITY_GFX1100_QSA_SCORES "Build the exact gfx1100 QSA score/ID check" OFF)
+@@ -587,6 +601,12 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
+     src/core/arch_defaults.cpp src/core/nv_defaults.cpp src/core/vmm.cpp src/core/conversation_file.cpp)
+   target_include_directories(strata_engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu ${_strata_gpu_runtime_target})
++  if(STRATA_ENABLE_LSA)
++    target_sources(strata_engine PRIVATE src/lsa/runtime.cu)
++    # Run explicitly inside an owned idle GPU window; never auto-start via CTest.
++    add_executable(lsa_runtime_test EXCLUDE_FROM_ALL src/lsa/runtime_test.cu)
++    target_link_libraries(lsa_runtime_test PRIVATE strata_engine)
++  endif()
+   if(STRATA_BUILD_TESTS AND STRATA_ENABLE_CUDA AND NOT STRATA_HIP_GFX906)
+     add_executable(host_graph_launch_test tests/core/host_graph_launch_test.cu)
+     target_include_directories(host_graph_launch_test PRIVATE include)
+diff --git a/include/strata/core/layer.hpp b/include/strata/core/layer.hpp
+index 9e0361ac..cbadd504 100644
+--- a/include/strata/core/layer.hpp
++++ b/include/strata/core/layer.hpp
+@@ -39,6 +39,9 @@
+ #include "strata/kernels/kv_stream.hpp"
+ #include "strata/kernels/ngram.hpp"
+ #include "strata/kernels/ple.hpp"
++#if defined(STRATA_LSA_CUDA)
++#include "strata/lsa/runtime.hpp"
++#endif
+ 
+ #include <cstdio>
+ #include <functional>
+@@ -207,6 +210,11 @@ bool layer_shared_early();
+ /// shorter than the sequence would have `rope_neox_apply` read past it, which is a wrong rotation rather than a
+ /// fault.
+ struct QsaState {
++#if defined(STRATA_LSA_CUDA)
++    // Opt-in learned-map history and index, carved inside this state's arena.
++    // Each resident conversation/layer owns distinct mutable device storage.
++    strata::lsa::RuntimeState lsa;
++#endif
+     uint16_t* k_pool = nullptr;      ///< [page][kv_head][page_size][head_dim] fp16 (null in INT8 mode)
+     uint16_t* v_pool = nullptr;
+     /// Plan v0.3 P7: INT8 KV (qsa_set_kv_int8). Codes [page][kv_head][page_size][head_dim], one FP16 scale per 64.
+diff --git a/include/strata/lsa/cache_state.hpp b/include/strata/lsa/cache_state.hpp
+new file mode 100644
+index 00000000..d94fc544
+--- /dev/null
++++ b/include/strata/lsa/cache_state.hpp
+@@ -0,0 +1,116 @@
++#pragma once
++
++#include <array>
++#include <cstdint>
++
++namespace strata::lsa {
++
++// Metadata contract for the experimental learned-map cache. This class owns no
++// device buffers and is not wired into Strata's sessions. The adapter must apply
++// each returned invalidation to its own projected keys, clusters and members
++// before using a slot again. Calls are serialized by the session owner.
++//
++// The pilot maps consume the trailing 192 nonrotary coordinates of each of two
++// 256-wide KV heads, concatenated in head order. Keys are dequantized INT8-cache
++// values. Queries sum the 12 matching Q heads within each KV group before the
++// same concatenation. The separate query/key 384x64 maps project these inputs;
++// normalize each projected row. Temperature remains separate from both maps.
++class CacheState {
++public:
++    static constexpr uint32_t kContext = 131072;
++    static constexpr uint32_t kSlots = 8;
++    static constexpr uint32_t kLayers = 12;
++    static constexpr uint32_t kInputDim = 384;
++    static constexpr uint32_t kIndexDim = 64;
++    static constexpr uint32_t kBlockTokens = 512;
++    static constexpr uint32_t kWindowTokens = 512;
++    static constexpr uint32_t kSinkTokens = 4;
++
++    struct Ticket {
++        uint32_t slot = 0;
++        uint64_t generation = 0;
++        uint32_t base_tokens = 0;
++    };
++
++    struct AppendRange {
++        uint32_t begin_token;
++        uint32_t end_token;          // exclusive
++        uint32_t first_new_block;    // previously incomplete block
++        uint32_t end_complete_block; // exclusive; provisional until commit
++    };
++
++    struct Transition {
++        uint32_t old_tokens;
++        uint32_t new_tokens;
++        uint32_t published_blocks_before;
++        uint32_t published_blocks_after;
++        uint32_t discard_from_token;
++        uint32_t discard_from_block;
++        uint64_t generation;
++    };
++
++    struct View {
++        uint32_t visible_tokens; // exactly query_position + 1, never future KV
++        uint32_t complete_blocks;
++        // Rank only these blocks (64 buckets per block): floor(position / 512).
++        // The block containing this query remains unranked even when its final
++        // token has just made it complete. This is not complete_blocks, nor the
++        // number of blocks wholly before the local window. Expansion still
++        // filters each selected member by long_range_end; at position 1536 the
++        // third ranked block can contribute key 1024 across that window edge.
++        uint32_t selectable_blocks;
++        uint32_t published_blocks;
++        uint32_t provisional_blocks;
++        uint32_t tail_begin;
++        uint32_t tail_tokens;
++        uint32_t long_range_end; // exclusive; expansion must filter by this
++        uint32_t long_range_complete_blocks;
++    };
++
++    static uint32_t layer_ordinal(uint32_t model_layer);
++
++    // begin never publishes speculative data. Only the matching live ticket can
++    // observe its appends; the ordinary slot view remains at committed_tokens.
++    Ticket begin(uint32_t slot);
++    AppendRange append(const Ticket& ticket, uint32_t model_layer, uint32_t count);
++
++    // All layers must have appended the same speculative length before a commit.
++    // Only the accepted prefix is published. Everything after it is invalidated,
++    // including a partly accepted 512-token block's provisional cluster state.
++    Transition accept_prefix(const Ticket& ticket, uint32_t accepted_tokens);
++    Transition reject(const Ticket& ticket); // also accepts an incomplete forward
++
++    // Reuse of the SAME stored KV prefix, not a declaration that another prompt
++    // matches it. Also abandons any open transaction and invalidates its ticket.
++    // Dropping a partial block invalidates that block and every later block.
++    Transition truncate(uint32_t slot, uint32_t retained_tokens);
++    Transition reset(uint32_t slot);
++
++    uint32_t committed_tokens(uint32_t slot) const;
++    uint32_t available_tokens(const Ticket& ticket, uint32_t model_layer) const;
++    uint32_t published_blocks(uint32_t slot) const;
++    bool transaction_open(uint32_t slot) const;
++    uint64_t generation(uint32_t slot) const;
++
++    View view(uint32_t slot, uint32_t model_layer, uint32_t query_position) const;
++    View view(const Ticket& ticket, uint32_t model_layer, uint32_t query_position) const;
++
++private:
++    struct Slot {
++        uint32_t committed = 0;
++        uint64_t generation = 0;
++        bool open = false;
++        std::array<uint32_t, kLayers> appended{};
++    };
++    std::array<Slot, kSlots> slots_{};
++
++    Slot& slot_at(uint32_t slot);
++    const Slot& slot_at(uint32_t slot) const;
++    Slot& live(const Ticket& ticket);
++    const Slot& live(const Ticket& ticket) const;
++    static View make_view(uint32_t committed, uint32_t available, uint32_t query_position);
++    static void bump(Slot& slot);
++    static Transition finish(Slot& slot, uint32_t new_tokens);
++};
++
++} // namespace strata::lsa
+diff --git a/include/strata/lsa/cuda_adapter.h b/include/strata/lsa/cuda_adapter.h
+new file mode 100644
+index 00000000..de17a200
+--- /dev/null
++++ b/include/strata/lsa/cuda_adapter.h
+@@ -0,0 +1,66 @@
++#pragma once
++#include <stddef.h>
++#include <stdint.h>
++
++// Research-only CUDA bridge. No engine path calls this API. All device buffers
++// are caller-owned and must remain alive until the explicit stream completes.
++// No allocation or synchronization occurs during projection/selection/attention.
++// Geometry is Flash-Next INT8 KV, 24 Q heads, 2 KV heads, 256 coordinates,
++// trailing 192 nonrotary coordinates, learned 384 x 64 row-major FP32 maps.
++// Returns cudaError_t as int. Inputs must be finite. Projection ignores invalid
++// page IDs defensively. Native attention requires validated page and cell tables;
++// its existing reader does not validate physical allocation bounds.
++#ifdef __cplusplus
++extern "C" {
++#endif
++// Startup/teardown only: strictly load the native map artifact and copy weights
++// to persistent device storage. These calls allocate and synchronize. Getter
++// pointers are borrowed until close, and layer is the model layer (3,7,...,47).
++// A handle belongs to the CUDA device/context current at open. Keep that device
++// current for its use and close; finish every stream and destroy captured graphs
++// referencing its weights before close. No reference-counted lifetime is implied.
++void* lsa_maps_open(const char* path, char* error, size_t error_capacity);
++const float* lsa_maps_query(void* handle, int layer);
++const float* lsa_maps_key(void* handle, int layer);
++float lsa_maps_temperature(void* handle, int layer);
++// Immutable full-byte FNV-1a 64 identity of the artifact actually loaded by open.
++// Cache compatibility only, not authentication. Null handle returns zero.
++uint64_t lsa_maps_identity(void* handle);
++void lsa_maps_close(void* handle);
++int lsa_project_keys(const int8_t* codes, const uint16_t* scales,
++                     const int32_t* page_table, int physical_pages, int page_size,
++                     int start, int count, const float* map, float* output, void* stream);
++// Capturable decode/verification form: positions are read from device memory.
++// Fully resident KV only: page_table has physical_pages logical entries and
++// pools have physical_pages pages. Positions outside that span produce zeros.
++int lsa_project_key_steps(const int8_t* codes, const uint16_t* scales,
++                          const int32_t* page_table, int physical_pages, int page_size,
++                          const int32_t* positions, int count, const float* map,
++                          float* output, void* stream);
++int lsa_project_queries(const float* query, int count, const float* map,
++                        float* output, void* stream);
++// Queries and centroids are FP32 storage of BF16-rounded normalized vectors.
++// The index covers closed 512-token blocks: 64 buckets/block, 16 members/bucket.
++// Members partition their blocks, are ordered, unique and -1 padded. Selection
++// masks each row by its device position; equal packed score bits resolve toward
++// lower bucket IDs. Signed zeros follow the pinned upstream packed-key ordering.
++// Capacity <= 16384 buckets (131072 context), <= 128 queries. top_p is 385.
++// Single-row calls sort only the device-position-visible prefix; the buffers
++// and temporary-storage requirement still use buckets capacity. Multirow calls
++// retain their capacity-strided segments. Empty visible prefixes are valid.
++int lsa_select_temp_bytes(int queries, int buckets, size_t* bytes);
++int lsa_select(const float* query, const float* centroids, const int32_t* members,
++               const int32_t* positions, int queries, int buckets,
++               int64_t* keys_in, int64_t* keys_out,
++               int32_t* offsets, void* temporary, size_t temporary_bytes,
++               int32_t* selected, int32_t* cells, int32_t* steps, void* stream);
++// Scratch floats per query for Strata's unchanged native paged INT8 attention.
++size_t lsa_attention_scratch_floats(void);
++int lsa_attention(const float* query, const int8_t* k, const int8_t* v,
++                  const uint16_t* k_scale, const uint16_t* v_scale,
++                  const int32_t* page_table, int page_size, int queries,
++                  const int32_t* cells, const int32_t* steps,
++                  float* scratch, float* output, void* stream);
++#ifdef __cplusplus
++}
++#endif
+diff --git a/include/strata/lsa/maps.hpp b/include/strata/lsa/maps.hpp
+new file mode 100644
+index 00000000..9672d995
+--- /dev/null
++++ b/include/strata/lsa/maps.hpp
+@@ -0,0 +1,45 @@
++#pragma once
++
++#include <array>
++#include <cstdint>
++#include <string>
++#include <vector>
++
++namespace strata::lsa {
++
++inline constexpr uint32_t kInputDim = 384;
++inline constexpr uint32_t kIndexDim = 64;
++inline constexpr uint32_t kLayerCount = 12;
++inline constexpr uint32_t kMapVersion = 1;
++inline constexpr uint64_t kMapHeaderBytes = 96;
++inline constexpr uint64_t kMatrixValues = uint64_t{kInputDim} * kIndexDim;
++inline constexpr uint64_t kMapRecordBytes = 16 + 2 * kMatrixValues * 4;
++inline constexpr uint64_t kMapFileBytes = kMapHeaderBytes + kLayerCount * kMapRecordBytes;
++
++// Row-major [384,64]. Inputs are two concatenated, 192-coordinate nonrotary
++// key heads, or sums of each head's twelve grouped queries. Temperature is
++// separate from the maps; projected rows are normalized by the indexer.
++struct LayerMap {
++    int32_t layer = -1;
++    float temperature = 0;
++    std::vector<float> query;
++    std::vector<float> key;
++};
++
++struct Maps {
++    std::array<LayerMap, kLayerCount> layers;
++    // Nonserialized cache identity over every exact byte validated by load_maps.
++    // FNV-1a 64 matches the existing 64-bit identity strength; not authentication.
++    uint64_t artifact_fingerprint = 0;
++    // Provenance identifiers of the original .pt and JSON files. They do not
++    // authenticate this file: the caller must pin the native file's SHA-256.
++    std::array<uint8_t, 32> source_weights_sha256{};
++    std::array<uint8_t, 32> source_metadata_sha256{};
++};
++
++// An explicitly invoked, CPU-only loader. No process-global state, allocation
++// on a device, or serving/default-path change. Failure leaves `out` unchanged.
++// The native format is fixed little-endian IEEE754 binary32, version 1.
++bool load_maps(const std::string& path, Maps& out, std::string& error);
++
++}  // namespace strata::lsa
+diff --git a/include/strata/lsa/runtime.hpp b/include/strata/lsa/runtime.hpp
+new file mode 100644
+index 00000000..df6d3ef9
+--- /dev/null
++++ b/include/strata/lsa/runtime.hpp
+@@ -0,0 +1,93 @@
++#pragma once
++
++#include "strata/kernels/qsa_decode_attn.hpp"
++#include <cstddef>
++#include <cstdint>
++#include <string>
++
++namespace strata::lsa {
++
++// Opt-in CUDA runtime state. Every pointer is carved from the owning QSA arena
++// before graph capture; no allocation, host readback or pointer changes happen
++// during a forward. Full projected history preserves accepted prefixes across
++// speculative rejection. Future rows are overwritten before becoming visible.
++struct RuntimeState {
++    int capacity = 0;
++    int buckets = 0;
++    int physical_pages = 0;
++    int page_size = 4;
++    int model_layer = -1;
++    float* history = nullptr;        // [capacity,64] FP32 normalized projected K
++    float* centroids = nullptr;      // [buckets,64] BF16-rounded FP32
++    int32_t* members = nullptr;      // [buckets,16]
++    float* key_row = nullptr;        // [64]
++    float* query_row = nullptr;      // [64]
++    int64_t* keys_in = nullptr;      // [buckets]
++    int64_t* keys_out = nullptr;     // [buckets]
++    int32_t* offsets = nullptr;     // [2]
++    int32_t* selected = nullptr;    // [385]
++    int32_t* cells = nullptr;       // [1540]
++    int32_t* steps = nullptr;       // [4], private LSA-width record
++    void* sort_temporary = nullptr;
++    size_t sort_bytes = 0;
++    void* ward_scratch = nullptr;   // sticky error and closure diagnostics
++    size_t arena_bytes = 0;
++};
++
++// One workspace per Prefill object, shared by its serial QSA layers. The model
++// planner prices it with the prompt scratch region before expert allocation.
++// It is never copied into each resident conversation/layer RuntimeState.
++struct RuntimePrefillScratch {
++    int queries = 0;
++    int buckets = 0;
++    float* query_rows = nullptr;    // [queries,64]
++    int32_t* positions = nullptr;  // [queries]
++    int64_t* keys_in = nullptr;    // [queries,buckets]
++    int64_t* keys_out = nullptr;
++    int32_t* offsets = nullptr;   // [queries+1]
++    int32_t* selected = nullptr;  // [queries,385]
++    int32_t* cells = nullptr;     // [queries,1540]
++    int32_t* steps = nullptr;     // [queries,4]
++    void* sort_temporary = nullptr;
++    size_t sort_bytes = 0;
++    size_t arena_bytes = 0;
++};
++
++// Call after selecting the CUDA device and before arena pricing. An explicit
++// incompatible/missing map refuses startup. No environment opt-in leaves the
++// existing inference route untouched. Configuration is immutable thereafter.
++bool runtime_configure_from_env(std::string& error);
++bool runtime_enabled();
++const std::string& runtime_map_path();
++uint64_t runtime_map_identity();
++size_t runtime_state_bytes(int64_t capacity);
++bool runtime_state_init(RuntimeState& state, int64_t capacity, int physical_pages,
++                        int page_size, void* arena, size_t arena_bytes, std::string& error);
++void runtime_zero(const RuntimeState& state, void* stream);
++size_t runtime_prefill_scratch_bytes(int64_t capacity, int queries = 128);
++bool runtime_prefill_scratch_init(RuntimePrefillScratch& scratch, int64_t capacity, int queries,
++                                 void* arena, size_t arena_bytes, std::string& error);
++
++bool runtime_step(const RuntimeState& state, int model_layer,
++                  const strata::kernels::QsaAttnPools& pools, const float* query,
++                  int32_t* step, int32_t* ids, int64_t cap, void* stream, std::string& error);
++bool runtime_prefill(const RuntimeState& state, int model_layer,
++                     const strata::kernels::QsaAttnPools& pools, const float* queries,
++                     int64_t start, int64_t count, int32_t* steps, int64_t step_stride,
++                     int32_t* ids, int64_t cap, void* stream, std::string& error,
++                     const RuntimePrefillScratch* scratch = nullptr);
++
++// Outside graph capture only. Restored INT8 KV is authoritative; rebuilding
++// derives fresh maps/clusters, so no LSA bytes are trusted from old snapshots.
++bool runtime_rebuild(const RuntimeState& state, const strata::kernels::QsaAttnPools& pools,
++                     int64_t tokens, std::string& error);
++// Ordered on stream. Copies the accepted prefix plus closed block data only;
++// callers must order this after any nonblocking KV copies themselves.
++bool runtime_copy(const RuntimeState& from, const RuntimeState& to, int64_t tokens,
++                  void* stream, std::string& error);
++// Outside capture: synchronize the device and report Ward diagnostics. A failed
++// closure also traps on device before inference can consume its bucket output.
++bool runtime_check(const RuntimeState& state, std::string& error);
++bool runtime_stats(const RuntimeState& state, int32_t (&values)[4], std::string& error);
++
++} // namespace strata::lsa
+diff --git a/include/strata/lsa/ward.hpp b/include/strata/lsa/ward.hpp
+new file mode 100644
+index 00000000..29865268
+--- /dev/null
++++ b/include/strata/lsa/ward.hpp
+@@ -0,0 +1,41 @@
++#pragma once
++#include <cstddef>
++#include <cstdint>
++
++namespace strata::lsa {
++// Native spherical Ward closure for the pinned Flash-Next LSA geometry:
++// 512 FP32 normalized projected keys of64 dims; consecutive pools of4;
++// mutual-cheapest Ward rounds128->64, max16 original keys/bucket.
++// Output arrays are indexed by absolute512-token block:
++// centroids [ceil(capacity/512),64,64] FP32 storage of BF16-rounded unit rows;
++// members [ceil(capacity/512),64,16] absolute token IDs, ascending, -1 padded.
++//
++// Positive capacities below512 are valid for step calls: no complete block
++// can close, so valid positions are no-ops. Range calls require complete blocks.
++// Caller owns all storage and an explicit nondefault CUDA stream. No allocation,
++// host readback, synchronization or position-dependent host launch occurs.
++// Scratch is16 bytes, aligned for int32 and zero-initialized before first use:
++// [sticky_error, completed_closures, max_rounds, reserved]. Error codes:
++// -1 invalid device position; -2 nonfinite input/arithmetic; -3 Ward stalled;
++// -4 invalid final partition. A skipped nonboundary step does not clear errors.
++// Inspect sticky_error at the enclosing request's validation boundary. Do not
++// use a failed closure's zero centroids and -1 members as a successful index.
++std::size_t ward_scratch_bytes();
++int ward_close_step(const float* history, const int32_t* position, int capacity,
++                    float* centroids, int32_t* members, void* scratch, void* stream);
++// Uncaptured prefill: first_block and block_count name fully projected blocks.
++// Graph capture is also legal when these host bounds are fixed for that graph.
++int ward_close_range(const float* history, int capacity, int first_block, int block_count,
++                     float* centroids, int32_t* members, void* scratch, void* stream);
++} // namespace strata::lsa
++
++extern "C" {
++std::size_t lsa_ward_scratch_bytes();
++int lsa_ward_close_step(const float*, const int32_t*, int, float*, int32_t*, void*, void*);
++int lsa_ward_close_range(const float*, int, int, int, float*, int32_t*, void*, void*);
++// Qualification-only variant. labels [capacity/512,128] and objective
++// [capacity/512] expose partition evidence; they may not be null. The labels
++// repeat across each consecutive4-key input pool. Runtime does not call it.
++int lsa_ward_close_range_diagnostic(const float*, int, int, int, float*, int32_t*,
++                                   void*, int32_t*, float*, void*);
++}
+diff --git a/src/core/conversation_snapshot.cpp b/src/core/conversation_snapshot.cpp
+index 76e69b5f..f00a8c6d 100644
+--- a/src/core/conversation_snapshot.cpp
++++ b/src/core/conversation_snapshot.cpp
+@@ -204,7 +204,8 @@ bool conversation_kv_validate(const ConversationKv& image, const QsaState& st, c
+ namespace {
+ // After the authoritative pools were rewritten: the VRAM slots of a streamed state still hold the outgoing
+ // conversation, so resolve must refill them before any attention reads (shared by restore and direct copy).
+-bool refresh_residency(const QsaState& st, const ModelGeometry& g, int64_t upto, std::string& error) {
++bool refresh_residency(const QsaState& st, const ModelGeometry& g, int64_t upto, std::string& error,
++                        bool rebuild_lsa = true) {
+     if (st.kv_mode == 1) strata::kernels::kv_stream_reset(st.map, nullptr);
+     if (st.kv_mode == 2 && upto > 0) {
+         auto shapes = strata::kernels::qsa_real_shapes();
+@@ -214,9 +215,20 @@ bool refresh_residency(const QsaState& st, const ModelGeometry& g, int64_t upto,
+                                         std::max<int64_t>(0, end - st.n_slots), end, st.n_slots, shapes, nullptr);
+     }
+     const auto status = cudaGetLastError();
+-    if (status == cudaSuccess) return true;
+-    error = std::string("conversation snapshot residency restore: ") + cudaGetErrorString(status);
+-    return false;
++    if (status != cudaSuccess) {
++        error = std::string("conversation snapshot residency restore: ") + cudaGetErrorString(status);
++        return false;
++    }
++#if defined(STRATA_LSA_CUDA)
++    // LSA is derived from the restored authoritative INT8 cache, not serialized
++    // alongside the old native indexer. Rebuild outside graph capture so disk,
++    // parked and borrowed-prefix restores all recreate exactly the same index.
++    if (rebuild_lsa && st.lsa.history && st.lsa.model_layer >= 0 &&
++        !strata::lsa::runtime_rebuild(st.lsa, qsa_attn_pools(st), upto, error)) return false;
++#else
++    (void) rebuild_lsa;
++#endif
++    return true;
+ }
+ } // namespace
+ 
+@@ -248,7 +260,24 @@ bool conversation_kv_copy(const QsaState& from, const QsaState& to, const ModelG
+         const cudaError_t e = conversation_detail::order_after_queued();
+         if (e != cudaSuccess) { error = std::string("conversation snapshot direct copy: ") + cudaGetErrorString(e); return false; }
+     }
+-    return refresh_residency(to, g, upto, error);
++#if defined(STRATA_LSA_CUDA)
++    // Use the same nonblocking copy stream as the authoritative KV copies.
++    // Introducing a legacy-stream copy here would depend on unrelated blocking
++    // streams, including a drafter graph another thread may be capturing.
++    if ((from.lsa.history && from.lsa.model_layer >= 0) || (to.lsa.history && to.lsa.model_layer >= 0)) {
++        cudaStream_t lsa_stream = nullptr;
++        auto e = conversation_detail::private_stream(lsa_stream);
++        if (e != cudaSuccess || !strata::lsa::runtime_copy(from.lsa, to.lsa, upto, lsa_stream, error)) {
++            if (e != cudaSuccess) error = std::string("conversation LSA copy stream: ") + cudaGetErrorString(e);
++            return false;
++        }
++        if (!queued && (e = cudaStreamSynchronize(lsa_stream)) != cudaSuccess) {
++            error = std::string("conversation LSA prefix copy: ") + cudaGetErrorString(e);
++            return false;
++        }
++    }
++#endif
++    return refresh_residency(to, g, upto, error, false);
+ }
+ 
+ bool conversation_kv_restore(const ConversationKv& image, const QsaState& st, const ModelGeometry& g,
+diff --git a/src/core/layer.cpp b/src/core/layer.cpp
+index 273b2293..d02d988f 100644
+--- a/src/core/layer.cpp
++++ b/src/core/layer.cpp
+@@ -787,6 +787,10 @@ uint64_t qsa_state_bytes(const ModelGeometry& g, int64_t max_cells, bool with_ro
+     if (with_rope) n += (uint64_t) max_cells * (s.n_rot / 2) * 4 * 2;          // cos + sin tables
+     n += strata::kernels::qsa_step_bytes() + 16;                               // counts and aligned attention status
+     n += (uint64_t) s.n_head * 4;                                              // pos_dev
++#if defined(STRATA_LSA_CUDA)
++    if (strata::lsa::runtime_enabled() && ring_cells == 0)
++        n += strata::lsa::runtime_state_bytes(max_cells) + 16;
++#endif
+     return align_up16(n) + 256;
+ }
+ 
+@@ -892,6 +896,22 @@ uint64_t qsa_state_init(const ModelGeometry& g, int64_t max_cells, void* base, Q
+     st.step = c.take<int32_t>((uint64_t) strata::kernels::kStepCount);
+     st.attention_status = c.take<int32_t>(1);
+     st.pos_dev = c.take<int32_t>((uint64_t) s.n_head);
++#if defined(STRATA_LSA_CUDA)
++    if (strata::lsa::runtime_enabled() && ring_cells == 0) {
++        if (!st.kv_int8 || st.kv_q4 || st.kv_hybrid || st.kv_rot || st.kv_mode != 0 ||
++            g.n_head != 24 || g.n_head_kv != 2 || g.head_dim != 256 || max_cells > 131072) {
++            std::fprintf(stderr, "strata: LSA requires resident, unrotated Flash-Next INT8 KV and context <=131072\n");
++            return 0;
++        }
++        const size_t bytes = strata::lsa::runtime_state_bytes(max_cells);
++        std::string why;
++        if (!bytes || !strata::lsa::runtime_state_init(st.lsa, max_cells, (int) st.n_slots,
++                (int) s.page_size, c.take<uint8_t>(bytes), bytes, why)) {
++            std::fprintf(stderr, "strata: LSA state initialization failed: %s\n", why.c_str());
++            return 0;
++        }
++    }
++#endif
+     // the pinned staging the uploads copy FROM - see the note on `host_step` in the header
+     if (strata::core::host_alloc_guarded((void**) &st.host_step, strata::kernels::qsa_step_bytes() + sizeof(int32_t),
+                       cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess ||
+@@ -993,6 +1013,9 @@ void qsa_state_zero(const QsaState& st, const ModelGeometry& g, void* stream) {
+     cudaMemsetAsync(st.idx_tail, 0, (size_t) (s.idx_block - 1) * s.idx_dim * 4, cs);
+     cudaMemsetAsync(st.idx_dead, 0, (size_t) s.idx_dim * 4, cs);
+     cudaMemsetAsync(st.idx_pooled, 0, (size_t) st.idx_pooled_rows * s.idx_dim * 4, cs);
++#if defined(STRATA_LSA_CUDA)
++    strata::lsa::runtime_zero(st.lsa, stream);
++#endif
+ }
+ 
+ strata::kernels::QsaAttnPools qsa_attn_pools(const QsaState& st) {
+@@ -1251,6 +1274,12 @@ if (!normalize_rotate(b.q_idx, w_iqn, (int) g.idx_q_heads, (int) g.idx_key_dim))
+ // token's counts: a grid or a shared-memory size that follows the sequence length is baked into a captured
+ // graph, and the kernels guard for the surplus.    const
+ int64_t max_blocks = (st.max_cells / s.idx_block) + 2;
++#if defined(STRATA_LSA_CUDA)
++    if (strata::lsa::runtime_enabled()) {
++        if (!strata::lsa::runtime_step(st.lsa, (int) layer, qsa_attn_pools(st), b.qcur,
++                                      st.step, b.ids, cap, stream, err)) return false;
++    } else
++#endif
+     if (g_fast_select) {
+         // Plan v0.3 P7: block-level FP32 scores and a radix selection over blocks (qsa_select.hpp).
+         qsa_block_scores(st.idx_pooled, st.idx_dead, b.q_idx, st.step, 1, max_blocks, s, b.cell_scores, stream);
+diff --git a/src/core/session.cpp b/src/core/session.cpp
+index 0a25df79..0b27ac2f 100644
+--- a/src/core/session.cpp
++++ b/src/core/session.cpp
+@@ -113,10 +113,14 @@ uint64_t session_init(const ModelGeometry& g, int64_t max_cells, int64_t k, void
+     uint8_t* qp = (uint8_t*) s.qsa_state_arena;
+     // a layer whose pinned RAM could not be had (KV streaming's host copy) is half-built: going on would have the
+     // attention read null host pointers at the first request ("illegal memory access"), so the session fails here
+-    for (int64_t j = 0; j < s.qsa_alloc; ++j)
++    for (int64_t j = 0; j < s.qsa_alloc; ++j) {
+         if (qsa_state_init(g, max_cells, qp + (j == 0 ? 0 : first + (uint64_t) (j - 1) * rest),
+                            s.qsa_states[s.qsa_ord0 + j], j == 0 ? nullptr : &s.qsa_states[s.qsa_ord0]) == 0)
+             return 0;
++#if defined(STRATA_LSA_CUDA)
++        s.qsa_states[s.qsa_ord0 + j].lsa.model_layer = (int) (3 + 4 * (s.qsa_ord0 + j));
++#endif
++    }
+     qsa_buffers_init(g, max_cells, s.qsa_buf_arena, s.qsa_bufs);
+ 
+     s.moe_arena = take(moe_buffers_bytes(g, k));
+diff --git a/src/core/verify.cpp b/src/core/verify.cpp
+index 3d6f48b2..f4be9e71 100644
+--- a/src/core/verify.cpp
++++ b/src/core/verify.cpp
+@@ -56,6 +56,9 @@
+ #include "strata/core/progress.hpp"
+ #include "strata/kernels/shared_expert.hpp"
+ #include "strata/kernels/verify_kernels.hpp"
++#if defined(STRATA_LSA_CUDA)
++#include "strata/lsa/runtime.hpp"
++#endif
+ #if defined(STRATA_HAVE_DFLASH2)
+ #include "strata/kernels/dflash2.hpp"
+ #endif
+@@ -1547,6 +1550,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
+                 // ======================= QSA =======================
+                 const int64_t qi = qsa_idx[(size_t) l];
+                 const QsaState& st = ss.qsa_states[qi];
++#if defined(STRATA_LSA_CUDA)
++                const bool use_lsa = strata::lsa::runtime_enabled();
++#endif
+                 const WeightRef *wik = need(v, "indexer.k_proj.weight", err), *wq = need(v, "attn_q.weight", err),
+                                 *wk = need(v, "attn_k.weight", err), *wv = need(v, "attn_v.weight", err),
+                                 *wo = need(v, "attn_output.weight", err), *wiq = need(v, "indexer.q_proj.weight", err),
+@@ -1662,6 +1668,11 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
+                         }
+                 };
+                 auto idx_select = [&](cudaStream_t ns) {
++#if defined(STRATA_LSA_CUDA)
++                    // Learned maps consume normalized attention Q and stored
++                    // INT8 K. Their selection runs after both producers join.
++                    if (use_lsa) return;
++#endif
+                     qsa_block_scores(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID, step_ + tb * kStepCount, n, max_blocks_,
+                                      s, scores_ + (size_t) tb * max_blocks_, ns);
+                     qsa_block_topk(scores_ + (size_t) tb * max_blocks_, step_ + tb * kStepCount, n, max_blocks_, cap_, s,
+@@ -1807,6 +1818,64 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
+                 }();
+                 bool rows_ok = batch_rec_ && attn_rows && te - tb <= strata::kernels::kAttnRowsMax;
+                 for (int t = tb; rows_ok && t < te; ++t) rows_ok = slot_ss(t).qsa_states[qi].kv_mode != 1;
++#if defined(STRATA_LSA_CUDA)
++                if (use_lsa) {
++                    // The native indexer remains maintained for its existing
++                    // commit/snapshot contracts. Join it before another layer
++                    // can reuse its scratch, although LSA does not read it.
++                    if (sidem && cudaStreamWaitEvent(cs, mjoin_, 0) != cudaSuccess) {
++                        err = "verify: the indexer's branch could not join before LSA";
++                        return false;
++                    }
++                    if (side_proj && cudaStreamWaitEvent(cs, pjoin_, 0) != cudaSuccess) {
++                        err = "verify: the queries' branch could not join before LSA";
++                        return false;
++                    }
++                    if (qbr) join(0);
++                    // Each row reads its slot's own cache. Rows for the same
++                    // slot stay ordered, including speculative proposals that
++                    // cross a 512-token closure. Runtime history is addressed
++                    // by absolute position; a replacement overwrites rejected
++                    // suffix state before that block becomes causally visible.
++                    const int lsa_rows = te - tb;
++                    QsaAttnPoolsRows lsa_pools;
++                    const bool lsa_batch_attention = lsa_rows <= kAttnRowsMax;
++                    if (lsa_batch_attention) lsa_pools.n = lsa_rows;
++                    for (int t = tb; t < te; ++t) {
++                        QsaState& sx = slot_ss(t).qsa_states[qi];
++                        const QsaAttnPools pools = qsa_attn_pools(sx);
++                        int32_t* const row_step = step_ + t * kStepCount;
++                        int32_t* const row_ids = sel_ + (size_t) t * cap_;
++                        if (!strata::lsa::runtime_step(sx.lsa, (int) l, pools, qcur_ + t * NH * HD,
++                                                       row_step, row_ids, cap_, cs, err)) {
++                            err = "verify: LSA layer " + std::to_string(l) + ": " + err;
++                            return false;
++                        }
++                        // The allocated stride remains cap_ (2051 for this
++                        // model); runtime writes the actual selection width.
++                        qsa_kv_resolve(sx, *g_, row_ids, row_step, 1, cap_, cs);
++                        if (lsa_batch_attention) lsa_pools.p[t - tb] = pools;
++                    }
++                    // Selection stays ordered for each slot's incremental
++                    // history. Its Q/K inputs are unchanged here, so native
++                    // attention can process all rows together with each row's
++                    // own pools and the same per-row arithmetic.
++                    if (lsa_batch_attention) {
++                        qsa_decode_attn_batch_rows(qcur_ + tb * NH * HD, lsa_pools, sel_ + (size_t) tb * cap_,
++                                                   step_ + tb * kStepCount, cap_, s,
++                                                   attn_scratch_ + (size_t) tb * attn_scratch_floats_,
++                                                   attn_ + tb * NH * HD, lsa_rows, cs);
++                    } else {
++                        // Verifier windows currently hold at most eight rows.
++                        // Retain the per-row call if that bound ever grows.
++                        for (int t = tb; t < te; ++t)
++                            qsa_decode_attn_batch(qcur_ + t * NH * HD, qsa_attn_pools(slot_ss(t).qsa_states[qi]),
++                                                  sel_ + (size_t) t * cap_, step_ + t * kStepCount, cap_, s,
++                                                  attn_scratch_ + (size_t) t * attn_scratch_floats_,
++                                                  attn_ + t * NH * HD, 1, cs);
++                    }
++                } else
++#endif
+                 if (rows_ok) {
+                     const int n_rows = te - tb;
+                     strata::kernels::QsaScoreRows sr;
+diff --git a/src/lsa/CMakeLists.txt b/src/lsa/CMakeLists.txt
+new file mode 100644
+index 00000000..4bda795a
+--- /dev/null
++++ b/src/lsa/CMakeLists.txt
+@@ -0,0 +1,60 @@
++cmake_minimum_required(VERSION 3.18)
++project(strata_lsa_research LANGUAGES CXX)
++
++# Standalone research targets. The production engine's root CMake project does
++# not include this directory; enabling this build does not alter engine defaults.
++get_filename_component(STRATA_LSA_SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
++
++option(STRATA_LSA_BUILD_CUDA "Build the standalone native CUDA LSA adapter" OFF)
++set(STRATA_LSA_NATIVE_MAP "" CACHE FILEPATH "Optional exported pilot map for the native loader test")
++
++add_library(strata_lsa STATIC maps.cpp cache_state.cpp)
++target_include_directories(strata_lsa PUBLIC "${STRATA_LSA_SOURCE_ROOT}/include")
++target_compile_features(strata_lsa PUBLIC cxx_std_17)
++set_target_properties(strata_lsa PROPERTIES POSITION_INDEPENDENT_CODE ON)
++
++include(CTest)
++if(BUILD_TESTING)
++    add_executable(lsa_maps_test maps_test.cpp)
++    target_link_libraries(lsa_maps_test PRIVATE strata_lsa)
++    set(lsa_maps_test_args "${CMAKE_CURRENT_BINARY_DIR}/lsa-maps-fixture.bin")
++    if(STRATA_LSA_NATIVE_MAP)
++        if(NOT EXISTS "${STRATA_LSA_NATIVE_MAP}")
++            message(FATAL_ERROR "STRATA_LSA_NATIVE_MAP does not exist: ${STRATA_LSA_NATIVE_MAP}")
++        endif()
++        list(APPEND lsa_maps_test_args "${STRATA_LSA_NATIVE_MAP}")
++    endif()
++    add_test(NAME lsa_maps COMMAND lsa_maps_test ${lsa_maps_test_args})
++
++    add_executable(lsa_cache_state_test cache_state_test.cpp)
++    target_link_libraries(lsa_cache_state_test PRIVATE strata_lsa)
++    add_test(NAME lsa_cache_state COMMAND lsa_cache_state_test)
++endif()
++
++if(STRATA_LSA_BUILD_CUDA)
++    # Set before language initialization. Callers can override this cache entry
++    # for another explicitly qualified target; Onyx's device is SM120.
++    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
++        set(CMAKE_CUDA_ARCHITECTURES 120 CACHE STRING "CUDA architectures for the isolated adapter")
++    endif()
++    enable_language(CUDA)
++    find_package(CUDAToolkit REQUIRED)
++    add_library(strata_lsa_cuda SHARED
++        cuda_adapter.cu
++        ward.cu
++        "${STRATA_LSA_SOURCE_ROOT}/src/kernels/cuda/qsa_decode_attn.cu")
++    target_include_directories(strata_lsa_cuda PRIVATE "${STRATA_LSA_SOURCE_ROOT}/include")
++    # CUDA 13 packages CCCL below include/cccl; other toolkits expose cub
++    # directly. Add the nested include only when that layout exists.
++    foreach(cuda_include IN LISTS CUDAToolkit_INCLUDE_DIRS)
++        if(EXISTS "${cuda_include}/cccl/cub/device/device_segmented_radix_sort.cuh")
++            target_include_directories(strata_lsa_cuda PRIVATE "${cuda_include}/cccl")
++        endif()
++    endforeach()
++    target_link_libraries(strata_lsa_cuda PRIVATE strata_lsa CUDA::cudart)
++    set_target_properties(strata_lsa_cuda PROPERTIES
++        CUDA_STANDARD 17
++        CUDA_STANDARD_REQUIRED ON
++        CXX_STANDARD 17
++        CXX_STANDARD_REQUIRED ON)
++endif()
+diff --git a/src/lsa/cache_state.cpp b/src/lsa/cache_state.cpp
+new file mode 100644
+index 00000000..c45d2c8e
+--- /dev/null
++++ b/src/lsa/cache_state.cpp
+@@ -0,0 +1,132 @@
++#include "strata/lsa/cache_state.hpp"
++
++#include <algorithm>
++#include <limits>
++#include <stdexcept>
++
++namespace strata::lsa {
++
++uint32_t CacheState::layer_ordinal(uint32_t layer) {
++    if (layer < 3 || layer > 47 || (layer - 3) % 4 != 0)
++        throw std::invalid_argument("LSA requires QSA model layers 3,7,...,47");
++    return (layer - 3) / 4;
++}
++
++CacheState::Slot& CacheState::slot_at(uint32_t slot) {
++    if (slot >= kSlots) throw std::out_of_range("LSA slot is outside the eight-slot capacity");
++    return slots_[slot];
++}
++
++const CacheState::Slot& CacheState::slot_at(uint32_t slot) const {
++    if (slot >= kSlots) throw std::out_of_range("LSA slot is outside the eight-slot capacity");
++    return slots_[slot];
++}
++
++const CacheState::Slot& CacheState::live(const Ticket& ticket) const {
++    const Slot& slot = slot_at(ticket.slot);
++    if (!slot.open || slot.generation != ticket.generation || slot.committed != ticket.base_tokens)
++        throw std::logic_error("LSA transaction ticket is stale or has the wrong committed prefix");
++    return slot;
++}
++
++CacheState::Slot& CacheState::live(const Ticket& ticket) {
++    (void) static_cast<const CacheState*>(this)->live(ticket);
++    return slots_[ticket.slot];
++}
++
++void CacheState::bump(Slot& slot) {
++    if (slot.generation == std::numeric_limits<uint64_t>::max())
++        throw std::overflow_error("LSA slot generation exhausted");
++    ++slot.generation;
++}
++
++CacheState::Ticket CacheState::begin(uint32_t id) {
++    Slot& slot = slot_at(id);
++    if (slot.open) throw std::logic_error("LSA slot already has an open transaction");
++    bump(slot);
++    slot.open = true;
++    slot.appended.fill(0);
++    return {id, slot.generation, slot.committed};
++}
++
++CacheState::AppendRange CacheState::append(const Ticket& ticket, uint32_t layer, uint32_t count) {
++    Slot& slot = live(ticket);
++    uint32_t& appended = slot.appended[layer_ordinal(layer)];
++    const uint32_t begin_token = slot.committed + appended;
++    if (count > kContext - begin_token)
++        throw std::out_of_range("LSA append exceeds 131072-token context");
++    appended += count;
++    return {begin_token, begin_token + count, begin_token / kBlockTokens,
++            (begin_token + count) / kBlockTokens};
++}
++
++CacheState::Transition CacheState::finish(Slot& slot, uint32_t new_tokens) {
++    const uint32_t old_tokens = slot.committed;
++    // Bump first: an exhausted counter must not leave a partly mutated slot.
++    bump(slot);
++    slot.committed = new_tokens;
++    slot.open = false;
++    slot.appended.fill(0);
++    return {old_tokens, new_tokens, old_tokens / kBlockTokens, new_tokens / kBlockTokens,
++            new_tokens, new_tokens / kBlockTokens, slot.generation};
++}
++
++CacheState::Transition CacheState::accept_prefix(const Ticket& ticket, uint32_t accepted) {
++    Slot& slot = live(ticket);
++    const uint32_t appended = slot.appended[0];
++    if (!std::all_of(slot.appended.begin(), slot.appended.end(),
++                     [appended](uint32_t n) { return n == appended; }))
++        throw std::logic_error("LSA cannot commit an incomplete per-layer forward");
++    if (accepted > appended)
++        throw std::out_of_range("LSA accepted prefix exceeds the speculative tokens");
++    return finish(slot, slot.committed + accepted);
++}
++
++CacheState::Transition CacheState::reject(const Ticket& ticket) {
++    Slot& slot = live(ticket);
++    return finish(slot, slot.committed);
++}
++
++CacheState::Transition CacheState::truncate(uint32_t id, uint32_t retained) {
++    Slot& slot = slot_at(id);
++    if (retained > slot.committed)
++        throw std::out_of_range("LSA prefix reuse cannot invent uncommitted tokens");
++    return finish(slot, retained);
++}
++
++CacheState::Transition CacheState::reset(uint32_t id) { return truncate(id, 0); }
++
++uint32_t CacheState::committed_tokens(uint32_t id) const { return slot_at(id).committed; }
++uint32_t CacheState::published_blocks(uint32_t id) const { return slot_at(id).committed / kBlockTokens; }
++bool CacheState::transaction_open(uint32_t id) const { return slot_at(id).open; }
++uint64_t CacheState::generation(uint32_t id) const { return slot_at(id).generation; }
++
++uint32_t CacheState::available_tokens(const Ticket& ticket, uint32_t layer) const {
++    const Slot& slot = live(ticket);
++    return slot.committed + slot.appended[layer_ordinal(layer)];
++}
++
++CacheState::View CacheState::make_view(uint32_t committed, uint32_t available, uint32_t position) {
++    if (position >= available)
++        throw std::out_of_range("LSA query would read unavailable or rejected KV tokens");
++    const uint32_t visible = position + 1;
++    const uint32_t complete = visible / kBlockTokens;
++    const uint32_t published = std::min(committed / kBlockTokens, complete);
++    const uint32_t tail = complete * kBlockTokens;
++    const uint32_t long_end = visible > kWindowTokens ? visible - kWindowTokens : 0;
++    return {visible, complete, position / kBlockTokens, published, complete - published, tail, visible - tail,
++            long_end, long_end / kBlockTokens};
++}
++
++CacheState::View CacheState::view(uint32_t id, uint32_t layer, uint32_t position) const {
++    (void) layer_ordinal(layer);
++    const Slot& slot = slot_at(id);
++    return make_view(slot.committed, slot.committed, position);
++}
++
++CacheState::View CacheState::view(const Ticket& ticket, uint32_t layer, uint32_t position) const {
++    const Slot& slot = live(ticket);
++    return make_view(slot.committed, slot.committed + slot.appended[layer_ordinal(layer)], position);
++}
++
++} // namespace strata::lsa
+diff --git a/src/lsa/cache_state_test.cpp b/src/lsa/cache_state_test.cpp
+new file mode 100644
+index 00000000..2386ec92
+--- /dev/null
++++ b/src/lsa/cache_state_test.cpp
+@@ -0,0 +1,248 @@
++#include "strata/lsa/cache_state.hpp"
++
++#include <cstdint>
++#include <iostream>
++#include <stdexcept>
++#include <string>
++
++using State = strata::lsa::CacheState;
++namespace {
++int checks = 0;
++void require(bool condition, const char* message) {
++    ++checks;
++    if (!condition) throw std::runtime_error(message);
++}
++
++template <class Exception, class F> void throws(F fn, const char* message) {
++    ++checks;
++    try { fn(); }
++    catch (const Exception&) { return; }
++    throw std::runtime_error(message);
++}
++
++void append_all(State& state, State::Ticket ticket, uint32_t count) {
++    for (uint32_t l = 3; l <= 47; l += 4) state.append(ticket, l, count);
++}
++
++void seed(State& state, uint32_t slot, uint32_t tokens) {
++    auto ticket = state.begin(slot);
++    append_all(state, ticket, tokens);
++    state.accept_prefix(ticket, tokens);
++}
++
++void block_boundaries() {
++    State state;
++    auto first = state.begin(0);
++    append_all(state, first, 511);
++    require(state.published_blocks(0) == 0, "uncommitted 511 tokens were published");
++    auto view = state.view(first, 3, 510);
++    require(view.visible_tokens == 511 && view.complete_blocks == 0 && view.tail_tokens == 511,
++            "511-token tail was miscounted");
++    throws<std::out_of_range>([&] { state.view(0, 3, 0); }, "ordinary view saw speculative KV");
++    state.accept_prefix(first, 511);
++    auto second = state.begin(0);
++    auto range = state.append(second, 3, 1);
++    require(range.begin_token == 511 && range.end_token == 512 && range.first_new_block == 0 &&
++            range.end_complete_block == 1, "512th token did not complete block zero");
++    view = state.view(second, 3, 511);
++    require(view.complete_blocks == 1 && view.provisional_blocks == 1 && view.published_blocks == 0,
++            "newly completed block escaped speculative quarantine");
++    for (uint32_t l = 7; l <= 47; l += 4) state.append(second, l, 1);
++    auto commit = state.accept_prefix(second, 1);
++    require(commit.published_blocks_before == 0 && commit.published_blocks_after == 1 &&
++            commit.discard_from_block == 1, "completed accepted block was not retained");
++    auto third = state.begin(0);
++    append_all(state, third, 1);
++    view = state.view(third, 47, 512);
++    require(view.visible_tokens == 513 && view.tail_begin == 512 && view.tail_tokens == 1 &&
++            view.published_blocks == 1 && view.provisional_blocks == 0 && view.long_range_end == 1,
++            "513-token view used wrong causal or local-window bounds");
++    state.reject(third);
++    require(state.committed_tokens(0) == 512 && state.published_blocks(0) == 1,
++            "reject after boundary changed committed blocks");
++}
++
++void partial_accept_and_replay() {
++    State state;
++    seed(state, 0, 509);
++    auto candidate = state.begin(0);
++    append_all(state, candidate, 8);
++    auto plan = state.accept_prefix(candidate, 3);
++    require(plan.old_tokens == 509 && plan.new_tokens == 512 && plan.discard_from_token == 512 &&
++            plan.discard_from_block == 1 && plan.published_blocks_after == 1,
++            "partial acceptance retained rejected token or block state");
++    throws<std::logic_error>([&] { state.available_tokens(candidate, 3); }, "accepted ticket remained valid");
++    throws<std::out_of_range>([&] { state.view(0, 3, 512); }, "rejected suffix was visible after acceptance");
++    auto replay = state.begin(0);
++    auto range = state.append(replay, 3, 1);
++    require(range.begin_token == 512 && range.end_token == 513, "replay appended past rejected suffix");
++    require(state.available_tokens(replay, 3) == 513 && state.available_tokens(replay, 7) == 512,
++            "a layer saw another layer's unexecuted append");
++    throws<std::out_of_range>([&] { state.view(replay, 7, 512); }, "later layer saw unappended KV");
++    auto reject = state.reject(replay); // intentionally incomplete per-layer forward
++    require(reject.new_tokens == 512 && !state.transaction_open(0), "incomplete forward could not be rejected");
++    throws<std::logic_error>([&] { state.append(replay, 3, 1); }, "rejected ticket allowed a later append");
++}
++
++void causal_queries_with_chunk_appended_first() {
++    State state;
++    auto ticket = state.begin(0);
++    append_all(state, ticket, 4096);
++    auto early = state.view(ticket, 27, 600);
++    auto late = state.view(ticket, 27, 4095);
++    require(early.visible_tokens == 601 && early.complete_blocks == 1 && early.provisional_blocks == 1 &&
++            early.long_range_end == 89, "prefill query saw future chunk keys");
++    require(late.visible_tokens == 4096 && late.complete_blocks == 8 && late.long_range_end == 3584 &&
++            late.long_range_complete_blocks == 7, "large speculative chunk lost its causal provisional view");
++    state.accept_prefix(ticket, 513);
++    auto next = state.begin(0);
++    append_all(state, next, 1);
++    auto now = state.view(next, 27, 513);
++    require(now.complete_blocks == 1 && now.tail_tokens == 2 && now.published_blocks == 1,
++            "accepted prefix inherited discarded speculative clusters");
++    throws<std::logic_error>([&] { state.view(ticket, 27, 4095); }, "old chunk ticket regained access to rejected KV");
++}
++
++void selector_visibility_at_block_edges() {
++    State state;
++    auto ticket = state.begin(0);
++    append_all(state, ticket, 2048);
++    struct Boundary {
++        uint32_t position;
++        uint32_t complete;
++        uint32_t selectable;
++        uint32_t long_end;
++        uint32_t wholly_long;
++    };
++    // The expected selector bounds are fixed examples of the upstream contract,
++    // including a completed current block and a block crossing the local window.
++    for (const Boundary& b : {Boundary{511, 1, 0, 0, 0}, {512, 1, 1, 1, 0},
++                              {513, 1, 1, 2, 0}, {1023, 2, 1, 512, 1},
++                              {1024, 2, 2, 513, 1}, {1535, 3, 2, 1024, 2},
++                              {1536, 3, 3, 1025, 2}}) {
++        const auto staged = state.view(ticket, 3, b.position);
++        require(staged.complete_blocks == b.complete && staged.selectable_blocks == b.selectable,
++                "selector confused completed KV with rankable blocks");
++        require(staged.long_range_end == b.long_end && staged.long_range_complete_blocks == b.wholly_long,
++                "selector lost the partially visible block at a local-window edge");
++        require(staged.published_blocks == 0 && staged.provisional_blocks == b.complete,
++                "selector visibility prematurely published speculative blocks");
++    }
++    state.accept_prefix(ticket, 2048);
++    const auto committed = state.view(0, 3, 1536);
++    require(committed.selectable_blocks == 3 && committed.long_range_complete_blocks == 2 &&
++            committed.long_range_end == 1025 && committed.published_blocks == 3,
++            "committed view suppressed the ranked block containing long-range key 1024");
++}
++
++void prefix_reuse_invalidates_partial_block() {
++    State state;
++    seed(state, 2, 1537);
++    auto ticket = state.begin(2);
++    append_all(state, ticket, 16);
++    auto trim = state.truncate(2, 511);
++    require(trim.old_tokens == 1537 && trim.new_tokens == 511 && trim.discard_from_token == 511 &&
++            trim.discard_from_block == 0 && state.published_blocks(2) == 0,
++            "trim kept a block with a discarded suffix");
++    throws<std::logic_error>([&] { state.append(ticket, 3, 1); }, "prefix trim did not invalidate open ticket");
++    auto next = state.begin(2);
++    append_all(state, next, 513);
++    auto commit = state.accept_prefix(next, 513);
++    require(commit.new_tokens == 1024 && commit.published_blocks_after == 2,
++            "reuse failed to rebuild boundary-spanning blocks");
++    trim = state.truncate(2, 512);
++    require(trim.discard_from_block == 1 && state.published_blocks(2) == 1,
++            "exact-block trim discarded or retained wrong block");
++    auto revision = state.generation(2);
++    state.reset(2);
++    require(state.committed_tokens(2) == 0 && state.generation(2) > revision,
++            "reset did not invalidate sequence cache identity");
++}
++
++void slots_and_layers_remain_independent() {
++    State state;
++    for (uint32_t slot = 0; slot < State::kSlots; ++slot) seed(state, slot, slot * 512 + 1);
++    auto a = state.begin(0);
++    auto b = state.begin(7);
++    append_all(state, a, 4);
++    state.append(b, 47, 8);
++    require(state.available_tokens(b, 47) == 3593 && state.available_tokens(b, 3) == 3585,
++            "per-layer stage state leaked");
++    state.reject(a);
++    require(state.transaction_open(7) && state.available_tokens(b, 47) == 3593,
++            "one slot's rejection invalidated another slot");
++    for (uint32_t slot = 1; slot < 7; ++slot)
++        require(state.committed_tokens(slot) == slot * 512 + 1,
++                "transaction changed an unrelated committed slot");
++    state.reset(0);
++    require(state.available_tokens(b, 47) == 3593, "one slot's reset invalidated another slot");
++    state.reject(b);
++}
++
++void invalid_mutations_are_atomic() {
++    State state;
++    auto ticket = state.begin(0);
++    throws<std::logic_error>([&] { state.begin(0); }, "nested transaction accepted");
++    state.append(ticket, 3, 2);
++    throws<std::logic_error>([&] { state.accept_prefix(ticket, 1); }, "incomplete forward committed");
++    require(state.transaction_open(0) && state.committed_tokens(0) == 0 &&
++            state.available_tokens(ticket, 3) == 2, "failed commit mutated slot");
++    for (uint32_t l = 7; l <= 47; l += 4) state.append(ticket, l, 2);
++    throws<std::out_of_range>([&] { state.accept_prefix(ticket, 3); }, "accepted unavailable tokens");
++    throws<std::out_of_range>([&] { state.truncate(0, 1); }, "prefix reuse invented committed KV");
++    require(state.transaction_open(0) && state.available_tokens(ticket, 3) == 2,
++            "failed truncate changed live transaction");
++    State::Ticket forged = ticket;
++    ++forged.base_tokens;
++    throws<std::logic_error>([&] { state.append(forged, 3, 1); }, "ticket with wrong prefix was accepted");
++    state.reject(ticket);
++    auto fresh = state.begin(0);
++    require(fresh.generation != ticket.generation, "new transaction reused old ticket generation");
++    throws<std::logic_error>([&] { state.reject(ticket); }, "old ticket rejected a newer transaction");
++    require(state.transaction_open(0), "stale mutation terminated new transaction");
++    state.reject(fresh);
++}
++
++void limits_and_layer_geometry() {
++    State state;
++    require(State::kInputDim == 384 && State::kIndexDim == 64 && State::kLayers == 12 && State::kSlots == 8,
++            "learned-map geometry drifted");
++    for (uint32_t ordinal = 0; ordinal < 12; ++ordinal)
++        require(State::layer_ordinal(3 + 4 * ordinal) == ordinal, "QSA layer ordinal mismatch");
++    for (uint32_t bad : {0u, 2u, 4u, 48u, UINT32_MAX})
++        throws<std::invalid_argument>([&] { State::layer_ordinal(bad); }, "non-QSA layer accepted");
++    throws<std::out_of_range>([&] { state.begin(8); }, "ninth slot accepted");
++    seed(state, 0, State::kContext - 1);
++    auto ticket = state.begin(0);
++    throws<std::out_of_range>([&] { state.append(ticket, 3, UINT32_MAX); }, "overflow append accepted");
++    require(state.available_tokens(ticket, 3) == State::kContext - 1, "overflow append mutated count");
++    append_all(state, ticket, 1);
++    state.accept_prefix(ticket, 1);
++    require(state.committed_tokens(0) == State::kContext && state.published_blocks(0) == 256,
++            "full context was not representable");
++    auto full = state.begin(0);
++    throws<std::out_of_range>([&] { state.append(full, 3, 1); }, "context overflow accepted");
++    require(state.view(0, 47, State::kContext - 1).visible_tokens == State::kContext,
++            "last context token was not visible");
++    throws<std::out_of_range>([&] { state.view(full, 47, State::kContext); }, "past-capacity query accepted");
++    state.reject(full);
++}
++} // namespace
++
++int main() {
++    try {
++        block_boundaries();
++        partial_accept_and_replay();
++        causal_queries_with_chunk_appended_first();
++        selector_visibility_at_block_edges();
++        prefix_reuse_invalidates_partial_block();
++        slots_and_layers_remain_independent();
++        invalid_mutations_are_atomic();
++        limits_and_layer_geometry();
++        std::cout << "LSA cache state: " << checks << " checks passed\n";
++        return 0;
++    } catch (const std::exception& error) {
++        std::cerr << "LSA cache state failed after " << checks << " checks: " << error.what() << '\n';
++        return 1;
++    }
++}
+diff --git a/src/lsa/cuda_adapter.cu b/src/lsa/cuda_adapter.cu
+new file mode 100644
+index 00000000..197dfaec
+--- /dev/null
++++ b/src/lsa/cuda_adapter.cu
+@@ -0,0 +1,273 @@
++#include "strata/lsa/cuda_adapter.h"
++#include "strata/lsa/maps.hpp"
++#include "strata/kernels/qsa_decode_attn.hpp"
++#include <cuda_runtime.h>
++#include <cuda_fp16.h>
++#include <cuda_bf16.h>
++#include <math_constants.h>
++#include <cub/device/device_segmented_radix_sort.cuh>
++#include <cub/block/block_scan.cuh>
++#include <cmath>
++#include <climits>
++#include <cstdio>
++#include <memory>
++#include <string>
++
++namespace {
++constexpr int kDim=64, kInput=384, kTopP=385, kTopK=1024, kWindow=512, kSink=4;
++constexpr int kWidth=kTopK+kWindow+kSink;
++struct MapHandle {
++    float* data=nullptr;
++    float temperature[12]={};
++    uint64_t identity=0;
++    ~MapHandle(){if(data) cudaFree(data);}
++};
++int ordinal(int layer){return layer>=3 && layer<=47 && (layer-3)%4==0?(layer-3)/4:-1;}
++
++__device__ float sum_warp(float value) {
++    for(int delta=16;delta;delta>>=1) value+=__shfl_xor_sync(0xffffffff,value,delta);
++    return value;
++}
++template<bool Query> __global__ void project(const int8_t* codes,const uint16_t* scales,
++ const int32_t* table,int physical_pages,int page_size,int start,const int32_t* positions,const float* q,
++ const float* map,float* out) {
++    const int row=blockIdx.x,d=threadIdx.x;
++    __shared__ float inputs[kInput];
++    __shared__ float norms[2];
++    // Gather each of the 384 input features once. Its original head-sum or
++    // dequantization arithmetic is unchanged; each output keeps its serial
++    // 384-term multiplication/addition order after this shared staging barrier.
++    for(int f=d;f<kInput;f+=kDim) {
++        const int head=f/192,coordinate=64+f%192;
++        float x=0;
++        if constexpr(Query) {
++            for(int group=0;group<12;++group)
++                x+=q[((size_t)row*24+head*12+group)*256+coordinate];
++        } else {
++            const int position=positions?positions[row]:start+row;
++            const int page=position>=0 && position<131072 && position/page_size<physical_pages
++                ?table[position/page_size]:-1;
++            if(page>=0 && page<physical_pages) {
++                const size_t r=((size_t)page*2+head)*page_size+position%page_size;
++                x=(float)codes[r*256+coordinate]*__half2float(__ushort_as_half(scales[r*4+coordinate/64]));
++            }
++        }
++        inputs[f]=x;
++    }
++    __syncthreads();
++    float acc=0;
++    for(int f=0;f<kInput;++f)
++        acc=__fadd_rn(acc,__fmul_rn(inputs[f],map[f*kDim+d]));
++    const float n=sum_warp(acc*acc);
++    if((d&31)==0) norms[d/32]=n;
++    __syncthreads();
++    const float denominator=fmaxf(sqrtf(norms[0]+norms[1]),1e-12f);
++    float value=acc/denominator;
++    if constexpr(Query) value=__bfloat162float(__float2bfloat16_rn(value));
++    out[(size_t)row*kDim+d]=value;
++}
++
++__global__ void score(const float* query,const float* centroids,const int32_t* positions,
++ int buckets,int64_t* keys) {
++    const int bucket=blockIdx.x*8+threadIdx.x/32,row=blockIdx.y,lane=threadIdx.x%32;
++    if(bucket>=buckets) return;
++    const int pos=positions[row],visible=pos>=0 && pos<131072 ? min((pos/512)*64,buckets):0;
++    float dot=0;
++    if(bucket<visible) {
++        dot=query[(size_t)row*64+lane]*centroids[(size_t)bucket*64+lane];
++        dot+=query[(size_t)row*64+lane+32]*centroids[(size_t)bucket*64+lane+32];
++    }
++    dot=sum_warp(dot);
++    if(lane==0) {
++        int32_t ordered=__float_as_int(dot);
++        if(ordered<0) ordered^=0x7fffffff;
++        const uint64_t packed=((uint64_t)(uint32_t)ordered<<32)|(uint32_t)(0x7fffffff-bucket);
++        keys[(size_t)row*buckets+bucket]=bucket<visible && isfinite(dot)?(int64_t)packed:LLONG_MIN;
++    }
++}
++__global__ void fill_offsets(int32_t* offsets,const int32_t* positions,int queries,int buckets) {
++    if(queries==1) {
++        // Captured decode keeps capacity-sized storage and launch bounds, but
++        // only its causal prefix participates in the segmented sort. The end
++        // offset is read from device position on every graph replay, including
++        // zero-visible prefixes. CUB accepts an empty segment without reading it.
++        if(threadIdx.x==0) offsets[0]=0;
++        if(threadIdx.x==1) {
++            const int pos=positions[0];
++            offsets[1]=pos>=0 && pos<131072?min((pos/512)*64,buckets):0;
++        }
++    } else if(threadIdx.x<=queries) offsets[threadIdx.x]=threadIdx.x*buckets;
++}
++
++// A CTA walks 256-member tiles in score-ranked bucket/member order. Exclusive
++// integer ranks preserve the exact serial expansion while independent loads,
++// initialization and local-window writes run in parallel. No score math changes.
++__global__ void expand(const int64_t* sorted,const int32_t* members,const int32_t* positions,
++ int buckets,int32_t* selected,int32_t* cells,int32_t* steps) {
++    constexpr int Threads=256,MembersPerBucket=16,BucketsPerTile=Threads/MembersPerBucket;
++    using Scan=cub::BlockScan<int,Threads>;
++    __shared__ Scan::TempStorage scan;
++    __shared__ int filled;
++    const int row=blockIdx.x,pos=positions[row],tid=threadIdx.x;
++    const bool valid_position=pos>=0 && pos<131072;
++    const int visible=valid_position?min((pos/512)*64,buckets):0;
++    int32_t* out=cells+(size_t)row*kWidth;
++    int32_t* picks=selected+(size_t)row*kTopP;
++    for(int j=tid;j<kWidth;j+=Threads) out[j]=-1;
++    // Publish every selected bucket even when expansion reaches 1024 keys early.
++    for(int j=tid;j<kTopP;j+=Threads) {
++        int bucket=-1;
++        if(j<min(kTopP,visible)) {
++            const int64_t key=sorted[(size_t)row*buckets+j];
++            if(key!=LLONG_MIN) {
++                const int decoded=0x7fffffff-(int)(key&0xffffffff);
++                if(decoded>=0 && decoded<visible) bucket=decoded;
++            }
++        }
++        picks[j]=bucket;
++    }
++    if(tid==0) filled=0;
++    __syncthreads();
++    int window_count=0,sink_count=0;
++    if(valid_position) {
++        const int window_start=max(0,pos+1-kWindow);
++        for(int first=0;first<min(kTopP,visible) && filled<kTopK;first+=BucketsPerTile) {
++            const int pick=first+tid/MembersPerBucket;
++            const int bucket=pick<kTopP?picks[pick]:-1;
++            const int id=bucket>=0?members[(size_t)bucket*MembersPerBucket+tid%MembersPerBucket]:-1;
++            const int keep=id>=kSink && id<window_start;
++            int prefix=0,total=0;
++            Scan(scan).ExclusiveSum(keep,prefix,total);
++            const int at=filled+prefix;
++            if(keep && at<kTopK) out[at]=id;
++            // Reusing scan storage and advancing the shared base both wait for
++            // all threads, including the tile that crosses the 1024-key budget.
++            __syncthreads();
++            if(tid==0) filled=min(kTopK,filled+total);
++            __syncthreads();
++        }
++        window_count=pos+1-window_start;
++        sink_count=min(kSink,window_start);
++        for(int j=tid;j<window_count;j+=Threads) out[filled+j]=window_start+j;
++        if(tid<sink_count) out[filled+window_count+tid]=tid;
++    }
++    if(tid==0) {
++        steps[row*4]=pos;
++        steps[row*4+1]=valid_position?pos+1:0;
++        steps[row*4+2]=valid_position?(pos+1)/4:0;
++        steps[row*4+3]=filled+window_count+sink_count;
++    }
++}
++bool shape(int queries,int buckets) {
++    return queries>0 && queries<=128 && buckets>0 && buckets<=16384 && buckets%64==0;
++}
++}
++extern "C" void* lsa_maps_open(const char* path,char* error,size_t capacity) {
++    auto fail=[&](const std::string& message)->void* {
++        if(error && capacity) std::snprintf(error,capacity,"%s",message.c_str());
++        return nullptr;
++    };
++    if(error && capacity) error[0]=0;
++    if(!path) return fail("missing LSA map path");
++    try {
++        strata::lsa::Maps maps;std::string message;
++        if(!strata::lsa::load_maps(path,maps,message)) return fail(message);
++        auto handle=std::make_unique<MapHandle>();
++        handle->identity=maps.artifact_fingerprint;
++        auto code=cudaMalloc((void**)&handle->data,24*384*64*sizeof(float));
++        if(code!=cudaSuccess) return fail(cudaGetErrorString(code));
++        for(int i=0;i<12;++i) {
++            handle->temperature[i]=maps.layers[i].temperature;
++            for(int key=0;key<2;++key) {
++                const auto& matrix=key?maps.layers[i].key:maps.layers[i].query;
++                code=cudaMemcpy(handle->data+(i*2+key)*384*64,matrix.data(),384*64*sizeof(float),cudaMemcpyHostToDevice);
++                if(code!=cudaSuccess) return fail(cudaGetErrorString(code));
++            }
++        }
++        // Pageable H2D copies may return after staging. The first consumer can
++        // use a nonblocking stream, so publish only fully uploaded weights.
++        code=cudaStreamSynchronize(nullptr);
++        if(code!=cudaSuccess) return fail(cudaGetErrorString(code));
++        return handle.release();
++    } catch(const std::exception& ex){return fail(ex.what());}
++}
++extern "C" const float* lsa_maps_query(void* pointer,int layer) {
++    auto* h=(MapHandle*)pointer;const int i=ordinal(layer);
++    return h && i>=0?h->data+i*2*384*64:nullptr;
++}
++extern "C" const float* lsa_maps_key(void* pointer,int layer) {
++    auto* h=(MapHandle*)pointer;const int i=ordinal(layer);
++    return h && i>=0?h->data+(i*2+1)*384*64:nullptr;
++}
++extern "C" float lsa_maps_temperature(void* pointer,int layer) {
++    auto* h=(MapHandle*)pointer;const int i=ordinal(layer);
++    return h && i>=0?h->temperature[i]:NAN;
++}
++extern "C" uint64_t lsa_maps_identity(void* pointer) {
++    const auto* h=(const MapHandle*)pointer;
++    return h?h->identity:0;
++}
++extern "C" void lsa_maps_close(void* pointer){delete (MapHandle*)pointer;}
++extern "C" int lsa_project_keys(const int8_t* codes,const uint16_t* scales,const int32_t* table,
++ int physical_pages,int page_size,int start,int count,const float* map,float* output,void* stream) {
++    if(!codes||!scales||!table||!map||!output||!stream||physical_pages<=0||physical_pages>131072||
++       page_size<=0||page_size>512||start<0||count<=0||start>131072-count||
++       (int64_t)start+count>(int64_t)physical_pages*page_size)
++        return cudaErrorInvalidValue;
++    project<false><<<count,64,0,(cudaStream_t)stream>>>(codes,scales,table,physical_pages,page_size,start,nullptr,nullptr,map,output);
++    return cudaGetLastError();
++}
++extern "C" int lsa_project_key_steps(const int8_t* codes,const uint16_t* scales,const int32_t* table,
++ int physical_pages,int page_size,const int32_t* positions,int count,const float* map,float* output,void* stream) {
++    if(!codes||!scales||!table||!map||!output||!stream||!positions||physical_pages<=0||physical_pages>131072||
++       page_size<=0||page_size>512||count<=0||count>128) return cudaErrorInvalidValue;
++    project<false><<<count,64,0,(cudaStream_t)stream>>>(codes,scales,table,physical_pages,page_size,0,positions,nullptr,map,output);
++    return cudaGetLastError();
++}
++extern "C" int lsa_project_queries(const float* query,int count,const float* map,float* output,void* stream) {
++    if(!query||!map||!output||!stream||count<=0||count>128) return cudaErrorInvalidValue;
++    project<true><<<count,64,0,(cudaStream_t)stream>>>(nullptr,nullptr,nullptr,0,0,0,nullptr,query,map,output);
++    return cudaGetLastError();
++}
++extern "C" int lsa_select_temp_bytes(int queries,int buckets,size_t* bytes) {
++    if(!bytes||!shape(queries,buckets)) return cudaErrorInvalidValue;
++    *bytes=0;
++    return cub::DeviceSegmentedRadixSort::SortKeysDescending(nullptr,*bytes,
++      (int64_t*)nullptr,(int64_t*)nullptr,queries*buckets,queries,
++      (int32_t*)nullptr,(int32_t*)nullptr,0,64);
++}
++extern "C" int lsa_select(const float* query,const float* centroids,const int32_t* members,
++ const int32_t* positions,int queries,int buckets,int64_t* keys_in,int64_t* keys_out,
++ int32_t* offsets,void* temporary,size_t bytes,
++ int32_t* selected,int32_t* cells,int32_t* steps,void* stream) {
++    if(!shape(queries,buckets)||!query||!centroids||!members||!positions||!keys_in||!keys_out||
++       !offsets||!temporary||!selected||!cells||!steps||!stream)
++        return cudaErrorInvalidValue;
++    size_t needed=0;
++    auto error=(cudaError_t)lsa_select_temp_bytes(queries,buckets,&needed);
++    if(error!=cudaSuccess) return error;
++    if(bytes<needed) return cudaErrorInvalidValue;
++    auto st=(cudaStream_t)stream;
++    score<<<dim3((buckets+7)/8,queries),256,0,st>>>(query,centroids,positions,buckets,keys_in);
++    fill_offsets<<<1,256,0,st>>>(offsets,positions,queries,buckets);
++    error=cudaGetLastError();
++    if(error!=cudaSuccess) return error;
++    error=cub::DeviceSegmentedRadixSort::SortKeysDescending(temporary,bytes,keys_in,keys_out,
++      queries*buckets,queries,offsets,offsets+1,0,64,st);
++    if(error!=cudaSuccess) return error;
++    expand<<<queries,256,0,st>>>(keys_out,members,positions,buckets,selected,cells,steps);
++    return cudaGetLastError();
++}
++extern "C" size_t lsa_attention_scratch_floats(void) {
++    return strata::kernels::qsa_decode_attn_scratch_floats(kWidth,strata::kernels::qsa_real_shapes());
++}
++extern "C" int lsa_attention(const float* query,const int8_t* k,const int8_t* v,
++ const uint16_t* ks,const uint16_t* vs,const int32_t* table,int page_size,int queries,
++ const int32_t* cells,const int32_t* steps,float* scratch,float* output,void* stream) {
++    if(!query||!k||!v||!ks||!vs||!table||!cells||!steps||!scratch||!output||!stream||
++       page_size<=0||page_size>512||queries<=0||queries>128) return cudaErrorInvalidValue;
++    auto s=strata::kernels::qsa_real_shapes();s.page_size=page_size;
++    strata::kernels::QsaAttnPools p;p.k_q=k;p.v_q=v;p.k_scale=ks;p.v_scale=vs;p.page_table=table;
++    strata::kernels::qsa_decode_attn_batch(query,p,cells,steps,kWidth,s,scratch,output,queries,stream);
++    return cudaGetLastError();
++}
+diff --git a/src/lsa/maps.cpp b/src/lsa/maps.cpp
+new file mode 100644
+index 00000000..cb66104f
+--- /dev/null
++++ b/src/lsa/maps.cpp
+@@ -0,0 +1,91 @@
++#include "strata/lsa/maps.hpp"
++
++#include <algorithm>
++#include <cmath>
++#include <cstring>
++#include <fstream>
++#include <limits>
++#include <utility>
++
++namespace strata::lsa {
++namespace {
++
++constexpr uint8_t kMagic[8] = {'S', 'T', 'L', 'S', 'A', 'M', '0', '1'};
++
++uint32_t u32(const uint8_t* p) {
++    return uint32_t{p[0]} | (uint32_t{p[1]} << 8) | (uint32_t{p[2]} << 16) | (uint32_t{p[3]} << 24);
++}
++
++uint64_t u64(const uint8_t* p) {
++    return uint64_t{u32(p)} | (uint64_t{u32(p + 4)} << 32);
++}
++
++float f32(const uint8_t* p) {
++    const uint32_t bits = u32(p);
++    float value;
++    std::memcpy(&value, &bits, sizeof(value));
++    return value;
++}
++
++bool fail(std::string& error, const std::string& message) {
++    error = "LSA maps: " + message;
++    return false;
++}
++
++}  // namespace
++
++bool load_maps(const std::string& path, Maps& out, std::string& error) {
++    static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
++                  "LSA map loader requires IEEE754 binary32");
++    std::ifstream input(path, std::ios::binary | std::ios::ate);
++    if (!input) return fail(error, "cannot open file");
++    const std::streampos size = input.tellg();
++    // Fixed geometry bounds every allocation and rejects trailing payloads.
++    if (size != std::streampos(kMapFileBytes)) return fail(error, "wrong file length (truncated or trailing bytes)");
++    input.seekg(0);
++    std::vector<uint8_t> bytes(static_cast<size_t>(kMapFileBytes));
++    if (!input.read(reinterpret_cast<char*>(bytes.data()), static_cast<std::streamsize>(bytes.size())))
++        return fail(error, "cannot read complete file");
++    // A file that grew between sizing and reading is also invalid.
++    if (input.peek() != std::char_traits<char>::eof()) return fail(error, "trailing bytes");
++    const uint8_t* p = bytes.data();
++    if (!std::equal(std::begin(kMagic), std::end(kMagic), p)) return fail(error, "bad magic");
++    if (u32(p + 8) != kMapVersion) return fail(error, "unsupported version");
++    if (u32(p + 12) != kInputDim || u32(p + 16) != kIndexDim || u32(p + 20) != kLayerCount)
++        return fail(error, "wrong dimensions or layer count");
++    if (u64(p + 24) != kLayerCount * kMapRecordBytes) return fail(error, "wrong payload length");
++    Maps candidate;
++    std::copy(p + 32, p + 64, candidate.source_weights_sha256.begin());
++    std::copy(p + 64, p + 96, candidate.source_metadata_sha256.begin());
++    p += kMapHeaderBytes;
++    for (uint32_t i = 0; i < kLayerCount; ++i) {
++        auto& layer = candidate.layers[i];
++        const uint32_t expected = 3 + 4 * i;
++        if (u32(p) != expected) return fail(error, "wrong, missing, duplicated, or unordered layer");
++        if (u32(p + 4) != 0 || u32(p + 12) != 0) return fail(error, "nonzero reserved field");
++        layer.layer = static_cast<int32_t>(expected);
++        layer.temperature = f32(p + 8);
++        if (!(std::isfinite(layer.temperature) && layer.temperature > 0))
++            return fail(error, "temperature must be positive and finite");
++        p += 16;
++        for (auto* matrix : {&layer.query, &layer.key}) {
++            matrix->resize(static_cast<size_t>(kMatrixValues));
++            for (float& value : *matrix) {
++                value = f32(p);
++                if (!std::isfinite(value)) return fail(error, "matrix contains a nonfinite value");
++                p += 4;
++            }
++        }
++    }
++    uint64_t fingerprint = 14695981039346656037ULL;
++    for (const uint8_t byte : bytes) {
++        fingerprint ^= byte;
++        fingerprint *= 1099511628211ULL;
++    }
++    candidate.artifact_fingerprint = fingerprint;
++    out = std::move(candidate);
++    error.clear();
++    return true;
++}
++
++}  // namespace strata::lsa
+diff --git a/src/lsa/maps_test.cpp b/src/lsa/maps_test.cpp
+new file mode 100644
+index 00000000..9d9fea46
+--- /dev/null
++++ b/src/lsa/maps_test.cpp
+@@ -0,0 +1,140 @@
++// CPU tests for the explicit learned-map interchange. No engine or CUDA calls.
++#include "strata/lsa/maps.hpp"
++
++#include <cmath>
++#include <cstdio>
++#include <cstring>
++#include <fstream>
++#include <limits>
++#include <string>
++#include <vector>
++
++using namespace strata::lsa;
++
++namespace {
++int failed = 0;
++int checks = 0;
++
++void check(bool ok, const char* name) {
++    ++checks;
++    if (!ok) { ++failed; std::fprintf(stderr, "FAIL %s\n", name); }
++}
++
++void put32(std::vector<uint8_t>& v, size_t offset, uint32_t n) {
++    for (int i = 0; i < 4; ++i) v[offset + i] = static_cast<uint8_t>(n >> (i * 8));
++}
++
++void putf(std::vector<uint8_t>& v, size_t offset, float f) {
++    uint32_t u;
++    std::memcpy(&u, &f, 4);
++    put32(v, offset, u);
++}
++
++std::vector<uint8_t> fixture() {
++    std::vector<uint8_t> v(static_cast<size_t>(kMapFileBytes));
++    std::memcpy(v.data(), "STLSAM01", 8);
++    put32(v, 8, 1); put32(v, 12, kInputDim); put32(v, 16, kIndexDim); put32(v, 20, kLayerCount);
++    const uint64_t payload = kMapRecordBytes * kLayerCount;
++    put32(v, 24, static_cast<uint32_t>(payload)); put32(v, 28, static_cast<uint32_t>(payload >> 32));
++    for (size_t j = 32; j < 96; ++j) v[j] = static_cast<uint8_t>(j);
++    for (uint32_t i = 0; i < kLayerCount; ++i) {
++        const size_t off = static_cast<size_t>(kMapHeaderBytes + i * kMapRecordBytes);
++        put32(v, off, 3 + 4 * i); putf(v, off + 8, 0.05f + i * 0.001f);
++        for (size_t j = 0; j < 2 * kMatrixValues; ++j) putf(v, off + 16 + j * 4, float(int(j % 127) - 63) / 128);
++    }
++    return v;
++}
++
++bool read_fixture(const std::string& path, const std::vector<uint8_t>& bytes, Maps& maps, std::string& error) {
++    { std::ofstream f(path, std::ios::binary); f.write(reinterpret_cast<const char*>(bytes.data()), bytes.size()); }
++    return load_maps(path, maps, error);
++}
++
++void rejection(const std::string& path, const std::vector<uint8_t>& bytes, const char* name) {
++    Maps maps;
++    maps.layers[0].layer = 777;
++    maps.layers[0].query = {123.0f};
++    maps.artifact_fingerprint = 456;
++    std::string error;
++    check(!read_fixture(path, bytes, maps, error) && !error.empty(), name);
++    check(maps.layers[0].layer == 777 && maps.layers[0].query == std::vector<float>{123.0f}
++          && maps.artifact_fingerprint == 456, "failure is transactional");
++}
++
++}  // namespace
++
++int main(int argc, char** argv) {
++    if (argc < 2 || argc > 3) {
++        std::fprintf(stderr, "usage: lsa_maps_test writable-fixture-path [exported-native-map]\n");
++        return 2;
++    }
++    const std::string path = argv[1];
++    auto bytes = fixture();
++    Maps maps;
++    std::string error = "stale";
++    check(read_fixture(path, bytes, maps, error) && error.empty(), "valid file");
++    check(maps.layers[0].layer == 3 && maps.layers[11].layer == 47, "complete ordered layers");
++    check(maps.layers[0].temperature == 0.05f && maps.layers[0].query[0] == -63.0f / 128, "float values exact");
++    check(maps.layers[11].key.size() == kMatrixValues && maps.source_weights_sha256[0] == 32
++          && maps.source_metadata_sha256[31] == 95, "matrices and provenance");
++    const uint64_t identity = maps.artifact_fingerprint;
++    check(identity != 0, "full artifact identity exists");
++    Maps identical;
++    check(read_fixture(path, bytes, identical, error) && identical.artifact_fingerprint == identity,
++          "unchanged bytes preserve identity");
++    // This float lies in the middle gap omitted by the legacy 1 MiB head/tail
++    // sampler. Keep geometry, provenance, length and finite-value validity.
++    const size_t middle = (bytes.size() / 2) & ~size_t(3);
++    check(middle >= (1u << 20) && middle + 4 <= bytes.size() - (1u << 20), "middle edit lies outside sampled ends");
++    auto changed = bytes;
++    putf(changed, middle, 1.25f);
++    Maps edited;
++    check(read_fixture(path, changed, edited, error) && edited.artifact_fingerprint != identity,
++          "valid finite middle edit changes full artifact identity");
++    check(edited.source_weights_sha256 == maps.source_weights_sha256 &&
++          edited.source_metadata_sha256 == maps.source_metadata_sha256, "middle identity change does not depend on provenance changes");
++    check(read_fixture(path, bytes, maps, error) && maps.artifact_fingerprint == identity,
++          "restored exact bytes restore identity");
++    auto bad = bytes; bad[0] ^= 1; rejection(path, bad, "magic");
++    bad = bytes; put32(bad, 8, 2); rejection(path, bad, "version");
++    bad = bytes; put32(bad, 12, 768); rejection(path, bad, "input dimension");
++    bad = bytes; put32(bad, 16, 128); rejection(path, bad, "index dimension");
++    bad = bytes; put32(bad, 20, 11); rejection(path, bad, "layer count");
++    bad = bytes; put32(bad, 24, 0); rejection(path, bad, "payload length");
++    bad = bytes; bad.pop_back(); rejection(path, bad, "truncation");
++    bad = bytes; bad.push_back(0); rejection(path, bad, "trailing bytes");
++    bad = bytes; put32(bad, kMapHeaderBytes + kMapRecordBytes, 3); rejection(path, bad, "duplicate layer");
++    bad = bytes; put32(bad, kMapHeaderBytes, 7); rejection(path, bad, "unordered layer");
++    bad = bytes; put32(bad, kMapHeaderBytes + 4, 1); rejection(path, bad, "reserved field");
++    bad = bytes; putf(bad, kMapHeaderBytes + 8, 0); rejection(path, bad, "zero temperature");
++    bad = bytes; putf(bad, kMapHeaderBytes + 8, -1); rejection(path, bad, "negative temperature");
++    bad = bytes; putf(bad, kMapHeaderBytes + 8, std::numeric_limits<float>::infinity()); rejection(path, bad, "infinite temperature");
++    bad = bytes; putf(bad, kMapHeaderBytes + 16, std::numeric_limits<float>::quiet_NaN()); rejection(path, bad, "NaN matrix");
++    bad = bytes; putf(bad, kMapHeaderBytes + 16 + kMatrixValues * 4, std::numeric_limits<float>::infinity());
++    rejection(path, bad, "infinite key matrix");
++    std::remove(path.c_str());
++    if (argc == 3) {
++        check(load_maps(argv[2], maps, error), "actual exported pilot maps load");
++        if (error.empty()) {
++            std::ifstream input(argv[2], std::ios::binary);
++            std::vector<uint8_t> raw(static_cast<size_t>(kMapFileBytes));
++            input.read(reinterpret_cast<char*>(raw.data()), raw.size());
++            bool exact = true;
++            for (uint32_t i = 0; i < kLayerCount; ++i) {
++                const size_t off = static_cast<size_t>(kMapHeaderBytes + i * kMapRecordBytes);
++                for (const auto* matrix : {&maps.layers[i].query, &maps.layers[i].key}) {
++                    const size_t which = matrix == &maps.layers[i].query ? 0 : 1;
++                    for (size_t j = 0; j < kMatrixValues; ++j) {
++                        const size_t p = off + 16 + which * kMatrixValues * 4 + j * 4;
++                        uint32_t bits;
++                        std::memcpy(&bits, &(*matrix)[j], 4);
++                        for (int k = 0; k < 4; ++k) exact &= raw[p + k] == static_cast<uint8_t>(bits >> (8 * k));
++                    }
++                }
++            }
++            check(exact, "all exported coefficients read bit-exactly");
++        }
++    }
++    std::printf("lsa_maps_test: %d checks, %d failed\n", checks, failed);
++    return failed ? 1 : 0;
++}
+diff --git a/src/lsa/runtime.cu b/src/lsa/runtime.cu
+new file mode 100644
+index 00000000..77b52299
+--- /dev/null
++++ b/src/lsa/runtime.cu
+@@ -0,0 +1,361 @@
++#include "strata/lsa/runtime.hpp"
++#include "strata/lsa/cuda_adapter.h"
++#include "strata/lsa/ward.hpp"
++
++#include <cuda_runtime.h>
++#include <algorithm>
++#include <cstdlib>
++#include <cstring>
++#include <limits>
++#include <iterator>
++#include <mutex>
++#include <string>
++
++namespace strata::lsa {
++namespace {
++constexpr int D = 64, P = 385, W = 1540;
++void* maps_handle = nullptr; // Immutable, intentionally retained until process exit.
++bool configured = false;
++std::string maps_path;
++std::mutex configuration_lock;
++
++size_t rounded(size_t bytes) { return (bytes + 255) & ~size_t(255); }
++int bucket_capacity(int64_t capacity) { return std::max<int64_t>(1, (capacity + 511) / 512) * 64; }
++bool status(int code, const char* what, std::string& error) {
++    if (code == cudaSuccess) return true;
++    error = std::string("LSA runtime ") + what + ": " + cudaGetErrorString((cudaError_t) code);
++    return false;
++}
++bool valid_capacity(int64_t capacity) { return capacity > 0 && capacity <= 131072; }
++
++size_t bytes_for(int64_t capacity, size_t sort_bytes) {
++    const size_t buckets = bucket_capacity(capacity);
++    size_t bytes = 256; // Up to 255 bytes to align the supplied arena's first address.
++    for (size_t n : {size_t(capacity) * D * 4, buckets * D * 4, buckets * 16 * 4,
++                     size_t(D * 4), size_t(D * 4), buckets * 8, buckets * 8,
++                     size_t(2 * 4), size_t(P * 4), size_t(W * 4), size_t(4 * 4),
++                     sort_bytes, ward_scratch_bytes()}) bytes += rounded(n);
++    return bytes;
++}
++
++size_t prefill_bytes_for(int64_t capacity, int queries, size_t sort_bytes) {
++    const size_t buckets = bucket_capacity(capacity), rows = size_t(queries);
++    size_t bytes = 256;
++    for (size_t n : {rows * D * 4, rows * 4, rows * buckets * 8, rows * buckets * 8,
++                     (rows + 1) * 4, rows * P * 4, rows * W * 4, rows * 4 * 4, sort_bytes})
++        bytes += rounded(n);
++    return bytes;
++}
++
++struct Arena {
++    uintptr_t next;
++    uintptr_t end;
++    void* take(size_t bytes) {
++        next = (next + 255) & ~uintptr_t(255);
++        if (next > end || bytes > end - next) return nullptr;
++        void* pointer = reinterpret_cast<void*>(next);
++        next += rounded(bytes);
++        return pointer;
++    }
++};
++
++__global__ void store_projected(const float* row, const int32_t* step, int capacity, float* history) {
++    const int position = step[0];
++    if (position < 0 || position >= capacity) { asm volatile("trap;"); return; }
++    history[size_t(position) * D + threadIdx.x] = row[threadIdx.x];
++}
++
++__global__ void closure_guard(const int32_t* diagnostics) {
++    // Fail closed before a failed closure's cleared output can become attention.
++    // The enclosing engine synchronization surfaces a candidate CUDA failure.
++    if (*diagnostics < 0) asm volatile("trap;");
++}
++
++__global__ void publish(const int32_t* cells, const int32_t* selected_step,
++                        int32_t* ids, int cap, int32_t* step) {
++    for (int i = threadIdx.x; i < cap; i += blockDim.x) ids[i] = i < W ? cells[i] : -1;
++    if (threadIdx.x == 0) step[3] = selected_step[3];
++}
++
++__global__ void positions_from_steps(const int32_t* steps, int64_t stride, int rows,
++                                    int first_position, int32_t* positions) {
++    const int row = threadIdx.x;
++    if (row >= rows) return;
++    const int position = steps[size_t(row) * stride];
++    if (position != first_position + row) { asm volatile("trap;"); return; }
++    positions[row] = position;
++}
++
++__global__ void publish_batch(const int32_t* cells, const int32_t* selected_steps,
++                              int32_t* ids, int cap, int32_t* steps, int64_t step_stride) {
++    const int row = blockIdx.x;
++    for (int i = threadIdx.x; i < cap; i += blockDim.x)
++        ids[size_t(row) * cap + i] = i < W ? cells[size_t(row) * W + i] : -1;
++    if (threadIdx.x == 0) steps[size_t(row) * step_stride + 3] = selected_steps[row * 4 + 3];
++}
++
++bool validate(const RuntimeState& s, int layer, const strata::kernels::QsaAttnPools& pools,
++              int64_t cap, void* stream, std::string& error) {
++    if (!maps_handle || !s.history || !s.centroids || !s.members || !stream || cap < W || cap > INT32_MAX ||
++        layer < 3 || layer > 47 || (layer - 3) % 4 || s.model_layer != layer ||
++        !pools.k_q || !pools.k_scale || !pools.page_table || pools.k_q4 || pools.k_pool ||
++        !valid_capacity(s.capacity)) {
++        error = "LSA runtime: incompatible state, map layer, INT8 pool or output capacity";
++        return false;
++    }
++    return true;
++}
++
++bool select_row(const RuntimeState& s, int layer, const float* query, int32_t* step,
++                int32_t* ids, int64_t cap, void* stream, std::string& error) {
++    if (!query || !step || !ids) { error = "LSA runtime: missing query/step/selection buffer"; return false; }
++    if (!status(lsa_project_queries(query, 1, lsa_maps_query(maps_handle, layer), s.query_row, stream),
++                "query projection", error)) return false;
++    if (!status(lsa_select(s.query_row, s.centroids, s.members, step, 1, s.buckets, s.keys_in, s.keys_out,
++                           s.offsets, s.sort_temporary, s.sort_bytes, s.selected, s.cells, s.steps, stream),
++                "selection", error)) return false;
++    publish<<<1, 256, 0, (cudaStream_t) stream>>>(s.cells, s.steps, ids, (int) cap, step);
++    return status(cudaGetLastError(), "selection publication", error);
++}
++} // namespace
++
++bool runtime_configure_from_env(std::string& error) {
++    std::lock_guard<std::mutex> lock(configuration_lock);
++    const char* value = std::getenv("STRATA_LSA_MAPS");
++    const std::string requested = value ? value : "";
++    if (configured) {
++        if (requested != maps_path) { error = "LSA map configuration cannot change after startup"; return false; }
++        error.clear();
++        return true;
++    }
++    if (requested.empty()) { configured = true; error.clear(); return true; }
++    char why[1024] = {};
++    void* candidate = lsa_maps_open(requested.c_str(), why, sizeof(why));
++    if (!candidate) { error = std::string("LSA map startup refused: ") + why; return false; }
++    maps_handle = candidate;
++    maps_path = requested;
++    configured = true;
++    error.clear();
++    return true;
++}
++
++bool runtime_enabled() { return maps_handle != nullptr; }
++const std::string& runtime_map_path() { return maps_path; }
++uint64_t runtime_map_identity() { return lsa_maps_identity(maps_handle); }
++
++size_t runtime_state_bytes(int64_t capacity) {
++    if (!runtime_enabled() || !valid_capacity(capacity)) return 0;
++    size_t sort_bytes = 0;
++    if (lsa_select_temp_bytes(1, bucket_capacity(capacity), &sort_bytes) != cudaSuccess) return 0;
++    return bytes_for(capacity, sort_bytes);
++}
++
++bool runtime_state_init(RuntimeState& out, int64_t capacity, int physical_pages, int page_size,
++                        void* memory, size_t bytes, std::string& error) {
++    if (!runtime_enabled() || !valid_capacity(capacity) || !memory || physical_pages <= 0 ||
++        page_size <= 0 || page_size > 512 || int64_t(physical_pages) * page_size < capacity) {
++        error = "LSA runtime: unsupported state allocation geometry"; return false;
++    }
++    size_t sort_bytes = 0;
++    if (!status(lsa_select_temp_bytes(1, bucket_capacity(capacity), &sort_bytes), "sort sizing", error)) return false;
++    if (bytes < bytes_for(capacity, sort_bytes)) { error = "LSA runtime: undersized state arena"; return false; }
++    Arena arena{reinterpret_cast<uintptr_t>(memory), reinterpret_cast<uintptr_t>(memory) + bytes};
++    RuntimeState s;
++    s.capacity = (int) capacity; s.buckets = bucket_capacity(capacity);
++    s.physical_pages = physical_pages; s.page_size = page_size; s.sort_bytes = sort_bytes; s.arena_bytes = bytes;
++    s.history = static_cast<float*>(arena.take(size_t(capacity) * D * 4));
++    s.centroids = static_cast<float*>(arena.take(size_t(s.buckets) * D * 4));
++    s.members = static_cast<int32_t*>(arena.take(size_t(s.buckets) * 16 * 4));
++    s.key_row = static_cast<float*>(arena.take(D * 4));
++    s.query_row = static_cast<float*>(arena.take(D * 4));
++    s.keys_in = static_cast<int64_t*>(arena.take(size_t(s.buckets) * 8));
++    s.keys_out = static_cast<int64_t*>(arena.take(size_t(s.buckets) * 8));
++    s.offsets = static_cast<int32_t*>(arena.take(2 * 4));
++    s.selected = static_cast<int32_t*>(arena.take(P * 4));
++    s.cells = static_cast<int32_t*>(arena.take(W * 4));
++    s.steps = static_cast<int32_t*>(arena.take(4 * 4));
++    s.sort_temporary = arena.take(sort_bytes);
++    s.ward_scratch = arena.take(ward_scratch_bytes());
++    if (!s.ward_scratch || !s.sort_temporary) { error = "LSA runtime: state carving overflow"; return false; }
++    if (!status(cudaMemset(s.ward_scratch, 0, ward_scratch_bytes()), "state initialization", error)) return false;
++    out = s;
++    return true;
++}
++
++void runtime_zero(const RuntimeState& s, void* stream) {
++    // No reader can name unwritten projected history or unfinished blocks. A
++    // reset only clears diagnostics; later closures overwrite their whole block.
++    if (s.history) cudaMemsetAsync(s.ward_scratch, 0, ward_scratch_bytes(), (cudaStream_t) stream);
++}
++
++size_t runtime_prefill_scratch_bytes(int64_t capacity, int queries) {
++    if (!runtime_enabled() || !valid_capacity(capacity) || queries < 1 || queries > 128) return 0;
++    size_t sort_bytes = 0;
++    if (lsa_select_temp_bytes(queries, bucket_capacity(capacity), &sort_bytes) != cudaSuccess) return 0;
++    return prefill_bytes_for(capacity, queries, sort_bytes);
++}
++
++bool runtime_prefill_scratch_init(RuntimePrefillScratch& out, int64_t capacity, int queries,
++                                 void* memory, size_t bytes, std::string& error) {
++    if (!runtime_enabled() || !valid_capacity(capacity) || queries < 1 || queries > 128 || !memory) {
++        error = "LSA runtime: unsupported prefill workspace geometry"; return false;
++    }
++    size_t sort_bytes = 0;
++    if (!status(lsa_select_temp_bytes(queries, bucket_capacity(capacity), &sort_bytes),
++                "prefill sort sizing", error)) return false;
++    if (bytes < prefill_bytes_for(capacity, queries, sort_bytes)) {
++        error = "LSA runtime: undersized prefill workspace"; return false;
++    }
++    Arena arena{reinterpret_cast<uintptr_t>(memory), reinterpret_cast<uintptr_t>(memory) + bytes};
++    RuntimePrefillScratch scratch;
++    scratch.queries = queries; scratch.buckets = bucket_capacity(capacity);
++    scratch.sort_bytes = sort_bytes; scratch.arena_bytes = bytes;
++    const size_t rows = size_t(queries), buckets = size_t(scratch.buckets);
++    scratch.query_rows = static_cast<float*>(arena.take(rows * D * 4));
++    scratch.positions = static_cast<int32_t*>(arena.take(rows * 4));
++    scratch.keys_in = static_cast<int64_t*>(arena.take(rows * buckets * 8));
++    scratch.keys_out = static_cast<int64_t*>(arena.take(rows * buckets * 8));
++    scratch.offsets = static_cast<int32_t*>(arena.take((rows + 1) * 4));
++    scratch.selected = static_cast<int32_t*>(arena.take(rows * P * 4));
++    scratch.cells = static_cast<int32_t*>(arena.take(rows * W * 4));
++    scratch.steps = static_cast<int32_t*>(arena.take(rows * 4 * 4));
++    scratch.sort_temporary = arena.take(sort_bytes);
++    if (!scratch.sort_temporary) { error = "LSA runtime: prefill workspace carving overflow"; return false; }
++    out = scratch;
++    return true;
++}
++
++bool runtime_step(const RuntimeState& s, int layer, const strata::kernels::QsaAttnPools& pools,
++                  const float* query, int32_t* step, int32_t* ids, int64_t cap, void* stream, std::string& error) {
++    if (!validate(s, layer, pools, cap, stream, error) || !step) return false;
++    if (!status(lsa_project_key_steps(pools.k_q, pools.k_scale, pools.page_table, s.physical_pages, s.page_size,
++                                     step, 1, lsa_maps_key(maps_handle, layer), s.key_row, stream),
++                "key projection", error)) return false;
++    store_projected<<<1, D, 0, (cudaStream_t) stream>>>(s.key_row, step, s.capacity, s.history);
++    if (!status(cudaGetLastError(), "projected history append", error)) return false;
++    if (!status(ward_close_step(s.history, step, s.capacity, s.centroids, s.members, s.ward_scratch, stream),
++                "block closure", error)) return false;
++    closure_guard<<<1, 1, 0, (cudaStream_t) stream>>>((const int32_t*) s.ward_scratch);
++    if (!status(cudaGetLastError(), "closure guard", error)) return false;
++    return select_row(s, layer, query, step, ids, cap, stream, error);
++}
++
++bool runtime_prefill(const RuntimeState& s, int layer, const strata::kernels::QsaAttnPools& pools,
++                     const float* queries, int64_t start, int64_t count, int32_t* steps, int64_t step_stride,
++                     int32_t* ids, int64_t cap, void* stream, std::string& error,
++                     const RuntimePrefillScratch* scratch) {
++    if (!validate(s, layer, pools, cap, stream, error) || !queries || !steps || !ids ||
++        start < 0 || count < 1 || count > s.capacity || start > s.capacity - count || step_stride < 4) {
++        if (error.empty()) error = "LSA runtime: invalid prompt range or buffers";
++        return false;
++    }
++    if (!status(lsa_project_keys(pools.k_q, pools.k_scale, pools.page_table, s.physical_pages, s.page_size,
++                                (int) start, (int) count, lsa_maps_key(maps_handle, layer),
++                                s.history + size_t(start) * D, stream), "prompt key projection", error)) return false;
++    const int first = (int) (start / 512), blocks = (int) ((start + count) / 512) - first;
++    if (blocks && !status(ward_close_range(s.history, s.capacity, first, blocks, s.centroids, s.members,
++                                          s.ward_scratch, stream), "prompt block closure", error)) return false;
++    closure_guard<<<1, 1, 0, (cudaStream_t) stream>>>((const int32_t*) s.ward_scratch);
++    if (!status(cudaGetLastError(), "prompt closure guard", error)) return false;
++    if (scratch) {
++        const auto& b = *scratch;
++        if (b.queries < 1 || b.queries > 128 || b.buckets < s.buckets || !b.query_rows || !b.positions ||
++            !b.keys_in || !b.keys_out || !b.offsets || !b.selected || !b.cells || !b.steps || !b.sort_temporary) {
++            error = "LSA runtime: missing or incompatible batched prefill workspace";
++            return false;
++        }
++        for (int64_t first_row = 0; first_row < count; first_row += b.queries) {
++            const int rows = (int) std::min<int64_t>(b.queries, count - first_row);
++            const int last_position = (int) (start + first_row + rows - 1);
++            // Prompt counts are host-known outside capture. Keep the exact
++            // device causal mask per query while avoiding scans of unused
++            // future-capacity buckets. Each packed row uses this active stride.
++            const int active = std::max(64, std::min(s.buckets, (last_position / 512) * 64));
++            size_t needed = 0;
++            if (!status(lsa_select_temp_bytes(rows, active, &needed), "active prefill sort sizing", error)) return false;
++            if (needed > b.sort_bytes) { error = "LSA runtime: active sort exceeds planned prefill workspace"; return false; }
++            int32_t* original_steps = steps + first_row * step_stride;
++            positions_from_steps<<<1, 128, 0, (cudaStream_t) stream>>>(original_steps, step_stride, rows,
++                                                                       (int) (start + first_row), b.positions);
++            if (!status(cudaGetLastError(), "prefill position packing", error)) return false;
++            if (!status(lsa_project_queries(queries + size_t(first_row) * 24 * 256, rows,
++                                            lsa_maps_query(maps_handle, layer), b.query_rows, stream),
++                        "batched prompt query projection", error)) return false;
++            if (!status(lsa_select(b.query_rows, s.centroids, s.members, b.positions, rows, active,
++                                   b.keys_in, b.keys_out, b.offsets, b.sort_temporary, b.sort_bytes,
++                                   b.selected, b.cells, b.steps, stream), "batched prompt selection", error)) return false;
++            publish_batch<<<rows, 256, 0, (cudaStream_t) stream>>>(b.cells, b.steps, ids + first_row * cap,
++                                                                  (int) cap, original_steps, step_stride);
++            if (!status(cudaGetLastError(), "batched prompt selection publication", error)) return false;
++        }
++        return true;
++    }
++    for (int64_t row = 0; row < count; ++row)
++        if (!select_row(s, layer, queries + size_t(row) * 24 * 256, steps + row * step_stride,
++                         ids + row * cap, cap, stream, error)) return false;
++    return true;
++}
++
++bool runtime_stats(const RuntimeState& s, int32_t (&values)[4], std::string& error) {
++    if (!s.history) { std::fill(std::begin(values), std::end(values), 0); return true; }
++    return status(cudaDeviceSynchronize(), "statistics synchronization", error) &&
++           status(cudaMemcpy(values, s.ward_scratch, sizeof(values), cudaMemcpyDeviceToHost), "statistics read", error);
++}
++
++bool runtime_check(const RuntimeState& s, std::string& error) {
++    int32_t values[4] = {};
++    if (!runtime_stats(s, values, error)) return false;
++    if (values[0] < 0) { error = "LSA native Ward closure failed: " + std::to_string(values[0]); return false; }
++    return true;
++}
++
++bool runtime_rebuild(const RuntimeState& s, const strata::kernels::QsaAttnPools& pools,
++                     int64_t tokens, std::string& error) {
++    if (!s.history) return true;
++    if (tokens < 0 || tokens > s.capacity) { error = "LSA runtime: restored prefix exceeds capacity"; return false; }
++    cudaStream_t stream = nullptr;
++    if (!status(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking), "restore stream", error)) return false;
++    bool ok = validate(s, s.model_layer, pools, W, stream, error);
++    if (ok) ok = status(cudaMemsetAsync(s.ward_scratch, 0, ward_scratch_bytes(), stream), "restore reset", error);
++    if (ok && tokens)
++        ok = status(lsa_project_keys(pools.k_q, pools.k_scale, pools.page_table, s.physical_pages, s.page_size,
++                                     0, (int) tokens, lsa_maps_key(maps_handle, s.model_layer), s.history, stream),
++                     "restored key projection", error);
++    if (ok && tokens >= 512)
++        ok = status(ward_close_range(s.history, s.capacity, 0, (int) (tokens / 512), s.centroids, s.members,
++                                     s.ward_scratch, stream), "restored block closure", error);
++    int32_t diagnostics[4] = {};
++    if (ok) ok = status(cudaMemcpyAsync(diagnostics, s.ward_scratch, sizeof(diagnostics),
++                                       cudaMemcpyDeviceToHost, stream), "restored closure diagnostics", error);
++    if (ok) ok = status(cudaStreamSynchronize(stream), "restored cache synchronization", error);
++    const cudaError_t destroy = cudaStreamDestroy(stream);
++    if (ok) ok = status(destroy, "restore stream release", error);
++    if (ok && diagnostics[0] < 0) {
++        error = "LSA restored native Ward closure failed: " + std::to_string(diagnostics[0]);
++        ok = false;
++    }
++    return ok;
++}
++
++bool runtime_copy(const RuntimeState& from, const RuntimeState& to, int64_t tokens,
++                  void* stream, std::string& error) {
++    if (!from.history && !to.history) return true;
++    // A short-context MTP drafter can request ring_cells==0 and receive an
++    // unused, correctly priced arena. Only session-owned main QSA layers bind
++    // a map layer; the drafter still uses its own unchanged attention path.
++    if (from.model_layer < 0 && to.model_layer < 0) return true;
++    if (!from.history || !to.history || from.capacity != to.capacity || from.model_layer != to.model_layer ||
++        tokens < 0 || tokens > from.capacity) { error = "LSA runtime: incompatible copied prefix"; return false; }
++    const size_t blocks = size_t(tokens / 512), history_bytes = size_t(tokens) * D * 4;
++    const auto st = (cudaStream_t) stream;
++    auto copy = [&](void* destination, const void* source, size_t bytes) {
++        return !bytes || status(cudaMemcpyAsync(destination, source, bytes, cudaMemcpyDeviceToDevice, st),
++                                "prefix copy", error);
++    };
++    return copy(to.history, from.history, history_bytes) &&
++           copy(to.centroids, from.centroids, blocks * 64 * D * 4) &&
++           copy(to.members, from.members, blocks * 64 * 16 * 4) &&
++           copy(to.ward_scratch, from.ward_scratch, ward_scratch_bytes());
++}
++
++} // namespace strata::lsa
+diff --git a/src/lsa/runtime_test.cu b/src/lsa/runtime_test.cu
+new file mode 100644
+index 00000000..4a67ca13
+--- /dev/null
++++ b/src/lsa/runtime_test.cu
+@@ -0,0 +1,303 @@
++#include "strata/lsa/runtime.hpp"
++#include <cuda_runtime.h>
++
++#include <algorithm>
++#include <cstdint>
++#include <cstring>
++#include <iostream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++namespace {
++constexpr int C = 2048, PAGE = 4, CAP = 2051, QROW = 24 * 256;
++int checks = 0;
++
++void demand(bool ok, const std::string& message) {
++    ++checks;
++    if (!ok) throw std::runtime_error(message);
++}
++void cuda_ok(cudaError_t code, const char* operation) {
++    if (code != cudaSuccess) throw std::runtime_error(std::string(operation) + ": " + cudaGetErrorString(code));
++}
++uint32_t mix(uint32_t x) {
++    x ^= x >> 16; x *= 0x7feb352dU; x ^= x >> 15; x *= 0x846ca68bU; x ^= x >> 16;
++    return x;
++}
++template<class T> T* allocate(size_t count) {
++    T* pointer = nullptr;
++    cuda_ok(cudaMalloc((void**) &pointer, count * sizeof(T)), "test allocation");
++    return pointer;
++}
++
++struct Fixture {
++    strata::lsa::RuntimeState state;
++    strata::lsa::RuntimePrefillScratch prefill;
++    cudaStream_t stream = nullptr;
++    void* arena = nullptr;
++    void* prefill_arena = nullptr;
++    int8_t* codes = nullptr;
++    uint16_t* scales = nullptr;
++    float* queries = nullptr;
++    int32_t* steps = nullptr;
++    int32_t* ids = nullptr;
++    int32_t* page_table = nullptr;
++    std::vector<int8_t> host_codes;
++    std::vector<uint16_t> host_scales;
++    std::vector<float> host_queries;
++    std::vector<int32_t> host_steps;
++    int layer;
++    uint32_t seed;
++
++    Fixture(int model_layer, uint32_t initial_seed) :
++        host_codes(size_t(C) * 2 * 256), host_scales(size_t(C) * 2 * 4, 0x3000),
++        host_queries(size_t(C) * QROW), host_steps(size_t(C) * 4), layer(model_layer), seed(initial_seed) {
++        cuda_ok(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking), "test stream");
++        codes = allocate<int8_t>(host_codes.size());
++        scales = allocate<uint16_t>(host_scales.size());
++        queries = allocate<float>(host_queries.size());
++        steps = allocate<int32_t>(host_steps.size());
++        ids = allocate<int32_t>(size_t(C) * CAP);
++        page_table = allocate<int32_t>(C / PAGE);
++        const size_t bytes = strata::lsa::runtime_state_bytes(C);
++        demand(bytes > 0, "runtime did not price its arena");
++        arena = allocate<uint8_t>(bytes);
++        std::string error;
++        demand(strata::lsa::runtime_state_init(state, C, C / PAGE, PAGE, arena, bytes, error), error);
++        state.model_layer = layer;
++        const size_t prefill_bytes = strata::lsa::runtime_prefill_scratch_bytes(C);
++        demand(prefill_bytes > 0, "runtime did not price batched prefill workspace");
++        prefill_arena = allocate<uint8_t>(prefill_bytes);
++        demand(strata::lsa::runtime_prefill_scratch_init(prefill, C, 128, prefill_arena, prefill_bytes, error), error);
++        std::vector<int32_t> table(C / PAGE);
++        for (int p = 0; p < C / PAGE; ++p) table[p] = p;
++        cuda_ok(cudaMemcpy(page_table, table.data(), table.size() * 4, cudaMemcpyHostToDevice), "page table upload");
++        for (int p = 0; p < C; ++p) {
++            host_steps[p * 4] = p; host_steps[p * 4 + 1] = p + 1;
++            host_steps[p * 4 + 2] = (p + 1) / 4;
++            host_steps[p * 4 + 3] = std::min(p + 1, CAP);
++        }
++        fill_from(0, initial_seed);
++        upload();
++        cuda_ok(cudaMemcpy(steps, host_steps.data(), host_steps.size() * 4, cudaMemcpyHostToDevice), "steps upload");
++        cuda_ok(cudaMemset(ids, 0xff, size_t(C) * CAP * 4), "selection initialization");
++    }
++    Fixture(const Fixture&) = delete;
++    Fixture& operator=(const Fixture&) = delete;
++    ~Fixture() {
++        if (stream) cudaStreamSynchronize(stream);
++        for (void* p : {arena, prefill_arena, (void*) codes, (void*) scales, (void*) queries, (void*) steps,
++                        (void*) ids, (void*) page_table}) if (p) cudaFree(p);
++        if (stream) cudaStreamDestroy(stream);
++    }
++    void fill_from(int start, uint32_t salt) {
++        for (int p = start; p < C; ++p) {
++            for (int h = 0; h < 2; ++h)
++                for (int d = 0; d < 256; ++d) {
++                    const size_t i = ((size_t(p / PAGE) * 2 + h) * PAGE + p % PAGE) * 256 + d;
++                    host_codes[i] = int8_t(int(mix(salt ^ uint32_t(p * 769 + h * 263 + d)) % 127) - 63);
++                }
++            for (int h = 0; h < 24; ++h)
++                for (int d = 0; d < 256; ++d) {
++                    const uint32_t v = mix((salt + 17) ^ uint32_t(p * 7919 + h * 257 + d));
++                    host_queries[size_t(p) * QROW + h * 256 + d] = (int(v % 1025) - 512) * (1.0f / 4096);
++                }
++        }
++    }
++    void upload() {
++        cuda_ok(cudaMemcpyAsync(codes, host_codes.data(), host_codes.size(), cudaMemcpyHostToDevice, stream), "K upload");
++        cuda_ok(cudaMemcpyAsync(scales, host_scales.data(), host_scales.size() * 2, cudaMemcpyHostToDevice, stream), "scale upload");
++        cuda_ok(cudaMemcpyAsync(queries, host_queries.data(), host_queries.size() * 4, cudaMemcpyHostToDevice, stream), "Q upload");
++        cuda_ok(cudaStreamSynchronize(stream), "input upload synchronization");
++    }
++    void same_inputs(const Fixture& other) {
++        host_codes = other.host_codes;
++        host_scales = other.host_scales;
++        host_queries = other.host_queries;
++        upload();
++    }
++    strata::kernels::QsaAttnPools pools() const {
++        strata::kernels::QsaAttnPools p;
++        p.k_q = codes; p.k_scale = scales; p.page_table = page_table;
++        return p;
++    }
++    void prompt(int start, int count, bool batched = false) {
++        std::string error;
++        demand(strata::lsa::runtime_prefill(state, layer, pools(), queries + size_t(start) * QROW,
++            start, count, steps + start * 4, 4, ids + size_t(start) * CAP, CAP, stream, error,
++            batched ? &prefill : nullptr), error);
++    }
++    void step(int position) {
++        std::string error;
++        demand(strata::lsa::runtime_step(state, layer, pools(), queries + size_t(position) * QROW,
++            steps + position * 4, ids + size_t(position) * CAP, CAP, stream, error), error);
++    }
++    void sync() {
++        cuda_ok(cudaStreamSynchronize(stream), "runtime test synchronization");
++        std::string error;
++        demand(strata::lsa::runtime_check(state, error), error);
++    }
++    void rebuild(int tokens) {
++        std::string error;
++        demand(strata::lsa::runtime_rebuild(state, pools(), tokens, error), error);
++    }
++};
++
++std::vector<uint8_t> read_bytes(const void* source, size_t bytes) {
++    std::vector<uint8_t> result(bytes);
++    if (bytes) cuda_ok(cudaMemcpy(result.data(), source, bytes, cudaMemcpyDeviceToHost), "test readback");
++    return result;
++}
++void equal_bytes(const void* a, const void* b, size_t bytes, const char* what) {
++    demand(read_bytes(a, bytes) == read_bytes(b, bytes), what);
++}
++void equal_cache(Fixture& a, Fixture& b, int tokens) {
++    a.sync(); b.sync();
++    equal_bytes(a.state.history, b.state.history, size_t(tokens) * 64 * 4, "projected prefix differs from reconstruction");
++    const size_t buckets = size_t(tokens / 512) * 64;
++    equal_bytes(a.state.centroids, b.state.centroids, buckets * 64 * 4, "closed centroids differ from reconstruction");
++    equal_bytes(a.state.members, b.state.members, buckets * 16 * 4, "closed members differ from reconstruction");
++}
++void equal_selection(Fixture& a, Fixture& b, int first, int count) {
++    a.sync(); b.sync();
++    equal_bytes(a.ids + size_t(first) * CAP, b.ids + size_t(first) * CAP,
++                size_t(count) * CAP * 4, "selected token IDs differ");
++    equal_bytes(a.steps + first * 4, b.steps + first * 4, size_t(count) * 4 * 4,
++                "causal count or published selection width differs");
++}
++
++void split_prefill(int layer) {
++    Fixture whole(layer, 41), batched(layer, 41), split(layer, 41);
++    whole.prompt(0, C);
++    batched.prompt(0, C, true);
++    equal_cache(whole, batched, C);
++    equal_selection(whole, batched, 0, C);
++    split.prompt(0, 511, true);
++    split.prompt(511, 1, true);
++    split.prompt(512, 1, true);
++    split.prompt(513, 510, true);
++    split.prompt(1023, 1, true);
++    split.prompt(1024, C - 1024, true);
++    equal_cache(batched, split, C);
++    equal_selection(batched, split, 0, C);
++    const auto packed = read_bytes(whole.steps + (C - 1) * 4, 4 * 4);
++    int32_t final_step[4];
++    std::memcpy(final_step, packed.data(), sizeof(final_step));
++    demand(final_step[3] == 1540, "mature runtime selection did not enforce its long-range budget");
++    const auto selected = read_bytes(whole.ids + size_t(C - 1) * CAP, 1540 * 4);
++    std::vector<int32_t> cells(1540);
++    std::memcpy(cells.data(), selected.data(), selected.size());
++    std::sort(cells.begin(), cells.end());
++    demand(cells.front() >= 0 && cells.back() < C &&
++            std::adjacent_find(cells.begin(), cells.end()) == cells.end(),
++            "mature runtime selection contains invalid or duplicate cells");
++    for (int p = 0; p < 4; ++p)
++        demand(std::binary_search(cells.begin(), cells.end(), p), "mature runtime selection dropped a sink");
++    for (int p = C - 512; p < C; ++p)
++        demand(std::binary_search(cells.begin(), cells.end(), p), "mature runtime selection dropped a recent-window token");
++}
++
++void rejected_replacement(int layer, int base, int accepted) {
++    Fixture candidate(layer, 83), rebuilt(layer, 83);
++    candidate.prompt(0, base);
++    for (int p = base; p < base + 8; ++p) candidate.step(p);
++    candidate.sync();
++    const int retained = base + accepted;
++    // Caller acceptance leaves only this prefix semantically live. Rejected
++    // physical rows and closed blocks remain until corrected writes replace them.
++    candidate.fill_from(retained, 901);
++    candidate.upload();
++    rebuilt.same_inputs(candidate);
++    candidate.prompt(retained, 1025 - retained);
++    rebuilt.rebuild(1025);
++    equal_cache(candidate, rebuilt, 1025);
++    rebuilt.step(1024);
++    equal_selection(candidate, rebuilt, 1024, 1);
++}
++
++void copy_and_interleave(int layer) {
++    Fixture a(layer, 109), b(layer, 211), copied(layer, 109), rebuilt(layer, 109);
++    a.prompt(0, 511); b.prompt(0, 511);
++    a.step(511); b.step(511); a.step(512); b.step(512);
++    a.sync(); b.sync();
++    rebuilt.rebuild(513);
++    equal_cache(a, rebuilt, 513);
++    Fixture b_rebuilt(layer, 211);
++    b_rebuilt.rebuild(513);
++    equal_cache(b, b_rebuilt, 513);
++    demand(read_bytes(a.state.history, 513 * 64 * 4) != read_bytes(b.state.history, 513 * 64 * 4),
++            "independent slots accidentally share projected keys");
++    // The retained KV is copied independently, as the engine's slot move does.
++    cuda_ok(cudaMemcpyAsync(copied.codes, a.codes, a.host_codes.size(), cudaMemcpyDeviceToDevice, copied.stream), "copied KV");
++    cuda_ok(cudaMemcpyAsync(copied.scales, a.scales, a.host_scales.size() * 2,
++                            cudaMemcpyDeviceToDevice, copied.stream), "copied scales");
++    std::string error;
++    demand(strata::lsa::runtime_copy(a.state, copied.state, 513, copied.stream, error), error);
++    equal_cache(a, copied, 513);
++    copied.step(513);
++    rebuilt.rebuild(514);
++    equal_cache(copied, rebuilt, 514);
++    rebuilt.step(513);
++    equal_selection(copied, rebuilt, 513, 1);
++}
++
++void graph_replay_positions(int layer) {
++    Fixture captured(layer, 313), rebuilt(layer, 313);
++    captured.prompt(0, 511);
++    captured.sync();
++    float* query_row = allocate<float>(QROW);
++    int32_t* step_row = allocate<int32_t>(4);
++    int32_t* selected_row = allocate<int32_t>(CAP);
++    cuda_ok(cudaMemcpyAsync(query_row, captured.queries + size_t(511) * QROW, QROW * 4,
++                            cudaMemcpyDeviceToDevice, captured.stream), "graph query setup");
++    cuda_ok(cudaMemcpyAsync(step_row, captured.host_steps.data() + 511 * 4, 4 * 4,
++                            cudaMemcpyHostToDevice, captured.stream), "graph position setup");
++    cuda_ok(cudaStreamSynchronize(captured.stream), "graph input synchronization");
++    cudaGraph_t graph = nullptr;
++    cudaGraphExec_t executable = nullptr;
++    cuda_ok(cudaStreamBeginCapture(captured.stream, cudaStreamCaptureModeThreadLocal), "runtime graph begin");
++    std::string error;
++    demand(strata::lsa::runtime_step(captured.state, layer, captured.pools(), query_row,
++                                     step_row, selected_row, CAP, captured.stream, error), error);
++    cuda_ok(cudaStreamEndCapture(captured.stream, &graph), "runtime graph end");
++    cuda_ok(cudaGraphInstantiate(&executable, graph, nullptr, nullptr, 0), "runtime graph instantiate");
++    for (int p = 511; p <= 1024; ++p) {
++        cuda_ok(cudaMemcpyAsync(query_row, captured.queries + size_t(p) * QROW, QROW * 4,
++                                cudaMemcpyDeviceToDevice, captured.stream), "graph query change");
++        cuda_ok(cudaMemcpyAsync(step_row, captured.host_steps.data() + p * 4, 4 * 4,
++                                cudaMemcpyHostToDevice, captured.stream), "graph position change");
++        cuda_ok(cudaGraphLaunch(executable, captured.stream), "runtime graph replay");
++    }
++    captured.sync();
++    rebuilt.rebuild(1025);
++    equal_cache(captured, rebuilt, 1025);
++    rebuilt.step(1024);
++    rebuilt.sync();
++    equal_bytes(selected_row, rebuilt.ids + size_t(1024) * CAP, CAP * 4, "graph dynamic position selected wrong keys");
++    equal_bytes(step_row, rebuilt.steps + 1024 * 4, 4 * 4, "graph dynamic position froze causal counts");
++    cuda_ok(cudaGraphExecDestroy(executable), "runtime graph exec release");
++    cuda_ok(cudaGraphDestroy(graph), "runtime graph release");
++    cudaFree(query_row); cudaFree(step_row); cudaFree(selected_row);
++}
++} // namespace
++
++int main() {
++    try {
++        std::string error;
++        demand(strata::lsa::runtime_configure_from_env(error), error);
++        demand(strata::lsa::runtime_enabled(), "set STRATA_LSA_MAPS to the pinned native artifact");
++        for (int layer : {3, 47}) {
++            split_prefill(layer);
++            rejected_replacement(layer, 511, 0);
++            rejected_replacement(layer, 509, 3);
++        }
++        copy_and_interleave(3);
++        graph_replay_positions(47);
++        std::cout << "{\"status\":\"passed\",\"scope\":\"native runtime state, rollback, copy, rebuild and graph correctness\","
++                     "\"layers\":[3,47],\"context\":2048,\"prefill\":\"batched and per-row bit-exact\",\"checks\":" << checks << "}\n";
++        return 0;
++    } catch (const std::exception& error) {
++        std::cerr << "LSA runtime test failed after " << checks << " checks: " << error.what() << '\n';
++        return 1;
++    }
++}
+diff --git a/src/lsa/ward.cu b/src/lsa/ward.cu
+new file mode 100644
+index 00000000..75d3e7a8
+--- /dev/null
++++ b/src/lsa/ward.cu
+@@ -0,0 +1,221 @@
++#include "strata/lsa/ward.hpp"
++#include <cuda_runtime.h>
++#include <cuda_bf16.h>
++#include <cmath>
++#include <climits>
++
++namespace {
++constexpr int D=64,P=128,T=512,B=64,CAP=16;
++constexpr unsigned long long EMPTY=0x7fffffffffffffffULL;
++
++// This is _square_sum in the pinned Triton Ward kernel: four-coordinate
++// runs then halves. Explicit FMAs and add.rn preserve that chosen order.
++__device__ float square_sum(const float* transposed, int row) {
++    float runs[16];
++#pragma unroll
++    for(int i=0;i<16;++i) {
++        const float a=transposed[(4*i)*P+row],b=transposed[(4*i+1)*P+row];
++        const float c=transposed[(4*i+2)*P+row],d=transposed[(4*i+3)*P+row];
++        runs[i]=__fmaf_rn(d,d,__fmaf_rn(c,c,__fmaf_rn(a,a,__fmul_rn(b,b))));
++    }
++#pragma unroll
++    for(int half=8;half;half>>=1)
++#pragma unroll
++        for(int i=0;i<half;++i) runs[i]=__fadd_rn(runs[i],runs[i+half]);
++    return runs[0];
++}
++// The pinned Triton3.7.1 Ward PTX uses sqrt.approx.ftz.f32 even for its
++// IEEE dot mode. CUDA sqrtf defaults to correctly-rounded sqrt instead; at
++// near-copy costs their last-bit difference changes a mutual partner. Match
++// the actual pinned square-root instruction, without changing gates or merges.
++__device__ float ward_sqrt(float value) {
++    float result;
++    asm("sqrt.approx.ftz.f32 %0, %1;" : "=f"(result) : "f"(value));
++    return result;
++}
++__device__ unsigned long long cost_key(float cost,int partner) {
++    int ordered=__float_as_int(cost);
++    if(ordered<0) ordered^=0x7fffffff;
++    const unsigned long long positive=(unsigned long long)((long long)ordered+(1LL<<31));
++    return (positive<<12)|(unsigned)partner;
++}
++__device__ void fail(int32_t* scratch,int error) { atomicCAS(scratch,0,error); }
++__device__ float warp_sum(float x) {
++#pragma unroll
++    for(int d=16;d;d>>=1) x=__fadd_rn(x,__shfl_xor_sync(0xffffffff,x,d));
++    return x;
++}
++
++template<bool Step> __global__ void close_kernel(const float* history,int capacity,const int32_t* position,
++ int first,float* centroids,int32_t* members,int32_t* diagnostics,int32_t* out_labels,float* objective) {
++    const int tid=threadIdx.x;
++    int block=first+(int)blockIdx.x;
++    if constexpr(Step) {
++        const int pos=*position;
++        if(pos<0 || pos>=capacity) {if(tid==0) fail(diagnostics,-1);return;}
++        if((pos&511)!=511) return;
++        block=pos/512;
++    }
++    // Host checks assure range calls refer only to complete in-capacity blocks.
++    const int start=block*T;
++    if(start<0 || start>capacity-T) {if(tid==0) fail(diagnostics,-1);return;}
++    __shared__ float work[D*P];       // transposed: adjacent threads own adjacent pools
++    __shared__ float square[P];
++    __shared__ int sizes[P],alive[P],parent[P],best[P],labels[P];
++    __shared__ unsigned long long nearest[P],mutual[P];
++    __shared__ int count,rounds,applied,mutual_count,error;
++    if(tid==0) {count=P;rounds=0;applied=1;error=0;}
++    if(tid<P) {sizes[tid]=4;alive[tid]=1;parent[tid]=tid;}
++    for(int i=tid;i<D*P;i+=blockDim.x) {
++        const int d=i/P,p=i%P;
++        const float* x=history+(std::size_t)(start+p*4)*D+d;
++        // PyTorch's reduction of each consecutive4-key pool adds in input order.
++        float value=__fadd_rn(__fadd_rn(__fadd_rn(x[0],x[D]),x[2*D]),x[3*D]);
++        if(!isfinite(value)) atomicCAS(&error,0,-2);
++        work[i]=value;
++    }
++    __syncthreads();
++    if(tid<P) {square[tid]=square_sum(work,tid);if(!isfinite(square[tid])) atomicCAS(&error,0,-2);}
++    __syncthreads();
++    while(count>B && applied>0 && rounds<P && error==0) {
++        if(tid<P) {
++            unsigned long long key=EMPTY;
++            if(alive[tid]) {
++                const float ar=ward_sqrt(fmaxf(square[tid],0.0f));
++                for(int col=0;col<P;++col) {
++                    if(col==tid || !alive[col] || sizes[tid]+sizes[col]>CAP) continue;
++                    float dot=0;
++#pragma unroll
++                    for(int d=0;d<D;++d) dot=__fmaf_rn(work[d*P+tid],work[d*P+col],dot);
++                    const float merged=ward_sqrt(fmaxf(__fadd_rn(__fadd_rn(square[tid],square[col]),__fmul_rn(2.0f,dot)),0.0f));
++                    const float cost=__fsub_rn(__fadd_rn(ar,ward_sqrt(fmaxf(square[col],0.0f))),merged);
++                    if(!isfinite(cost)) {atomicCAS(&error,0,-2);continue;}
++                    const auto candidate=cost_key(cost,col);
++                    if(candidate<key) key=candidate;
++                }
++            }
++            nearest[tid]=key;
++            best[tid]=key<EMPTY?(int)(key&4095ULL):-1;
++        }
++        __syncthreads();
++        if(tid<P) {
++            const int partner=best[tid];
++            mutual[tid]=partner>=0 && tid<partner && best[partner]==tid ? nearest[tid]:EMPTY;
++        }
++        __syncthreads();
++        if(tid==0) {
++            mutual_count=0;
++            for(int row=0;row<P;++row) mutual_count+=(mutual[row]<EMPTY);
++            applied=min(mutual_count,count-B);
++        }
++        __syncthreads();
++        if(tid<P && mutual[tid]<EMPTY && error==0) {
++            bool keep=true;
++            if(mutual_count>count-B) {
++                int rank=0;
++                for(int row=0;row<P;++row) rank+=(mutual[row]<mutual[tid]);
++                keep=rank<count-B;
++            }
++            if(keep) {
++                const int partner=best[tid];
++#pragma unroll
++                for(int d=0;d<D;++d) work[d*P+tid]=__fadd_rn(work[d*P+tid],work[d*P+partner]);
++                square[tid]=square_sum(work,tid);
++                sizes[tid]+=sizes[partner];alive[partner]=0;parent[partner]=tid;
++            }
++        }
++        __syncthreads();
++        if(tid==0) {count-=applied;++rounds;}
++        __syncthreads();
++    }
++    if(tid==0 && error==0 && count!=B) error=-3;
++    __syncthreads();
++    if(tid<P) {
++        int root=tid;
++        for(int jumps=0;jumps<P && parent[root]!=root;++jumps) root=parent[root];
++        int label=0;
++        for(int row=0;row<root;++row) label+=alive[row];
++        labels[tid]=label;
++        if(parent[root]!=root || label<0 || label>=B) atomicCAS(&error,0,-4);
++        if(out_labels) out_labels[(std::size_t)block*P+tid]=label;
++    }
++    __syncthreads();
++    int32_t* output_members=members+(std::size_t)block*B*CAP;
++    float* output_centroids=centroids+(std::size_t)block*B*D;
++    if(tid<B) {
++        for(int slot=0;slot<CAP;++slot) output_members[tid*CAP+slot]=-1;
++        int held=0;
++        for(int pool=0;pool<P;++pool) if(labels[pool]==tid) {
++            for(int k=0;k<4;++k) {
++                if(held<CAP) output_members[tid*CAP+held]=start+pool*4+k;
++                ++held;
++            }
++        }
++        if(held<4 || held>CAP || held%4) atomicCAS(&error,0,-4);
++    }
++    __syncthreads();
++    // Build exported centroids from original key rows in member order rather
++    // than the rounded Ward merge tree. This is the upstream centroid definition.
++    for(int i=tid;i<B*D;i+=blockDim.x) {
++        const int bucket=i/D,d=i%D;
++        float sum=0;
++        if(error==0)
++            for(int slot=0;slot<CAP;++slot) {
++                const int id=output_members[bucket*CAP+slot];
++                if(id>=0) sum=__fadd_rn(sum,history[(std::size_t)id*D+d]);
++            }
++        output_centroids[i]=sum;
++    }
++    __syncthreads();
++    const int lane=tid&31,warp=tid>>5;
++    for(int bucket=warp;bucket<B;bucket+=blockDim.x/32) {
++        const float a=output_centroids[bucket*D+lane],b=output_centroids[bucket*D+lane+32];
++        const float norm=sqrtf(warp_sum(__fadd_rn(__fmul_rn(a,a),__fmul_rn(b,b))));
++        const float den=fmaxf(norm,1e-12f);
++        output_centroids[bucket*D+lane]=__bfloat162float(__float2bfloat16_rn(a/den));
++        output_centroids[bucket*D+lane+32]=__bfloat162float(__float2bfloat16_rn(b/den));
++        if(!isfinite(norm)) atomicCAS(&error,0,-2);
++    }
++    __syncthreads();
++    if(tid==0) {
++        if(objective) {
++            float alignment=0;
++            for(int pool=0;pool<P;++pool) if(alive[pool]) alignment+=sqrtf(fmaxf(square[pool],0.0f));
++            objective[block]=alignment;
++        }
++        if(error) fail(diagnostics,error);
++        else {atomicAdd(diagnostics+1,1);atomicMax(diagnostics+2,rounds);}
++    }
++    if(error) {
++        for(int i=tid;i<B*CAP;i+=blockDim.x) output_members[i]=-1;
++        for(int i=tid;i<B*D;i+=blockDim.x) output_centroids[i]=0;
++    }
++}
++bool valid(const float* history,int capacity,float* centroids,int32_t* members,void* scratch,void* stream) {
++    return history && centroids && members && scratch && stream && capacity>0 && capacity<=131072;
++}
++int launch_range(const float* h,int c,int first,int n,float* out,int32_t* m,void* scratch,
++                 int32_t* labels,float* objective,void* stream) {
++    if(!valid(h,c,out,m,scratch,stream) || first<0 || n<=0 || first>c/512-n) return cudaErrorInvalidValue;
++    close_kernel<false><<<n,256,0,(cudaStream_t)stream>>>(h,c,nullptr,first,out,m,(int32_t*)scratch,labels,objective);
++    return cudaGetLastError();
++}
++}
++namespace strata::lsa {
++std::size_t ward_scratch_bytes(){return 4*sizeof(int32_t);}
++int ward_close_step(const float* h,const int32_t* p,int c,float* out,int32_t* m,void* scratch,void* stream) {
++    if(!valid(h,c,out,m,scratch,stream) || !p) return cudaErrorInvalidValue;
++    close_kernel<true><<<1,256,0,(cudaStream_t)stream>>>(h,c,p,0,out,m,(int32_t*)scratch,nullptr,nullptr);
++    return cudaGetLastError();
++}
++int ward_close_range(const float* h,int c,int first,int n,float* out,int32_t* m,void* scratch,void* stream) {
++    return launch_range(h,c,first,n,out,m,scratch,nullptr,nullptr,stream);
++}
++}
++extern "C" std::size_t lsa_ward_scratch_bytes(){return strata::lsa::ward_scratch_bytes();}
++extern "C" int lsa_ward_close_step(const float* h,const int32_t* p,int c,float* out,int32_t* m,void* s,void* st){return strata::lsa::ward_close_step(h,p,c,out,m,s,st);}
++extern "C" int lsa_ward_close_range(const float* h,int c,int first,int n,float* out,int32_t* m,void* s,void* st){return strata::lsa::ward_close_range(h,c,first,n,out,m,s,st);}
++extern "C" int lsa_ward_close_range_diagnostic(const float* h,int c,int first,int n,float* out,int32_t* m,void* s,int32_t* l,float* o,void* st){
++    if(!l || !o) return cudaErrorInvalidValue;
++    return launch_range(h,c,first,n,out,m,s,l,o,st);
++}
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index 18ee385a..eb32d53d 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -40,6 +40,9 @@
+ #include "strata/kernels/qsa_decode_attn.hpp"
+ #include "strata/kernels/qsa_prompt_attn.hpp"
+ #include "strata/kernels/qsa_select.hpp"
++#if defined(STRATA_LSA_CUDA)
++#include "strata/lsa/runtime.hpp"
++#endif
+ #include "strata/prefill/gemm.hpp"
+ #include "strata/prefill/moe_fused.hpp"
+ #include "strata/prefill/moe_fused_iq.hpp"
+@@ -907,6 +910,10 @@ struct Prefill::Impl {
+     int64_t sel_batch = 256, max_blocks = 0;
+     float* attn_scratch = nullptr;
+     int64_t attn_batch = 32, cap = 0;
++#if defined(STRATA_LSA_CUDA)
++    // Shared prompt workspace, not duplicated in every resident layer/slot.
++    strata::lsa::RuntimePrefillScratch lsa_prefill;
++#endif
+     // MoE
+     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
+           *shared = nullptr, *sg = nullptr;
+@@ -1127,7 +1134,7 @@ uint64_t gdn_set_bytes(size_t T) {
+     return a.used;
+ }
+ uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
+-                       const strata::kernels::QsaShapes& s) {
++                       const strata::kernels::QsaShapes& s, int64_t context) {
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * 512, ok); a.take<float>(T * 512, ok); a.take<float>(T * 12288, ok); a.take<float>(T * ZV, ok);
+     a.take<float>(T * 128, ok); a.take<float>(T * 512, ok); a.take<float>(T * ZV, ok);
+@@ -1135,6 +1142,12 @@ uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_ba
+     a.take<int32_t>(T * (size_t) cap, ok);
+     a.take<float>((size_t) sel_batch * (size_t) max_blocks, ok);
+     a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);
++#if defined(STRATA_LSA_CUDA)
++    if (strata::lsa::runtime_enabled())
++        a.take<uint8_t>(strata::lsa::runtime_prefill_scratch_bytes(context), ok);
++#else
++    (void) context;
++#endif
+     return a.used;
+ }
+ // Step 2b: which layers' experts go through MMQ (both weight types covered; the Strata Q2_0 pack always - its blob
+@@ -1598,7 +1611,7 @@ bool Prefill::carve(size_t T, void* alloc) {
+         m.fused_bufs = fz;
+         const MoeBufs mb = moe_bufs(T, m.g->n_expert, fz);
+         const uint64_t region = std::max({gdn_set_bytes(T), qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch,
+-                                                                           m.attn_batch, s), moe_set_bytes(T, m.g->n_expert, fz)});
++                                                                           m.attn_batch, s, ss.max_cells), moe_set_bytes(T, m.g->n_expert, fz)});
+         uint8_t* base = o.take<uint8_t>((size_t) region, ok);
+         m.region = base;
+         m.region_bytes = region;
+@@ -1615,6 +1628,19 @@ bool Prefill::carve(size_t T, void* alloc) {
+         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
+         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
+         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
++#if defined(STRATA_LSA_CUDA)
++        m.lsa_prefill = {};
++        if (strata::lsa::runtime_enabled()) {
++            const size_t bytes = strata::lsa::runtime_prefill_scratch_bytes(ss.max_cells);
++            void* memory = b.take<uint8_t>(bytes, ok);
++            std::string why;
++            if (!bytes || !memory || !strata::lsa::runtime_prefill_scratch_init(
++                    m.lsa_prefill, ss.max_cells, 128, memory, bytes, why)) {
++                std::fprintf(stderr, "strata: LSA prefill workspace initialization failed: %s\n", why.c_str());
++                ok = false;
++            }
++        }
++#endif
+         Alloc c;
+         c.base = base; c.cap = region; c.owned = &m.owned;
+         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
+@@ -2369,7 +2395,7 @@ uint64_t Prefill::bytes_needed_impl(const core::ModelGeometry& g, const core::Se
+     strata::kernels::QsaShapes s = core::qsa_shapes(g);
+     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
+     const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
+-    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s),
++    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s, ss.max_cells),
+                                        moe_set_bytes(T, g.n_expert, fused_layout(T, src))}), ok);
+     for (int i = 0; i < DQ; ++i) { o.take<uint16_t>(1280 * 2560, ok); o.take<uint16_t>(2560 * 640, ok); }
+     if (mmq_plan().any) {
+@@ -3385,6 +3411,18 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+                                                                        strata::kernels::rope_scaling(), m.cs);
+                         }
+                     } catch (const std::exception& e) { err = std::string("prefill indexer: ") + e.what(); return false; }
++#if defined(STRATA_LSA_CUDA)
++                    if (strata::lsa::runtime_enabled()) {
++                        if (staged || st.kv_mode != 0 || st.kv_rot || st.kv_hybrid || !st.kv_int8) {
++                            err = "LSA prefill requires ordinary resident INT8 KV";
++                            return false;
++                        }
++                        if (!strata::lsa::runtime_prefill(st.lsa, (int) l, core::qsa_attn_pools(st), m.q,
++                                                         p0, T, m.steps_dev, strata::kernels::kStepCount,
++                                                         m.sel_ids, m.cap, m.cs, err, &m.lsa_prefill)) return false;
++                    } else
++#endif
++                    {
+                     pt.mark(kPfQsaSel, cs);
+                     for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {
+                         const int64_t nb = std::min(m.sel_batch, T - t0);
+@@ -3403,6 +3441,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                                         m.sel_ids + t0 * m.cap, m.cs, active);
+                     }
++                    }
+                     // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?
+                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
+                     if (static const bool ovl = std::getenv("STRATA_SEL_OVERLAP") != nullptr; ovl && qsa_index == 0) {
+@@ -3427,7 +3466,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+                     // design's last question). Every query is selected again from the pooled keys and `dead` rounded
+                     // to fp16 (exactly what an fp16 store reads back); the agreement with the fp32 selection is
+                     // printed cumulatively after each chunk's last QSA layer. Debug: syncs per layer.
+-                    if (static const bool f16chk = std::getenv("STRATA_IDX_FP16_CHECK") != nullptr; f16chk) {
++                    if (static const bool f16chk = std::getenv("STRATA_IDX_FP16_CHECK") != nullptr; f16chk
++#if defined(STRATA_LSA_CUDA)
++                        && !strata::lsa::runtime_enabled()
++#endif
++                        ) {
+                         static float *pooled16 = nullptr, *dead16 = nullptr;
+                         static int32_t* ids16 = nullptr;
+                         static double shared = 0, cells = 0;
+diff --git a/src/program/generate.cpp b/src/program/generate.cpp
+index d381227d..ac77814c 100644
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -39,6 +39,9 @@
+ #include "strata/core/on_device.hpp"
+ #include "strata/core/peer_experts.hpp"
+ #include "strata/core/layer.hpp"
++#if defined(STRATA_LSA_CUDA)
++#include "strata/lsa/runtime.hpp"
++#endif
+ #include "strata/core/layout.hpp"
+ #include "strata/core/session.hpp"
+ #include "strata/core/weights.hpp"
+@@ -3535,6 +3538,24 @@ int main(int argc, char** argv) {
+         }
+         std::fprintf(stderr, "strata generate: primary device from STRATA_PRIMARY_DEVICE: CUDA%d\n", primary_device);
+     }
++    if (const char* lsa_maps = std::getenv("STRATA_LSA_MAPS"); lsa_maps && *lsa_maps) {
++#if defined(STRATA_LSA_CUDA)
++        if (o.kv != "int8" || (kv_rot && kv_rot[0] == '1') || o.max_context > 131072 ||
++            (o.kv_resident > 0 && o.kv_resident < o.max_context) || multi_gpu ||
++            o.expert_cache_remote[0] > 0 || o.expert_cache_remote[1] > 0 || o.expert_cache_remote[2] > 0) {
++            std::fprintf(stderr, "strata LSA: requires single-GPU, ordinary resident INT8 KV and context <=131072\n");
++            return 2;
++        }
++        if (!strata::lsa::runtime_configure_from_env(err)) {
++            std::fprintf(stderr, "strata LSA: %s\n", err.c_str());
++            return 2;
++        }
++        std::fprintf(stderr, "strata LSA: native learned-map selector enabled; maps=%s, full projected history, 512/64/16 Ward\n", lsa_maps);
++#else
++        std::fprintf(stderr, "strata LSA: this engine was built without STRATA_ENABLE_LSA\n");
++        return 2;
++#endif
++    }
+     // STRATA_EARLY_REMOTE_CONTEXTS=1: create EVERY secondary context here, like CUDA1's.  Under WSL2 the driver's
+     // pinned/mapped host budget (dxg gpadl, ~1 GiB) is spent by CUDA0's weights and MTP before the later loop runs,
+     // and a new context then fails with cudaErrorMemoryAllocation (CUDA2: "cudaSetDevice(2) failed: out of memory").
+@@ -9437,6 +9458,10 @@ int main(int argc, char** argv) {
+                 in.mtp = o.mtp.empty() ? std::string() : o.mtp + "/dense.bin";
+                 if (srcp != nullptr) in.experts = srcp->model_inputs();
+                 std::vector<strata::core::SessionModelFile> files = strata::core::session_model_inputs(in);
++#if defined(STRATA_LSA_CUDA)
++                if (strata::lsa::runtime_enabled())
++                    files.push_back({"native learned LSA maps", strata::lsa::runtime_map_path()});
++#endif
+                 // the pack's other files the loader reads (weights.cpp, expert_layout.cpp)
+                 if (!o.pack.empty()) {
+                     for (const char* n : {"index.txt", "dense.bin"}) files.push_back({std::string("pack ") + n, o.pack + "/" + n});
+@@ -9486,6 +9511,21 @@ int main(int argc, char** argv) {
+                     {"no_fast_attn", o.no_fast_attn}, {"no_fused_gdn", o.no_fused_gdn},
+                     {"no_fast_select", o.no_fast_select}, {"vision", o.vision}};
+                 config_fp = strata::core::session_config_fingerprint(c);
++#if defined(STRATA_LSA_CUDA)
++                if (strata::lsa::runtime_enabled()) {
++                    strata::core::SessionIdentityBuilder lsa_identity(*config_fp);
++                    lsa_identity.u64("lsa-loaded-map-complete-payload", strata::lsa::runtime_map_identity());
++                    lsa_identity.u64("lsa-native-ward-v1", 1);
++                    lsa_identity.u64("lsa-block", 512);
++                    lsa_identity.u64("lsa-buckets", 64);
++                    lsa_identity.u64("lsa-member-cap", 16);
++                    lsa_identity.u64("lsa-top-p", 385);
++                    lsa_identity.u64("lsa-long-range", 1024);
++                    lsa_identity.u64("lsa-window", 512);
++                    lsa_identity.u64("lsa-sinks", 4);
++                    config_fp = lsa_identity.digest();
++                }
++#endif
+             }
+             id.model = *model_fp;
+             id.config = *config_fp;
+diff --git a/tools/export_lsa_maps.py b/tools/export_lsa_maps.py
+new file mode 100644
+index 00000000..2a22a712
+--- /dev/null
++++ b/tools/export_lsa_maps.py
+@@ -0,0 +1,132 @@
++#!/usr/bin/env python3
++"""Export the frozen Flash-Next pilot maps to Strata's CPU-readable format.
++
++Explicit export only; does not load an engine or alter a service. The source
++must be the complete FP32 384x64 pilot set. The accompanying JSON's temperatures
++are stored separately from the map coefficients. Pin the exported SHA-256 when
++passing the binary to a future opt-in engine adapter.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import struct
++
++os.environ["CUDA_VISIBLE_DEVICES"] = ""
++os.environ["NVIDIA_VISIBLE_DEVICES"] = "void"
++os.environ.setdefault("OMP_NUM_THREADS", "2")
++os.environ.setdefault("MKL_NUM_THREADS", "2")
++
++MAGIC = b"STLSAM01"
++VERSION = 1
++INPUT_DIM = 384
++INDEX_DIM = 64
++LAYERS = tuple(range(3, 48, 4))
++HEADER = struct.Struct("<8sIIIIQ32s32s")
++RECORD = struct.Struct("<IIfI")
++RECORD_BYTES = RECORD.size + 2 * INPUT_DIM * INDEX_DIM * 4
++
++
++def digest(path: Path) -> str:
++    with path.open("rb") as stream:
++        return hashlib.file_digest(stream, "sha256").hexdigest()
++
++
++def export(weights: Path, metadata: Path, output: Path) -> dict:
++    import torch
++
++    torch.set_num_threads(2)
++    if weights.stat().st_size > 16 * 1024 * 1024:
++        raise ValueError("weights file exceeds the fixed pilot export limit")
++    if metadata.stat().st_size > 65536:
++        raise ValueError("metadata file exceeds the fixed pilot export limit")
++    source_digest, metadata_digest = digest(weights), digest(metadata)
++    meta = json.loads(metadata.read_text(encoding="utf-8"))
++    if not isinstance(meta, dict) or meta.get("sha256") != source_digest:
++        raise ValueError("metadata does not bind the supplied weights SHA-256")
++    if meta.get("input") != "key_and_query" or meta.get("query_heads") != "all":
++        raise ValueError("metadata is not the pilot key/query grouping contract")
++    tau = meta.get("tau")
++    if not isinstance(tau, dict) or set(tau) != {str(layer) for layer in LAYERS}:
++        raise ValueError("metadata must provide exactly twelve layer temperatures")
++    blob = torch.load(weights, map_location="cpu", weights_only=True)
++    names = {f"{layer}.{kind}" for layer in LAYERS for kind in ("W_Q_idx", "W_K_idx")}
++    if not isinstance(blob, dict) or set(blob) != names:
++        raise ValueError("weights must contain exactly the twelve query/key pairs")
++    payload = bytearray()
++    source_tensors = {}
++    for layer in LAYERS:
++        value = tau[str(layer)]
++        if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value <= 0:
++            raise ValueError(f"layer {layer} temperature must be positive and finite")
++        try:
++            encoded_tau = struct.pack("<f", value)
++        except (OverflowError, struct.error) as exc:
++            raise ValueError(f"layer {layer} temperature does not fit FP32") from exc
++        native_tau = struct.unpack("<f", encoded_tau)[0]
++        if not math.isfinite(native_tau) or native_tau <= 0:
++            raise ValueError(f"layer {layer} temperature does not fit positive FP32")
++        payload.extend(RECORD.pack(layer, 0, native_tau, 0))
++        for kind in ("W_Q_idx", "W_K_idx"):
++            name = f"{layer}.{kind}"
++            tensor = blob[name]
++            if (not isinstance(tensor, torch.Tensor) or tensor.layout != torch.strided
++                    or tensor.dtype != torch.float32 or tuple(tensor.shape) != (INPUT_DIM, INDEX_DIM)):
++                raise ValueError(f"{name} must be a dense FP32 [384,64] tensor")
++            if not bool(torch.isfinite(tensor).all()):
++                raise ValueError(f"{name} contains a nonfinite value")
++            raw = tensor.detach().contiguous().numpy().astype("<f4", copy=False).tobytes(order="C")
++            source_tensors[name] = hashlib.sha256(raw).hexdigest()
++            payload.extend(raw)
++    if digest(weights) != source_digest or digest(metadata) != metadata_digest:
++        raise ValueError("source changed during export")
++    if len(payload) != len(LAYERS) * RECORD_BYTES:
++        raise ValueError("internal payload size mismatch")
++    data = HEADER.pack(MAGIC, VERSION, INPUT_DIM, INDEX_DIM, len(LAYERS), len(payload),
++                       bytes.fromhex(source_digest), bytes.fromhex(metadata_digest)) + payload
++    receipt = {
++        "format": "STLSAM01", "version": VERSION,
++        "scope": "frozen Flash-Next pilot maps; no serving or promotion claim",
++        "input_dim": INPUT_DIM, "index_dim": INDEX_DIM, "layers": list(LAYERS),
++        "matrix_layout": "row-major FP32 [384,64]; Q then K per layer",
++        "temperature": "separate positive FP32 coefficient; not folded into maps",
++        "source_weights": str(weights.resolve()), "source_weights_sha256": source_digest,
++        "source_metadata": str(metadata.resolve()), "source_metadata_sha256": metadata_digest,
++        "tensor_sha256": source_tensors, "output": str(output.resolve()),
++        "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
++    }
++    receipt_path = Path(str(output) + ".json")
++    if output.exists() or receipt_path.exists():
++        raise FileExistsError("output or receipt already exists; use a fresh destination")
++    # Build and validate the entire payload before writing. Exclusive creation
++    # preserves prior immutable exports, including when two exporters race.
++    with output.open("xb") as stream:
++        stream.write(data)
++        stream.flush()
++        os.fsync(stream.fileno())
++    with receipt_path.open("x", encoding="utf-8") as stream:
++        json.dump(receipt, stream, indent=2, sort_keys=True)
++        stream.write("\n")
++    return receipt
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--weights", type=Path, required=True)
++    parser.add_argument("--metadata", type=Path, required=True)
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    try:
++        receipt = export(args.weights, args.metadata, args.output)
++    except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
++        parser.exit(1, f"export refused: {exc}\n")
++    print(json.dumps(receipt, sort_keys=True))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+-- 
+2.43.0
+

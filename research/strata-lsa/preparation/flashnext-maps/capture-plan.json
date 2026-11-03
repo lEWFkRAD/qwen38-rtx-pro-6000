@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "source_config_sha256": "f3d1b869d3d36733fa58686b73537092733bc52b9c9c06ba7d2789bfb17c16a4",
+  "engine": "/path/to/lsa-prep-20261103/flashnext-maps/build/strata",
+  "engine_sha256": "70067facc003c2971f4f085b21766176c632c279edaeb8e1b8d938d3e5843045",
+  "args": [
+    "--pack",
+    "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+    "--native",
+    "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--ple-gguf",
+    "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+    "--expert-profile",
+    "/path/to/operator/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+    "--expert-cache",
+    "auto",
+    "--prefill",
+    "8192",
+    "--spec",
+    "6",
+    "--spec-min-p",
+    "0.5",
+    "--mtp",
+    "/path/to/operator/model-tests/strata-20261005/Strata-data/mtp/rt",
+    "--max-context",
+    "8192",
+    "--kv",
+    "int8",
+    "--vram-reserve-mib",
+    "4096",
+    "--control-vector-scaled",
+    "/path/to/operator/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+    "--control-vector-layer-range",
+    "4",
+    "44",
+    "--cvec-mode",
+    "project",
+    "--cvec-dir",
+    "per-layer",
+    "--pool-workers",
+    "12",
+    "--pcie-frac",
+    "0",
+    "--no-prefill-borrow",
+    "--ple-io",
+    "ram",
+    "--max-new",
+    "1",
+    "--temperature",
+    "0"
+  ],
+  "env": {
+    "STRATA_BATCH_DECODE_SHARE": "0.75",
+    "STRATA_BATCH_SELF_COMMIT": "1",
+    "STRATA_OWNED_PRICE": "exact",
+    "STRATA_PF_FUSED": "0",
+    "STRATA_QSA_SLOTS": "1",
+    "STRATA_SLOT_COPY_BATCHSYNC": "1",
+    "STRATA_SLOT_COPY_DIRECT": "1",
+    "STRATA_ARENA_MMAP": "1",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "LD_LIBRARY_PATH": "/usr/local/cuda-13.0/lib64:/opt/onyx-strata-0150-candidate",
+    "CUDA_MODULE_LOADING": "EAGER"
+  },
+  "model_assets": [
+    {
+      "flag": "--native",
+      "path": "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "size": 54817524224,
+      "mtime_ns": 1791208807889408739
+    },
+    {
+      "flag": "--ple-gguf",
+      "path": "/path/to/operator/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "size": 28800138432,
+      "mtime_ns": 1791208206532440542
+    },
+    {
+      "flag": "--expert-profile",
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+      "size": 196632,
+      "mtime_ns": 1791207208458796621,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    {
+      "flag": "--control-vector-scaled",
+      "path": "/path/to/operator/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf",
+      "size": 483520,
+      "mtime_ns": 1791207416006953386,
+      "sha256": "59f9ae8b4372107ae79044278a4406bdfe8f8861fe599aa5848515f0d072be38"
+    },
+    {
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/conversions.json",
+      "size": 306,
+      "mtime_ns": 1791211091407792730,
+      "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+    },
+    {
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/dense.bin",
+      "size": 1538035200,
+      "mtime_ns": 1791211091405258524
+    },
+    {
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/experts.bin",
+      "size": 50294988800,
+      "mtime_ns": 1791215118532011987
+    },
+    {
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/index.txt",
+      "size": 93685,
+      "mtime_ns": 1791211091407539031,
+      "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+    },
+    {
+      "path": "/path/to/operator/model-tests/strata-20261005/Strata-data/packs/iq3_s/native_experts.txt",
+      "size": 3304,
+      "mtime_ns": 1791211091907551187,
+      "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    }
+  ],
+  "differences_from_production": [
+    "one isolated CLI prompt at a time",
+    "8192 context/prefill and4096MiB reserve",
+    "ordinary resident INT8 KV instead of streaming wrapper",
+    "vision not loaded for text calibration",
+    "one generated token after appended sentinel"
+  ],
+  "capture_contract": {
+    "query_stride": 32,
+    "layers": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      27,
+      31,
+      35,
+      39,
+      43,
+      47
+    ],
+    "kv": "int8 codes with FP16 scale per64 values",
+    "inputs": "Q/K post-RoPE unrotated trailing192 coordinates; K from dequantized actual cache",
+    "teacher": "native sparse selection and FP64 replay validated against actual attention output"
+  }
+}

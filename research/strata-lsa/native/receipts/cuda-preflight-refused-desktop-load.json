@@ -1,0 +1,20 @@
+{
+  "status": "preflight_refused",
+  "gpu_work_started": false,
+  "reason": "GPU utilization above original 5% threshold",
+  "followup_samples_percent": [
+    8,
+    8,
+    8
+  ],
+  "followup_free_mib": [
+    94594,
+    94581,
+    94581
+  ],
+  "compute_processes": [
+    "/usr/bin/sunshine"
+  ],
+  "decision": "Explicit bounded desktop allowance for correctness only; no performance claim",
+  "recorded_at": "2026-11-03T20:46:50.802998+00:00"
+}

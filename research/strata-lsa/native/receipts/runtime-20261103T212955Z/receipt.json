@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "owner": "example-lsa-maintenance-owner",
+  "executable_sha256": "2d0a020e67459dddaf3fb396ebc69206a1fd0d5ec1e0c4dba807fca07edd9dee",
+  "script_sha256": "4d74c75d32aff48c1197869b3624399863a29206b0cf408047d5dc8bd31f585c",
+  "returncode": 0,
+  "finished_at": "2026-11-03T21:29:58.444359+00:00"
+}

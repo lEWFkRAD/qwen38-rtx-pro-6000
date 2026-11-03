@@ -1,0 +1,15 @@
+{
+  "default_output_ids_match_original": {
+    "exact_canary": true,
+    "boundary_retrieval": true,
+    "accepted_prefix_reuse": true,
+    "independent_long_retrieval": true,
+    "code_result": true,
+    "speculative_copy": true
+  },
+  "lsamode_off": true,
+  "infrastructure": "passed",
+  "source_commit": "876307a9ded78bbca941189e63230b33cfdc6e2a",
+  "known_accuracy_failure": "Both original and new default output188 for code_result whose correct answer is208; unchanged and not relabelled passing",
+  "default_report_sha256": "841e5c593c1b13a34cbf0bcf629215656fc3add6a21a2f7bdfa770727edf733c"
+}

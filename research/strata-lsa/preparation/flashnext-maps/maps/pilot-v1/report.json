@@ -1,0 +1,2910 @@
+{
+  "schema_version": 1,
+  "scope": "Flash-Next IQ3_S INT8-cache pilot maps; no model-quality/serving-promotion claim",
+  "created_unix": 1793714451.9948876,
+  "dataset_sha256": "e44e91e43736a7fb12a766988673977ec3ea61c98322c3ad25bbf0d4e78c3984",
+  "capture_plan_sha256": "5ff6475c7634a1e94f3c2e65cc133e636b75d23ed56be8450f3aa309fb0354ae",
+  "source": "LSA906be195 plus CPU Ward symmetry repair35b1bf9",
+  "parameters": {
+    "input_dim": 384,
+    "index_dim": 64,
+    "layers": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      27,
+      31,
+      35,
+      39,
+      43,
+      47
+    ],
+    "budget": [
+      512,
+      1024
+    ],
+    "top_p": 385,
+    "window": 512,
+    "sink": 4,
+    "batch": 16,
+    "optimizer": "AdamW weight_decay0",
+    "matrix_lr": 0.0003,
+    "temperature_lr": 0.01,
+    "clip": 1.0,
+    "input_precision": "FP32 dequantized INT8 K; FP32 Q group sums",
+    "pilot_gate": "mean KL improves; mean retained mass at512and1024doesnotdecrease; no layer-document mass regression larger than0.03"
+  },
+  "splits": {
+    "train": [
+      "train_code",
+      "train_narrative",
+      "train_operations",
+      "train_technical"
+    ],
+    "validation": [
+      "validation_operations",
+      "validation_technical"
+    ],
+    "test": [
+      "test_code",
+      "test_narrative"
+    ]
+  },
+  "layers": {
+    "3": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.4302489906549454,
+          "100": 0.2646331861615181,
+          "200": 0.23155532404780388,
+          "300": 0.21298761293292046,
+          "400": 0.1990576907992363,
+          "500": 0.1891389973461628,
+          "600": 0.181414682418108
+        },
+        "pca_tau": 0.1333521455526352,
+        "learned_tau": 0.09695195406675339,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-3.pt",
+          "sha256": "65a8656c186103d39142f8f5ab85c6842f5941969fa2f0f8188f4e3dc16e5e3a"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-3.pt",
+          "sha256": "dfaf16680fa201bf6fc14f5645e0008a69a86aefa3475418cc1d66f025379c80"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-3.pt",
+          "sha256": "aa17f88f693c658eb81621a8f811b359e12862ecc40864751ca7ab511da42a10"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-3.pt",
+          "sha256": "b98e7ea515bba906f23e82ca33bf250e0bd13e5fc63c2ca99a2984c659db0e40"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.32750535011291504,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7795358896255493,
+                "absolute_long_range_mass": 0.4337383210659027,
+                "total_native_mass_retained": 0.8787344098091125,
+                "ideal_per_key_mass": 0.8315566182136536,
+                "teacher_oracle_mass": 0.8656792640686035
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.91279137134552,
+                "absolute_long_range_mass": 0.5067155361175537,
+                "total_native_mass_retained": 0.9517114758491516,
+                "ideal_per_key_mass": 0.9369648098945618,
+                "teacher_oracle_mass": 0.9637260437011719
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.17632651329040527,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7892794013023376,
+                "absolute_long_range_mass": 0.4390404224395752,
+                "total_native_mass_retained": 0.8840363621711731,
+                "ideal_per_key_mass": 0.8424315452575684,
+                "teacher_oracle_mass": 0.8656792640686035
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9203281402587891,
+                "absolute_long_range_mass": 0.5108765363693237,
+                "total_native_mass_retained": 0.9558725357055664,
+                "ideal_per_key_mass": 0.9433760643005371,
+                "teacher_oracle_mass": 0.9637260437011719
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.4684453010559082,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6227604746818542,
+                "absolute_long_range_mass": 0.2749958038330078,
+                "total_native_mass_retained": 0.8267524838447571,
+                "ideal_per_key_mass": 0.753836452960968,
+                "teacher_oracle_mass": 0.8240798115730286
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8528464436531067,
+                "absolute_long_range_mass": 0.3789413571357727,
+                "total_native_mass_retained": 0.9306979179382324,
+                "ideal_per_key_mass": 0.9201285243034363,
+                "teacher_oracle_mass": 0.957922101020813
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.39561519026756287,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6375336647033691,
+                "absolute_long_range_mass": 0.2824987769126892,
+                "total_native_mass_retained": 0.8342555165290833,
+                "ideal_per_key_mass": 0.7686458826065063,
+                "teacher_oracle_mass": 0.8240798115730286
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8640004992485046,
+                "absolute_long_range_mass": 0.38434019684791565,
+                "total_native_mass_retained": 0.9360968470573425,
+                "ideal_per_key_mass": 0.9255855679512024,
+                "teacher_oracle_mass": 0.957922101020813
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.7696497440338135,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.574176549911499,
+                "absolute_long_range_mass": 0.2605058252811432,
+                "total_native_mass_retained": 0.8123543858528137,
+                "ideal_per_key_mass": 0.7011858820915222,
+                "teacher_oracle_mass": 0.8189910054206848
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.7870678901672363,
+                "absolute_long_range_mass": 0.35433343052864075,
+                "total_native_mass_retained": 0.906182050704956,
+                "ideal_per_key_mass": 0.8641054630279541,
+                "teacher_oracle_mass": 0.9522790908813477
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.6040010452270508,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6137454509735107,
+                "absolute_long_range_mass": 0.2781650424003601,
+                "total_native_mass_retained": 0.830013632774353,
+                "ideal_per_key_mass": 0.7259848117828369,
+                "teacher_oracle_mass": 0.8189910054206848
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8047212362289429,
+                "absolute_long_range_mass": 0.36224842071533203,
+                "total_native_mass_retained": 0.9140969514846802,
+                "ideal_per_key_mass": 0.8740262985229492,
+                "teacher_oracle_mass": 0.9522790908813477
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4985002875328064,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7224200367927551,
+                "absolute_long_range_mass": 0.3992883563041687,
+                "total_native_mass_retained": 0.8517340421676636,
+                "ideal_per_key_mass": 0.7886154651641846,
+                "teacher_oracle_mass": 0.8412853479385376
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8626925349235535,
+                "absolute_long_range_mass": 0.47437477111816406,
+                "total_native_mass_retained": 0.9268205165863037,
+                "ideal_per_key_mass": 0.8998223543167114,
+                "teacher_oracle_mass": 0.9542149305343628
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.28127071261405945,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7418060302734375,
+                "absolute_long_range_mass": 0.4091564416885376,
+                "total_native_mass_retained": 0.8616021275520325,
+                "ideal_per_key_mass": 0.7998679280281067,
+                "teacher_oracle_mass": 0.8412853479385376
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8764567971229553,
+                "absolute_long_range_mass": 0.4813910722732544,
+                "total_native_mass_retained": 0.933836817741394,
+                "ideal_per_key_mass": 0.9064441323280334,
+                "teacher_oracle_mass": 0.9542149305343628
+              }
+            }
+          }
+        }
+      }
+    },
+    "7": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.4646242931485176,
+          "100": 0.28286775574088097,
+          "200": 0.23934942111372948,
+          "300": 0.21452782675623894,
+          "400": 0.19804206117987633,
+          "500": 0.18546834960579872,
+          "600": 0.17536587081849575
+        },
+        "pca_tau": 0.09999999403953552,
+        "learned_tau": 0.08556701987981796,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-7.pt",
+          "sha256": "f276a2198a29f285f0de7ed45aff94a0a8541e9ccdaf9c1253a1b69cce7dd7f4"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-7.pt",
+          "sha256": "c560454caddea38230e6ac97f2de9b5372be54d8f4a82eeb8696cef2f0bd8a5b"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-7.pt",
+          "sha256": "3475058cd6386c93d3f44010ad9ce200b99a25cb22dfdd1aa3282e78846cb240"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-7.pt",
+          "sha256": "e38383ca498f86f10da97dcc7a2350cab91f79d3d6a5076f586d9898ae2d5b7b"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.3813340663909912,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8729427456855774,
+                "absolute_long_range_mass": 0.4569225311279297,
+                "total_native_mass_retained": 0.9344579577445984,
+                "ideal_per_key_mass": 0.9055683016777039,
+                "teacher_oracle_mass": 0.9303169250488281
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9543920755386353,
+                "absolute_long_range_mass": 0.49875155091285706,
+                "total_native_mass_retained": 0.9762870669364929,
+                "ideal_per_key_mass": 0.9677238464355469,
+                "teacher_oracle_mass": 0.9828775525093079
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2298218309879303,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8807622194290161,
+                "absolute_long_range_mass": 0.46096912026405334,
+                "total_native_mass_retained": 0.9385045766830444,
+                "ideal_per_key_mass": 0.9122072458267212,
+                "teacher_oracle_mass": 0.9303169250488281
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9584851264953613,
+                "absolute_long_range_mass": 0.5008528232574463,
+                "total_native_mass_retained": 0.9783881902694702,
+                "ideal_per_key_mass": 0.9704181551933289,
+                "teacher_oracle_mass": 0.9828775525093079
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.6342993378639221,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7021936178207397,
+                "absolute_long_range_mass": 0.24277491867542267,
+                "total_native_mass_retained": 0.9041344523429871,
+                "ideal_per_key_mass": 0.8020636439323425,
+                "teacher_oracle_mass": 0.8725639581680298
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8893585205078125,
+                "absolute_long_range_mass": 0.3023816645145416,
+                "total_native_mass_retained": 0.9637411832809448,
+                "ideal_per_key_mass": 0.9356635212898254,
+                "teacher_oracle_mass": 0.9702418446540833
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.5408056974411011,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7204093933105469,
+                "absolute_long_range_mass": 0.24878644943237305,
+                "total_native_mass_retained": 0.9101460576057434,
+                "ideal_per_key_mass": 0.8148921728134155,
+                "teacher_oracle_mass": 0.8725639581680298
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8966531753540039,
+                "absolute_long_range_mass": 0.3048122525215149,
+                "total_native_mass_retained": 0.9661718606948853,
+                "ideal_per_key_mass": 0.9394122362136841,
+                "teacher_oracle_mass": 0.9702418446540833
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.8091028928756714,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6984613537788391,
+                "absolute_long_range_mass": 0.27887871861457825,
+                "total_native_mass_retained": 0.8858668804168701,
+                "ideal_per_key_mass": 0.785007894039154,
+                "teacher_oracle_mass": 0.8786275386810303
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8552128672599792,
+                "absolute_long_range_mass": 0.3373667001724243,
+                "total_native_mass_retained": 0.944354772567749,
+                "ideal_per_key_mass": 0.9036865234375,
+                "teacher_oracle_mass": 0.9684903621673584
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.6602258682250977,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7194218039512634,
+                "absolute_long_range_mass": 0.28807371854782104,
+                "total_native_mass_retained": 0.8950619101524353,
+                "ideal_per_key_mass": 0.800425112247467,
+                "teacher_oracle_mass": 0.8786275386810303
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8679255843162537,
+                "absolute_long_range_mass": 0.3431212306022644,
+                "total_native_mass_retained": 0.9501092433929443,
+                "ideal_per_key_mass": 0.9120373129844666,
+                "teacher_oracle_mass": 0.9684903621673584
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4170929193496704,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8489505648612976,
+                "absolute_long_range_mass": 0.44245243072509766,
+                "total_native_mass_retained": 0.9229490756988525,
+                "ideal_per_key_mass": 0.8803194761276245,
+                "teacher_oracle_mass": 0.9158303141593933
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9315900802612305,
+                "absolute_long_range_mass": 0.4845234453678131,
+                "total_native_mass_retained": 0.9650200605392456,
+                "ideal_per_key_mass": 0.9451198577880859,
+                "teacher_oracle_mass": 0.9761213660240173
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.22806024551391602,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8676391243934631,
+                "absolute_long_range_mass": 0.4519501328468323,
+                "total_native_mass_retained": 0.9324467778205872,
+                "ideal_per_key_mass": 0.893830418586731,
+                "teacher_oracle_mass": 0.9158303141593933
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9436720609664917,
+                "absolute_long_range_mass": 0.4906679689884186,
+                "total_native_mass_retained": 0.9711647033691406,
+                "ideal_per_key_mass": 0.9532254338264465,
+                "teacher_oracle_mass": 0.9761213660240173
+              }
+            }
+          }
+        }
+      }
+    },
+    "11": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.3205070197582245,
+          "100": 0.21957333013415337,
+          "200": 0.19516070187091827,
+          "300": 0.18112299963831902,
+          "400": 0.17083263024687767,
+          "500": 0.16323066130280495,
+          "600": 0.1568942703306675
+        },
+        "pca_tau": 0.09999999403953552,
+        "learned_tau": 0.08442506939172745,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-11.pt",
+          "sha256": "2abb277eb18449acd0e721526189d5c7f8bbb1c7c49c3307a9304197412fed60"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-11.pt",
+          "sha256": "1a93f00a787414f4298cf0650e60126cfc281bf23693cd3d5ebb3ac95a798553"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-11.pt",
+          "sha256": "5b59a902c622b082052617739beecb0dfa23cc8acb777a3b10473af6f1110736"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-11.pt",
+          "sha256": "29f35ded275278fdac3773739173080dc774922fc61d9550c19485713f0458ea"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.27455970644950867,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7993283271789551,
+                "absolute_long_range_mass": 0.5408612489700317,
+                "total_native_mass_retained": 0.8663080334663391,
+                "ideal_per_key_mass": 0.8900448679924011,
+                "teacher_oracle_mass": 0.915176510810852
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9309656023979187,
+                "absolute_long_range_mass": 0.6283506155014038,
+                "total_native_mass_retained": 0.9537975192070007,
+                "ideal_per_key_mass": 0.9676536321640015,
+                "teacher_oracle_mass": 0.9814345240592957
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.17848339676856995,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8096258044242859,
+                "absolute_long_range_mass": 0.5476759672164917,
+                "total_native_mass_retained": 0.8731228709220886,
+                "ideal_per_key_mass": 0.8975776433944702,
+                "teacher_oracle_mass": 0.915176510810852
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9373577237129211,
+                "absolute_long_range_mass": 0.6325334310531616,
+                "total_native_mass_retained": 0.9579802751541138,
+                "ideal_per_key_mass": 0.9706060290336609,
+                "teacher_oracle_mass": 0.9814345240592957
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3629806637763977,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7129567861557007,
+                "absolute_long_range_mass": 0.25620192289352417,
+                "total_native_mass_retained": 0.8997923731803894,
+                "ideal_per_key_mass": 0.807582676410675,
+                "teacher_oracle_mass": 0.8604990839958191
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8976055979728699,
+                "absolute_long_range_mass": 0.32030317187309265,
+                "total_native_mass_retained": 0.963893711566925,
+                "ideal_per_key_mass": 0.9372401237487793,
+                "teacher_oracle_mass": 0.9681854248046875
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.33351612091064453,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7220154404640198,
+                "absolute_long_range_mass": 0.2596156895160675,
+                "total_native_mass_retained": 0.9032060503959656,
+                "ideal_per_key_mass": 0.8162525296211243,
+                "teacher_oracle_mass": 0.8604990839958191
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9032757878303528,
+                "absolute_long_range_mass": 0.3224644958972931,
+                "total_native_mass_retained": 0.9660550355911255,
+                "ideal_per_key_mass": 0.9426909685134888,
+                "teacher_oracle_mass": 0.9681854248046875
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.519148588180542,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.702479898929596,
+                "absolute_long_range_mass": 0.31902360916137695,
+                "total_native_mass_retained": 0.8724625706672668,
+                "ideal_per_key_mass": 0.8055701851844788,
+                "teacher_oracle_mass": 0.8781667947769165
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8636811971664429,
+                "absolute_long_range_mass": 0.3873754143714905,
+                "total_native_mass_retained": 0.9408143162727356,
+                "ideal_per_key_mass": 0.9206020832061768,
+                "teacher_oracle_mass": 0.9709286093711853
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.4632522761821747,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7156195640563965,
+                "absolute_long_range_mass": 0.3247149884700775,
+                "total_native_mass_retained": 0.878153920173645,
+                "ideal_per_key_mass": 0.8146925568580627,
+                "teacher_oracle_mass": 0.8781667947769165
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8714516162872314,
+                "absolute_long_range_mass": 0.39098596572875977,
+                "total_native_mass_retained": 0.9444249272346497,
+                "ideal_per_key_mass": 0.9260316491127014,
+                "teacher_oracle_mass": 0.9709286093711853
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.3628048300743103,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7063639163970947,
+                "absolute_long_range_mass": 0.45209822058677673,
+                "total_native_mass_retained": 0.8143689632415771,
+                "ideal_per_key_mass": 0.809395432472229,
+                "teacher_oracle_mass": 0.856842577457428
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8720947504043579,
+                "absolute_long_range_mass": 0.5563850998878479,
+                "total_native_mass_retained": 0.9186559319496155,
+                "ideal_per_key_mass": 0.9180933833122253,
+                "teacher_oracle_mass": 0.9621677398681641
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.26451435685157776,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.722306489944458,
+                "absolute_long_range_mass": 0.4624300003051758,
+                "total_native_mass_retained": 0.8247007727622986,
+                "ideal_per_key_mass": 0.8221763968467712,
+                "teacher_oracle_mass": 0.856842577457428
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8833553791046143,
+                "absolute_long_range_mass": 0.5635195374488831,
+                "total_native_mass_retained": 0.9257902503013611,
+                "ideal_per_key_mass": 0.9263705015182495,
+                "teacher_oracle_mass": 0.9621677398681641
+              }
+            }
+          }
+        }
+      }
+    },
+    "15": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.28707848116755486,
+          "100": 0.15862023830413818,
+          "200": 0.13815299794077873,
+          "300": 0.1280129924416542,
+          "400": 0.11956032365560532,
+          "500": 0.11414013430476189,
+          "600": 0.11006498895585537
+        },
+        "pca_tau": 0.09999999403953552,
+        "learned_tau": 0.07232765108346939,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-15.pt",
+          "sha256": "95c073f38ab44bb4673ba182b2bc12434266a11b98a56544b7e1de4be92614c8"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-15.pt",
+          "sha256": "1d4c15444c8fc75dbf0615fcda242789911aa958666aaf7396dfe9cd11682138"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-15.pt",
+          "sha256": "7fc230bc12f692e606bb67e51757d9ef773a7012080e71868bdb4f35c0f6b782"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-15.pt",
+          "sha256": "d5ca6244d68e12177ee8680c957cbd54cfcb33b6fb62bafaf0ad190d8b116e1f"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.23714585602283478,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7552582025527954,
+                "absolute_long_range_mass": 0.5021716952323914,
+                "total_native_mass_retained": 0.8430134057998657,
+                "ideal_per_key_mass": 0.8768408894538879,
+                "teacher_oracle_mass": 0.9022890329360962
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9106804132461548,
+                "absolute_long_range_mass": 0.6016533374786377,
+                "total_native_mass_retained": 0.9424949884414673,
+                "ideal_per_key_mass": 0.963718056678772,
+                "teacher_oracle_mass": 0.9795761108398438
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.156770259141922,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.768437385559082,
+                "absolute_long_range_mass": 0.5102347731590271,
+                "total_native_mass_retained": 0.8510764241218567,
+                "ideal_per_key_mass": 0.8841768503189087,
+                "teacher_oracle_mass": 0.9022890329360962
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9189244508743286,
+                "absolute_long_range_mass": 0.6068753004074097,
+                "total_native_mass_retained": 0.9477168917655945,
+                "ideal_per_key_mass": 0.9674615859985352,
+                "teacher_oracle_mass": 0.9795761108398438
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.303947389125824,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7367428541183472,
+                "absolute_long_range_mass": 0.25724920630455017,
+                "total_native_mass_retained": 0.9168140292167664,
+                "ideal_per_key_mass": 0.8713847398757935,
+                "teacher_oracle_mass": 0.9008454084396362
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9096564054489136,
+                "absolute_long_range_mass": 0.3136749565601349,
+                "total_native_mass_retained": 0.9732397794723511,
+                "ideal_per_key_mass": 0.9653803706169128,
+                "teacher_oracle_mass": 0.9813328981399536
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.21288537979125977,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7471044659614563,
+                "absolute_long_range_mass": 0.2619398236274719,
+                "total_native_mass_retained": 0.9215046763420105,
+                "ideal_per_key_mass": 0.8761368989944458,
+                "teacher_oracle_mass": 0.9008454084396362
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9138708114624023,
+                "absolute_long_range_mass": 0.31491535902023315,
+                "total_native_mass_retained": 0.974480152130127,
+                "ideal_per_key_mass": 0.966910719871521,
+                "teacher_oracle_mass": 0.9813328981399536
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.4220975637435913,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7597942352294922,
+                "absolute_long_range_mass": 0.32924604415893555,
+                "total_native_mass_retained": 0.8977388739585876,
+                "ideal_per_key_mass": 0.877422571182251,
+                "teacher_oracle_mass": 0.9148504734039307
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9002816081047058,
+                "absolute_long_range_mass": 0.3880206346511841,
+                "total_native_mass_retained": 0.956513524055481,
+                "ideal_per_key_mass": 0.9590533375740051,
+                "teacher_oracle_mass": 0.9836409091949463
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2833167314529419,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7660810947418213,
+                "absolute_long_range_mass": 0.3322089910507202,
+                "total_native_mass_retained": 0.9007017612457275,
+                "ideal_per_key_mass": 0.8827989101409912,
+                "teacher_oracle_mass": 0.9148504734039307
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9051781892776489,
+                "absolute_long_range_mass": 0.3901668190956116,
+                "total_native_mass_retained": 0.9586595892906189,
+                "ideal_per_key_mass": 0.9617392420768738,
+                "teacher_oracle_mass": 0.9836409091949463
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4455529749393463,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6229714155197144,
+                "absolute_long_range_mass": 0.4417145252227783,
+                "total_native_mass_retained": 0.7243414521217346,
+                "ideal_per_key_mass": 0.7921203374862671,
+                "teacher_oracle_mass": 0.8642339706420898
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8066011071205139,
+                "absolute_long_range_mass": 0.5731862187385559,
+                "total_native_mass_retained": 0.8558131456375122,
+                "ideal_per_key_mass": 0.9112759828567505,
+                "teacher_oracle_mass": 0.9669468998908997
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2721325159072876,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6487166881561279,
+                "absolute_long_range_mass": 0.4611096978187561,
+                "total_native_mass_retained": 0.7437365651130676,
+                "ideal_per_key_mass": 0.8251678943634033,
+                "teacher_oracle_mass": 0.8642339706420898
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8303914070129395,
+                "absolute_long_range_mass": 0.5912936329841614,
+                "total_native_mass_retained": 0.8739205598831177,
+                "ideal_per_key_mass": 0.9314231872558594,
+                "teacher_oracle_mass": 0.9669468998908997
+              }
+            }
+          }
+        }
+      }
+    },
+    "19": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.2903086692094803,
+          "100": 0.16226876713335514,
+          "200": 0.14121741615235806,
+          "300": 0.12978575564920902,
+          "400": 0.12185783311724663,
+          "500": 0.11570346914231777,
+          "600": 0.11094817519187927
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.06995880603790283,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-19.pt",
+          "sha256": "c2dc1967903b1373dea896f60276a668867867b0b3c468aae5935f8f141b9c0e"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-19.pt",
+          "sha256": "c0a9d40cceeecc039530a1ad339a8afb8af8f25980d1e292a0559a91c057aac2"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-19.pt",
+          "sha256": "fbecbd0c99c11a78376dbdd15ca2145699ac754dd163e57b0ba6fcb203766e5c"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-19.pt",
+          "sha256": "f370cad3e189a77abc4e56dff3c4563df42bd4734b366f361d20bd73615963a2"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.25431618094444275,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7827554941177368,
+                "absolute_long_range_mass": 0.536452054977417,
+                "total_native_mass_retained": 0.8594255447387695,
+                "ideal_per_key_mass": 0.8975814580917358,
+                "teacher_oracle_mass": 0.9196634292602539
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9210106134414673,
+                "absolute_long_range_mass": 0.626165509223938,
+                "total_native_mass_retained": 0.9491391181945801,
+                "ideal_per_key_mass": 0.9730197787284851,
+                "teacher_oracle_mass": 0.9842681884765625
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.14055445790290833,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7890803217887878,
+                "absolute_long_range_mass": 0.5400587320327759,
+                "total_native_mass_retained": 0.8630322217941284,
+                "ideal_per_key_mass": 0.9042413830757141,
+                "teacher_oracle_mass": 0.9196634292602539
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9248429536819458,
+                "absolute_long_range_mass": 0.6279827952384949,
+                "total_native_mass_retained": 0.9509563446044922,
+                "ideal_per_key_mass": 0.9752703905105591,
+                "teacher_oracle_mass": 0.9842681884765625
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3084336221218109,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7519611120223999,
+                "absolute_long_range_mass": 0.22891338169574738,
+                "total_native_mass_retained": 0.9337215423583984,
+                "ideal_per_key_mass": 0.8591474294662476,
+                "teacher_oracle_mass": 0.8989904522895813
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9102139472961426,
+                "absolute_long_range_mass": 0.2719900906085968,
+                "total_native_mass_retained": 0.9767981767654419,
+                "ideal_per_key_mass": 0.9578173756599426,
+                "teacher_oracle_mass": 0.9799976348876953
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.26537075638771057,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7561015486717224,
+                "absolute_long_range_mass": 0.22991034388542175,
+                "total_native_mass_retained": 0.9347184896469116,
+                "ideal_per_key_mass": 0.8672982454299927,
+                "teacher_oracle_mass": 0.8989904522895813
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9148996472358704,
+                "absolute_long_range_mass": 0.2728177011013031,
+                "total_native_mass_retained": 0.977625846862793,
+                "ideal_per_key_mass": 0.9622629284858704,
+                "teacher_oracle_mass": 0.9799976348876953
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.4012250006198883,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7685543894767761,
+                "absolute_long_range_mass": 0.3011142909526825,
+                "total_native_mass_retained": 0.913422167301178,
+                "ideal_per_key_mass": 0.8738397359848022,
+                "teacher_oracle_mass": 0.9176238179206848
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9034478664398193,
+                "absolute_long_range_mass": 0.350615531206131,
+                "total_native_mass_retained": 0.9629233479499817,
+                "ideal_per_key_mass": 0.9570883512496948,
+                "teacher_oracle_mass": 0.9837675094604492
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.35470548272132874,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7747864127159119,
+                "absolute_long_range_mass": 0.30350470542907715,
+                "total_native_mass_retained": 0.9158124923706055,
+                "ideal_per_key_mass": 0.8799538016319275,
+                "teacher_oracle_mass": 0.9176238179206848
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9074417948722839,
+                "absolute_long_range_mass": 0.35215404629707336,
+                "total_native_mass_retained": 0.9644618630409241,
+                "ideal_per_key_mass": 0.9600543975830078,
+                "teacher_oracle_mass": 0.9837675094604492
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4145198464393616,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6686010360717773,
+                "absolute_long_range_mass": 0.491144061088562,
+                "total_native_mass_retained": 0.7515747547149658,
+                "ideal_per_key_mass": 0.8311516642570496,
+                "teacher_oracle_mass": 0.8865654468536377
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8376061916351318,
+                "absolute_long_range_mass": 0.6156089901924133,
+                "total_native_mass_retained": 0.8760396242141724,
+                "ideal_per_key_mass": 0.9299007058143616,
+                "teacher_oracle_mass": 0.9731995463371277
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.24653884768486023,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6831273436546326,
+                "absolute_long_range_mass": 0.5020772814750671,
+                "total_native_mass_retained": 0.7625079154968262,
+                "ideal_per_key_mass": 0.8492501974105835,
+                "teacher_oracle_mass": 0.8865654468536377
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8499211072921753,
+                "absolute_long_range_mass": 0.6246907711029053,
+                "total_native_mass_retained": 0.8851214647293091,
+                "ideal_per_key_mass": 0.9399111270904541,
+                "teacher_oracle_mass": 0.9731995463371277
+              }
+            }
+          }
+        }
+      }
+    },
+    "23": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.334260992705822,
+          "100": 0.15991635620594025,
+          "200": 0.13083546422421932,
+          "300": 0.11784660443663597,
+          "400": 0.10934841632843018,
+          "500": 0.10391619615256786,
+          "600": 0.09868444688618183
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.06008749455213547,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-23.pt",
+          "sha256": "3d0ef82374e88f68501fb3b3608b97e83e519e292b094b4bfc9a487461773604"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-23.pt",
+          "sha256": "fb2e21a5d9b00080a025060e1a510cd44d73e6ccb874bcb0fb2b57f78b3eeb75"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-23.pt",
+          "sha256": "6c958d7bc77eed2aea9793109b55c6160ce36045fbcb954074724258f923ceff"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-23.pt",
+          "sha256": "62d2119315fdf8f499b97e053ac20681ab3e5f8042a97bfaf4e6c6d7c3f61eb3"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.3235856890678406,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7880379557609558,
+                "absolute_long_range_mass": 0.5386701822280884,
+                "total_native_mass_retained": 0.8598917126655579,
+                "ideal_per_key_mass": 0.908786416053772,
+                "teacher_oracle_mass": 0.9299755096435547
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9227898716926575,
+                "absolute_long_range_mass": 0.6274229288101196,
+                "total_native_mass_retained": 0.9486443400382996,
+                "ideal_per_key_mass": 0.9738180041313171,
+                "teacher_oracle_mass": 0.9846111536026001
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.14228412508964539,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7931069731712341,
+                "absolute_long_range_mass": 0.5417682528495789,
+                "total_native_mass_retained": 0.8629897832870483,
+                "ideal_per_key_mass": 0.9176036715507507,
+                "teacher_oracle_mass": 0.9299755096435547
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9232215881347656,
+                "absolute_long_range_mass": 0.6277786493301392,
+                "total_native_mass_retained": 0.9490001797676086,
+                "ideal_per_key_mass": 0.9769145846366882,
+                "teacher_oracle_mass": 0.9846111536026001
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.36281025409698486,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6823339462280273,
+                "absolute_long_range_mass": 0.2619754374027252,
+                "total_native_mass_retained": 0.8857008218765259,
+                "ideal_per_key_mass": 0.8990083932876587,
+                "teacher_oracle_mass": 0.9231306314468384
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.850104808807373,
+                "absolute_long_range_mass": 0.3237365484237671,
+                "total_native_mass_retained": 0.9474619626998901,
+                "ideal_per_key_mass": 0.9729564785957336,
+                "teacher_oracle_mass": 0.9854079484939575
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.23638410866260529,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6878324151039124,
+                "absolute_long_range_mass": 0.26374688744544983,
+                "total_native_mass_retained": 0.8874722719192505,
+                "ideal_per_key_mass": 0.9017607569694519,
+                "teacher_oracle_mass": 0.9231306314468384
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8540457487106323,
+                "absolute_long_range_mass": 0.3252471387386322,
+                "total_native_mass_retained": 0.9489725232124329,
+                "ideal_per_key_mass": 0.973767876625061,
+                "teacher_oracle_mass": 0.9854079484939575
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.4323757588863373,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6996145248413086,
+                "absolute_long_range_mass": 0.32918280363082886,
+                "total_native_mass_retained": 0.8799830079078674,
+                "ideal_per_key_mass": 0.9072510600090027,
+                "teacher_oracle_mass": 0.9357855916023254
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8410832285881042,
+                "absolute_long_range_mass": 0.3857731223106384,
+                "total_native_mass_retained": 0.936573326587677,
+                "ideal_per_key_mass": 0.9683336615562439,
+                "teacher_oracle_mass": 0.9869557619094849
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.30138665437698364,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7106309533119202,
+                "absolute_long_range_mass": 0.33298590779304504,
+                "total_native_mass_retained": 0.883786141872406,
+                "ideal_per_key_mass": 0.9119483232498169,
+                "teacher_oracle_mass": 0.9357855916023254
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8467780351638794,
+                "absolute_long_range_mass": 0.38787418603897095,
+                "total_native_mass_retained": 0.9386743903160095,
+                "ideal_per_key_mass": 0.9704810380935669,
+                "teacher_oracle_mass": 0.9869557619094849
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4149613082408905,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.695358395576477,
+                "absolute_long_range_mass": 0.48993852734565735,
+                "total_native_mass_retained": 0.7821402549743652,
+                "ideal_per_key_mass": 0.8631696701049805,
+                "teacher_oracle_mass": 0.9056269526481628
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8468742966651917,
+                "absolute_long_range_mass": 0.5968185067176819,
+                "total_native_mass_retained": 0.8890203833580017,
+                "ideal_per_key_mass": 0.9431426525115967,
+                "teacher_oracle_mass": 0.975340723991394
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.21396499872207642,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7150697708129883,
+                "absolute_long_range_mass": 0.5043283700942993,
+                "total_native_mass_retained": 0.7965301871299744,
+                "ideal_per_key_mass": 0.8819522857666016,
+                "teacher_oracle_mass": 0.9056269526481628
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8586061000823975,
+                "absolute_long_range_mass": 0.6054391264915466,
+                "total_native_mass_retained": 0.8976409435272217,
+                "ideal_per_key_mass": 0.9527676701545715,
+                "teacher_oracle_mass": 0.975340723991394
+              }
+            }
+          }
+        }
+      }
+    },
+    "27": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.3054535239934921,
+          "100": 0.16661472246050835,
+          "200": 0.14718041196465492,
+          "300": 0.13553799130022526,
+          "400": 0.12761073000729084,
+          "500": 0.1216359194368124,
+          "600": 0.11708178743720055
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.06413250416517258,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-27.pt",
+          "sha256": "9e1c7e03978a94056f76c1e49cd2eb71dfec41e077f03a88b2bfdd46597b35f8"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-27.pt",
+          "sha256": "abdbf41c616bca6de4fd85826eea3cebffb8e65437e434ccf14832d97a7273a1"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-27.pt",
+          "sha256": "90451287d0a4d61225fe9f133f7cd02115c6a90396debb0688be2299a07ba619"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-27.pt",
+          "sha256": "b6d3b2cd91a0e372105fbd6be04e67b2de653e947a60e490c3d00b49b2f25ade"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.2746809422969818,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7359611392021179,
+                "absolute_long_range_mass": 0.5192561149597168,
+                "total_native_mass_retained": 0.8195155262947083,
+                "ideal_per_key_mass": 0.8911969065666199,
+                "teacher_oracle_mass": 0.9171354174613953
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.901557445526123,
+                "absolute_long_range_mass": 0.6323249340057373,
+                "total_native_mass_retained": 0.9325841665267944,
+                "ideal_per_key_mass": 0.9707971811294556,
+                "teacher_oracle_mass": 0.9842888712882996
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.1502685397863388,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7540534138679504,
+                "absolute_long_range_mass": 0.5307502746582031,
+                "total_native_mass_retained": 0.8310096859931946,
+                "ideal_per_key_mass": 0.9012222290039062,
+                "teacher_oracle_mass": 0.9171354174613953
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9097874760627747,
+                "absolute_long_range_mass": 0.6372068524360657,
+                "total_native_mass_retained": 0.9374662637710571,
+                "ideal_per_key_mass": 0.9738830327987671,
+                "teacher_oracle_mass": 0.9842888712882996
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3199142515659332,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7034188508987427,
+                "absolute_long_range_mass": 0.2442980706691742,
+                "total_native_mass_retained": 0.9023414850234985,
+                "ideal_per_key_mass": 0.8309147953987122,
+                "teacher_oracle_mass": 0.875886082649231
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8891183137893677,
+                "absolute_long_range_mass": 0.3054109215736389,
+                "total_native_mass_retained": 0.9634542465209961,
+                "ideal_per_key_mass": 0.9488142728805542,
+                "teacher_oracle_mass": 0.9750917553901672
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.26262974739074707,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.710835337638855,
+                "absolute_long_range_mass": 0.24721693992614746,
+                "total_native_mass_retained": 0.9052602648735046,
+                "ideal_per_key_mass": 0.8398494720458984,
+                "teacher_oracle_mass": 0.875886082649231
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8943597674369812,
+                "absolute_long_range_mass": 0.3071613907814026,
+                "total_native_mass_retained": 0.9652047157287598,
+                "ideal_per_key_mass": 0.953691840171814,
+                "teacher_oracle_mass": 0.9750917553901672
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.42386576533317566,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7310689687728882,
+                "absolute_long_range_mass": 0.3216013014316559,
+                "total_native_mass_retained": 0.8836753368377686,
+                "ideal_per_key_mass": 0.8548254370689392,
+                "teacher_oracle_mass": 0.9028242826461792
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8826217651367188,
+                "absolute_long_range_mass": 0.38631102442741394,
+                "total_native_mass_retained": 0.9483850002288818,
+                "ideal_per_key_mass": 0.9482291340827942,
+                "teacher_oracle_mass": 0.9804116487503052
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.33170631527900696,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7410194873809814,
+                "absolute_long_range_mass": 0.3261372745037079,
+                "total_native_mass_retained": 0.888211190700531,
+                "ideal_per_key_mass": 0.8637687563896179,
+                "teacher_oracle_mass": 0.9028242826461792
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8863136768341064,
+                "absolute_long_range_mass": 0.3875572979450226,
+                "total_native_mass_retained": 0.9496312737464905,
+                "ideal_per_key_mass": 0.9528912305831909,
+                "teacher_oracle_mass": 0.9804116487503052
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.41068974137306213,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6533730030059814,
+                "absolute_long_range_mass": 0.48976272344589233,
+                "total_native_mass_retained": 0.7309341430664062,
+                "ideal_per_key_mass": 0.8430665135383606,
+                "teacher_oracle_mass": 0.8950384855270386
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.831483781337738,
+                "absolute_long_range_mass": 0.6261452436447144,
+                "total_native_mass_retained": 0.8673167824745178,
+                "ideal_per_key_mass": 0.9404629468917847,
+                "teacher_oracle_mass": 0.9776045680046082
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.25844234228134155,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6750936508178711,
+                "absolute_long_range_mass": 0.5061767101287842,
+                "total_native_mass_retained": 0.7473481893539429,
+                "ideal_per_key_mass": 0.8592520952224731,
+                "teacher_oracle_mass": 0.8950384855270386
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8453394174575806,
+                "absolute_long_range_mass": 0.6367155909538269,
+                "total_native_mass_retained": 0.8778870701789856,
+                "ideal_per_key_mass": 0.9473651051521301,
+                "teacher_oracle_mass": 0.9776045680046082
+              }
+            }
+          }
+        }
+      }
+    },
+    "31": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.33938147127628326,
+          "100": 0.14250564202666283,
+          "200": 0.117793720215559,
+          "300": 0.10523536987602711,
+          "400": 0.09681982733309269,
+          "500": 0.09157639183104038,
+          "600": 0.0871894545853138
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.05179660767316818,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-31.pt",
+          "sha256": "ab7b94b467a6d28da7b1da80904c46fce6f47034f9aa7d0835ff7f62c1fd61e9"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-31.pt",
+          "sha256": "18f33b5ab0f50df65a6745c6f02672634cd82d01113ace8b85eb144bdaa6cb6b"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-31.pt",
+          "sha256": "ef898fc50785e6361c7882a5bb480f17aca892a91c5d12350459de3ce5a074c8"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-31.pt",
+          "sha256": "74f22f86f48c7b169ed7abf3dc4963eb4a014d961c22c8ad5ff9e14ec8fe99b0"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.3474873900413513,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7236428260803223,
+                "absolute_long_range_mass": 0.47726359963417053,
+                "total_native_mass_retained": 0.8228179812431335,
+                "ideal_per_key_mass": 0.8949037790298462,
+                "teacher_oracle_mass": 0.925114631652832
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8905845880508423,
+                "absolute_long_range_mass": 0.5841923356056213,
+                "total_native_mass_retained": 0.9297466278076172,
+                "ideal_per_key_mass": 0.9723440408706665,
+                "teacher_oracle_mass": 0.9868322610855103
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.1378013789653778,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7444018721580505,
+                "absolute_long_range_mass": 0.4894767701625824,
+                "total_native_mass_retained": 0.8350311517715454,
+                "ideal_per_key_mass": 0.9107815027236938,
+                "teacher_oracle_mass": 0.925114631652832
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9005085229873657,
+                "absolute_long_range_mass": 0.5902674794197083,
+                "total_native_mass_retained": 0.9358218908309937,
+                "ideal_per_key_mass": 0.9767361879348755,
+                "teacher_oracle_mass": 0.9868322610855103
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3127681314945221,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7457367777824402,
+                "absolute_long_range_mass": 0.23775342106819153,
+                "total_native_mass_retained": 0.9256454706192017,
+                "ideal_per_key_mass": 0.9110315442085266,
+                "teacher_oracle_mass": 0.9302946925163269
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9103794097900391,
+                "absolute_long_range_mass": 0.28629881143569946,
+                "total_native_mass_retained": 0.974190890789032,
+                "ideal_per_key_mass": 0.9801692962646484,
+                "teacher_oracle_mass": 0.9895563125610352
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.17532919347286224,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7555145025253296,
+                "absolute_long_range_mass": 0.24082903563976288,
+                "total_native_mass_retained": 0.9287210702896118,
+                "ideal_per_key_mass": 0.9138500094413757,
+                "teacher_oracle_mass": 0.9302946925163269
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9150159955024719,
+                "absolute_long_range_mass": 0.28780797123908997,
+                "total_native_mass_retained": 0.9757000803947449,
+                "ideal_per_key_mass": 0.9810260534286499,
+                "teacher_oracle_mass": 0.9895563125610352
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.39760616421699524,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7753594517707825,
+                "absolute_long_range_mass": 0.3265876770019531,
+                "total_native_mass_retained": 0.9132503867149353,
+                "ideal_per_key_mass": 0.9151746034622192,
+                "teacher_oracle_mass": 0.9397085905075073
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9110053181648254,
+                "absolute_long_range_mass": 0.378810852766037,
+                "total_native_mass_retained": 0.965473473072052,
+                "ideal_per_key_mass": 0.9758926033973694,
+                "teacher_oracle_mass": 0.9904030561447144
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.22824031114578247,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7800938487052917,
+                "absolute_long_range_mass": 0.3290680944919586,
+                "total_native_mass_retained": 0.9157307147979736,
+                "ideal_per_key_mass": 0.919489324092865,
+                "teacher_oracle_mass": 0.9397085905075073
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9115345478057861,
+                "absolute_long_range_mass": 0.3796469271183014,
+                "total_native_mass_retained": 0.9663095474243164,
+                "ideal_per_key_mass": 0.9776597619056702,
+                "teacher_oracle_mass": 0.9904030561447144
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.48291343450546265,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.610301673412323,
+                "absolute_long_range_mass": 0.4426245093345642,
+                "total_native_mass_retained": 0.7161762118339539,
+                "ideal_per_key_mass": 0.8254615664482117,
+                "teacher_oracle_mass": 0.893843948841095
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8039765357971191,
+                "absolute_long_range_mass": 0.58199143409729,
+                "total_native_mass_retained": 0.8555430769920349,
+                "ideal_per_key_mass": 0.9335260391235352,
+                "teacher_oracle_mass": 0.9782981872558594
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.21880896389484406,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6586771011352539,
+                "absolute_long_range_mass": 0.47631967067718506,
+                "total_native_mass_retained": 0.7498713731765747,
+                "ideal_per_key_mass": 0.8608810901641846,
+                "teacher_oracle_mass": 0.893843948841095
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8365580439567566,
+                "absolute_long_range_mass": 0.6050628423690796,
+                "total_native_mass_retained": 0.8786145448684692,
+                "ideal_per_key_mass": 0.9488751292228699,
+                "teacher_oracle_mass": 0.9782981872558594
+              }
+            }
+          }
+        }
+      }
+    },
+    "35": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.3298279196023941,
+          "100": 0.1661566160619259,
+          "200": 0.14041483588516712,
+          "300": 0.12721479684114456,
+          "400": 0.11839036084711552,
+          "500": 0.11111756972968578,
+          "600": 0.10628226585686207
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.05893188714981079,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-35.pt",
+          "sha256": "30221bb264b205e707da661d2c90a43c9e484eb46961f6ae0f3607b7b1b79d8d"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-35.pt",
+          "sha256": "c65168a8c5f798a24df6c538d141edcf22de48c1f2968fe0c67dc327c219b3bd"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-35.pt",
+          "sha256": "b7463dc169939a8ad98151fb81b34d18d81c1db677472e81f2860fb23608e590"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-35.pt",
+          "sha256": "291e816503d563cd386d77273e56793af2159376aacf4256cb7bbbe33b6cc07a"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.31998905539512634,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7284566164016724,
+                "absolute_long_range_mass": 0.48640894889831543,
+                "total_native_mass_retained": 0.8264797329902649,
+                "ideal_per_key_mass": 0.8744750022888184,
+                "teacher_oracle_mass": 0.9103283882141113
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8923118710517883,
+                "absolute_long_range_mass": 0.5909799337387085,
+                "total_native_mass_retained": 0.9310508966445923,
+                "ideal_per_key_mass": 0.9640538096427917,
+                "teacher_oracle_mass": 0.9821089506149292
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.15686552226543427,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7408968210220337,
+                "absolute_long_range_mass": 0.4935666024684906,
+                "total_native_mass_retained": 0.8336375951766968,
+                "ideal_per_key_mass": 0.8922545313835144,
+                "teacher_oracle_mass": 0.9103283882141113
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9002865552902222,
+                "absolute_long_range_mass": 0.5961095094680786,
+                "total_native_mass_retained": 0.9361804127693176,
+                "ideal_per_key_mass": 0.9690728187561035,
+                "teacher_oracle_mass": 0.9821089506149292
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3085353970527649,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7358130216598511,
+                "absolute_long_range_mass": 0.22224938869476318,
+                "total_native_mass_retained": 0.9278509020805359,
+                "ideal_per_key_mass": 0.8683953285217285,
+                "teacher_oracle_mass": 0.9025412797927856
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9031704068183899,
+                "absolute_long_range_mass": 0.2674621641635895,
+                "total_native_mass_retained": 0.9730637669563293,
+                "ideal_per_key_mass": 0.9620494842529297,
+                "teacher_oracle_mass": 0.9816719889640808
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2464773952960968,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7365948557853699,
+                "absolute_long_range_mass": 0.22205288708209991,
+                "total_native_mass_retained": 0.9276544451713562,
+                "ideal_per_key_mass": 0.8760083913803101,
+                "teacher_oracle_mass": 0.9025412797927856
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9040263891220093,
+                "absolute_long_range_mass": 0.2676730751991272,
+                "total_native_mass_retained": 0.9732747077941895,
+                "ideal_per_key_mass": 0.9670078158378601,
+                "teacher_oracle_mass": 0.9816719889640808
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.42237401008605957,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7762109041213989,
+                "absolute_long_range_mass": 0.319201797246933,
+                "total_native_mass_retained": 0.9187074303627014,
+                "ideal_per_key_mass": 0.8926928639411926,
+                "teacher_oracle_mass": 0.9277511239051819
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9063182473182678,
+                "absolute_long_range_mass": 0.3660198748111725,
+                "total_native_mass_retained": 0.9655253887176514,
+                "ideal_per_key_mass": 0.965876042842865,
+                "teacher_oracle_mass": 0.9867343902587891
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.30162450671195984,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7849540710449219,
+                "absolute_long_range_mass": 0.3228359818458557,
+                "total_native_mass_retained": 0.9223416447639465,
+                "ideal_per_key_mass": 0.8984056115150452,
+                "teacher_oracle_mass": 0.9277511239051819
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9116551280021667,
+                "absolute_long_range_mass": 0.36803877353668213,
+                "total_native_mass_retained": 0.9675443172454834,
+                "ideal_per_key_mass": 0.9690356850624084,
+                "teacher_oracle_mass": 0.9867343902587891
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.48223331570625305,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6438561677932739,
+                "absolute_long_range_mass": 0.473282128572464,
+                "total_native_mass_retained": 0.7347263097763062,
+                "ideal_per_key_mass": 0.8391034603118896,
+                "teacher_oracle_mass": 0.9030587077140808
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8140502572059631,
+                "absolute_long_range_mass": 0.5974541306495667,
+                "total_native_mass_retained": 0.8588982820510864,
+                "ideal_per_key_mass": 0.9359820485115051,
+                "teacher_oracle_mass": 0.9789841771125793
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2340097427368164,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.674144983291626,
+                "absolute_long_range_mass": 0.49427831172943115,
+                "total_native_mass_retained": 0.7557223439216614,
+                "ideal_per_key_mass": 0.8711812496185303,
+                "teacher_oracle_mass": 0.9030587077140808
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8396936655044556,
+                "absolute_long_range_mass": 0.616261899471283,
+                "total_native_mass_retained": 0.8777059316635132,
+                "ideal_per_key_mass": 0.9508693218231201,
+                "teacher_oracle_mass": 0.9789841771125793
+              }
+            }
+          }
+        }
+      }
+    },
+    "39": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.39293183386325836,
+          "100": 0.14360349625349045,
+          "200": 0.12015199474990368,
+          "300": 0.10885454528033733,
+          "400": 0.09907982125878334,
+          "500": 0.09333939664065838,
+          "600": 0.08888559974730015
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.05585585534572601,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-39.pt",
+          "sha256": "d4f6caa81ee7940f6d5fa3e6d324e349928c8c6d7e2f0da809512234d557a6ea"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-39.pt",
+          "sha256": "3eaaf9eb052c54e2d64012c34fe55a1fd5e24f3775853677ffe70322ab317e47"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-39.pt",
+          "sha256": "bae541021a2130bfb0ab9036d650b2aed9ddd3de2dd0f378531cdc8739293160"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-39.pt",
+          "sha256": "0acd7bc624a38e344baed48eb0246af383a48d2cd66fa65fc8a12b9227b3d656"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.383932888507843,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.767462968826294,
+                "absolute_long_range_mass": 0.5671312212944031,
+                "total_native_mass_retained": 0.8330287933349609,
+                "ideal_per_key_mass": 0.9428898096084595,
+                "teacher_oracle_mass": 0.955717921257019
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9223990440368652,
+                "absolute_long_range_mass": 0.6778929233551025,
+                "total_native_mass_retained": 0.9437904357910156,
+                "ideal_per_key_mass": 0.9841247797012329,
+                "teacher_oracle_mass": 0.9906493425369263
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.12696877121925354,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7762991189956665,
+                "absolute_long_range_mass": 0.5738332271575928,
+                "total_native_mass_retained": 0.8397308588027954,
+                "ideal_per_key_mass": 0.9475268125534058,
+                "teacher_oracle_mass": 0.955717921257019
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9260779619216919,
+                "absolute_long_range_mass": 0.6805595755577087,
+                "total_native_mass_retained": 0.9464570879936218,
+                "ideal_per_key_mass": 0.9851902723312378,
+                "teacher_oracle_mass": 0.9906493425369263
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.46965140104293823,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7440507411956787,
+                "absolute_long_range_mass": 0.32560640573501587,
+                "total_native_mass_retained": 0.8970093727111816,
+                "ideal_per_key_mass": 0.8984401822090149,
+                "teacher_oracle_mass": 0.9260610342025757
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8992656469345093,
+                "absolute_long_range_mass": 0.38848036527633667,
+                "total_native_mass_retained": 0.9598833322525024,
+                "ideal_per_key_mass": 0.9711419939994812,
+                "teacher_oracle_mass": 0.9862185716629028
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2203138768672943,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7718368768692017,
+                "absolute_long_range_mass": 0.3353663384914398,
+                "total_native_mass_retained": 0.9067693948745728,
+                "ideal_per_key_mass": 0.9021553993225098,
+                "teacher_oracle_mass": 0.9260610342025757
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9102643132209778,
+                "absolute_long_range_mass": 0.39168521761894226,
+                "total_native_mass_retained": 0.9630882143974304,
+                "ideal_per_key_mass": 0.9733540415763855,
+                "teacher_oracle_mass": 0.9862185716629028
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.5037621259689331,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7211942076683044,
+                "absolute_long_range_mass": 0.36812925338745117,
+                "total_native_mass_retained": 0.8758769631385803,
+                "ideal_per_key_mass": 0.9058283567428589,
+                "teacher_oracle_mass": 0.9348354339599609
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8636912703514099,
+                "absolute_long_range_mass": 0.43098965287208557,
+                "total_native_mass_retained": 0.9387374520301819,
+                "ideal_per_key_mass": 0.968815267086029,
+                "teacher_oracle_mass": 0.9866236448287964
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2946525812149048,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7303797602653503,
+                "absolute_long_range_mass": 0.3720792829990387,
+                "total_native_mass_retained": 0.8798271417617798,
+                "ideal_per_key_mass": 0.9099735617637634,
+                "teacher_oracle_mass": 0.9348354339599609
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8683231472969055,
+                "absolute_long_range_mass": 0.4328627586364746,
+                "total_native_mass_retained": 0.9406104683876038,
+                "ideal_per_key_mass": 0.9709072113037109,
+                "teacher_oracle_mass": 0.9866236448287964
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.4315963387489319,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7231380939483643,
+                "absolute_long_range_mass": 0.5780630111694336,
+                "total_native_mass_retained": 0.7763568162918091,
+                "ideal_per_key_mass": 0.9140921831130981,
+                "teacher_oracle_mass": 0.9395197629928589
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8676005601882935,
+                "absolute_long_range_mass": 0.6939874291419983,
+                "total_native_mass_retained": 0.8922809958457947,
+                "ideal_per_key_mass": 0.9701686501502991,
+                "teacher_oracle_mass": 0.9861018061637878
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.1847975105047226,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7432642579078674,
+                "absolute_long_range_mass": 0.5945597290992737,
+                "total_native_mass_retained": 0.7928534746170044,
+                "ideal_per_key_mass": 0.9239627122879028,
+                "teacher_oracle_mass": 0.9395197629928589
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8737109303474426,
+                "absolute_long_range_mass": 0.6990643739700317,
+                "total_native_mass_retained": 0.8973581790924072,
+                "ideal_per_key_mass": 0.9731337428092957,
+                "teacher_oracle_mass": 0.9861018061637878
+              }
+            }
+          }
+        }
+      }
+    },
+    "43": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.5869591385126114,
+          "100": 0.14372023940086365,
+          "200": 0.11405543237924576,
+          "300": 0.1015859954059124,
+          "400": 0.09452366828918457,
+          "500": 0.08885900117456913,
+          "600": 0.08329318091273308
+        },
+        "pca_tau": 0.0749894306063652,
+        "learned_tau": 0.05472300574183464,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-43.pt",
+          "sha256": "a1bae6ad6b7aa3b52445fecf613f087cd4e209c841c42f1a6925874d98fce312"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-43.pt",
+          "sha256": "c428422d2bbc581f7ee4bef16de9e7d1949f46a27567631ba57d93ff30ae2a26"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-43.pt",
+          "sha256": "1010e190c590416374152ea07fbd6287c32480a52a62b28a536b0002f287e50a"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-43.pt",
+          "sha256": "1bcced6334c8d2d3920d51bce9e73a92273430a92cefc7b8b3fa83355286fd97"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.513901948928833,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8223305940628052,
+                "absolute_long_range_mass": 0.6745300889015198,
+                "total_native_mass_retained": 0.8573888540267944,
+                "ideal_per_key_mass": 0.9417093396186829,
+                "teacher_oracle_mass": 0.9550232887268066
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9345860481262207,
+                "absolute_long_range_mass": 0.7646634578704834,
+                "total_native_mass_retained": 0.9475223422050476,
+                "ideal_per_key_mass": 0.9824639558792114,
+                "teacher_oracle_mass": 0.9902963638305664
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.1300828456878662,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.8249382972717285,
+                "absolute_long_range_mass": 0.6765505075454712,
+                "total_native_mass_retained": 0.8594093322753906,
+                "ideal_per_key_mass": 0.9452019929885864,
+                "teacher_oracle_mass": 0.9550232887268066
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9334861636161804,
+                "absolute_long_range_mass": 0.7637192606925964,
+                "total_native_mass_retained": 0.9465781450271606,
+                "ideal_per_key_mass": 0.9834314584732056,
+                "teacher_oracle_mass": 0.9902963638305664
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.6845546960830688,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7636149525642395,
+                "absolute_long_range_mass": 0.456976979970932,
+                "total_native_mass_retained": 0.8637033700942993,
+                "ideal_per_key_mass": 0.9209015965461731,
+                "teacher_oracle_mass": 0.938823401927948
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9063739776611328,
+                "absolute_long_range_mass": 0.5392016172409058,
+                "total_native_mass_retained": 0.9459279775619507,
+                "ideal_per_key_mass": 0.9776260256767273,
+                "teacher_oracle_mass": 0.9887939691543579
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.176482155919075,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7353671789169312,
+                "absolute_long_range_mass": 0.4417634904384613,
+                "total_native_mass_retained": 0.8484897613525391,
+                "ideal_per_key_mass": 0.9224122762680054,
+                "teacher_oracle_mass": 0.938823401927948
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8956197500228882,
+                "absolute_long_range_mass": 0.5336087942123413,
+                "total_native_mass_retained": 0.9403350949287415,
+                "ideal_per_key_mass": 0.9788583517074585,
+                "teacher_oracle_mass": 0.9887939691543579
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.6701977849006653,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6967261433601379,
+                "absolute_long_range_mass": 0.44496986269950867,
+                "total_native_mass_retained": 0.808931827545166,
+                "ideal_per_key_mass": 0.8943073749542236,
+                "teacher_oracle_mass": 0.9258173704147339
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8486787676811218,
+                "absolute_long_range_mass": 0.5382379293441772,
+                "total_native_mass_retained": 0.9022000432014465,
+                "ideal_per_key_mass": 0.9599383473396301,
+                "teacher_oracle_mass": 0.9834518432617188
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2631351351737976,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6845207810401917,
+                "absolute_long_range_mass": 0.4380718767642975,
+                "total_native_mass_retained": 0.8020340204238892,
+                "ideal_per_key_mass": 0.9003899693489075,
+                "teacher_oracle_mass": 0.9258173704147339
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8426811695098877,
+                "absolute_long_range_mass": 0.5358946919441223,
+                "total_native_mass_retained": 0.8998568058013916,
+                "ideal_per_key_mass": 0.9630299806594849,
+                "teacher_oracle_mass": 0.9834518432617188
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.5617751479148865,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7572140097618103,
+                "absolute_long_range_mass": 0.6571539640426636,
+                "total_native_mass_retained": 0.7905970811843872,
+                "ideal_per_key_mass": 0.9035781025886536,
+                "teacher_oracle_mass": 0.9347515106201172
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8793689012527466,
+                "absolute_long_range_mass": 0.7625102996826172,
+                "total_native_mass_retained": 0.8959534168243408,
+                "ideal_per_key_mass": 0.9626177549362183,
+                "teacher_oracle_mass": 0.9846546649932861
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.18907621502876282,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7665926218032837,
+                "absolute_long_range_mass": 0.6653487086296082,
+                "total_native_mass_retained": 0.798791766166687,
+                "ideal_per_key_mass": 0.9145172834396362,
+                "teacher_oracle_mass": 0.9347515106201172
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8808904886245728,
+                "absolute_long_range_mass": 0.7637143135070801,
+                "total_native_mass_retained": 0.8971574306488037,
+                "ideal_per_key_mass": 0.9675288796424866,
+                "teacher_oracle_mass": 0.9846546649932861
+              }
+            }
+          }
+        }
+      }
+    },
+    "47": {
+      "training": {
+        "steps": 600,
+        "train_kl": {
+          "0": 0.40918194502592087,
+          "100": 0.23057034984230995,
+          "200": 0.1959947533905506,
+          "300": 0.17582057043910027,
+          "400": 0.1633702553808689,
+          "500": 0.15342233330011368,
+          "600": 0.14628646709024906
+        },
+        "pca_tau": 0.09999999403953552,
+        "learned_tau": 0.07345393300056458,
+        "continuation": "300 additional steps only if train KL drops more than0.5percent from200to300"
+      },
+      "train_inputs": [
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_code/layer-47.pt",
+          "sha256": "13dc4bc0da5e69adc51096d00c841d7acb53566a0d2e8f6882f01382a7ab025f"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_narrative/layer-47.pt",
+          "sha256": "ee958eecbd17beb6d1215f9ca03815c48de56ed51631218cce6d80c73530986a"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_operations/layer-47.pt",
+          "sha256": "1da03a6776ddc21313614c6409cc8872d3da259da04950118a432604e0a86708"
+        },
+        {
+          "path": "/path/to/lsa-prep-20261103/flashnext-maps/prepared/train_technical/layer-47.pt",
+          "sha256": "de45cd424902a602cae378b145b1ed81ce0078ef954df3324838895b228c2f55"
+        }
+      ],
+      "validation": {
+        "validation_operations": {
+          "pca": {
+            "kl": 0.4160987436771393,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7834509015083313,
+                "absolute_long_range_mass": 0.3925384283065796,
+                "total_native_mass_retained": 0.8928187489509583,
+                "ideal_per_key_mass": 0.8703460693359375,
+                "teacher_oracle_mass": 0.9023243188858032
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.9152949452400208,
+                "absolute_long_range_mass": 0.45786792039871216,
+                "total_native_mass_retained": 0.958148181438446,
+                "ideal_per_key_mass": 0.9535672068595886,
+                "teacher_oracle_mass": 0.9742169380187988
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.2265898436307907,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7986069917678833,
+                "absolute_long_range_mass": 0.3997449278831482,
+                "total_native_mass_retained": 0.9000251889228821,
+                "ideal_per_key_mass": 0.8826502561569214,
+                "teacher_oracle_mass": 0.9023243188858032
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.921661376953125,
+                "absolute_long_range_mass": 0.4609626233577728,
+                "total_native_mass_retained": 0.9612429738044739,
+                "ideal_per_key_mass": 0.9597465395927429,
+                "teacher_oracle_mass": 0.9742169380187988
+              }
+            }
+          }
+        },
+        "validation_technical": {
+          "pca": {
+            "kl": 0.3890257775783539,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6373488903045654,
+                "absolute_long_range_mass": 0.1487874537706375,
+                "total_native_mass_retained": 0.9213833808898926,
+                "ideal_per_key_mass": 0.7558361887931824,
+                "teacher_oracle_mass": 0.8174904584884644
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8473638296127319,
+                "absolute_long_range_mass": 0.19458192586898804,
+                "total_native_mass_retained": 0.9671779870986938,
+                "ideal_per_key_mass": 0.9176328778266907,
+                "teacher_oracle_mass": 0.9565416574478149
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.3231504261493683,
+            "query_rows_used": 80,
+            "query_rows_total": 97,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6449794173240662,
+                "absolute_long_range_mass": 0.15074574947357178,
+                "total_native_mass_retained": 0.9233415722846985,
+                "ideal_per_key_mass": 0.7687191963195801,
+                "teacher_oracle_mass": 0.8174904584884644
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8519638180732727,
+                "absolute_long_range_mass": 0.19569595158100128,
+                "total_native_mass_retained": 0.9682918787002563,
+                "ideal_per_key_mass": 0.9238927960395813,
+                "teacher_oracle_mass": 0.9565416574478149
+              }
+            }
+          }
+        }
+      },
+      "test": {
+        "test_code": {
+          "pca": {
+            "kl": 0.612053632736206,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6451362371444702,
+                "absolute_long_range_mass": 0.1976861208677292,
+                "total_native_mass_retained": 0.8929932117462158,
+                "ideal_per_key_mass": 0.7522843480110168,
+                "teacher_oracle_mass": 0.8304600119590759
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8268333077430725,
+                "absolute_long_range_mass": 0.2511571943759918,
+                "total_native_mass_retained": 0.9464643001556396,
+                "ideal_per_key_mass": 0.8930994868278503,
+                "teacher_oracle_mass": 0.9552011489868164
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.45190298557281494,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.6590221524238586,
+                "absolute_long_range_mass": 0.20263953506946564,
+                "total_native_mass_retained": 0.8979464769363403,
+                "ideal_per_key_mass": 0.7718408703804016,
+                "teacher_oracle_mass": 0.8304600119590759
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8376739025115967,
+                "absolute_long_range_mass": 0.2548832595348358,
+                "total_native_mass_retained": 0.9501903057098389,
+                "ideal_per_key_mass": 0.9057978391647339,
+                "teacher_oracle_mass": 0.9552011489868164
+              }
+            }
+          }
+        },
+        "test_narrative": {
+          "pca": {
+            "kl": 0.5175829529762268,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7196432948112488,
+                "absolute_long_range_mass": 0.39282849431037903,
+                "total_native_mass_retained": 0.8448144197463989,
+                "ideal_per_key_mass": 0.8273873925209045,
+                "teacher_oracle_mass": 0.8764318823814392
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8593570590019226,
+                "absolute_long_range_mass": 0.4690946936607361,
+                "total_native_mass_retained": 0.9210807085037231,
+                "ideal_per_key_mass": 0.919123113155365,
+                "teacher_oracle_mass": 0.9630844593048096
+              }
+            }
+          },
+          "learned": {
+            "kl": 0.3056928217411041,
+            "query_rows_used": 144,
+            "query_rows_total": 161,
+            "budgets": {
+              "512": {
+                "long_range_keys": 512,
+                "conditional_long_range_mass": 0.7438659071922302,
+                "absolute_long_range_mass": 0.4064907431602478,
+                "total_native_mass_retained": 0.8584767580032349,
+                "ideal_per_key_mass": 0.8440954685211182,
+                "teacher_oracle_mass": 0.8764318823814392
+              },
+              "1024": {
+                "long_range_keys": 1024,
+                "conditional_long_range_mass": 0.8757145404815674,
+                "absolute_long_range_mass": 0.47819674015045166,
+                "total_native_mass_retained": 0.930182695388794,
+                "ideal_per_key_mass": 0.9308520555496216,
+                "teacher_oracle_mass": 0.9630844593048096
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "exports": {
+    "pca": {
+      "path": "/path/to/lsa-prep-20261103/flashnext-maps/maps/pilot-v1/flashnext-pca-384x64.pt",
+      "sha256": "ce33feb1951993512adbf103727c1fe74883af0c49e3913e8f5c08d8f0c2e076",
+      "roundtrip_exact": true,
+      "tensors": 24,
+      "parameters": 589824
+    },
+    "learned": {
+      "path": "/path/to/lsa-prep-20261103/flashnext-maps/maps/pilot-v1/flashnext-learned-384x64.pt",
+      "sha256": "4d8a606e0ddd33858cb662e7f82f723dd54ca96776f3c383af28b30935a85d02",
+      "roundtrip_exact": true,
+      "tensors": 24,
+      "parameters": 589824
+    }
+  },
+  "summary": {
+    "validation": {
+      "pairs": 24,
+      "mean_kl": {
+        "pca": 0.37416266836225986,
+        "learned": 0.22257406388719878
+      },
+      "mean_conditional_mass": {
+        "pca": {
+          "512": 0.7449206536014875,
+          "1024": 0.9031175499161085
+        },
+        "learned": {
+          "512": 0.7539839049180349,
+          "1024": 0.9080401559670767
+        }
+      },
+      "worst_mass_delta": {
+        "512": {
+          "delta": -0.02824777364730835,
+          "layer": "43",
+          "document": "validation_technical"
+        },
+        "1024": {
+          "delta": -0.010754227638244629,
+          "layer": "43",
+          "document": "validation_technical"
+        }
+      },
+      "pilot_gate_passed": true
+    },
+    "test": {
+      "pairs": 24,
+      "mean_kl": {
+        "pca": 0.49265342205762863,
+        "learned": 0.3098107986152172
+      },
+      "mean_conditional_mass": {
+        "pca": {
+          "512": 0.7050403530399004,
+          "1024": 0.8584674745798111
+        },
+        "learned": {
+          "512": 0.7216908062497774,
+          "1024": 0.8689994985858599
+        }
+      },
+      "worst_mass_delta": {
+        "512": {
+          "delta": -0.012205362319946289,
+          "layer": "43",
+          "document": "test_code"
+        },
+        "1024": {
+          "delta": -0.005997598171234131,
+          "layer": "43",
+          "document": "test_code"
+        }
+      },
+      "pilot_gate_passed": true
+    }
+  },
+  "status": "pilot_qualified",
+  "production_promotion": false
+}

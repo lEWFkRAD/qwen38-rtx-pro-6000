@@ -1,0 +1,132 @@
+From https://github.com/Prefrontal-AI/latent-sparse-attention
+ * branch            906be195c1052aaa74f95852ad1917ce1926ba64 -> FETCH_HEAD
+Collecting uv==0.13.0
+  Downloading uv-0.13.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Downloading uv-0.13.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (17.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 17.9/17.9 MB 30.1 MB/s eta 0:00:00
+Installing collected packages: uv
+Successfully installed uv-0.13.0
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /path/to/lsa-prep-20261103/.venv
+Resolved 281 packages in 36.41s
+   Building lsa @ file:///path/to/lsa-prep-20261103/upstream
+Downloading pygments (1.2MiB)
+Downloading sympy (6.0MiB)
+Downloading libcst (2.2MiB)
+Downloading networkx (2.0MiB)
+Downloading nvidia-nvjitlink-cu12 (37.9MiB)
+Downloading nvidia-cuda-runtime-cu12 (3.3MiB)
+Downloading nvidia-curand-cu12 (65.1MiB)
+Downloading nvidia-cufile-cu12 (1.2MiB)
+Downloading ast-serialize (1.3MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading mypy (14.6MiB)
+Downloading numpy (15.9MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cuda-nvdisasm (5.0MiB)
+Downloading nvidia-cufft-cu12 (191.6MiB)
+Downloading virtualenv (5.1MiB)
+Downloading nvidia-cusparselt-cu12 (228.2MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (85.4MiB)
+Downloading nvidia-cuda-cupti-cu12 (10.3MiB)
+Downloading nvidia-nvshmem-cu12 (132.7MiB)
+Downloading cuda-bindings (7.3MiB)
+Downloading nvidia-cutlass-dsl-libs-base (2.7MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading triton (188.6MiB)
+Downloading ruff (9.8MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.4MiB)
+Downloading apache-tvm-ffi (2.8MiB)
+Downloading setuptools (1.0MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading torch (886.5MiB)
+   Building antlr4-python3-runtime==4.9.3
+ Downloaded setuptools
+ Downloaded nvidia-cufile-cu12
+ Downloaded pygments
+ Downloaded ast-serialize
+      Built lsa @ file:///path/to/lsa-prep-20261103/upstream
+ Downloaded networkx
+ Downloaded libcst
+      Built antlr4-python3-runtime==4.9.3
+ Downloaded nvidia-cutlass-dsl-libs-base
+ Downloaded apache-tvm-ffi
+ Downloaded nvidia-cuda-runtime-cu12
+ Downloaded nvidia-cuda-nvdisasm
+ Downloaded virtualenv
+ Downloaded sympy
+ Downloaded cuda-bindings
+ Downloaded ruff
+ Downloaded nvidia-cuda-cupti-cu12
+ Downloaded mypy
+ Downloaded numpy
+Downloading nvidia-curand-cu12 (65.1MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-nvjitlink-cu12 (37.9MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cufft-cu12 (191.6MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.4MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-nvshmem-cu12 (132.7MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (85.4MiB)
+Downloading nvidia-cusparselt-cu12 (228.2MiB)
+Downloading nvidia-nvjitlink-cu12 (37.9MiB)
+Downloading nvidia-nvshmem-cu12 (132.7MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (85.4MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cufft-cu12 (191.6MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading nvidia-cusparselt-cu12 (228.2MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.4MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-curand-cu12 (65.1MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.4MiB)
+Downloading nvidia-cusparselt-cu12 (228.2MiB)
+Downloading nvidia-curand-cu12 (65.1MiB)
+Downloading nvidia-cufft-cu12 (191.6MiB)
+Downloading nvidia-nvshmem-cu12 (132.7MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading nvidia-nvjitlink-cu12 (37.9MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (85.4MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-nvshmem-cu12 (132.7MiB)
+Downloading nvidia-nvjitlink-cu12 (37.9MiB)
+Downloading nvidia-cudnn-cu12 (627.4MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (85.4MiB)
+Downloading nvidia-cusolver-cu12 (322.5MiB)
+Downloading nvidia-cusparselt-cu12 (228.2MiB)
+Downloading nvidia-nccl-cu12 (280.0MiB)
+Downloading nvidia-cusparse-cu12 (349.5MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.4MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-cublas-cu12 (554.3MiB)
+Downloading nvidia-cufft-cu12 (191.6MiB)
+Downloading nvidia-curand-cu12 (65.1MiB)
+ Downloaded torch
+ Downloaded nvidia-nvjitlink-cu12
+ Downloaded nvidia-curand-cu12
+ Downloaded nvidia-cutlass-dsl-libs-cu12
+ Downloaded nvidia-cuda-nvrtc-cu12
+ Downloaded nvidia-nvshmem-cu12
+ Downloaded triton
+ Downloaded nvidia-cufft-cu12
+ Downloaded nvidia-cusparselt-cu12
+error: Failed to download `nvidia-cudnn-cu12==9.20.0.48`
+  cause: Failed to write to the distribution cache
+  cause: error decoding response body
+  cause: request or response body error
+  cause: error reading a body from connection
+  cause: connection reset
+
+hint: `nvidia-cudnn-cu12` (v9.20.0.48) was included because `lsa` depends on `torch` (v2.13.0+cu129) which depends on `nvidia-cudnn-cu12`

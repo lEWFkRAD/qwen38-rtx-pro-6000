@@ -1,0 +1,37 @@
+test_bounds (test_benchmark_lsa.HarnessTests.test_bounds) ... ok
+test_corrupt_selection (test_benchmark_lsa.HarnessTests.test_corrupt_selection) ... ok
+test_deadline (test_benchmark_lsa.HarnessTests.test_deadline) ... ok
+test_failure_not_pass (test_benchmark_lsa.HarnessTests.test_failure_not_pass) ... ok
+test_gpu_double_optin (test_benchmark_lsa.HarnessTests.test_gpu_double_optin) ... ok
+test_plan_no_import (test_benchmark_lsa.HarnessTests.test_plan_no_import) ... ok
+test_qualification_failure (test_benchmark_lsa.HarnessTests.test_qualification_failure) ... ok
+test_score_bound (test_benchmark_lsa.HarnessTests.test_score_bound) ... ok
+test_timings (test_benchmark_lsa.HarnessTests.test_timings) ... ok
+test_active_stops_before_gpu (test_run_window.GuardTests.test_active_stops_before_gpu) ... ok
+test_command_errors (test_run_window.GuardTests.test_command_errors) ... ok
+test_dirty_source (test_run_window.GuardTests.test_dirty_source) ... ok
+test_duplicate_contexts (test_run_window.GuardTests.test_duplicate_contexts) ... ok
+test_identity_change (test_run_window.GuardTests.test_identity_change) ... ok
+test_invalid_gpu_rows (test_run_window.GuardTests.test_invalid_gpu_rows) ... ok
+test_non_linux (test_run_window.GuardTests.test_non_linux) ... ok
+test_path_escape (test_run_window.GuardTests.test_path_escape) ... ok
+test_plan_no_reads (test_run_window.GuardTests.test_plan_no_reads) ... ok
+test_primary_restart (test_run_window.GuardTests.test_primary_restart) ... ok
+test_resource_bounds (test_run_window.GuardTests.test_resource_bounds) ... ok
+test_resources_refused (test_run_window.GuardTests.test_resources_refused) ... ok
+test_result_requires_gpu_and_success (test_run_window.GuardTests.test_result_requires_gpu_and_success) ... ok
+test_three_samples (test_run_window.GuardTests.test_three_samples) ... ok
+test_unknown_state (test_run_window.GuardTests.test_unknown_state) ... ok
+test_valid_gpu_parse (test_run_window.GuardTests.test_valid_gpu_parse) ... ok
+test_window_label (test_run_window.GuardTests.test_window_label) ... ok
+test_cleanup_descendants (test_run_window.WorkerTests.test_cleanup_descendants) ... ok
+test_interrupt_own_group (test_run_window.WorkerTests.test_interrupt_own_group) ... ok
+test_primary_definition_missing (test_run_window.WorkerTests.test_primary_definition_missing) ... ok
+test_success_no_kill (test_run_window.WorkerTests.test_success_no_kill) ... ok
+test_timeout_own_group (test_run_window.WorkerTests.test_timeout_own_group) ... ok
+test_worker_aborts_on_restart_or_unreadable_state (test_run_window.WorkerTests.test_worker_aborts_on_restart_or_unreadable_state) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.011s
+
+OK

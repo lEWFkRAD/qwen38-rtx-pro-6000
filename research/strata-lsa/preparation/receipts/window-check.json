@@ -1,0 +1,1 @@
+{"status": "refused", "error": "qwen38-flash-next-strata.service must already be inactive; observed 'active'. Launcher never stops it or changes recovery."}

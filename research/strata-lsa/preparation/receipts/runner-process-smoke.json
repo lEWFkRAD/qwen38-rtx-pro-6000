@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "gpu_work_started": false,
+  "normal": {
+    "returncode": 0,
+    "timed_out": false,
+    "pid": 2723213
+  },
+  "timeout": {
+    "returncode": -15,
+    "timed_out": true,
+    "pid": 2723214
+  },
+  "timeout_elapsed_seconds": 0.20177187101216987
+}

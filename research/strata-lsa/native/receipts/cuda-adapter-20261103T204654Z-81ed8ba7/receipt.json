@@ -1,0 +1,45 @@
+{
+  "started_at": "2026-11-03T20:46:54.435154+00:00",
+  "status": "component_parity_passed",
+  "before": {
+    "status": "maintenance",
+    "owner": "example-lsa-maintenance-owner",
+    "service": "inactive"
+  },
+  "gpu": {
+    "uuid": "GPU-REDACTED",
+    "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "capability": "12.0",
+    "free_mib": 94609,
+    "utilization": 9
+  },
+  "script_sha256": "98b516d4eb984de7ba78625f06f3e2898dc533b6a38e63a9bcb4c8b63a0eff67",
+  "library_sha256": "5125ff14286f8b5d1c216b8b514db78f969759930a3ec62623308c30d7065182",
+  "timeout_seconds": 900,
+  "owner": "example-lsa-maintenance-owner",
+  "gpu_work_started": true,
+  "preflight_utilization_limit": 20,
+  "desktop_load_allowed": true,
+  "performance_claim": false,
+  "pid": 4018916,
+  "argv": [
+    "/path/to/lsa-prep-20261103/.venv/bin/python",
+    "/path/to/strata-lsa-resume-20261103/test_cuda_adapter.py",
+    "--worker",
+    "--owner",
+    "example-lsa-maintenance-owner",
+    "--output",
+    "/path/to/strata-lsa-resume-20261103/receipts/cuda-adapter-20261103T204654Z-81ed8ba7/result.json",
+    "--library",
+    "/path/to/strata-lsa-resume-20261103/build-cuda/libstrata_lsa_cuda.so",
+    "--max-capacity"
+  ],
+  "returncode": 0,
+  "after": {
+    "status": "maintenance",
+    "owner": "example-lsa-maintenance-owner",
+    "service": "inactive"
+  },
+  "result_sha256": "6752207787c84b2215157f51eafd95be4222fe7c5dc9f253d5ecf5ed275072d0",
+  "finished_at": "2026-11-03T20:47:15.490978+00:00"
+}

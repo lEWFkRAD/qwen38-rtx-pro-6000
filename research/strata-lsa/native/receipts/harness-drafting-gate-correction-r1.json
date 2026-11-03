@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "scope": "harness gate correction only; no native engine flags or model changes",
+  "prior_failed_receipt": "/path/to/strata-lsa-resume-20261103/receipts/integrated-canary-r1/candidate/report.json",
+  "prior_failed_receipt_sha256": "5faee4571391338112af3697ef2f74503937dcd9234c85aa09e4da30a9399e80",
+  "prior_failure": "harness incorrectly compared INFO spec to requested --spec6 before any request",
+  "actual_unchanged_native_policy": {
+    "spec": 8,
+    "mtp_max": 6,
+    "lookup": 3
+  },
+  "source_provenance": "src/program/generate.cpp Options suffix_draft=3; normal startup preserves requested MTP max6 and adds2 suffix verifier slots capped8",
+  "checks": [
+    "recorded r1 native INFO now passes canary gate",
+    "matching full production capacity passes full gate",
+    "wrong spec refused",
+    "wrong mtp_max refused",
+    "wrong lookup refused"
+  ],
+  "gpu_executed": false,
+  "requests_in_r1": 0
+}

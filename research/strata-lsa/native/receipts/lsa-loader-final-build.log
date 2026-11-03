@@ -1,0 +1,10 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /path/to/strata-lsa-resume-20261103/build-cpu
+[ 20%] Building CXX object CMakeFiles/strata_lsa.dir/maps.cpp.o
+[ 40%] Building CXX object CMakeFiles/strata_lsa.dir/cache_state.cpp.o
+[ 60%] Linking CXX static library libstrata_lsa.a
+[ 60%] Built target strata_lsa
+[ 80%] Building CXX object CMakeFiles/lsa_maps_test.dir/maps_test.cpp.o
+[100%] Linking CXX executable lsa_maps_test
+[100%] Built target lsa_maps_test

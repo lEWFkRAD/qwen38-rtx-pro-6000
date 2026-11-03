@@ -1,0 +1,60 @@
+{
+  "roundtrip": {
+    "matrices": 24,
+    "values": 589824,
+    "byte_exact": true,
+    "temperature_exact": true
+  },
+  "refusals": [
+    {
+      "case": "missing_layer",
+      "error": "weights must contain exactly the twelve query/key pairs"
+    },
+    {
+      "case": "extra_layer",
+      "error": "weights must contain exactly the twelve query/key pairs"
+    },
+    {
+      "case": "bad_shape",
+      "error": "3.W_Q_idx must be a dense FP32 [384,64] tensor"
+    },
+    {
+      "case": "bad_dtype",
+      "error": "3.W_Q_idx must be a dense FP32 [384,64] tensor"
+    },
+    {
+      "case": "nonfinite_matrix",
+      "error": "3.W_K_idx contains a nonfinite value"
+    },
+    {
+      "case": "wrong_digest",
+      "error": "metadata does not bind the supplied weights SHA-256"
+    },
+    {
+      "case": "missing_tau",
+      "error": "metadata must provide exactly twelve layer temperatures"
+    },
+    {
+      "case": "zero_tau",
+      "error": "layer 3 temperature must be positive and finite"
+    },
+    {
+      "case": "negative_tau",
+      "error": "layer 3 temperature must be positive and finite"
+    },
+    {
+      "case": "infinite_tau",
+      "error": "layer 3 temperature must be positive and finite"
+    },
+    {
+      "case": "underflow_tau",
+      "error": "layer 3 temperature does not fit positive FP32"
+    },
+    {
+      "case": "wrong_input_contract",
+      "error": "metadata is not the pilot key/query grouping contract"
+    }
+  ],
+  "exclusive_create_preserved_existing": true,
+  "status": "passed"
+}

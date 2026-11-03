@@ -1,0 +1,7 @@
+[1/7] Building CUDA object CMakeFiles/strata_kernels.dir/src/lsa/ward.cu.o
+[2/7] Building CUDA object CMakeFiles/strata_engine.dir/src/lsa/runtime.cu.o
+[3/7] Linking CXX static library libstrata_kernels.a
+[4/7] Linking CXX static library libstrata_engine.a
+[5/7] Linking CXX executable strata
+[6/7] Building CUDA object CMakeFiles/lsa_runtime_test.dir/src/lsa/runtime_test.cu.o
+[7/7] Linking CXX executable lsa_runtime_test

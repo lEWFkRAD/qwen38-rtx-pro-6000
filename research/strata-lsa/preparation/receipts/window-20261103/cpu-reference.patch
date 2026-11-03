@@ -1,0 +1,13 @@
+diff --git a/src/lsa/core/ward.py b/src/lsa/core/ward.py
+index bbdb6c6..bfa89cc 100644
+--- a/src/lsa/core/ward.py
++++ b/src/lsa/core/ward.py
+@@ -62,6 +62,8 @@ def ward_rounds(
+         if not (merges_left > 0).any():
+             break
+         gram = torch.bmm(key_sums, key_sums.transpose(1, 2))
++        # Pair costs must be symmetric for mutual-nearest-neighbor merging.
++        gram = 0.5 * (gram + gram.transpose(1, 2))
+         squares = gram.diagonal(dim1=1, dim2=2)
+         merged_alignments = (squares[:, :, None] + squares[:, None, :] + 2 * gram).clamp_min(0).sqrt()
+         alignments = squares.clamp_min(0).sqrt()

@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "gpu_executed": false,
+  "prior_full_control_receipt": "/path/to/strata-lsa-resume-20261103/receipts/integrated-full-control-r1/control/report.json",
+  "prior_receipt_sha256": "a192e95f0f77f3bbdfcef48fb046f27d884e0935cac013d5d67fbdc609558289",
+  "baseline_arithmetic": {
+    "expected": "208",
+    "model_actual": "188",
+    "expected_unchanged": true,
+    "classification": "baseline model quality error; not an LSA integration failure"
+  },
+  "checks": [
+    "wrong arithmetic stays failed while later quality cases and batch capacity test execute",
+    "structural/protocol result separated from quality result",
+    "candidate arithmetic improvement recognized without hiding baseline failure",
+    "critical-marker regression separately blocks no-regression gate",
+    "required prefix reuse still fails immediately",
+    "original r1 receipt remains byte-identical",
+    "main loop retains both arms after control quality failure and reports candidate improvement"
+  ]
+}

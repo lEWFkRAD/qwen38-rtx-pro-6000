@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "cases": 12,
+  "key_max_abs_error": 4.76837158203125e-07,
+  "query_bf16_differing_coordinates": 0,
+  "attention_max_relative_l2": 2.573060804467168e-07,
+  "attention_max_relative_max_scale": 8.820052771750683e-07,
+  "peak_allocated_mib": 62.1025390625,
+  "peak_reserved_mib": 80.0,
+  "graph_layers": [
+    3,
+    47
+  ],
+  "synthetic": [
+    "zero_query_equal_scores",
+    "one_hot_equal_scores",
+    "signed_zero_scores",
+    "zero_and_invalid_projection"
+  ],
+  "finished_at": "2026-11-03T20:47:14.902652+00:00"
+}

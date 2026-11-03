@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T11:48:30.462429+00:00",
+  "mode": "cpu",
+  "status": "passed",
+  "gpu_executed": false,
+  "qualification_claim": false,
+  "plan": {
+    "source_sha_expected": "906be195c1052aaa74f95852ad1917ce1926ba64",
+    "backend": "triton",
+    "precision": "ieee",
+    "dtype": "fp32 keys / bf16 scoring",
+    "contexts": [
+      131072,
+      262144,
+      1048576
+    ],
+    "index_dim": 64,
+    "cluster_block": 512,
+    "pool_size": 4,
+    "bucket_size": 8,
+    "bucket_cap": 16,
+    "top_p": 512,
+    "top_k": 2048,
+    "sink": 4,
+    "window": 512,
+    "query_batches": [
+      1,
+      64
+    ],
+    "repeats": 3,
+    "warmups": 1,
+    "max_gpu_mib": 2048,
+    "max_seconds": 900,
+    "largest_score_matrix_elements": 8388608,
+    "scope": "Synthetic flat index construction, selection and expansion",
+    "limitations": [
+      "No model accuracy, memory fit or serving compatibility claim",
+      "No full-context prefill or model speedup measured",
+      "External hard timeout and source verification required",
+      "Small CPU smoke is not a passing upstream baseline",
+      "Known upstream near-copy failures are retained separately"
+    ]
+  },
+  "torch_version": "2.13.0+cu129",
+  "cpu_smoke": {
+    "keys_shape": [
+      2048,
+      64
+    ],
+    "query_count": 6,
+    "build_ms": 5.654064996633679,
+    "read_ms": 0.34000798768829554,
+    "checks": {
+      "rows": 6,
+      "causal_unique_window_sink_padding": true,
+      "partition": true,
+      "repeat": true
+    }
+  }
+}

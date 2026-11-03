@@ -1,0 +1,680 @@
+Calibration document test_code. Read the following document accurately.
+
+Source document: reference.py
+"""The flat design in plain torch - pool, Ward, bucket, score, pick, expand - correct on a CPU.
+
+This is the oracle the kernels are tested against and what a report on the design reads. It is the whole of flat:
+`build_buckets` turns the closed cluster blocks of a cache's index keys into buckets, and `read` scores the
+buckets a query may see, takes its top-p, and expands them to its top-k beside the sink and the window.
+`shape_buckets` gives each bucket its shape, and `read` given the shapes scores a bucket by its estimated best key
+rather than its centroid ([shape](shape.py)).
+
+Both are the public boundary. They take vectors a model adapter or a test built, where a wrong dtype or a row
+that is not unit length makes every score quietly wrong, so they raise on it and say what arrived.
+"""
+
+from typing import NamedTuple
+
+import torch
+
+from lsa.budget import EarlyBudget, budget_at
+from lsa.core.shape import Shapes, build_shapes, spread
+from lsa.core.ward import members_from_labels, pool_keys, ward_merge
+
+# Unit rows to within what the dtype can hold
+NORM_TOLERANCE = {torch.float32: 1e-4, torch.bfloat16: 2e-2}
+# How a cluster block's pools become buckets - Ward, or runs of consecutive keys as a research option
+CLUSTER_ALGORITHMS = ("ward", "position")
+
+
+class Buckets(NamedTuple):
+    """The buckets of a cache's closed cluster blocks, block after block."""
+
+    # Normalized key sum of each bucket [rows, index_dim] fp32
+    bucket_centroids: torch.Tensor
+    # Positions of each bucket's keys [rows, bucket_cap] int32, -1 padded
+    bucket_members: torch.Tensor
+    # Keys in each bucket [rows] int32
+    bucket_sizes: torch.Tensor
+    # Buckets a cluster block ends with
+    block_bucket_count: int
+    # Keys in a cluster block
+    cluster_block_size: int
+
+
+def check_unit_rows(name: str, vectors: torch.Tensor) -> None:
+    """Refuse vectors that are not a float matrix of unit rows.
+
+    Args:
+        name: What the vectors are, for the message.
+        vectors: The vectors [N, index_dim] fp32 or bf16.
+
+    Raises:
+        ValueError: If they are not 2-D, not fp32 or bf16, hold a non-finite value, or have a row off unit length.
+    """
+    if vectors.dim() != 2:
+        raise ValueError(f"{name} must be [N, index_dim] - got shape {tuple(vectors.shape)}")
+    if vectors.dtype not in NORM_TOLERANCE:
+        raise ValueError(f"{name} must be float32 or bfloat16 - got {vectors.dtype}")
+    if not vectors.isfinite().all():
+        raise ValueError(f"{name} holds a non-finite value")
+    off = (vectors.float().norm(dim=1) - 1).abs().max() if vectors.numel() else vectors.new_zeros(())
+    if off > NORM_TOLERANCE[vectors.dtype]:
+        raise ValueError(f"{name} must be unit rows - a row is {off:.3g} off unit length")
+
+
+def check_sizes(pool_size: int, bucket_size: int, bucket_cap: int, cluster_block_size: int) -> None:
+    """Refuse sizes that do not nest, or a cap under twice the bucket size.
+
+    Args:
+        pool_size: Keys in a pool.
+        bucket_size: Average keys in a bucket.
+        bucket_cap: Most keys in a bucket.
+        cluster_block_size: Keys in a cluster block.
+
+    Raises:
+        ValueError: If a size is not positive, a pool does not divide a bucket, a bucket does not divide a block,
+            or the cap is under twice the bucket size.
+    """
+    if min(pool_size, bucket_size, bucket_cap, cluster_block_size) < 1:
+        raise ValueError("pool_size, bucket_size, bucket_cap and cluster_block_size must be positive")
+    if bucket_size % pool_size or cluster_block_size % bucket_size:
+        raise ValueError(
+            f"pool_size {pool_size} must divide bucket_size {bucket_size}, which must divide "
+            f"cluster_block_size {cluster_block_size}"
+        )
+    if bucket_cap < 2 * bucket_size:
+        raise ValueError(f"bucket_cap must be at least twice bucket_size {bucket_size} - got {bucket_cap}")
+
+
+def build_buckets(
+    index_keys: torch.Tensor,
+    pool_size: int,
+    bucket_size: int,
+    bucket_cap: int,
+    cluster_block_size: int,
+    cluster_algorithm: str = "ward",
+) -> Buckets:
+    """Cluster every closed cluster block of the index keys into buckets with Ward.
+
+    A trailing partial block is still open - its keys are in no bucket, and a read takes them from the window.
+    Under `cluster_algorithm` `position`, a research option, each bucket is instead `bucket_size` consecutive keys, as a
+    positional block-sparse selector groups them.
+
+    Args:
+        index_keys: The cache's index keys [T, index_dim] fp32 or bf16, unit rows.
+        pool_size: Keys in a pool, a pool never split across buckets.
+        bucket_size: Average keys in a bucket.
+        bucket_cap: Most keys in a bucket, at least twice `bucket_size`.
+        cluster_block_size: Keys in a cluster block.
+        cluster_algorithm: `ward`, the design's, or `position` - runs of consecutive keys.
+
+    Returns:
+        The buckets of the `T // cluster_block_size` closed blocks.
+
+    Raises:
+        ValueError: If the keys are not unit rows, the sizes do not nest or leave the cap too small, or the cluster
+            algorithm is unknown.
+    """
+    check_unit_rows("index_keys", index_keys)
+    check_sizes(pool_size, bucket_size, bucket_cap, cluster_block_size)
+    if cluster_algorithm not in CLUSTER_ALGORITHMS:
+        raise ValueError(f"cluster_algorithm must be one of {CLUSTER_ALGORITHMS} - got {cluster_algorithm!r}")
+    keys = index_keys.float()
+    block_count = keys.shape[0] // cluster_block_size
+    block_bucket_count = cluster_block_size // bucket_size
+    index_dim = keys.shape[1]
+    blocks = keys[: block_count * cluster_block_size].view(block_count, cluster_block_size, index_dim)
+    pools = pool_keys(blocks, pool_size)
+    pool_sizes = torch.full(pools.shape[:2], float(pool_size))
+    if cluster_algorithm == "position":
+        labels = (torch.arange(pools.shape[1]) // (bucket_size // pool_size)).expand(block_count, -1)
+    else:
+        labels = ward_merge(pools, pool_sizes, block_bucket_count, bucket_cap)
+    key_labels = labels.repeat_interleave(pool_size, dim=1)
+    # Bucket of each key across the whole cache, numbered block after block
+    bucket_of_key = key_labels + block_bucket_count * torch.arange(block_count)[:, None]
+    key_sums = torch.zeros(block_count * block_bucket_count, index_dim)
+    key_sums.index_add_(0, bucket_of_key.flatten(), blocks.reshape(-1, index_dim))
+    bucket_centroids = key_sums / key_sums.norm(dim=1, keepdim=True).clamp_min(1e-30)
+    members = torch.empty(block_count * block_bucket_count, bucket_cap, dtype=torch.int32)
+    for block in range(block_count):
+        local = members_from_labels(key_labels[block], block_bucket_count, bucket_cap)
+        rows = slice(block * block_bucket_count, (block + 1) * block_bucket_count)
+        # Block-local positions made absolute, the padding left at -1
+        members[rows] = torch.where(local >= 0, local + block * cluster_block_size, -1)
+    bucket_sizes = (members >= 0).sum(1).to(torch.int32)
+    return Buckets(bucket_centroids, members, bucket_sizes, block_bucket_count, cluster_block_size)
+
+
+def shape_buckets(index_keys: torch.Tensor, buckets: Buckets, rank: int) -> Shapes:
+    """Give every bucket its shape - its keys' spread about its centroid, kept as `rank` sign directions.
+
+    Args:
+        index_keys: The cache's index keys [T, d] fp32 or bf16, unit rows, the ones the buckets were built from.
+        buckets: The buckets, from `build_buckets`.
+        rank: Directions kept a bucket, at most d.
+
+    Returns:
+        The buckets' shapes, row for row.
+
+    Raises:
+        ValueError: If the keys are not unit rows, or the rank is negative or past their width.
+    """
+    check_unit_rows("index_keys", index_keys)
+    if not 0 <= rank <= index_keys.shape[1]:
+        raise ValueError(f"rank must be from 0 to the keys' width {index_keys.shape[1]} - got {rank}")
+    return build_shapes(index_keys, buckets.bucket_centroids, buckets.bucket_members, rank)
+
+
+def read(
+    index_queries: torch.Tensor,
+    positions: torch.Tensor,
+    buckets: Buckets,
+    top_p: int,
+    top_k: int,
+    sink_size: int,
+    window_size: int,
+    shapes: Shapes | None = None,
+    deviations: float = 0.0,
+    early_budget: EarlyBudget | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Select the keys each query reads - the buckets of closed blocks scored, picked and expanded.
+
+    A query scores every bucket of the cluster blocks closed before its own, picks the `top_p` best, a tie going
+    to the lower bucket, and reads their keys best bucket first until `top_k` keys are held. A key in the sinks or
+    the window is not counted, because the read takes them anyway, and the last bucket is cut short.
+    With shapes, a bucket's score is its estimated best key, its centroid's plus `deviations` times its spread.
+    A query before the early budget's position reads that budget's `top_p` and `top_k` instead, and its row stays
+    -1 padded to the same width.
+
+    Args:
+        index_queries: One index query a row [Tq, index_dim] fp32 or bf16, unit rows.
+        positions: Each query's position [Tq] int32 or int64.
+        buckets: The buckets of the cache, from `build_buckets`.
+        top_p: Buckets a query picks.
+        top_k: Long-range keys a query reads at most.
+        sink_size: First positions always read.
+        window_size: Recent positions always read, the query's own included.
+        shapes: The buckets' shapes, from `shape_buckets`, or None to score the centroids.
+        deviations: Standard deviations a shaped score adds, z.
+        early_budget: The budget of queries before its position, or None to read `top_p` and `top_k` throughout.
+
+    Returns:
+        Selected key ids [Tq, top_k + window_size + sink_size] int32 - the expansion, then the window, then the
+        sinks, -1 padded.
+        Keys each row holds [Tq] int32.
+
+    Raises:
+        ValueError: If the queries are not unit rows of the buckets' index dim, the positions are not a non-negative
+            integer vector one a query, a size is not positive, or the early budget is over `top_p` or `top_k`.
+    """
+    check_unit_rows("index_queries", index_queries)
+    if index_queries.shape[1] != buckets.bucket_centroids.shape[1]:
+        raise ValueError(
+            f"index_queries have {index_queries.shape[1]} dims and the buckets {buckets.bucket_centroids.shape[1]}"
+        )
+    if positions.dtype not in (torch.int32, torch.int64) or positions.shape != (index_queries.shape[0],):
+        raise ValueError("positions must be an int32 or int64 vector, one a query")
+    if positions.numel() and positions.min() < 0:
+        raise ValueError("positions must be non-negative")
+    if min(top_p, top_k, window_size) < 1 or sink_size < 0:
+        raise ValueError("top_p, top_k and window_size must be positive and sink_size non-negative")
+    if early_budget is not None and (early_budget.top_p > top_p or early_budget.top_k > top_k):
+        raise ValueError(
+            f"the early budget is at most top_p {top_p} and top_k {top_k} - "
+            f"got top_p {early_budget.top_p} and top_k {early_budget.top_k}"
+        )
+    width = top_k + window_size + sink_size
+    selected = torch.full((index_queries.shape[0], width), -1, dtype=torch.int32)
+    lengths = torch.zeros(index_queries.shape[0], dtype=torch.int32)
+    scores_all = index_queries.float() @ buckets.bucket_centroids.T
+    if shapes is not None:
+        scores_all = scores_all + deviations * spread(index_queries, shapes)
+    for row, position in enumerate(positions.tolist()):
+        row_top_k, row_top_p = budget_at(position, top_k, top_p, early_budget)
+        keys = _read_row(scores_all[row], position, buckets, row_top_p, row_top_k, sink_size, window_size)
+        selected[row, : keys.numel()] = keys
+        lengths[row] = keys.numel()
+    return selected, lengths
+
+
+def _read_row(
+    scores: torch.Tensor,
+    position: int,
+    buckets: Buckets,
+    top_p: int,
+    top_k: int,
+    sink_size: int,
+    window_size: int,
+) -> torch.Tensor:
+    """Select one query's keys from its scores of every bucket.
+
+    Args:
+        scores: The query's score of every bucket [rows] fp32.
+        position: The query's position.
+        buckets: The buckets of the cache.
+        top_p: Buckets the query picks.
+        top_k: Long-range keys it reads at most.
+        sink_size: First positions always read.
+        window_size: Recent positions always read.
+
+    Returns:
+        Its key ids [n] int32 - the expansion, the window, then the sinks.
+    """
+    visible = min(position // buckets.cluster_block_size * buckets.block_bucket_count, scores.shape[0])
+    # Best score first, a tie to the lower bucket
+    picked = torch.argsort(scores[:visible], descending=True, stable=True)[:top_p]
+    return expand_buckets(picked, position, buckets, top_k, sink_size, window_size)
+
+
+def expand_buckets(
+    picked: torch.Tensor, position: int, buckets: Buckets, top_k: int, sink_size: int, window_size: int
+) -> torch.Tensor:
+    """Expand one query's picked buckets to its keys, best bucket first, beside its window and its sinks.
+
+    Args:
+        picked: The picked bucket rows [<= top_p] int64, best first.
+        position: The query's position.
+        buckets: The buckets of the cache.
+        top_k: Long-range keys it reads at most.
+        sink_size: First positions always read.
+        window_size: Recent positions always read.
+
+    Returns:
+        Its key ids [n] int32 - the expansion, the window, then the sinks.
+    """
+    window_start = max(0, position + 1 - window_size)
+    members = buckets.bucket_members[picked].flatten().long()
+    members = members[(members >= sink_size) & (members < window_start)][:top_k]
+    window = torch.arange(window_start, position + 1)
+    sinks = torch.arange(min(sink_size, window_start, position + 1))
+    return torch.cat([members, window, sinks]).to(torch.int32)
+
+
+Source document: scan_select.py
+"""The top-p of a prefill chunk's bucket scores - the one place `dense_keys`, `listed_keys` and `sample_thresholds` choose a language.
+
+Under `kernels: cutedsl` a step runs its CuTeDSL kernel when [dispatch](dispatch.py)'s table names the GPU and the
+kernel's own `supports` takes the rows, and only for unshaped buckets; anything else runs the
+[Triton kernel](triton/scan_select.py), which reads the same.
+`ScanSelect` orders the steps - threshold estimate, bucket scan, candidate scoring, and a wider bucket scan or a dense scoring for a row that
+may have missed - and holds the language they run in.
+"""
+
+from collections.abc import Sequence
+from typing import NamedTuple
+
+import torch
+
+from lsa.core.kernels import dispatch
+from lsa.core.kernels.cutedsl import bucket_scan, scoring
+from lsa.core.kernels.cutedsl import thresholds as cutedsl_thresholds
+from lsa.core.kernels.triton import scan_select as triton_scan_select
+from lsa.core.kernels.triton.keys import unpack_ids
+from lsa.core.kernels.triton.scan_select import CAPACITY, DENSE_ROWS, MARGIN, WIDE, WIDE_ENTRIES
+from lsa.core.kernels.triton.shape import ShapeTable, SignQuery, sign_query
+
+
+def dense_keys(
+    index_queries: torch.Tensor,
+    bucket_centroids: torch.Tensor,
+    visible_counts: torch.Tensor,
+    width: int | None = None,
+    shapes: ShapeTable | None = None,
+    query_planes: SignQuery | None = None,
+    kernels: str = "triton",
+) -> torch.Tensor:
+    """Score every bucket each row sees and pack it with its bucket, at its own column.
+
+    Args:
+        index_queries: Index queries [R, index_dim] bf16, of any norm - unit rows when the buckets are shaped.
+        bucket_centroids: Bucket centroids [N, index_dim] bf16.
+        visible_counts: Buckets each row sees [R] int32, at most N.
+        width: Columns of the result, at least N - N when None.
+        shapes: The buckets' shapes, row for row, to score each by its estimated best key - None for the centroid.
+        query_planes: The queries' planes, when shaped and already split.
+        kernels: `cutedsl` to score unshaped 64-dim bf16 rows in CuTeDSL, `triton` to score every row in Triton - the
+            same keys either way.
+
+    Returns:
+        Packed keys [R, width] int64, the empty key past a row's length.
+    """
+    if (
+        dispatch.runs_cutedsl("dense scoring", kernels, index_queries.device)
+        and shapes is None
+        and scoring.supports(index_queries, bucket_centroids)
+    ):
+        return scoring.score_dense(index_queries, bucket_centroids, visible_counts, width)
+    return triton_scan_select.dense_keys(
+        index_queries, bucket_centroids, visible_counts, width, shapes, query_planes
+    )
+
+
+def listed_keys(
+    index_queries: torch.Tensor,
+    bucket_centroids: torch.Tensor,
+    visible_counts: torch.Tensor,
+    thresholds: torch.Tensor,
+    capacity: int,
+    shapes: ShapeTable | None = None,
+    query_planes: SignQuery | None = None,
+    kernels: str = "triton",
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """List the buckets each row scores near its threshold, score them and pack each with its bucket.
+
+    Args:
+        index_queries: Index queries [R, index_dim] bf16, of any norm - unit rows when the buckets are shaped.
+        bucket_centroids: Bucket centroids [N, index_dim] bf16.
+        visible_counts: Buckets each row sees [R] int32, at most N.
+        thresholds: Score each row's top-p is expected at or above [R] fp32.
+        capacity: Buckets a row's buffer holds.
+        shapes: The buckets' shapes, row for row, or None for the centroid.
+        query_planes: The queries' planes, when shaped and already split.
+        kernels: `cutedsl` to list unshaped 64-dim bf16 rows on Hopper or Blackwell and score them in CuTeDSL, `triton` to
+            list every row by survivor words and score it in Triton.
+
+    Returns:
+        Packed keys [R, capacity] int64 of the first `capacity` listed buckets, the empty key after.
+        Buckets each row listed [R] int32 - above capacity for a row whose buffer overflowed.
+        Listed buckets each row scored at or above its threshold [R] int32.
+    """
+    device = index_queries.device
+    # Both list the same buckets and add each score in the same order
+    # => CuTeDSL lists and scores where asked for and it takes the rows, survivor words and Triton the rest
+    if (
+        dispatch.runs_cutedsl("bucket scan", kernels, device)
+        and dispatch.runs_cutedsl("candidate scoring", kernels, device)
+        and shapes is None
+        and bucket_scan.supports(index_queries, bucket_centroids)
+    ):
+        shifted = thresholds - MARGIN * index_queries.float().norm(dim=1)
+        buckets, survivor_counts = bucket_scan.scan_buckets(
+            index_queries, bucket_centroids, visible_counts, shifted, capacity
+        )
+        keys, reached = scoring.score_candidates(
+            index_queries, bucket_centroids, buckets, survivor_counts, thresholds
+        )
+        return keys, survivor_counts, reached
+    return triton_scan_select.listed_keys(
+        index_queries, bucket_centroids, visible_counts, thresholds, capacity, shapes, query_planes
+    )
+
+
+def sample_thresholds(
+    index_queries: torch.Tensor,
+    bucket_centroids: torch.Tensor,
+    visible_counts: torch.Tensor,
+    top_p: int,
+    shapes: ShapeTable | None = None,
+    query_planes: SignQuery | None = None,
+    kernels: str = "triton",
+) -> torch.Tensor:
+    """Estimate each row's score at TARGET times its top_p from every stride-th bucket it sees.
+
+    Args:
+        index_queries: Index queries [R, index_dim] bf16, of any norm - unit rows when the buckets are shaped.
+        bucket_centroids: Bucket centroids [N, index_dim] bf16 of unit rows.
+        visible_counts: Buckets each row sees [R] int32, at most N.
+        top_p: Buckets each row selects.
+        shapes: The buckets' shapes, row for row, to estimate the shaped scores - None for the centroid.
+        query_planes: The queries' planes, when shaped and already split.
+        kernels: `cutedsl` to keep the sampled scores on chip, `triton` to write them - the same thresholds.
+
+    Returns:
+        Estimated scores [R] fp32, -inf for a row seeing too few to rank.
+    """
+    if (
+        dispatch.runs_cutedsl("threshold estimate", kernels, index_queries.device)
+        and shapes is None
+        and cutedsl_thresholds.supports(index_queries, bucket_centroids)
+    ):
+        stride, rank = triton_scan_select.sample_plan(top_p)
+        return cutedsl_thresholds.sample_thresholds(
+            index_queries, bucket_centroids, visible_counts, stride, rank
+        )
+    return triton_scan_select.sample_thresholds(
+        index_queries, bucket_centroids, visible_counts, top_p, shapes, query_planes
+    )
+
+
+def rows_where(mask: torch.Tensor, count: int) -> torch.Tensor:
+    """Return the indices of the `count` rows a mask holds, ascending - what `nonzero` returns, without reading the device for its size.
+
+    Args:
+        mask: A mask [R] bool.
+        count: Rows it holds.
+    """
+    return torch.argsort(mask.int(), descending=True, stable=True)[:count]
+
+
+class Listing(NamedTuple):
+    """A chunk's rows listed near their thresholds, with what a fallback needs to score them again."""
+
+    index_queries: torch.Tensor
+    bucket_centroids: torch.Tensor
+    visible_counts: torch.Tensor
+    thresholds: torch.Tensor
+    keys: torch.Tensor
+    survivor_counts: torch.Tensor
+    reached: torch.Tensor
+    shapes: ShapeTable | None = None
+    query_planes: SignQuery | None = None
+
+    def take(self, rows: torch.Tensor) -> "Listing":
+        """Return the listing of some of the rows, in the order given.
+
+        Args:
+            rows: The rows [F] int64.
+        """
+        planes = None if self.query_planes is None else SignQuery(*(part[rows] for part in self.query_planes))
+        return Listing(
+            self.index_queries[rows],
+            self.bucket_centroids,
+            self.visible_counts[rows],
+            self.thresholds[rows],
+            self.keys[rows],
+            self.survivor_counts[rows],
+            self.reached[rows],
+            self.shapes,
+            planes,
+        )
+
+
+class ScanSelect:
+    """The top-p buckets of a prefill chunk's bf16 centroid scores, into an output buffer sized once."""
+
+    def __init__(
+        self, rows: int, top_p: int, device: str | torch.device = "cuda", kernels: str = "triton"
+    ) -> None:
+        """Size the output buffer.
+
+        Args:
+            rows: Most rows a call picks for.
+            top_p: Buckets each row picks.
+            device: Where the output lives.
+            kernels: The thresholds' and listing's language, `triton` or `cutedsl` - the same picks either way.
+        """
+        self.top_p = top_p
+        self.kernels = kernels
+        self.out = torch.empty(rows, top_p, device=device, dtype=torch.int32)
+
+    def __call__(
+        self,
+        index_queries: torch.Tensor,
+        bucket_centroids: torch.Tensor,
+        visible_counts: torch.Tensor,
+        shapes: ShapeTable | None = None,
+    ) -> torch.Tensor:
+        """Pick each row's top-p buckets - `listed`, then `pick`.
+
+        Args:
+            index_queries: Index queries [R, index_dim] bf16, of any norm.
+            bucket_centroids: Bucket centroids [N, index_dim] bf16 of unit rows.
+            visible_counts: Buckets each row sees [R] int32, at most N.
+            shapes: The buckets' shapes, row for row, or None for the centroid.
+
+        Returns:
+            Buckets [R, top_p] int32, the best score first and a tie to the lower bucket, -1 past a row's
+            visible count.
+        """
+        return self.pick(self.listed(index_queries, bucket_centroids, visible_counts, shapes))
+
+    def listed(
+        self,
+        index_queries: torch.Tensor,
+        bucket_centroids: torch.Tensor,
+        visible_counts: torch.Tensor,
+        shapes: ShapeTable | None = None,
+    ) -> Listing:
+        """Estimate each row's threshold, then list and score the buckets near it.
+
+        Args:
+            index_queries: Index queries [R, index_dim] bf16, of any norm - unit rows when the buckets are shaped.
+            bucket_centroids: Bucket centroids [N, index_dim] bf16 of unit rows.
+            visible_counts: Buckets each row sees [R] int32, at most N.
+            shapes: The buckets' shapes, row for row, to score each by its estimated best key - None for the
+                centroid.
+
+        Returns:
+            The rows' listing.
+        """
+        planes = None if shapes is None else sign_query(index_queries)
+        thresholds = sample_thresholds(
+            index_queries, bucket_centroids, visible_counts, self.top_p, shapes, planes, self.kernels
+        )
+        keys, survivor_counts, reached = listed_keys(
+            index_queries,
+            bucket_centroids,
+            visible_counts,
+            thresholds,
+            round(CAPACITY * self.top_p),
+            shapes,
+            planes,
+            self.kernels,
+        )
+        return Listing(
+            index_queries,
+            bucket_centroids,
+            visible_counts,
+            thresholds,
+            keys,
+            survivor_counts,
+            reached,
+            shapes,
+            planes,
+        )
+
+    def holds_top_p(self, listing: Listing) -> bool:
+        """Tell whether every row's top-p is among its listed buckets - no row to list again or score in full.
+
+        Args:
+            listing: The rows' listing.
+
+        Returns:
+            True when no row overflowed its buffer or reached fewer than `top_p` at its threshold.
+        """
+        return not any(self.missed_runs(listing, [(0, len(listing.visible_counts))]))
+
+    def missed_runs(self, listing: Listing, runs: Sequence[tuple[int, int]]) -> list[bool]:
+        """Tell for each run of rows whether any row's top-p may not be among its listed buckets - one read of the device.
+
+        Args:
+            listing: The rows' listing.
+            runs: Consecutive row ranges [start, stop) to answer for.
+
+        Returns:
+            For each run, True when a row of it overflowed its buffer or reached fewer than `top_p` at its threshold.
+        """
+        missed = (listing.survivor_counts > listing.keys.shape[1]) | (listing.reached < self.top_p)
+        return torch.stack([missed[start:stop].any() for start, stop in runs]).tolist()
+
+    def pick(self, listing: Listing) -> torch.Tensor:
+        """Pick each listed row's best buckets, listing again or scoring in full a row that may have missed one.
+
+        Args:
+            listing: The rows' listing.
+
+        Returns:
+            Buckets [R, top_p] int32, the best score first and a tie to the lower bucket, -1 past a row's
+            visible count.
+        """
+        index_queries, bucket_centroids, visible_counts = (
+            listing.index_queries,
+            listing.bucket_centroids,
+            listing.visible_counts,
+        )
+        keys, survivor_counts, shapes, planes = (
+            listing.keys,
+            listing.survivor_counts,
+            listing.shapes,
+            listing.query_planes,
+        )
+        reached = listing.reached.clone()
+        best = keys.topk(self.top_p, dim=1).values
+        overflowed = survivor_counts > keys.shape[1]
+        starved = reached < self.top_p
+        # One read of the device for how many rows overflowed, how wide the widest is and how many are short
+        overflow_count, widest, short_count = torch.stack(
+            [overflowed.sum(), torch.where(overflowed, survivor_counts, 0).max(), starved.sum()]
+        ).tolist()
+        # Buckets tied at the threshold can overflow a buffer
+        # => list those rows again into one as wide as they need
+        if overflow_count:
+            self.list_wide(listing, rows_where(overflowed, overflow_count), widest, best, reached)
+            short = (reached < self.top_p).nonzero().flatten()
+        else:
+            short = rows_where(starved, short_count)
+        # A row with fewer than top_p at its threshold may have its best below it
+        # => score it in full
+        for batch in short.split(DENSE_ROWS):
+            width = max(bucket_centroids.shape[0], self.top_p)
+            if shapes is None or planes is None:
+                full = dense_keys(
+                    index_queries[batch], bucket_centroids, visible_counts[batch], width, kernels=self.kernels
+                )
+            else:
+                full = dense_keys(
+                    index_queries[batch],
+                    bucket_centroids,
+                    visible_counts[batch],
+                    width,
+                    shapes=shapes,
+                    query_planes=SignQuery(*(part[batch] for part in planes)),
+                )
+            best[batch] = full.topk(self.top_p, dim=1).values
+        out = self.out[: index_queries.shape[0]]
+        out.copy_(unpack_ids(best))
+        return out
+
+    def list_wide(
+        self, listing: Listing, rows: torch.Tensor, width: int, best: torch.Tensor, reached: torch.Tensor
+    ) -> None:
+        """List overflowed rows again into buffers `width` wide, a batch at a time, and rank them in place.
+
+        A row wider than WIDE times top_p is left for the dense scoring, its reached count zeroed.
+
+        Args:
+            listing: The rows' listing.
+            rows: The overflowed rows [F] int64.
+            width: Buckets the widest of them lists.
+            best: Best packed keys [R, top_p] int64, written for the rows.
+            reached: Listed buckets at or above each threshold [R] int32, written for the rows.
+        """
+        if width > WIDE * self.top_p:
+            reached[rows] = 0
+            return
+        planes = listing.query_planes
+        for batch in rows.split(max(1, WIDE_ENTRIES // width)):
+            wide, _, wide_reached = listed_keys(
+                listing.index_queries[batch],
+                listing.bucket_centroids,
+                listing.visible_counts[batch],
+                listing.thresholds[batch],
+                width,
+                listing.shapes,
+                None if planes is None else SignQuery(*(part[batch] for part in planes)),
+                self.kernels,
+            )
+            best[batch] = wide.topk(self.top_p, dim=1).values
+            reached[batch] = wide_reached
