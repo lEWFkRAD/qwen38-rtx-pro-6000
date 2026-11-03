@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-11-03T23:46:56.942346+00:00",
+  "objective": "Benchmark and tune stock Strata0.1.56; LSA deferred",
+  "status": "complete_benchmarked_tuned_not_deployed",
+  "selected_profile": "profiles/fused_prefill.json",
+  "profile_sha256": "ba71b5414df050787bab60aff7b0de0f2a4acf198e421d905a19d44b7915d761",
+  "serving_overlay": "tuned-serving-overlay.json",
+  "native_confirmation": "NATIVE-CONFIRMATION.json",
+  "native_comparison": "receipts/final-heldout-r1/report.json",
+  "api_throughput": "receipts/api-throughput-final-r3/report.json",
+  "api_features": "receipts/api-features-final-r1/report.json",
+  "mixed_load": "receipts/mixed-final-r2/report.json",
+  "rejected_diagnostic": "receipts/interactive8k-mixed-screen-r1/report.json",
+  "independent_audit": "final_evidence_audit.json",
+  "final_state": "receipts/final-state.json",
+  "quality": {
+    "new_pass_fail_regressions": 0,
+    "shared_failed_arithmetic_cases_per_native_arm": 2,
+    "general_quality_equivalence_established": false
+  },
+  "capacity": {
+    "slots": 8,
+    "context_per_slot": 131072,
+    "kv": "fullyresidentordinaryINT8",
+    "resident_experts": 24576
+  },
+  "unchanged_operational_state": {
+    "production": "paused",
+    "Sunshine": "stopped",
+    "config_and_recovery_hashes": true,
+    "owned_HOLD_and_recovery_attempts": true
+  },
+  "no_model_weight_training": true,
+  "LSA_used": false
+}

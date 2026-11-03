@@ -1,0 +1,46 @@
+{
+  "campaign.json": {
+    "bytes": 11195,
+    "sha256": "85d546cd690b9b16c15b6b3ee86e049647e1704ac6316ebbe42940ec70c7b84c"
+  },
+  "quality-fixtures.json": {
+    "bytes": 27477,
+    "sha256": "18e39c945fd738034a988f496b31f1a962371b8c9679a31894d685a6e54b7098"
+  },
+  "profiles.json": {
+    "bytes": 3881,
+    "sha256": "16b81599f1e31b043c1c1d2d0b4462a0e8b401deba80bbee4514e556129cd3a0"
+  },
+  "profiles/fused_prefill.json": {
+    "bytes": 757,
+    "sha256": "ba71b5414df050787bab60aff7b0de0f2a4acf198e421d905a19d44b7915d761"
+  },
+  "profiles/latency_chunks_if_needed.json": {
+    "bytes": 807,
+    "sha256": "8bcb80d39f94d94ae19c56c9fdbde7f19ee9cbdea71554af4698191a7b9eadd0"
+  },
+  "profiles/parallel9.json": {
+    "bytes": 669,
+    "sha256": "0fefb69075905284d0f4c2eabdae02df96940499147c682e2ab00d0e4c54f0cb"
+  },
+  "profiles/recommended_gdn.json": {
+    "bytes": 731,
+    "sha256": "e35ae587f1ed4d6e376776fb9a1388bb51f7341316a63b6b84d8b88b1f5da0dc"
+  },
+  "profiles/stock0156_same_settings.json": {
+    "bytes": 371,
+    "sha256": "01d04e499cb75f4c384fb352fcd59938afa93458bf3c3f20f2bb16c503747123"
+  },
+  "quality-oracle-audit.json": {
+    "bytes": 4274,
+    "sha256": "e6d59779fee40e51a9b15467c2349c22984a17a0441286f3230a4ed2d9c56596"
+  },
+  "test_benchmark_strata.py": {
+    "bytes": 14740,
+    "sha256": "2abbb1499e440fcb15bc31e012fdca0a7a51cf827a7a0ec51bc9fb156b05e325"
+  },
+  "cpu-benchmark-audit.json": {
+    "bytes": 769,
+    "sha256": "cfd449905de100a0a67bed149edf0bb7a9d122b97ed4af320c3680937f55417c"
+  }
+}

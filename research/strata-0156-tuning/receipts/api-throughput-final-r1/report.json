@@ -1,0 +1,105 @@
+{
+  "scope": "finite eight-client retained-wrapper API throughput spot; no statistical benchmark or promotion claim",
+  "sampling": {
+    "experimental_speed_projection": true
+  },
+  "request_sampling_overrides": {},
+  "thinking": "disabled explicitly to match native no-thinking inputs",
+  "streams": 8,
+  "context": 131072,
+  "engine_slots": 8,
+  "max_completion_tokens_each": 256,
+  "fixture_origin": {
+    "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/version-screen-r1/fixtures.json",
+    "sha256": "476f9dec7a82e6c16176e5baac33e2ba6cb6f7f46405515c22bf9d7ad6458bd1",
+    "fresh_heldout": false,
+    "scope": "same saved native inputs; no new heldout claim"
+  },
+  "tokenizer_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+    "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+    "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+  },
+  "inputs": [
+    {
+      "id": "stream0",
+      "prompt_tokens": 3989,
+      "token_sha256": "7dfffc580d8206747eba818f4ddb0358acd3ce33b791cb74f161d1e87d30393f"
+    },
+    {
+      "id": "stream1",
+      "prompt_tokens": 3995,
+      "token_sha256": "331a897c5ba673fc425a5d4aa25db7a4f88801b4ad1aca893ed064440769fd43"
+    },
+    {
+      "id": "stream2",
+      "prompt_tokens": 3989,
+      "token_sha256": "390c51425c9f65406025d1eb46603f8288301dc7ffaef3f8a38cf424673ec5e7"
+    },
+    {
+      "id": "stream3",
+      "prompt_tokens": 3995,
+      "token_sha256": "f333974ce2329955ef3ea891d051e8e4c3005ad5bb91ca65e4ff8ccbec492137"
+    },
+    {
+      "id": "stream4",
+      "prompt_tokens": 3989,
+      "token_sha256": "e404a4157bd3d9f5af3cbb94254422532a985fa8dcdbd7b652f78b2e8abc17c9"
+    },
+    {
+      "id": "stream5",
+      "prompt_tokens": 3995,
+      "token_sha256": "c4e21ff8bed43cfd4eeea37c0d368bdc4013b2b28ac982d04a21ed0a920d87b3"
+    },
+    {
+      "id": "stream6",
+      "prompt_tokens": 3989,
+      "token_sha256": "1bff486a669b21552fdb04885534bc799936986782ec1f1fbc866d1fc658e6e0"
+    },
+    {
+      "id": "stream7",
+      "prompt_tokens": 3995,
+      "token_sha256": "e7e9fa3e61cc588d24bf72869be0df7974875dda8c9704b5e620a5df747120e9"
+    }
+  ],
+  "solo_input": {
+    "id": "solo",
+    "prompt_tokens": 3988,
+    "token_sha256": "ff84857d1e52b17c2e7fba5d4c237b898e4a4fe28c7c273c2dd16ccbe7ae0094"
+  },
+  "request_order": "one4000-token solo256 response within8slotallocation, then8concurrent4000-token256 responses",
+  "arms": [
+    {
+      "role": "baseline",
+      "status": "failed",
+      "started_at": "2026-11-03T23:23:53.942461+00:00",
+      "error": "retained API wrapper failed to reach authenticated readiness",
+      "telemetry": {
+        "path": "receipts/api-throughput-final-r1/baseline/telemetry.jsonl",
+        "interval_seconds": 1,
+        "samples": 1,
+        "minimum_mem_available_kib": 54424964,
+        "errors": []
+      },
+      "finished_at": "2026-11-03T23:23:54.252671+00:00",
+      "owned_process_group_empty": true,
+      "private_credential_removed": true
+    }
+  ],
+  "private_bind": "127.0.0.1:18023",
+  "production_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "production_contract_sha256": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+  "total_seconds": 900,
+  "private_gate_override": {
+    "ONYX_STRATA_READINESS_GATE": "0",
+    "production_gate_unchanged": true,
+    "replacement": "exact owned HOLD/inactive production, private auth, process-bound capacity/PID admission"
+  },
+  "gpu_work_started": true,
+  "started_at": "2026-11-03T23:23:53.381479+00:00",
+  "status": "failed",
+  "error": "retained API wrapper failed to reach authenticated readiness",
+  "finished_at": "2026-11-03T23:23:54.255812+00:00"
+}

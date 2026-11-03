@@ -1,0 +1,29 @@
+test_lower_is_better_ratio_uses_observed_latency (test_mixed_latency.ComparisonTests.test_lower_is_better_ratio_uses_observed_latency) ... ok
+test_marker_failure_or_incomplete_cleanup_blocks_comparison (test_mixed_latency.ComparisonTests.test_marker_failure_or_incomplete_cleanup_blocks_comparison) ... ok
+test_counts_only_inside_and_distinguishes_censored_gaps (test_mixed_latency.IntervalTests.test_counts_only_inside_and_distinguishes_censored_gaps) ... ok
+test_invalid_intervals_and_clocks_refused (test_mixed_latency.IntervalTests.test_invalid_intervals_and_clocks_refused) ... ok
+test_no_arrival_reports_whole_interval_silence (test_mixed_latency.IntervalTests.test_no_arrival_reports_whole_interval_silence) ... ok
+test_observed_cross_boundary_pair_is_separate_from_clipped_silence (test_mixed_latency.IntervalTests.test_observed_cross_boundary_pair_is_separate_from_clipped_silence) ... ok
+test_single_arrival_does_not_invent_complete_gap (test_mixed_latency.IntervalTests.test_single_arrival_does_not_invent_complete_gap) ... ok
+test_background_early_completion_refused (test_mixed_latency.ProtocolTests.test_background_early_completion_refused) ... ok
+test_background_natural_finish_after_join_is_still_unqualified (test_mixed_latency.ProtocolTests.test_background_natural_finish_after_join_is_still_unqualified) ... ok
+test_joiner_output_count_mismatch_refused (test_mixed_latency.ProtocolTests.test_joiner_output_count_mismatch_refused) ... ok
+test_no_joiner_continuation_refused (test_mixed_latency.ProtocolTests.test_no_joiner_continuation_refused) ... ok
+test_success_waits_for_all_four_then_joins_and_drains_only_owned_slots (test_mixed_latency.ProtocolTests.test_success_waits_for_all_four_then_joins_and_drains_only_owned_slots) ... ok
+test_unadmitted_slot_token_refused (test_mixed_latency.ProtocolTests.test_unadmitted_slot_token_refused) ... ok
+test_wrong_marker_stays_quality_failure_with_clean_protocol (test_mixed_latency.ProtocolTests.test_wrong_marker_stays_quality_failure_with_clean_protocol) ... ok
+test_wrong_slot_admission_refused (test_mixed_latency.ProtocolTests.test_wrong_slot_admission_refused) ... ok
+test_duplicate_resume_is_refused (test_mixed_metadata.MetadataInterleavingTests.test_duplicate_resume_is_refused) ... ok
+test_metadata_and_done_reuse_must_agree (test_mixed_metadata.MetadataInterleavingTests.test_metadata_and_done_reuse_must_agree) ... ok
+test_metadata_without_pending_admission_is_refused (test_mixed_metadata.MetadataInterleavingTests.test_metadata_without_pending_admission_is_refused) ... ok
+test_normal_metadata_is_recorded_without_changing_tokens_lifecycle_or_timing (test_mixed_metadata.MetadataInterleavingTests.test_normal_metadata_is_recorded_without_changing_tokens_lifecycle_or_timing) ... ok
+test_progress_cannot_move_backwards (test_mixed_metadata.MetadataInterleavingTests.test_progress_cannot_move_backwards) ... ok
+test_bad_progress_shape_count_timing_or_rate_is_refused (test_mixed_metadata.MetadataShapeTests.test_bad_progress_shape_count_timing_or_rate_is_refused) ... ok
+test_malformed_or_out_of_bounds_reuse_is_refused (test_mixed_metadata.MetadataShapeTests.test_malformed_or_out_of_bounds_reuse_is_refused) ... ok
+test_native_resume_reused_and_progress_fields (test_mixed_metadata.MetadataShapeTests.test_native_resume_reused_and_progress_fields) ... ok
+test_nonmetadata_is_left_to_protocol_parser (test_mixed_metadata.MetadataShapeTests.test_nonmetadata_is_left_to_protocol_parser) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.003s
+
+OK

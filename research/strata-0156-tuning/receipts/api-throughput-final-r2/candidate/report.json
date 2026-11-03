@@ -1,0 +1,14 @@
+{
+  "role": "candidate",
+  "status": "failed",
+  "started_at": "2026-11-03T23:27:21.864415+00:00",
+  "error": "OSError",
+  "telemetry": {
+    "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-throughput-final-r2/candidate/telemetry.jsonl",
+    "interval_seconds": 1,
+    "samples": 1,
+    "minimum_mem_available_kib": 55743100,
+    "errors": []
+  },
+  "finished_at": "2026-11-03T23:27:21.949256+00:00"
+}

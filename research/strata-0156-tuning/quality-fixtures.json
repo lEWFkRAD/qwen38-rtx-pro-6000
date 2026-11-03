@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "unexecuted_new_synthetic_material",
+  "seed": 15620261103,
+  "provenance": "Generated fictional data here; independent of consumed LSA map/capture/pilot corpus. Freeze and hash before any engine run.",
+  "comparison": "exact stripped text unless comparator specified; no oracle changes after execution",
+  "tuning": [
+    {
+      "id": "v156_tune_canary",
+      "question": "Reply with exactly CITRINE_156_OK.",
+      "expected": "CITRINE_156_OK",
+      "max_new": 24
+    },
+    {
+      "id": "v156_tune_record",
+      "question": "unit-0000: verification=V83733826; quantity=51\nunit-0001: verification=V36606787; quantity=17\nunit-0002: verification=V79630968; quantity=23\nunit-0003: verification=V81784046; quantity=48\nunit-0004: verification=V66415213; quantity=38\nunit-0005: verification=V69726940; quantity=40\nunit-0006: verification=V31105734; quantity=53\nunit-0007: verification=V20559514; quantity=73\nunit-0008: verification=V07952925; quantity=43\nunit-0009: verification=V98418895; quantity=51\nunit-0010: verification=V29527112; quantity=11\nunit-0011: verification=V31099205; quantity=77\nunit-0012: verification=V12761185; quantity=15\nunit-0013: verification=V30724566; quantity=21\nunit-0014: verification=V89574253; quantity=31\nunit-0015: verification=V41826867; quantity=94\nunit-0016: verification=V77769019; quantity=56\nunit-0017: verification=V75049512; quantity=2\nunit-0018: verification=V72004319; quantity=98\nunit-0019: verification=V75063702; quantity=21\nunit-0020: verification=V20204022; quantity=27\nunit-0021: verification=V45505384; quantity=87\nunit-0022: verification=V13279894; quantity=36\nunit-0023: verification=V57294839; quantity=12\nunit-0024: verification=V58771482; quantity=79\nunit-0025: verification=V45628535; quantity=64\nunit-0026: verification=V01767840; quantity=58\nunit-0027: verification=V23851812; quantity=81\nunit-0028: verification=V75570047; quantity=88\nunit-0029: verification=V52691102; quantity=36\nunit-0030: verification=V81922443; quantity=88\nunit-0031: verification=V74210775; quantity=66\nunit-0032: verification=V02257831; quantity=59\nunit-0033: verification=V05871893; quantity=80\nunit-0034: verification=V50523586; quantity=12\nunit-0035: verification=V88658552; quantity=97\nunit-0036: verification=V24103555; quantity=73\nunit-0037: verification=V70991911; quantity=7\nunit-0038: verification=V12552395; quantity=32\nunit-0039: verification=V64477614; quantity=84\nunit-0040: verification=V15781717; quantity=64\nunit-0041: verification=V33929961; quantity=53\nunit-0042: verification=V67104317; quantity=84\nunit-0043: verification=V11959726; quantity=98\nunit-0044: verification=V98289136; quantity=4\nunit-0045: verification=V65250544; quantity=83\nunit-0046: verification=V75538592; quantity=52\nunit-0047: verification=V71468370; quantity=44\nunit-0048: verification=V86733574; quantity=62\nunit-0049: verification=V90615316; quantity=5\nunit-0050: verification=V03521547; quantity=12\nunit-0051: verification=V03780569; quantity=42\nunit-0052: verification=V19102081; quantity=45\nunit-0053: verification=V09219203; quantity=88\nunit-0054: verification=V31392531; quantity=40\nunit-0055: verification=V62323074; quantity=65\nunit-0056: verification=V63860879; quantity=18\nunit-0057: verification=V51351760; quantity=14\nunit-0058: verification=V01351734; quantity=78\nunit-0059: verification=V12929035; quantity=55\nunit-0060: verification=V65778142; quantity=39\nunit-0061: verification=V78202410; quantity=83\nunit-0062: verification=V28072150; quantity=15\nunit-0063: verification=V94033227; quantity=15\nunit-0064: verification=V46648633; quantity=66\nunit-0065: verification=V63039224; quantity=86\nunit-0066: verification=V90495439; quantity=9\nunit-0067: verification=V64325656; quantity=65\nunit-0068: verification=V76008628; quantity=53\nunit-0069: verification=V68072788; quantity=84\nunit-0070: verification=V22712686; quantity=27\nunit-0071: verification=V70227981; quantity=8\nunit-0072: verification=V07115002; quantity=42\nunit-0073: verification=V79022398; quantity=89\nunit-0074: verification=V24135404; quantity=10\nunit-0075: verification=V78974542; quantity=31\nunit-0076: verification=V55160171; quantity=54\nunit-0077: verification=V48195076; quantity=67\nunit-0078: verification=V36183554; quantity=91\nunit-0079: verification=V18700158; quantity=29\nunit-0080: verification=V55491115; quantity=21\nunit-0081: verification=V18219445; quantity=2\nunit-0082: verification=V37271917; quantity=3\nunit-0083: verification=V89602853; quantity=82\nunit-0084: verification=V53168950; quantity=4\nunit-0085: verification=V82809993; quantity=93\nunit-0086: verification=V14712486; quantity=11\nunit-0087: verification=V36537464; quantity=89\nunit-0088: verification=V88887370; quantity=40\nunit-0089: verification=V57595476; quantity=66\nunit-0090: verification=V22261314; quantity=5\nunit-0091: verification=V45871496; quantity=70\nunit-0092: verification=V73157469; quantity=73\nunit-0093: verification=V55240627; quantity=14\nunit-0094: verification=V61897925; quantity=21\nunit-0095: verification=V17696690; quantity=47\nunit-0096: verification=V18749156; quantity=82\nunit-0097: verification=V66155169; quantity=41\nunit-0098: verification=V30696596; quantity=40\nunit-0099: verification=V98683613; quantity=3\nunit-0100: verification=V50518997; quantity=70\nunit-0101: verification=V19684674; quantity=64\nunit-0102: verification=V17122282; quantity=99\nunit-0103: verification=V25189451; quantity=12\nunit-0104: verification=V90102647; quantity=67\nunit-0105: verification=V27882011; quantity=23\nunit-0106: verification=V88175189; quantity=23\nunit-0107: verification=V48549875; quantity=63\nunit-0108: verification=V46269052; quantity=10\nunit-0109: verification=V15930347; quantity=17\nunit-0110: verification=V49873917; quantity=88\nunit-0111: verification=V80152627; quantity=60\nunit-0112: verification=V94371033; quantity=44\nunit-0113: verification=V69866202; quantity=42\nunit-0114: verification=V29640547; quantity=23\nunit-0115: verification=V68285822; quantity=38\nunit-0116: verification=V63473282; quantity=98\nunit-0117: verification=V96136395; quantity=3\nunit-0118: verification=V33258846; quantity=71\nunit-0119: verification=V09990254; quantity=68\nunit-0120: verification=V43422042; quantity=90\nunit-0121: verification=V35184465; quantity=44\nunit-0122: verification=V08827345; quantity=56\nunit-0123: verification=V46885785; quantity=33\nunit-0124: verification=V20695464; quantity=40\nunit-0125: verification=V00607208; quantity=13\nunit-0126: verification=V00998934; quantity=51\nunit-0127: verification=V56831797; quantity=25\nReturn only the verification value for unit-0087.",
+      "expected": "V36537464",
+      "max_new": 24
+    },
+    {
+      "id": "v156_tune_filter_sum",
+      "question": "Return only the decimal result of sum(x*x for x in [3,5,8,13,21] if x%2==1).",
+      "expected": "644",
+      "max_new": 24
+    },
+    {
+      "id": "v156_tune_code",
+      "question": "Return only the integer this Python prints:\na=[4,9,2,7]\na[1:3]=[6,3]\nprint(sum((i+1)*x for i,x in enumerate(a)))",
+      "expected": "53",
+      "max_new": 24
+    },
+    {
+      "id": "v156_tune_order",
+      "question": "Sort these labels by numeric suffix ascending. Return only the comma-separated labels with no spaces: bay-41,bay-7,bay-23,bay-12,bay-3",
+      "expected": "bay-3,bay-7,bay-12,bay-23,bay-41",
+      "max_new": 64
+    },
+    {
+      "id": "v156_tune_copy",
+      "question": "Copy exactly this value with no quotation marks or explanation:\nV88658552|V24103555|V70991911|V12552395|V64477614|V15781717|V33929961|V67104317",
+      "expected": "V88658552|V24103555|V70991911|V12552395|V64477614|V15781717|V33929961|V67104317",
+      "max_new": 128
+    }
+  ],
+  "heldout": [
+    {
+      "id": "v156_holdout_record",
+      "question": "unit-0000: verification=V36176973; quantity=24\nunit-0001: verification=V10967386; quantity=63\nunit-0002: verification=V44246461; quantity=74\nunit-0003: verification=V38296426; quantity=63\nunit-0004: verification=V93601038; quantity=1\nunit-0005: verification=V18554076; quantity=68\nunit-0006: verification=V41310660; quantity=22\nunit-0007: verification=V08455575; quantity=17\nunit-0008: verification=V53255359; quantity=76\nunit-0009: verification=V39532315; quantity=97\nunit-0010: verification=V49537890; quantity=87\nunit-0011: verification=V81500431; quantity=49\nunit-0012: verification=V46531490; quantity=88\nunit-0013: verification=V85618240; quantity=43\nunit-0014: verification=V77270500; quantity=5\nunit-0015: verification=V98954984; quantity=26\nunit-0016: verification=V47073960; quantity=80\nunit-0017: verification=V65441160; quantity=65\nunit-0018: verification=V43719637; quantity=59\nunit-0019: verification=V19998259; quantity=54\nunit-0020: verification=V77186903; quantity=50\nunit-0021: verification=V38263628; quantity=64\nunit-0022: verification=V48548556; quantity=44\nunit-0023: verification=V81676343; quantity=65\nunit-0024: verification=V87594209; quantity=33\nunit-0025: verification=V21119698; quantity=58\nunit-0026: verification=V06686594; quantity=73\nunit-0027: verification=V53361739; quantity=11\nunit-0028: verification=V79378345; quantity=19\nunit-0029: verification=V36472920; quantity=27\nunit-0030: verification=V82384945; quantity=53\nunit-0031: verification=V08978903; quantity=89\nunit-0032: verification=V62543217; quantity=65\nunit-0033: verification=V15418763; quantity=29\nunit-0034: verification=V46412083; quantity=88\nunit-0035: verification=V44829811; quantity=76\nunit-0036: verification=V28254216; quantity=1\nunit-0037: verification=V49363802; quantity=95\nunit-0038: verification=V59824838; quantity=95\nunit-0039: verification=V63036761; quantity=23\nunit-0040: verification=V13457850; quantity=93\nunit-0041: verification=V85899791; quantity=66\nunit-0042: verification=V15686052; quantity=3\nunit-0043: verification=V11188271; quantity=83\nunit-0044: verification=V00406308; quantity=33\nunit-0045: verification=V70655029; quantity=91\nunit-0046: verification=V01663309; quantity=19\nunit-0047: verification=V67914405; quantity=91\nunit-0048: verification=V51215145; quantity=73\nunit-0049: verification=V62240321; quantity=37\nunit-0050: verification=V44250284; quantity=35\nunit-0051: verification=V07331180; quantity=65\nunit-0052: verification=V70543234; quantity=36\nunit-0053: verification=V84585394; quantity=58\nunit-0054: verification=V29788973; quantity=81\nunit-0055: verification=V86126641; quantity=18\nunit-0056: verification=V96666916; quantity=62\nunit-0057: verification=V27988904; quantity=16\nunit-0058: verification=V03718709; quantity=60\nunit-0059: verification=V32060288; quantity=9\nunit-0060: verification=V32173126; quantity=19\nunit-0061: verification=V99911332; quantity=96\nunit-0062: verification=V95153168; quantity=47\nunit-0063: verification=V56908076; quantity=24\nunit-0064: verification=V36734243; quantity=3\nunit-0065: verification=V12243851; quantity=45\nunit-0066: verification=V65280090; quantity=52\nunit-0067: verification=V21762851; quantity=11\nunit-0068: verification=V59050480; quantity=35\nunit-0069: verification=V51997913; quantity=35\nunit-0070: verification=V62156034; quantity=22\nunit-0071: verification=V34857281; quantity=31\nunit-0072: verification=V12444311; quantity=5\nunit-0073: verification=V84343813; quantity=65\nunit-0074: verification=V69780716; quantity=70\nunit-0075: verification=V05878440; quantity=89\nunit-0076: verification=V02643630; quantity=68\nunit-0077: verification=V09646973; quantity=45\nunit-0078: verification=V58792999; quantity=97\nunit-0079: verification=V32777437; quantity=70\nunit-0080: verification=V23782846; quantity=71\nunit-0081: verification=V07731871; quantity=84\nunit-0082: verification=V76908080; quantity=94\nunit-0083: verification=V74997254; quantity=5\nunit-0084: verification=V59233122; quantity=25\nunit-0085: verification=V95530946; quantity=67\nunit-0086: verification=V98743826; quantity=84\nunit-0087: verification=V31886283; quantity=79\nunit-0088: verification=V95183873; quantity=33\nunit-0089: verification=V48216066; quantity=40\nunit-0090: verification=V70370877; quantity=59\nunit-0091: verification=V51815755; quantity=37\nunit-0092: verification=V25709564; quantity=60\nunit-0093: verification=V18089066; quantity=11\nunit-0094: verification=V37570368; quantity=47\nunit-0095: verification=V03961215; quantity=39\nunit-0096: verification=V88891148; quantity=94\nunit-0097: verification=V24491000; quantity=8\nunit-0098: verification=V06006130; quantity=29\nunit-0099: verification=V45259123; quantity=17\nunit-0100: verification=V31634519; quantity=67\nunit-0101: verification=V40379333; quantity=64\nunit-0102: verification=V65706216; quantity=27\nunit-0103: verification=V82442857; quantity=53\nunit-0104: verification=V99042519; quantity=64\nunit-0105: verification=V31597132; quantity=74\nunit-0106: verification=V15971795; quantity=40\nunit-0107: verification=V03718381; quantity=87\nunit-0108: verification=V11588233; quantity=26\nunit-0109: verification=V56621723; quantity=68\nunit-0110: verification=V35368300; quantity=29\nunit-0111: verification=V42818621; quantity=99\nunit-0112: verification=V54596169; quantity=16\nunit-0113: verification=V18496589; quantity=20\nunit-0114: verification=V21834951; quantity=90\nunit-0115: verification=V01404486; quantity=54\nunit-0116: verification=V62926641; quantity=3\nunit-0117: verification=V94497458; quantity=38\nunit-0118: verification=V66395595; quantity=34\nunit-0119: verification=V65931421; quantity=1\nunit-0120: verification=V95170235; quantity=27\nunit-0121: verification=V63699179; quantity=80\nunit-0122: verification=V81504400; quantity=99\nunit-0123: verification=V90837280; quantity=35\nunit-0124: verification=V54667609; quantity=61\nunit-0125: verification=V79005469; quantity=47\nunit-0126: verification=V10458617; quantity=12\nunit-0127: verification=V68657377; quantity=70\nunit-0128: verification=V64677356; quantity=63\nunit-0129: verification=V67678403; quantity=65\nunit-0130: verification=V05112521; quantity=41\nunit-0131: verification=V87666956; quantity=29\nunit-0132: verification=V73090714; quantity=82\nunit-0133: verification=V75653987; quantity=73\nunit-0134: verification=V17466727; quantity=74\nunit-0135: verification=V71195592; quantity=4\nunit-0136: verification=V16835828; quantity=49\nunit-0137: verification=V10130110; quantity=75\nunit-0138: verification=V92707116; quantity=58\nunit-0139: verification=V72611753; quantity=53\nunit-0140: verification=V99661998; quantity=17\nunit-0141: verification=V32442509; quantity=90\nunit-0142: verification=V64722935; quantity=39\nunit-0143: verification=V02573212; quantity=69\nunit-0144: verification=V11635063; quantity=55\nunit-0145: verification=V78098006; quantity=97\nunit-0146: verification=V19498935; quantity=61\nunit-0147: verification=V25920728; quantity=48\nunit-0148: verification=V63529063; quantity=72\nunit-0149: verification=V60451922; quantity=45\nunit-0150: verification=V05646942; quantity=39\nunit-0151: verification=V34814477; quantity=66\nunit-0152: verification=V43128074; quantity=26\nunit-0153: verification=V39576380; quantity=62\nunit-0154: verification=V64248728; quantity=39\nunit-0155: verification=V96583279; quantity=58\nunit-0156: verification=V17527861; quantity=34\nReturn only the verification value for unit-0119.",
+      "expected": "V65931421",
+      "max_new": 24
+    },
+    {
+      "id": "v156_holdout_quantity",
+      "question": "unit-0000: verification=V36176973; quantity=24\nunit-0001: verification=V10967386; quantity=63\nunit-0002: verification=V44246461; quantity=74\nunit-0003: verification=V38296426; quantity=63\nunit-0004: verification=V93601038; quantity=1\nunit-0005: verification=V18554076; quantity=68\nunit-0006: verification=V41310660; quantity=22\nunit-0007: verification=V08455575; quantity=17\nunit-0008: verification=V53255359; quantity=76\nunit-0009: verification=V39532315; quantity=97\nunit-0010: verification=V49537890; quantity=87\nunit-0011: verification=V81500431; quantity=49\nunit-0012: verification=V46531490; quantity=88\nunit-0013: verification=V85618240; quantity=43\nunit-0014: verification=V77270500; quantity=5\nunit-0015: verification=V98954984; quantity=26\nunit-0016: verification=V47073960; quantity=80\nunit-0017: verification=V65441160; quantity=65\nunit-0018: verification=V43719637; quantity=59\nunit-0019: verification=V19998259; quantity=54\nunit-0020: verification=V77186903; quantity=50\nunit-0021: verification=V38263628; quantity=64\nunit-0022: verification=V48548556; quantity=44\nunit-0023: verification=V81676343; quantity=65\nunit-0024: verification=V87594209; quantity=33\nunit-0025: verification=V21119698; quantity=58\nunit-0026: verification=V06686594; quantity=73\nunit-0027: verification=V53361739; quantity=11\nunit-0028: verification=V79378345; quantity=19\nunit-0029: verification=V36472920; quantity=27\nunit-0030: verification=V82384945; quantity=53\nunit-0031: verification=V08978903; quantity=89\nunit-0032: verification=V62543217; quantity=65\nunit-0033: verification=V15418763; quantity=29\nunit-0034: verification=V46412083; quantity=88\nunit-0035: verification=V44829811; quantity=76\nunit-0036: verification=V28254216; quantity=1\nunit-0037: verification=V49363802; quantity=95\nunit-0038: verification=V59824838; quantity=95\nunit-0039: verification=V63036761; quantity=23\nunit-0040: verification=V13457850; quantity=93\nunit-0041: verification=V85899791; quantity=66\nunit-0042: verification=V15686052; quantity=3\nunit-0043: verification=V11188271; quantity=83\nunit-0044: verification=V00406308; quantity=33\nunit-0045: verification=V70655029; quantity=91\nunit-0046: verification=V01663309; quantity=19\nunit-0047: verification=V67914405; quantity=91\nunit-0048: verification=V51215145; quantity=73\nunit-0049: verification=V62240321; quantity=37\nunit-0050: verification=V44250284; quantity=35\nunit-0051: verification=V07331180; quantity=65\nunit-0052: verification=V70543234; quantity=36\nunit-0053: verification=V84585394; quantity=58\nunit-0054: verification=V29788973; quantity=81\nunit-0055: verification=V86126641; quantity=18\nunit-0056: verification=V96666916; quantity=62\nunit-0057: verification=V27988904; quantity=16\nunit-0058: verification=V03718709; quantity=60\nunit-0059: verification=V32060288; quantity=9\nunit-0060: verification=V32173126; quantity=19\nunit-0061: verification=V99911332; quantity=96\nunit-0062: verification=V95153168; quantity=47\nunit-0063: verification=V56908076; quantity=24\nunit-0064: verification=V36734243; quantity=3\nunit-0065: verification=V12243851; quantity=45\nunit-0066: verification=V65280090; quantity=52\nunit-0067: verification=V21762851; quantity=11\nunit-0068: verification=V59050480; quantity=35\nunit-0069: verification=V51997913; quantity=35\nunit-0070: verification=V62156034; quantity=22\nunit-0071: verification=V34857281; quantity=31\nunit-0072: verification=V12444311; quantity=5\nunit-0073: verification=V84343813; quantity=65\nunit-0074: verification=V69780716; quantity=70\nunit-0075: verification=V05878440; quantity=89\nunit-0076: verification=V02643630; quantity=68\nunit-0077: verification=V09646973; quantity=45\nunit-0078: verification=V58792999; quantity=97\nunit-0079: verification=V32777437; quantity=70\nunit-0080: verification=V23782846; quantity=71\nunit-0081: verification=V07731871; quantity=84\nunit-0082: verification=V76908080; quantity=94\nunit-0083: verification=V74997254; quantity=5\nunit-0084: verification=V59233122; quantity=25\nunit-0085: verification=V95530946; quantity=67\nunit-0086: verification=V98743826; quantity=84\nunit-0087: verification=V31886283; quantity=79\nunit-0088: verification=V95183873; quantity=33\nunit-0089: verification=V48216066; quantity=40\nunit-0090: verification=V70370877; quantity=59\nunit-0091: verification=V51815755; quantity=37\nunit-0092: verification=V25709564; quantity=60\nunit-0093: verification=V18089066; quantity=11\nunit-0094: verification=V37570368; quantity=47\nunit-0095: verification=V03961215; quantity=39\nunit-0096: verification=V88891148; quantity=94\nunit-0097: verification=V24491000; quantity=8\nunit-0098: verification=V06006130; quantity=29\nunit-0099: verification=V45259123; quantity=17\nunit-0100: verification=V31634519; quantity=67\nunit-0101: verification=V40379333; quantity=64\nunit-0102: verification=V65706216; quantity=27\nunit-0103: verification=V82442857; quantity=53\nunit-0104: verification=V99042519; quantity=64\nunit-0105: verification=V31597132; quantity=74\nunit-0106: verification=V15971795; quantity=40\nunit-0107: verification=V03718381; quantity=87\nunit-0108: verification=V11588233; quantity=26\nunit-0109: verification=V56621723; quantity=68\nunit-0110: verification=V35368300; quantity=29\nunit-0111: verification=V42818621; quantity=99\nunit-0112: verification=V54596169; quantity=16\nunit-0113: verification=V18496589; quantity=20\nunit-0114: verification=V21834951; quantity=90\nunit-0115: verification=V01404486; quantity=54\nunit-0116: verification=V62926641; quantity=3\nunit-0117: verification=V94497458; quantity=38\nunit-0118: verification=V66395595; quantity=34\nunit-0119: verification=V65931421; quantity=1\nunit-0120: verification=V95170235; quantity=27\nunit-0121: verification=V63699179; quantity=80\nunit-0122: verification=V81504400; quantity=99\nunit-0123: verification=V90837280; quantity=35\nunit-0124: verification=V54667609; quantity=61\nunit-0125: verification=V79005469; quantity=47\nunit-0126: verification=V10458617; quantity=12\nunit-0127: verification=V68657377; quantity=70\nunit-0128: verification=V64677356; quantity=63\nunit-0129: verification=V67678403; quantity=65\nunit-0130: verification=V05112521; quantity=41\nunit-0131: verification=V87666956; quantity=29\nunit-0132: verification=V73090714; quantity=82\nunit-0133: verification=V75653987; quantity=73\nunit-0134: verification=V17466727; quantity=74\nunit-0135: verification=V71195592; quantity=4\nunit-0136: verification=V16835828; quantity=49\nunit-0137: verification=V10130110; quantity=75\nunit-0138: verification=V92707116; quantity=58\nunit-0139: verification=V72611753; quantity=53\nunit-0140: verification=V99661998; quantity=17\nunit-0141: verification=V32442509; quantity=90\nunit-0142: verification=V64722935; quantity=39\nunit-0143: verification=V02573212; quantity=69\nunit-0144: verification=V11635063; quantity=55\nunit-0145: verification=V78098006; quantity=97\nunit-0146: verification=V19498935; quantity=61\nunit-0147: verification=V25920728; quantity=48\nunit-0148: verification=V63529063; quantity=72\nunit-0149: verification=V60451922; quantity=45\nunit-0150: verification=V05646942; quantity=39\nunit-0151: verification=V34814477; quantity=66\nunit-0152: verification=V43128074; quantity=26\nunit-0153: verification=V39576380; quantity=62\nunit-0154: verification=V64248728; quantity=39\nunit-0155: verification=V96583279; quantity=58\nunit-0156: verification=V17527861; quantity=34\nReturn only the sum of quantities for unit-0026 and unit-0143 as a decimal integer.",
+      "expected": "142",
+      "max_new": 24
+    },
+    {
+      "id": "v156_holdout_code",
+      "question": "Return only the integer this Python prints:\nd={\"a\":3,\"b\":11,\"c\":5}\nprint(sum(v*len(k) for k,v in d.items())+len(d))",
+      "expected": "22",
+      "max_new": 24
+    },
+    {
+      "id": "v156_holdout_order",
+      "question": "Sort the pairs by score descending, breaking ties by name ascending. Return only the comma-separated names, no spaces. (mira,14),(tavo,9),(arlo,14),(sena,12)",
+      "expected": "arlo,mira,sena,tavo",
+      "max_new": 32
+    },
+    {
+      "id": "v156_holdout_json",
+      "question": "Return a compact JSON object with only these two keys in this order: approved and count. approved must be false; count must equal 7 plus 16. No code fence.",
+      "expected": {
+        "approved": false,
+        "count": 23
+      },
+      "comparator": "json_structural_exact_keys_values",
+      "max_new": 40
+    },
+    {
+      "id": "v156_holdout_copy",
+      "question": "Copy exactly this value with no quotation marks or explanation:\nV18089066;V37570368;V03961215;V88891148;V24491000;V06006130;V45259123;V31634519;V40379333",
+      "expected": "V18089066;V37570368;V03961215;V88891148;V24491000;V06006130;V45259123;V31634519;V40379333",
+      "max_new": 128
+    }
+  ],
+  "long_recipes": [
+    {
+      "id": "v156_holdout_32k",
+      "target_prompt_tokens": 32000,
+      "max_new": 64,
+      "marker_fractions": [
+        0.12,
+        0.55,
+        0.89
+      ],
+      "marker_values": [
+        "LANTERN_156_31729",
+        "NIMBUS_156_68413",
+        "TOPAZ_156_90581"
+      ],
+      "question": "Return only the three verification marker values in document order, separated by commas and no spaces.",
+      "expected": "LANTERN_156_31729,NIMBUS_156_68413,TOPAZ_156_90581",
+      "construction": "Seed15620261103+32; fictional unique ledgers. Tokenize filler then split into12%,55%,89% positions, insert explicitly labelled verification markers, render final chat, record actual marker token positions and token SHA. Final prompt within2%target."
+    },
+    {
+      "id": "v156_holdout_125k",
+      "target_prompt_tokens": 125000,
+      "max_new": 64,
+      "marker_fractions": [
+        0.12,
+        0.55,
+        0.89
+      ],
+      "marker_values": [
+        "JASPER_156_47293",
+        "PALLAS_156_81907",
+        "QUARTZ_156_26021"
+      ],
+      "question": "Return only the three verification marker values in document order, separated by commas and no spaces.",
+      "expected": "JASPER_156_47293,PALLAS_156_81907,QUARTZ_156_26021",
+      "construction": "Seed15620261103+125; different fictional unique ledgers. Same token-position insertion method; actual prompt124000..130000 and prompt+max_new<=131072. Record actual token count, marker positions and token SHA."
+    }
+  ],
+  "performance_recipes": [
+    {
+      "id": "solo_code4k",
+      "prompt_tokens": 4096,
+      "max_new": 256,
+      "min_actual_output_tokens": 128,
+      "instruction": "Write a complete Python3 module for an in-memory fictional parcel inventory, including validation, transfer, aggregation, and unit tests. Return only Python code.",
+      "note": "Unconstrained natural generation, never teacher forcing. Different output IDs allowed; count actual tokens and early stop."
+    },
+    {
+      "id": "c8_code4k",
+      "slots": 8,
+      "prompt_tokens_each": 4096,
+      "max_new_each": 256,
+      "min_actual_output_tokens_each": 128,
+      "instruction": "Eight distinct fictional ledger schemas and code-writing tasks, one per slot; avoid identical repeated CSV continuation so prompt lookup is not the only source of speed.",
+      "note": "Record8live admissions, wall and steady-state throughput, per-slot TTFT/ITL/finish, windows/rows and actual MTP acceptance. Reject invalid short output metrics."
+    },
+    {
+      "id": "mixed4plusjoiner32k",
+      "established_decoders": 4,
+      "decoder_max_new": 512,
+      "cold_joiner_prompt_tokens": 32768,
+      "joiner_max_new": 64,
+      "note": "Start joiner only after every established stream has>=32 outputtokens and before any finishes. Record joiner TTFT and every established stream longest token gap across read. Repeat three paired final comparisons."
+    }
+  ]
+}

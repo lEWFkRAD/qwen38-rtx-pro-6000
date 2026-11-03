@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "kind": "independent_cpu_quality_oracle_review",
+  "at": "2026-11-03T22:59:06.725818+00:00",
+  "fixture_sha256": "18e39c945fd738034a988f496b31f1a962371b8c9679a31894d685a6e54b7098",
+  "all_expected_values_and_types_valid": true,
+  "checks": [
+    {
+      "id": "v156_tune_canary",
+      "status": "passed",
+      "expected": "CITRINE_156_OK",
+      "independently_calculated": "CITRINE_156_OK",
+      "method": "Extract required literal from instruction."
+    },
+    {
+      "id": "v156_tune_record",
+      "status": "passed",
+      "expected": "V36537464",
+      "independently_calculated": "V36537464",
+      "method": "Independently parse ledger and exact requested unit."
+    },
+    {
+      "id": "v156_tune_filter_sum",
+      "status": "passed",
+      "expected": "644",
+      "independently_calculated": "644",
+      "method": "Independent integer arithmetic; odd values[3, 5, 13, 21]."
+    },
+    {
+      "id": "v156_tune_code",
+      "status": "passed",
+      "expected": "53",
+      "independently_calculated": "53",
+      "method": "Execute exact finite fixture Python with minimal permitted builtins; no imports or external access."
+    },
+    {
+      "id": "v156_tune_order",
+      "status": "passed",
+      "expected": "bay-3,bay-7,bay-12,bay-23,bay-41",
+      "independently_calculated": "bay-3,bay-7,bay-12,bay-23,bay-41",
+      "method": "Parse numeric suffixes and sort integers ascending."
+    },
+    {
+      "id": "v156_tune_copy",
+      "status": "passed",
+      "expected": "V88658552|V24103555|V70991911|V12552395|V64477614|V15781717|V33929961|V67104317",
+      "independently_calculated": "V88658552|V24103555|V70991911|V12552395|V64477614|V15781717|V33929961|V67104317",
+      "method": "Exact literal copy after first newline."
+    },
+    {
+      "id": "v156_holdout_record",
+      "status": "passed",
+      "expected": "V65931421",
+      "independently_calculated": "V65931421",
+      "method": "Independently parse ledger and exact requested unit."
+    },
+    {
+      "id": "v156_holdout_quantity",
+      "status": "passed",
+      "expected": "142",
+      "independently_calculated": "142",
+      "method": "Independently parse ledger quantities and requested two-unit sum."
+    },
+    {
+      "id": "v156_holdout_code",
+      "status": "passed",
+      "expected": "22",
+      "independently_calculated": "22",
+      "method": "Execute exact finite fixture Python with minimal permitted builtins; no imports or external access."
+    },
+    {
+      "id": "v156_holdout_order",
+      "status": "passed",
+      "expected": "arlo,mira,sena,tavo",
+      "independently_calculated": "arlo,mira,sena,tavo",
+      "method": "Sort score descending and name ascending."
+    },
+    {
+      "id": "v156_holdout_json",
+      "status": "passed",
+      "expected": {
+        "approved": false,
+        "count": 23
+      },
+      "independently_calculated": {
+        "approved": false,
+        "count": 23
+      },
+      "method": "Boolean false, integer7+16=23; exact keys approved/count. Validate types separately."
+    },
+    {
+      "id": "v156_holdout_copy",
+      "status": "passed",
+      "expected": "V18089066;V37570368;V03961215;V88891148;V24491000;V06006130;V45259123;V31634519;V40379333",
+      "independently_calculated": "V18089066;V37570368;V03961215;V88891148;V24491000;V06006130;V45259123;V31634519;V40379333",
+      "method": "Exact literal copy after first newline."
+    },
+    {
+      "id": "v156_holdout_32k",
+      "status": "passed",
+      "expected": "LANTERN_156_31729,NIMBUS_156_68413,TOPAZ_156_90581",
+      "independently_calculated": "LANTERN_156_31729,NIMBUS_156_68413,TOPAZ_156_90581",
+      "method": "Exact document-order join of three separately fixed marker literals."
+    },
+    {
+      "id": "v156_holdout_125k",
+      "status": "passed",
+      "expected": "JASPER_156_47293,PALLAS_156_81907,QUARTZ_156_26021",
+      "independently_calculated": "JASPER_156_47293,PALLAS_156_81907,QUARTZ_156_26021",
+      "method": "Exact document-order join of three separately fixed marker literals."
+    }
+  ],
+  "additional_known_code_208": 208,
+  "observed_control_644_actual588_and_53_actual10": "Reference values independently verified; preserve failed observations as model errors.",
+  "no_gpu_work": true
+}

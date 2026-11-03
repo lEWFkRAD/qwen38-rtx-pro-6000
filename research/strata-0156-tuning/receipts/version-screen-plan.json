@@ -1,0 +1,26 @@
+{
+  "scope": "version-only screen; tuning6, actual8stream256, solo256; all8slots131072",
+  "profiles": [
+    {
+      "name": "official0150_current",
+      "env": {},
+      "arg_overrides": {},
+      "executable": "/opt/onyx-strata-0150-candidate/strata",
+      "sha256": "ae49d5da81b9b65d50af1108c4b3f8b289ee198d9992d66268b7e885cf1a4776",
+      "lib_dirs": [
+        "/opt/onyx-strata-0150-candidate"
+      ]
+    },
+    {
+      "name": "stock0156_same_settings",
+      "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+      "sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+      "lib_dirs": [
+        "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+      ],
+      "env": {},
+      "arg_overrides": {}
+    }
+  ],
+  "gpu_work_started": false
+}

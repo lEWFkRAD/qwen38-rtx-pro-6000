@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "independent_cpu_benchmark_helper_audit",
+  "at": "2026-11-03T23:04:04.682000+00:00",
+  "tests": 33,
+  "passed": 33,
+  "expected_failures": 0,
+  "runtime_seconds": 0.013,
+  "test_file_sha256": "2abbb1499e440fcb15bc31e012fdca0a7a51cf827a7a0ec51bc9fb156b05e325",
+  "helper_sha256": "dabd66ab5527f064fe9a630f6026a1b5277ab5c18dde2126a801b2b0ab53aca1",
+  "coverage": [
+    "all8actualtokenaccounting",
+    "common-live-windowminimum",
+    "strictnestedJSONandduplicatekeys",
+    "DONEfinite/nonnegativecounts/timings",
+    "clocklifetime",
+    "protectedcapacity/modelargs",
+    "matchedlibraryfull-byteidentity",
+    "paircompletenessandregressionassessment"
+  ],
+  "gpu_work_started": false,
+  "helper_files_edited_by_reviewer": false
+}

@@ -1,0 +1,16 @@
+{
+  "role": "baseline",
+  "status": "failed",
+  "started_at": "2026-11-03T23:23:53.942461+00:00",
+  "error": "retained API wrapper failed to reach authenticated readiness",
+  "telemetry": {
+    "path": "receipts/api-throughput-final-r1/baseline/telemetry.jsonl",
+    "interval_seconds": 1,
+    "samples": 1,
+    "minimum_mem_available_kib": 54424964,
+    "errors": []
+  },
+  "finished_at": "2026-11-03T23:23:54.252671+00:00",
+  "owned_process_group_empty": true,
+  "private_credential_removed": true
+}

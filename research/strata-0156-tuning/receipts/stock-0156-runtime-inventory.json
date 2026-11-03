@@ -1,0 +1,99 @@
+{
+  "status": "static_inventory_no_model_execution",
+  "engine_source": "06698c674673008395ba6e971580538d6b1ea6e0",
+  "control_source": "974074c549754029882c1cea1ce0e1e7674d7ba2",
+  "paths": {
+    "engine": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+    "vision": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision",
+    "library_dir": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "api_python": "/home/USER/Documents/strata-0156-tuning-20261103/official-control-0.1.56/python/bin/python3",
+    "api_module_root": "/home/USER/Documents/strata-0156-tuning-20261103/official-control-0.1.56",
+    "api_launcher": "/home/USER/Documents/strata-0156-tuning-20261103/official-control-0.1.56/bin/strata"
+  },
+  "runtime": {
+    "python": "3.12.15",
+    "minimum_glibc": "2.34",
+    "minimum_glibcxx": "3.4.30",
+    "minimum_cxxabi": "1.3.13",
+    "min_nvidia_driver": "580.65",
+    "installed_nvidia_driver": "615.71.09",
+    "cuda": "13.0",
+    "runpath": "$ORIGIN",
+    "same_folder_libraries": [
+      "libcudart.so.13",
+      "libcublas.so.13",
+      "libcublasLt.so.13",
+      "libstrata_kq.so"
+    ],
+    "entrypoints_present_executable": true
+  },
+  "cli": {
+    "new_flags": [
+      "--draft-fallback",
+      "--draft-mtp-min-p",
+      "--draft-mtp-spec",
+      "--draft-rule",
+      "--lookup-max-t",
+      "--lookup-sizes",
+      "--ram-keep-gib"
+    ],
+    "removed_parsed_flags": [],
+    "expected_batch8_spec6_resolution": {
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3
+    },
+    "new_lookup_default": "12 only solo narrow-window CUDA serve; batch>1 stays0 extended lookup limit",
+    "info_changes": [
+      "engine=0.1.56 appended; prior relevant capacity/spec fields retained"
+    ],
+    "protocol": "GEN/GENT/BGEN/BT/BDONE/BSTOP/INFO/READY retained per actual source; runtime test pending"
+  },
+  "wrapper_defaults": {
+    "PARALLEL_STACK_ENV": {
+      "STRATA_CKPT_POOL": "1",
+      "STRATA_CKPT_POOL_READY": "4",
+      "STRATA_SLOT_CKPT_MOVE": "1",
+      "STRATA_SLOT_COPY_DIRECT": "1",
+      "STRATA_SLOT_COPY_BATCHSYNC": "1",
+      "STRATA_BATCH_GDN_GROUPS": "1",
+      "STRATA_BATCH_ATTN_ROWS": "1",
+      "STRATA_BATCH_SELF_COMMIT": "1",
+      "STRATA_QSA_SLOTS": "1"
+    },
+    "GDN_STACK_CUDA": {
+      "STRATA_GDN_TC": "1",
+      "STRATA_GDN_CONVL2": "2"
+    }
+  },
+  "performance_qualification": {
+    "already_set_parallel_defaults": [
+      "STRATA_SLOT_COPY_DIRECT",
+      "STRATA_SLOT_COPY_BATCHSYNC",
+      "STRATA_BATCH_SELF_COMMIT",
+      "STRATA_QSA_SLOTS"
+    ],
+    "fp16_weight_cache": "OFF by default in actual engine source; explicit STRATA_PF_W16_CACHE_MIB is numerical-change opt-in",
+    "auto_noborrow": "does not change current explicit prefill32768 plus no-prefill-borrow",
+    "published_gain": "Upstream 1.45x is not a prediction versus our already-tuned0150"
+  },
+  "isolated_launch_requirements": [
+    "STRATA_LSA_MAPS absent",
+    "same weights, control vector, INT8KV, 8slots,131072context,24576experts capacity gate",
+    "explicit cfg drafting=mtp",
+    "replace old lib_dirs/LD_LIBRARY_PATH with newengine folder",
+    "STRATA_NO_HANDOVER=1 if CLI to pin Control",
+    "clear PYTHONHOME/PYTHONPATH and disable user-site imports",
+    "no production service or routing changes; parent HOLD/PID/capacity supervisor required",
+    "new stock Control has no custom Onyx readiness gate; external candidate admission required"
+  ],
+  "verification_receipts": [
+    "receipts/official-bundle-verification.json",
+    "receipts/independent-openssl-verification.json"
+  ],
+  "sources": {
+    "release": "https://github.com/Niko1221/Strata/releases/tag/v0.2.10",
+    "engine": "https://github.com/Niko1221/Strata/tree/06698c674673008395ba6e971580538d6b1ea6e0",
+    "control": "https://github.com/Niko1221/Strata/tree/974074c549754029882c1cea1ce0e1e7674d7ba2"
+  }
+}

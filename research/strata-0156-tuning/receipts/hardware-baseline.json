@@ -1,0 +1,11 @@
+{
+  "recorded_at": "2026-11-03T22:51:26.565179+00:00",
+  "gpu_csv": "GPU-<redacted-uuid>, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 615.71.09, 550.00 W, 600.00 W, 600.00 W, 3090 MHz, 1095 MHz, 37, 97887 MiB, 95394 MiB",
+  "memory_kib": {
+    "MemTotal": 65276828,
+    "MemAvailable": 53100392,
+    "SwapTotal": 16777212,
+    "SwapFree": 8472760
+  },
+  "cgroups": {}
+}

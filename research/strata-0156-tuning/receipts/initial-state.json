@@ -1,0 +1,151 @@
+{
+  "recorded_at": "2026-11-03T22:45:17.594955+00:00",
+  "state": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "/usr/local/libexec/onyx-inference-recovery/strata-maintenance.py",
+        "status"
+      ],
+      "returncode": 0,
+      "stdout": "{\"attempts\": [1793710099.7349627, 1793714835.5615344], \"capacity_block\": null, \"hold\": {\"at\": \"2026-11-03T20:33:04.058440+00:00\", \"kind\": \"owned-strata-maintenance\", \"owner\": \"<maintenance-owner>\", \"reason\": \"Jeff requested production pause to resume native Strata LSA integration\", \"version\": 1}, \"reason\": \"operator HOLD present; remove explicitly to resume\", \"status\": \"maintenance\"}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/local/sbin/qwen38-modectl",
+        "status"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Flash-Next service is not healthy: active=inactive sub=dead enabled=enabled"
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "show",
+        "sunshine.service",
+        "-p",
+        "ActiveState",
+        "-p",
+        "SubState",
+        "-p",
+        "MainPID"
+      ],
+      "returncode": 0,
+      "stdout": "MainPID=0\nActiveState=inactive\nSubState=dead",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "nvidia-smi",
+        "--query-compute-apps=pid,process_name,used_gpu_memory",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=memory.free,utilization.gpu,temperature.gpu",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stdout": "95405 MiB, 4 %, 37",
+      "stderr": ""
+    }
+  ],
+  "configuration": {
+    "exe": "/opt/onyx-strata-0150-candidate/strata",
+    "args": [
+      "--pack",
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+      "--native",
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--ple-gguf",
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "--expert-profile",
+      "/home/USER/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "32768",
+      "--spec",
+      "6",
+      "--spec-min-p",
+      "0.5",
+      "--mtp",
+      "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--vision",
+      "--vram-reserve-mib",
+      "700",
+      "--control-vector-scaled",
+      "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+      "--control-vector-layer-range",
+      "4",
+      "44",
+      "--cvec-mode",
+      "project",
+      "--cvec-dir",
+      "per-layer",
+      "--pool-workers",
+      "12",
+      "--pcie-frac",
+      "0",
+      "--no-prefill-borrow",
+      "--ple-io",
+      "ram",
+      "--kv-resident",
+      "131072",
+      "--conversation-cache-mib",
+      "0"
+    ],
+    "parallel": 8,
+    "lib_dirs": [
+      "/opt/onyx-strata-0150-candidate"
+    ],
+    "cwd": "/opt/onyx-strata-0142/runtime",
+    "gpu": 0,
+    "tokenizer": "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer",
+    "vision": {
+      "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+      "gpu": true,
+      "max_tokens": 1024,
+      "mmproj": "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf"
+    },
+    "drafting": null,
+    "mtp": null,
+    "fit_max_tokens": true,
+    "env": {
+      "STRATA_BATCH_DECODE_SHARE": "0.75",
+      "STRATA_BATCH_SELF_COMMIT": "1",
+      "STRATA_OWNED_PRICE": "exact",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_QSA_SLOTS": "1",
+      "STRATA_SLOT_COPY_BATCHSYNC": "1",
+      "STRATA_SLOT_COPY_DIRECT": "1"
+    },
+    "contract_environment": {
+      "STRATA_ADMIT_ROTATE": "1",
+      "STRATA_ADMIT_ROTATE_QUANTUM": "32768",
+      "STRATA_ARENA_MMAP": "1",
+      "STRATA_SLOT_QUEUE": "1",
+      "STRATA_VERIFY_ALL_RESIDENT": "1"
+    }
+  },
+  "hashes": {
+    "/etc/onyx-inference/strata-server.json": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+    "/etc/onyx-inference/strata.json": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+    "/etc/onyx-inference/strata-server.shared-settings.json": "376f90ea31c61c38d951df42b85fc8bf892c92984de96060b0f2777403724416"
+  }
+}

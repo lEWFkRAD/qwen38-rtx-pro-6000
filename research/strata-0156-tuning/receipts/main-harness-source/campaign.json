@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "campaign": "stock-strata-0.1.56-serving-settings",
+  "status": "unexecuted_plan",
+  "source_commit": "06698c674673008395ba6e971580538d6b1ea6e0",
+  "scope": "Serving settings only; no model or LSA map training. Native stock attention; no LSA source modifications or LSA environment.",
+  "common": {
+    "derive_args_from": "authoritative current production config, hash pinned at start",
+    "control_engine": "Installed official production-qualified0.1.50 cfg.exe (ae49... according to parent), with cfg.lib_dirs. Do not substitute retained capture build.",
+    "candidate_engine": "Official stock0.1.56 CUDA13 engine manifest build06698c674673+cuda13.0, SHA21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788; only its matched supplied .so libraries.",
+    "fixed_capacity": {
+      "batch_slots": 8,
+      "max_context": 131072,
+      "kv": "int8",
+      "kv_resident_requested": 131072,
+      "resolved_kv_resident": 0,
+      "expert_slots": 24576
+    },
+    "fixed_model": [
+      "same native IQ3_S assets and hashes",
+      "same tokenizer/template files and hashes",
+      "same MTP assets",
+      "same control-vector bytes, scale, project mode, per-layer direction and layer range4..44",
+      "same prompt/conversation cache policy; conversation-cache-mib0",
+      "same GPU0 and550W existing policy"
+    ],
+    "fixed_mtp": "Preserve production MTP/spec6/suffix3 and measured min-p. Validate resolved INFO fields against source, not one hardcoded spec value; batch excludes automatic lookup-max-t12. Do not enable batch-MTP.",
+    "environment": "Start from scrubbed inherited STRATA_/CUDA_/NVIDIA_/LD_ environment, then explicitly restore approved production env and matched candidate library paths. Remove all STRATA_LSA_ variables. Keep pinned production SELF_COMMIT/QSA_SLOTS/SLOT_COPY_DIRECT/SLOT_COPY_BATCHSYNC and PF_FUSED0 for version-only arm."
+  },
+  "budgets": {
+    "total_seconds": 2700,
+    "max_profile_starts": "Bound each screening profile to one engine start; at most five candidates including same-settings, plus six interleaved confirmation arms. Runtime budget2700s is authoritative.",
+    "max_extra_combined_profiles": 0,
+    "screen_repetitions": 2,
+    "final_interleaved_pairs": 3,
+    "per_arm_ready_seconds": 180,
+    "per_request_seconds": 180,
+    "near_capacity_seconds": 240,
+    "minimum_meaningful_decode_tokens_per_slot": 128,
+    "max_new_perf_tokens": 256,
+    "tuning_rules": "Required order: version-only same-settings first, exact9 stack second, wrapper GDN defaults third. Only then screen PF_FUSED1, and only evaluate2048/share0.5 scheduling arm if baseline mixed latency warrants. At most two optional tuning arms; no combinations beyond listed closures, no arbitrary sweeps."
+  },
+  "stages": [
+    {
+      "name": "preflight",
+      "actions": [
+        "Verify exact owned HOLD via maintenance helper, inactive production, no GPU compute apps, no current other model. Repeat HOLD/config hash checks every3s.",
+        "No live downloads/builds; compile MAX_JOBS<=8 only while model stopped and before timing. One owned model process group at a time.",
+        "Verify hardware/driver/GPU UUID, CPU/RAM/cgroup capacity, 80,000MiB free VRAM before launch, MemAvailable>=8GiB and SwapFree>=2GiB; stop if MemAvailable<4GiB or sustained swap-out. Record actual free/peak values.",
+        "Record GPU power/temp/clocks/util/memory every1s; reject thermal or power throttling that differs between arms. Desktop graphics load is recorded; require compute-app list empty prelaunch. Sunshine stays stopped.",
+        "Capture production config/contract SHA, model/tokenizer/cvec/MTP hashes, executable and all matched .so hashes, env/args and source provenance. Production files stay unchanged."
+      ]
+    },
+    {
+      "name": "version_comparison",
+      "arms": [
+        "official0150_current",
+        "stock0156_same_settings"
+      ],
+      "measure": [
+        "one warmup each",
+        "fresh tuning6 exact fixtures",
+        "cold4K and16K prefill2reps per arm with unique synthetic prefixes",
+        "solo4K generation256max2reps; record tokens/time, MTP acceptance and lookup counters",
+        "C8 eight-live-slot256max2reps; require every slot>=128 actual tokens, report admission-inclusive wall plus steady decode aggregate",
+        "one mixed-load run:4 established decoders then cold32K joiner, record joinerTTFT and established streams longest token gap"
+      ],
+      "purpose": "Required first benchmark: exact same approved settings and capacity on official0150 vs native stock0156. Then separately measure full fresh-wrapper-recommended defaults so no wrapper-only optimization is missed."
+    },
+    {
+      "name": "bounded_screen",
+      "profiles": [
+        "parallel9",
+        "recommended_gdn",
+        "fused_prefill_optional",
+        "latency_chunks_if_needed_optional"
+      ],
+      "measure": [
+        "parallel9: exact-task tuning6 + cold4K/16K, solo256 and eight-live-slot256 performance; same current four flags plus five new ones. Upstream bit-exact claim still locally gated.",
+        "recommended_gdn: same9 plus TC1/CONVL22, fresh quality gate and4K/16K prefill; after qualifying9 baseline.",
+        "fused_prefill: optional only after wrapper-defaults benchmark; same9+GDN+PF_FUSED1, rounding change requires task quality.",
+        "latency_chunks_if_needed: optional only after measured mixed-load gap/TTFT issue; same9+GDN with prefill2048/share0.5; if GDN does not qualify, regenerate frozen profile on9-only and record newSHA."
+      ],
+      "retain": "All capacity/residency pass, no infrastructure errors, no new quality failure among control-correct fixtures; existing model failures remain explicit. >=3% target median improvement without>5%other regression; two repeats are screening only."
+    },
+    {
+      "name": "confirmation",
+      "arms": [
+        "official0150_current",
+        "final0156_profile"
+      ],
+      "order": "A,B / B,A / A,B; new owned engine process per arm; same fixtures and parity of warmup/cache state",
+      "measure": [
+        "all6 interleaved arms use frozen cold4K/16K, solo256, C8>=128tokens/slot, mixed-load32K metrics",
+        "three paired ratios reported individually plus median; use actual tokens and raw wall seconds",
+        "Fresh heldout exact fixtures only after profile frozen; baseline and finalist once each",
+        "Finalist and baseline each one near125K prompt with three seed-derived markers at12%,55%,89%, max_new64 and actual token count+allowance<=131072",
+        "One native8slot cancel+resume/prefix lifecycle test and final loopback API JSON/tool/cancel/image regression smoke with unchanged installed wrapper and correct candidate library bundle"
+      ],
+      "winner": "All capacity/API gates pass and no new heldout failure on control-correct cases; preserve shared failures explicitly. No>5%median performance regression across mandatory workloads; speedup claim only target median paired gain>=5%and all3pair signs agree. Otherwise retain baseline/report neutral or tradeoff. No automatic production promotion."
+    }
+  ],
+  "harness_changes_needed": [
+    "Reuse existing external Guard/process-group cleanup, but point control at official installed0.1.50; retained capture0.1.50 is a separate diagnostic control only.",
+    "Use new source/tokenizer adapter rather than oldSOURCE constant; no candidate LSA-map hash/startup-marker checks. Explicitly assert no LSA env or enabled startup marker.",
+    "Native DONE.parse must tolerate source-compatible appended fields and validate finite timings/counters. Pin resolved batch/group/window/MTP fields per profile; do not require exact cross-version output IDs for rounding-changing paths.",
+    "Old eight-slot cancel-after3tokens case proves lifecycle only; never call it throughput. New C8 performance must keep8 slots live long enough, record8BADM before steady sample and per-slot token timestamps.",
+    "Record cold versus prefix-reused requests separately. Fresh repeat prefixes prevent warm prefix cache from impersonating cold prefill; accepted-prefix reuse tested as another workload.",
+    "Final quality fixtures heldout from screening; no consumed LSA captures or pilot test set used. No changing fixture oracle after seeing a failure.",
+    "Read profiles.json with schema_version1/control/profiles list. All candidate env/arg overrides are fully explicit. Because recommended profiles inherit base cfg and set overrides, source child_env setdefault behavior is emulated without replacing native binary or wrapper during tuning."
+  ],
+  "source_backed_defaults": {
+    "source_commit": "06698c674673008395ba6e971580538d6b1ea6e0",
+    "native_vs_wrapper": "Direct native launch does not invoke Python child_env. Its low-level GDN flags are opt-in, while LinuxCUDA0.1.56 wrapper sets defaults using setdefault. Explicit cfg/shell values win.",
+    "parallel9": {
+      "file": "serve/server.py",
+      "lines": [
+        3947,
+        3991
+      ],
+      "env": {
+        "STRATA_CKPT_POOL": "1",
+        "STRATA_CKPT_POOL_READY": "4",
+        "STRATA_SLOT_CKPT_MOVE": "1",
+        "STRATA_SLOT_COPY_DIRECT": "1",
+        "STRATA_SLOT_COPY_BATCHSYNC": "1",
+        "STRATA_BATCH_GDN_GROUPS": "1",
+        "STRATA_BATCH_ATTN_ROWS": "1",
+        "STRATA_BATCH_SELF_COMMIT": "1",
+        "STRATA_QSA_SLOTS": "1"
+      },
+      "applicability": "LinuxCUDA Qwen, parallel/--batch/--slots>=2; Windows/HIP/SYCL/Metal/Vulkan excluded."
+    },
+    "gdn": {
+      "file": "serve/server.py",
+      "lines": [
+        3993,
+        4024
+      ],
+      "env": {
+        "STRATA_GDN_TC": "1",
+        "STRATA_GDN_CONVL2": "2"
+      },
+      "applicability": "LinuxCUDA qwen4exp, independent of slot count. Qualified upstream rounding change, not bitwise.",
+      "qualification_note": "CONVL2=2 is distinct from the old AMD table CONVL2=1. Do not treat AMD-only arch-default caution as excluding the newer CUDA wrapper setting."
+    },
+    "native_memory_defaults": {
+      "file": "serve/server.py",
+      "lines": [
+        3957,
+        3960
+      ],
+      "note": "PF_W16_CACHE and AUTO_NOBORROW are native free-VRAM-gated defaults, not wrapper env. Leave native decisions unchanged and record resolved allocation. Explicit --prefill prevents AUTO_NOBORROW new-auto-chunk rule."
+    }
+  },
+  "quality_assessment": {
+    "tuning_gate": "No new failure on any case the retained control answers correctly. Preserve all raw failed baseline and candidate observations. Do not rewrite fixture questions/expected values or call shared failures correct.",
+    "heldout_gate": "Fresh heldout critical retrieval/API/capacity gates remain strict where retained control passes; any new candidate failure rejects qualification. Shared control/candidate failures remain explicitly failed and limit claims.",
+    "reason": "Initial retained-control run fails independently verified arithmetic644 and53. Zero-error tuning gate cannot be satisfied by baseline and would confound model ability with engine regressions.",
+    "model_training": "This campaign tunes serving settings only; no weight training or optimizer state."
+  }
+}

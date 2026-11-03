@@ -1,0 +1,4082 @@
+{
+  "role": "baseline",
+  "status": "passed",
+  "started_at": "2026-11-03T23:26:12.424243+00:00",
+  "initial": {
+    "health": {
+      "status": "ok",
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next",
+      "images": true,
+      "api_key": true,
+      "loaded": true,
+      "service": "strata"
+    },
+    "metrics": {
+      "engine": {
+        "model": "qwen3.8-flash-next",
+        "max_context": 131072,
+        "images": true,
+        "version": "0.1.50",
+        "logit_bias": 1,
+        "context": 131072,
+        "kv": "int8",
+        "kv_resident": 0,
+        "expert_slots": 24576,
+        "expert_cache_mib": 47962,
+        "expert_slots_primary": 24576,
+        "expert_cache_primary_mib": 47962,
+        "spec": 8,
+        "mtp_max": 6,
+        "lookup": 3,
+        "vram_free_mib": 9719,
+        "cvec": "project:4-44",
+        "arena_mib": 47962,
+        "pool_workers": 12,
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.50",
+        "conversation_cache_mib": 0,
+        "conversation_cache_slots": 4,
+        "conversation_cache_min_free_mib": 2560,
+        "conversation_cache_min_tokens": 0,
+        "tail_role_token": -1,
+        "vram_elastic": 0,
+        "prefill_cap": 32768,
+        "prefill_stages": 1,
+        "stream_all_min": 1024,
+        "prefill_pipe": 0,
+        "batch_slots": 8,
+        "slot_cache": 1,
+        "batch_groups": 1,
+        "engine": "0.1.50"
+      },
+      "live": {
+        "state": "idle",
+        "queued": 0,
+        "phase": null,
+        "prompt_tokens": null,
+        "prompt_read": null,
+        "prompt_total": null,
+        "generated": null,
+        "max_tokens": null,
+        "elapsed_s": null,
+        "tok_s": null,
+        "tok_s_mean": null,
+        "prefill_tok_s_mean": null,
+        "tok_s_window_s": null,
+        "parallel": 8,
+        "running": 0,
+        "slots": [
+          {
+            "slot": 0,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 1,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 2,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 3,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 4,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 5,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 6,
+            "state": "idle",
+            "held_tokens": 0
+          },
+          {
+            "slot": 7,
+            "state": "idle",
+            "held_tokens": 0
+          }
+        ],
+        "outside_slots": 0,
+        "waiting": 0,
+        "admitting": 0
+      },
+      "requests": [],
+      "conversation_cache": {
+        "enabled": false,
+        "budget_mib": 0,
+        "slots": 4,
+        "parked": 0,
+        "bytes": 0,
+        "evictions": 0,
+        "parks": 0,
+        "restores": 0,
+        "last_event": null,
+        "last_tokens": null,
+        "last_at": null,
+        "requests": 0,
+        "requests_reused": 0,
+        "reused_tokens": 0,
+        "prompt_tokens": 0,
+        "last_reused": null,
+        "last_prompt": null
+      },
+      "requests_kept": 0,
+      "totals": {
+        "since": 1793748425.1048017,
+        "requests": 0,
+        "prompt_tokens": 0,
+        "reused": 0,
+        "output_tokens": 0,
+        "prompt_ms": 0.0,
+        "decode_ms": 0.0,
+        "drafts_offered": 0,
+        "drafts_accepted": 0
+      },
+      "hardware": {
+        "gpu_util": 7,
+        "gpu_mem_used": 92450848768,
+        "gpu_mem_total": 102641958912,
+        "gpu_temp": 42,
+        "gpu_power": 95.439,
+        "gpu_power_limit": 550.0,
+        "gpu_pcie_gen": 5,
+        "gpu_pcie_gen_max": 5,
+        "gpu_pcie_width": 16,
+        "gpu_pcie_rx_mb": 51.2373046875,
+        "gpu_pcie_tx_mb": 10.0419921875,
+        "cpu": 0.0,
+        "ram_used": 12245635072,
+        "ram_total": 66843471872,
+        "disk_read_mb": null,
+        "disk_write_mb": null,
+        "tok_s": 0.0,
+        "tok_s_mean": 0,
+        "prefill_tok_s_mean": 0.0
+      },
+      "hardware_static": {
+        "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "gpu_count": 1,
+        "gpu_note": null,
+        "cpu_name": "Intel(R) Core(TM) Ultra 9 285K",
+        "cores": 24,
+        "threads": 24,
+        "psutil": true
+      },
+      "history": {
+        "gpu_util": [
+          7
+        ],
+        "gpu_mem_used": [
+          92450848768
+        ],
+        "gpu_temp": [
+          42
+        ],
+        "gpu_power": [
+          95.44
+        ],
+        "gpu_pcie_rx_mb": [
+          51.24
+        ],
+        "cpu": [
+          0.0
+        ],
+        "ram_used": [
+          12245635072
+        ],
+        "disk_read_mb": [
+          null
+        ],
+        "tok_s": [
+          0.0
+        ],
+        "prefill_tok_s_mean": [
+          0.0
+        ]
+      },
+      "time": 1793748425.2291303
+    },
+    "status": {
+      "service": "strata",
+      "model": "qwen3.8-flash-next",
+      "loaded": true,
+      "auto_load": true,
+      "structured_output": {
+        "formats": [
+          "json_object",
+          "json_schema"
+        ],
+        "method": "prompt_and_validate",
+        "constrained_decoding": false,
+        "stream_buffered": true
+      },
+      "engine": "0.1.50",
+      "started": 1793748425,
+      "uptime_s": 0,
+      "cache_max_tokens": 131072,
+      "context": {
+        "native": 131072,
+        "max_positions": 131072
+      },
+      "concurrency": {
+        "serving": 8,
+        "requested": 8
+      },
+      "dialects": [
+        "/v1/chat/completions",
+        "/v1/messages",
+        "/v1/responses"
+      ],
+      "vision": {
+        "enabled": true,
+        "available": true,
+        "error": null
+      },
+      "activity": {
+        "requests": 0,
+        "in_flight": 0,
+        "last_request_at": null
+      },
+      "last_timings": null,
+      "vram": {
+        "elastic": false
+      },
+      "machine": {
+        "at": 1793748425,
+        "gpu": {
+          "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+          "used_mib": 88168.0,
+          "total_mib": 97887.0,
+          "util_pct": 7,
+          "temp_c": 42,
+          "power_w": 95.439
+        },
+        "ram": {
+          "used_gib": 11.4,
+          "total_gib": 62.3
+        }
+      }
+    },
+    "identity": {
+      "wrapper": {
+        "pid": 151063,
+        "start_ticks": "16866571",
+        "exe": "/usr/bin/python3.12",
+        "argv": [
+          "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+          "-m",
+          "serve.server",
+          "--engine",
+          "strata",
+          "--config",
+          "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-throughput-final-r2/baseline/candidate-private.json",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18023"
+        ]
+      },
+      "engine": {
+        "pid": 151158,
+        "start_ticks": "16866835",
+        "exe": "/opt/onyx-strata-0150-candidate/strata",
+        "argv": [
+          "/opt/onyx-strata-0150-candidate/strata",
+          "--serve",
+          "--pack",
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+          "--native",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--ple-gguf",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "--expert-profile",
+          "/home/USER/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+          "--expert-cache",
+          "auto",
+          "--prefill",
+          "32768",
+          "--spec",
+          "6",
+          "--spec-min-p",
+          "0.5",
+          "--mtp",
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--vision",
+          "--vram-reserve-mib",
+          "700",
+          "--control-vector-scaled",
+          "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+          "--control-vector-layer-range",
+          "4",
+          "44",
+          "--cvec-mode",
+          "project",
+          "--cvec-dir",
+          "per-layer",
+          "--pool-workers",
+          "12",
+          "--pcie-frac",
+          "0",
+          "--no-prefill-borrow",
+          "--ple-io",
+          "ram",
+          "--kv-resident",
+          "131072",
+          "--conversation-cache-mib",
+          "0",
+          "--batch",
+          "8"
+        ]
+      },
+      "vision": {
+        "pid": 151067,
+        "start_ticks": "16866605",
+        "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+        "argv": [
+          "/opt/onyx-strata-0150-candidate/strata-vision",
+          "--mmproj",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+          "--model",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--gpu",
+          "--max-tokens",
+          "1024"
+        ]
+      },
+      "boot_id": "<redacted-uuid>",
+      "process_group": 151063,
+      "loopback_listener_verified": true
+    },
+    "startup_ms": 52798.3661229955,
+    "authentication_rejection_verified": true
+  },
+  "initial_loaded_libraries": {
+    "engine": [
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+        "matched_bundle": true
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "size": 236616,
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "size": 2129424,
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "size": 112475080,
+        "sha256": "85a8cc8cf00419ceb295ec62c481d05b4cdbdab10f25c5375d6d24bdbe00b4d9",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "size": 14408,
+        "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "size": 183024,
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "size": 952616,
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "size": 14408,
+        "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "size": 14624,
+        "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "size": 2592224,
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "matched_bundle": false
+      }
+    ],
+    "vision": [
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+        "matched_bundle": true
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "size": 236616,
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "size": 2129424,
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "size": 112475080,
+        "sha256": "85a8cc8cf00419ceb295ec62c481d05b4cdbdab10f25c5375d6d24bdbe00b4d9",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "size": 14408,
+        "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "size": 183024,
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "size": 952616,
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "size": 14408,
+        "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "size": 14624,
+        "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "size": 2592224,
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "matched_bundle": false
+      }
+    ]
+  },
+  "solo": {
+    "streams": [
+      {
+        "id": "solo",
+        "http_status": 200,
+        "actual_content": "1. Initialize the Synthetic Solo Ledger environment by verifying that all records are marked as fictional and independent.\n2. Confirm that the dataset contains exactly 145 records, indexed from 00000 to 00144.\n3. Load the initial dataset into the operational memory buffer for processing.\n4. Verify that record 00000 contains parcel 942561 and bay 088.\n5. Verify that record 00001 contains parcel 950480 and bay 125.\n6. Verify that record 00002 contains parcel 958399 and bay 162.\n7. Verify that record 00003 contains parcel 966318 and bay 199.\n8. Verify that record 00004 contains parcel 974237 and bay 236.\n9. Verify that record 00005 contains parcel 982156 and bay 273.\n10. Verify that record 00006 contains parcel 990075",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3988,
+          "completion_tokens": 256,
+          "total_tokens": 4244,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 1154.8012029961683,
+        "wall_ms": 1968.8927859824616,
+        "sse_chunks_observed": 249,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3988,
+          "prompt_ms": 1062.9,
+          "prompt_per_token_ms": 0.267,
+          "prompt_per_second": 3752.0,
+          "predicted_n": 256,
+          "predicted_ms": 831.1,
+          "predicted_per_token_ms": 3.246,
+          "predicted_per_second": 308.0,
+          "draft_n": 216,
+          "draft_n_accepted": 192
+        },
+        "sent_after_release_ms": 0.17703801859170198,
+        "completed_after_release_ms": 1969.0698240010533
+      }
+    ],
+    "concurrent_clients": 1,
+    "engine_slots_allocated": 8,
+    "requested_output_tokens_each": 256,
+    "actual_usage_completion_tokens_each": [
+      256
+    ],
+    "usage_completion_tokens_total": 256,
+    "whole_request_seconds": 1.9690698240010533,
+    "whole_request_output_tokens_per_second": 130.0106257683745,
+    "all_output_caps_reached": true,
+    "eligible_for_same_budget_speed_comparison": true,
+    "client_release_spread_ms": 0.0,
+    "peak_observed_active_engine_slots": 0,
+    "peak_observed_decoding_slots": 0,
+    "metrics_samples": [
+      {
+        "elapsed_ms": 162.63129000435583,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3988,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 0.1,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": null,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 1,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 724.3750570050906,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3988,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 0.7,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": null,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 1,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 1285.4870820010547,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3988,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 17,
+          "max_tokens": 256,
+          "elapsed_s": 1.2,
+          "tok_s": 68.0,
+          "tok_s_mean": 130.6,
+          "prefill_tok_s_mean": 3751.4,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 1,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 1844.9010970070958,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3988,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 202,
+          "max_tokens": 256,
+          "elapsed_s": 1.8,
+          "tok_s": 293.0,
+          "tok_s_mean": 293.0,
+          "prefill_tok_s_mean": 3751.4,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 1,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 0,
+          "admitting": 0
+        }
+      }
+    ],
+    "metric_scope": "real usage completion tokens / total time from synchronized client release through final DONE",
+    "ttft_scope": "first nonempty visible-content SSE delta; chunks are never treated as tokens",
+    "common_token_window_rate": null,
+    "common_token_window_note": "SSE chunks do not provide token arrival timestamps; native harness supplies that separate metric"
+  },
+  "solo_metrics": {
+    "engine": {
+      "model": "qwen3.8-flash-next",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.50",
+      "logit_bias": 1,
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 24576,
+      "expert_cache_mib": 47962,
+      "expert_slots_primary": 24576,
+      "expert_cache_primary_mib": 47962,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3,
+      "vram_free_mib": 9719,
+      "cvec": "project:4-44",
+      "arena_mib": 47962,
+      "pool_workers": 12,
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "conversation_cache_slots": 4,
+      "conversation_cache_min_free_mib": 2560,
+      "conversation_cache_min_tokens": 0,
+      "tail_role_token": -1,
+      "vram_elastic": 0,
+      "prefill_cap": 32768,
+      "prefill_stages": 1,
+      "stream_all_min": 1024,
+      "prefill_pipe": 0,
+      "batch_slots": 8,
+      "slot_cache": 1,
+      "batch_groups": 1,
+      "engine": "0.1.50"
+    },
+    "live": {
+      "state": "idle",
+      "queued": 0,
+      "phase": null,
+      "prompt_tokens": null,
+      "prompt_read": null,
+      "prompt_total": null,
+      "generated": null,
+      "max_tokens": null,
+      "elapsed_s": null,
+      "tok_s": null,
+      "tok_s_mean": null,
+      "prefill_tok_s_mean": null,
+      "tok_s_window_s": null,
+      "parallel": 8,
+      "running": 0,
+      "slots": [
+        {
+          "slot": 0,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 1,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 2,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 3,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 4,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 5,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 6,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 7,
+          "state": "idle",
+          "held_tokens": 0
+        }
+      ],
+      "outside_slots": 0,
+      "waiting": 0,
+      "admitting": 0
+    },
+    "requests": [
+      {
+        "projection": true,
+        "time": 1793748425.5767136,
+        "duration_s": 1.9,
+        "finish": "length",
+        "prompt_tokens": 3988,
+        "reused": 0,
+        "output_tokens": 256,
+        "prompt_total": 3988,
+        "prompt_read": 3988,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 256,
+        "prompt_ms": 1062.9,
+        "decode_ms": 831.1,
+        "decode_tok_s": 308.0,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 216,
+        "drafts_accepted": 192
+      }
+    ],
+    "conversation_cache": {
+      "enabled": false,
+      "budget_mib": 0,
+      "slots": 4,
+      "parked": 0,
+      "bytes": 0,
+      "evictions": 0,
+      "parks": 0,
+      "restores": 0,
+      "last_event": null,
+      "last_tokens": null,
+      "last_at": null,
+      "requests": 1,
+      "requests_reused": 0,
+      "reused_tokens": 0,
+      "prompt_tokens": 3988,
+      "last_reused": 0,
+      "last_prompt": 3988
+    },
+    "requests_kept": 1,
+    "totals": {
+      "since": 1793748425.1048017,
+      "requests": 1,
+      "prompt_tokens": 3988,
+      "reused": 0,
+      "output_tokens": 256,
+      "prompt_ms": 1062.9,
+      "decode_ms": 831.1,
+      "drafts_offered": 216,
+      "drafts_accepted": 192
+    },
+    "hardware": {
+      "gpu_util": 100,
+      "gpu_mem_used": 92557475840,
+      "gpu_mem_total": 102641958912,
+      "gpu_temp": 51,
+      "gpu_power": 399.566,
+      "gpu_power_limit": 550.0,
+      "gpu_pcie_gen": 5,
+      "gpu_pcie_gen_max": 5,
+      "gpu_pcie_width": 16,
+      "gpu_pcie_rx_mb": 141.3671875,
+      "gpu_pcie_tx_mb": 48.072265625,
+      "cpu": 12.4,
+      "ram_used": 12871401472,
+      "ram_total": 66843471872,
+      "disk_read_mb": 222.9875878683887,
+      "disk_write_mb": 0.05994189287636664,
+      "tok_s": 279.03072482754385,
+      "tok_s_mean": 279.0274296898188,
+      "prefill_tok_s_mean": 3751.4
+    },
+    "hardware_static": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "gpu_count": 1,
+      "gpu_note": null,
+      "cpu_name": "Intel(R) Core(TM) Ultra 9 285K",
+      "cores": 24,
+      "threads": 24,
+      "psutil": true
+    },
+    "history": {
+      "gpu_util": [
+        7,
+        100,
+        100
+      ],
+      "gpu_mem_used": [
+        92450848768,
+        92513763328,
+        92557475840
+      ],
+      "gpu_temp": [
+        42,
+        50,
+        51
+      ],
+      "gpu_power": [
+        95.44,
+        146.01,
+        399.57
+      ],
+      "gpu_pcie_rx_mb": [
+        51.24,
+        125.4,
+        141.37
+      ],
+      "cpu": [
+        0.0,
+        7.7,
+        12.4
+      ],
+      "ram_used": [
+        12245635072,
+        12536741888,
+        12871401472
+      ],
+      "disk_read_mb": [
+        null,
+        275.12,
+        222.99
+      ],
+      "tok_s": [
+        0.0,
+        0.0,
+        279.03
+      ],
+      "prefill_tok_s_mean": [
+        0.0,
+        null,
+        3751.4
+      ]
+    },
+    "time": 1793748427.4876158
+  },
+  "throughput": {
+    "streams": [
+      {
+        "id": "stream0",
+        "http_status": 200,
+        "actual_content": "1. Initialize the operational environment for the Independent Workload Stream0 ledger system.\n2. Verify that the system clock is synchronized with the primary NTP server to ensure timestamp accuracy.\n3. Confirm that the database connection pool is active and configured for high availability.\n4. Load the configuration file defining the synthetic stream parameters.\n5. Validate that the stream identifier is correctly set to \"stream0\".\n6. Ensure that the record counter is initialized to zero for the current processing cycle.\n7. Check that the parcel ID generation algorithm is set to the linear increment mode.\n8. Verify that the bay ID assignment logic is configured for the modulo-999 sequence.\n9. Confirm that the data validation schema is loaded into the memory cache.\n10. Initialize the error logging subsystem with the appropriate severity levels.\n11. Set up the monitoring dashboard to display real-time throughput metrics.\n12. Verify that the backup storage volume is mounted and writable.\n13. Ensure that the retention policy engine is active and configured for 7-year archival.\n14. Confirm that the reconciliation module is ready to compare source and target datasets.\n15. Validate that the network firewall rules allow traffic on the designated ledger",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3989,
+          "completion_tokens": 256,
+          "total_tokens": 4245,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 1754.4578879897017,
+        "wall_ms": 11501.84183998499,
+        "sse_chunks_observed": 244,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3989,
+          "prompt_ms": 772.8,
+          "prompt_per_token_ms": 0.194,
+          "prompt_per_second": 5161.7,
+          "predicted_n": 256,
+          "predicted_ms": 9746.5,
+          "predicted_per_token_ms": 38.072,
+          "predicted_per_second": 26.3,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 0.07505802204832435,
+        "completed_after_release_ms": 11501.916898007039
+      },
+      {
+        "id": "stream1",
+        "http_status": 200,
+        "actual_content": "```python\n\"\"\"\nModule for processing synthetic stream1 ledger records.\n\nThis module provides functionality to parse, validate, filter, group,\nand analyze records from a fictional workload stream. It includes\nrobust error handling and comprehensive testing.\n\"\"\"\n\nimport json\nimport re\nfrom typing import List, Dict, Any, Optional, Tuple\nfrom dataclasses import dataclass, asdict\nfrom collections import defaultdict\nimport statistics\n\n\n@dataclass\nclass LedgerRecord:\n    \"\"\"Represents a single record in the synthetic stream1 ledger.\"\"\"\n    record_id: int\n    parcel: str\n    bay: str\n\n    def to_dict(self) -> Dict[str, Any]:\n        \"\"\"Convert record to dictionary for JSON serialization.\"\"\"\n        return asdict(self)\n\n    @classmethod\n    def from_dict(cls, data: Dict[str, Any]) -> 'LedgerRecord':\n        \"\"\"Create a LedgerRecord from a dictionary.\"\"\"\n        return cls(\n            record_id=int(data['record_id']),\n            parcel=str(data['parcel']),\n            bay=str(data['bay'])\n        )\n\n\nclass LedgerParser:\n    \"\"\"Parser for synthetic stream1 ledger records.\"\"\"\n\n    # Pattern to match the synthetic record format\n   ",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3995,
+          "completion_tokens": 256,
+          "total_tokens": 4251,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 4275.123957020696,
+        "wall_ms": 11567.3932589998,
+        "sse_chunks_observed": 225,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3995,
+          "prompt_ms": 774.9,
+          "prompt_per_token_ms": 0.194,
+          "prompt_per_second": 5155.5,
+          "predicted_n": 256,
+          "predicted_ms": 7291.3,
+          "predicted_per_token_ms": 28.482,
+          "predicted_per_second": 35.1,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 0.6882949965074658,
+        "completed_after_release_ms": 11568.081553996308
+      },
+      {
+        "id": "stream2",
+        "http_status": 200,
+        "actual_content": "1. Initialize the operational environment for the Independent Workload Stream2 ledger system.\n2. Verify that the system clock is synchronized with the primary NTP server to ensure timestamp accuracy.\n3. Confirm that the database connection pool is active and configured for high availability.\n4. Load the configuration file specific to Stream2, ensuring all parameters match the production environment.\n5. Validate that the input source for Stream2 records is accessible and read-only permissions are correctly applied.\n6. Check that the output destination for processed records is writable and has sufficient disk space.\n7. Ensure that the logging service is running and configured to capture INFO, WARN, and ERROR levels.\n8. Verify that the alerting system is connected to the monitoring dashboard for real-time notifications.\n9. Confirm that the backup service is scheduled and functioning correctly for the ledger database.\n10. Review the current status of the Stream2 ingestion queue to ensure it is empty or within expected thresholds.\n11. Validate the schema definition for the Stream2 ledger table to ensure it matches the expected structure.\n12. Check that the `parcel` field is defined as a fixed-length string or integer with leading zeros preserved.\n13. Check that the `bay`",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3989,
+          "completion_tokens": 256,
+          "total_tokens": 4245,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 3429.718989995308,
+        "wall_ms": 11546.937297011027,
+        "sse_chunks_observed": 246,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3989,
+          "prompt_ms": 770.6,
+          "prompt_per_token_ms": 0.193,
+          "prompt_per_second": 5176.5,
+          "predicted_n": 256,
+          "predicted_ms": 8116.3,
+          "predicted_per_token_ms": 31.704,
+          "predicted_per_second": 31.5,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 1.8636730092111975,
+        "completed_after_release_ms": 11548.800970020238
+      },
+      {
+        "id": "stream3",
+        "http_status": 200,
+        "actual_content": "```python\n\"\"\"\nModule for processing synthetic stream3 ledger records.\n\nThis module provides functionality to parse, validate, filter, group,\nand analyze fictional parcel and bay assignment records.\n\"\"\"\n\nimport json\nimport re\nfrom typing import List, Dict, Any, Optional, Tuple\nfrom dataclasses import dataclass, asdict\nfrom collections import defaultdict\n\n@dataclass\nclass LedgerRecord:\n    \"\"\"Represents a single record in the stream3 ledger.\"\"\"\n    record_id: int\n    parcel: int\n    bay: int\n\n    def to_dict(self) -> Dict[str, Any]:\n        \"\"\"Convert record to dictionary for JSON serialization.\"\"\"\n        return {\n            \"record_id\": self.record_id,\n            \"parcel\": self.parcel,\n            \"bay\": self.bay\n        }\n\n    @classmethod\n    def from_dict(cls, data: Dict[str, Any]) -> \"LedgerRecord\":\n        \"\"\"Create a LedgerRecord from a dictionary.\"\"\"\n        return cls(\n            record_id=int(data[\"record_id\"]),\n            parcel=int(data[\"parcel\"]),\n            bay=int(data[\"bay\"])\n        )\n\n\nclass Stream3LedgerProcessor:\n    \"\"\"\n    Processor for handling",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3995,
+          "completion_tokens": 256,
+          "total_tokens": 4251,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 5954.834771022433,
+        "wall_ms": 11598.482508008601,
+        "sse_chunks_observed": 224,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3995,
+          "prompt_ms": 770.9,
+          "prompt_per_token_ms": 0.193,
+          "prompt_per_second": 5182.3,
+          "predicted_n": 256,
+          "predicted_ms": 5642.8,
+          "predicted_per_token_ms": 22.042,
+          "predicted_per_second": 45.4,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 1.984431000892073,
+        "completed_after_release_ms": 11600.466939009493
+      },
+      {
+        "id": "stream4",
+        "http_status": 200,
+        "actual_content": "1. Initialize the operational environment for the Independent Workload Stream4 ledger system.\n2. Verify that the system clock is synchronized with the primary NTP server to ensure timestamp accuracy.\n3. Confirm that the database connection pool is active and configured for high availability.\n4. Load the configuration file specific to Stream4, ensuring all parameters match the production environment.\n5. Validate that the input source for Stream4 records is accessible and read-only permissions are correctly applied.\n6. Ensure that the output destination for processed records is writable and has sufficient disk space.\n7. Check that the logging service is running and configured to capture INFO, WARN, and ERROR levels.\n8. Verify that the alerting system is connected to the monitoring dashboard for real-time notifications.\n9. Confirm that the backup service is scheduled and functioning correctly for the Stream4 database.\n10. Review the current status of the Stream4 processing queue to ensure it is empty or within expected limits.\n11. Validate the schema definition for the Stream4 ledger to ensure it matches the expected data structure.\n12. Ensure that the data validation rules for parcel IDs are loaded into the validation engine.\n13. Ensure that the data validation rules for bay IDs are",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3989,
+          "completion_tokens": 256,
+          "total_tokens": 4245,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 907.5299960095435,
+        "wall_ms": 11457.988040026976,
+        "sse_chunks_observed": 246,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3989,
+          "prompt_ms": 0.2,
+          "prompt_per_token_ms": 0.0,
+          "prompt_per_second": 19945000.0,
+          "predicted_n": 256,
+          "predicted_ms": 10536.7,
+          "predicted_per_token_ms": 41.32,
+          "predicted_per_second": 24.2,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 0.558875995920971,
+        "completed_after_release_ms": 11458.546916022897
+      },
+      {
+        "id": "stream5",
+        "http_status": 200,
+        "actual_content": "```python\n\"\"\"\nModule for processing synthetic stream5 ledger records.\n\nThis module provides functionality to parse, validate, filter, group,\nand analyze fictional parcel and bay assignment records.\n\"\"\"\n\nimport json\nimport re\nfrom typing import List, Dict, Any, Optional, Tuple\nfrom dataclasses import dataclass, asdict\nfrom collections import defaultdict\n\n@dataclass\nclass LedgerRecord:\n    \"\"\"Represents a single record from the synthetic stream5 ledger.\"\"\"\n    record_id: int\n    parcel: str\n    bay: str\n\n    def to_dict(self) -> Dict[str, Any]:\n        \"\"\"Convert record to dictionary for JSON serialization.\"\"\"\n        return asdict(self)\n\n    @classmethod\n    def from_dict(cls, data: Dict[str, Any]) -> 'LedgerRecord':\n        \"\"\"Create a LedgerRecord from a dictionary.\"\"\"\n        return cls(\n            record_id=int(data['record_id']),\n            parcel=str(data['parcel']),\n            bay=str(data['bay'])\n        )\n\n\nclass Stream5LedgerProcessor:\n    \"\"\"\n    Processor for handling synthetic stream5 ledger data.\n    \n    Provides methods for parsing raw text, validating records,\n    filtering, grouping, and",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3995,
+          "completion_tokens": 256,
+          "total_tokens": 4251,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 2596.315145987319,
+        "wall_ms": 11525.728111009812,
+        "sse_chunks_observed": 226,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3995,
+          "prompt_ms": 776.8,
+          "prompt_per_token_ms": 0.194,
+          "prompt_per_second": 5142.9,
+          "predicted_n": 256,
+          "predicted_ms": 8928.4,
+          "predicted_per_token_ms": 34.877,
+          "predicted_per_second": 28.7,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 0.38997401134110987,
+        "completed_after_release_ms": 11526.118085021153
+      },
+      {
+        "id": "stream6",
+        "http_status": 200,
+        "actual_content": "1. Initialize the operational environment for the Independent Workload Stream6 ledger system.\n2. Verify that the system clock is synchronized with the primary NTP server to ensure timestamp accuracy.\n3. Confirm that the database connection pool is active and configured for high availability.\n4. Load the configuration file specific to Stream6, ensuring all parameters match the production environment.\n5. Validate that the input source for Stream6 records is accessible and read-only permissions are correctly applied.\n6. Check that the output destination for processed records is writable and has sufficient disk space.\n7. Ensure that the logging service is running and configured to capture INFO, WARN, and ERROR levels.\n8. Verify that the alerting system is connected to the monitoring dashboard for real-time notifications.\n9. Confirm that the backup service is scheduled and functioning correctly for the Stream6 database.\n10. Review the current status of the Stream6 processing queue to ensure it is empty or within expected limits.\n11. Validate the schema definition for the Stream6 ledger table to ensure it matches the expected structure.\n12. Check that the `parcel` field is defined as a fixed-length string or integer with appropriate constraints.\n13. Check that the `bay`",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3989,
+          "completion_tokens": 256,
+          "total_tokens": 4245,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 5115.863034996437,
+        "wall_ms": 11583.7182860123,
+        "sse_chunks_observed": 246,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3989,
+          "prompt_ms": 774.6,
+          "prompt_per_token_ms": 0.194,
+          "prompt_per_second": 5149.8,
+          "predicted_n": 256,
+          "predicted_ms": 6466.6,
+          "predicted_per_token_ms": 25.26,
+          "predicted_per_second": 39.6,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 2.1000870037823915,
+        "completed_after_release_ms": 11585.818373016082
+      },
+      {
+        "id": "stream7",
+        "http_status": 200,
+        "actual_content": "```python\n\"\"\"\nModule for processing the fictional 'stream7' workload ledger.\n\nThis module provides functionality to parse, validate, filter, group,\nand analyze synthetic records containing parcel and bay information.\nIt also supports exporting results to JSON format.\n\nExample:\n    >>> data = \"Synthetic stream7 record 00000: parcel 837832; bay 077.\"\n    >>> parser = Stream7Parser()\n    >>> record = parser.parse(data)\n    >>> print(record['parcel'])\n    837832\n\"\"\"\n\nimport re\nimport json\nfrom typing import List, Dict, Optional, Any\nfrom collections import defaultdict\n\nclass Stream7Record:\n    \"\"\"Represents a single record from the stream7 ledger.\"\"\"\n    \n    def __init__(self, record_id: int, parcel: int, bay: int):\n        self.record_id = record_id\n        self.parcel = parcel\n        self.bay = bay\n\n    def to_dict(self) -> Dict[str, Any]:\n        \"\"\"Convert the record to a dictionary.\"\"\"\n        return {\n            \"record_id\": self.record_id,\n            \"parcel\": self.parcel",
+        "reasoning_content": "",
+        "usage": {
+          "prompt_tokens": 3995,
+          "completion_tokens": 256,
+          "total_tokens": 4251,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "first_nonempty_content_ttft_ms": 6797.758988017449,
+        "wall_ms": 11610.647310008062,
+        "sse_chunks_observed": 231,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 3995,
+          "prompt_ms": 772.0,
+          "prompt_per_token_ms": 0.193,
+          "prompt_per_second": 5174.9,
+          "predicted_n": 256,
+          "predicted_ms": 4812.1,
+          "predicted_per_token_ms": 18.797,
+          "predicted_per_second": 53.2,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        },
+        "sent_after_release_ms": 2.211443003034219,
+        "completed_after_release_ms": 11612.858753011096
+      }
+    ],
+    "concurrent_clients": 8,
+    "engine_slots_allocated": 8,
+    "requested_output_tokens_each": 256,
+    "actual_usage_completion_tokens_each": [
+      256,
+      256,
+      256,
+      256,
+      256,
+      256,
+      256,
+      256
+    ],
+    "usage_completion_tokens_total": 2048,
+    "whole_request_seconds": 11.612858753011096,
+    "whole_request_output_tokens_per_second": 176.35623092969888,
+    "all_output_caps_reached": true,
+    "eligible_for_same_budget_speed_comparison": true,
+    "client_release_spread_ms": 2.136384980985895,
+    "peak_observed_active_engine_slots": 8,
+    "peak_observed_decoding_slots": 8,
+    "metrics_samples": [
+      {
+        "elapsed_ms": 158.49819901632145,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 0.0,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 3751.4,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 3,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 3,
+          "waiting": 2,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 722.9417320049834,
+        "active_slots": 0,
+        "decoding_slots": 0,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 0.5,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 3751.4,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 1,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 8,
+          "waiting": 7,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 1284.6077030117158,
+        "active_slots": 2,
+        "decoding_slots": 1,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 1.1,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5050.6,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 3,
+              "elapsed_s": 0.4,
+              "tok_s": 9.2
+            },
+            {
+              "slot": 1,
+              "state": "reading",
+              "prompt_tokens": 3989,
+              "generated": 0,
+              "elapsed_s": 0.3,
+              "tok_s": null
+            },
+            {
+              "slot": 2,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 6,
+          "waiting": 6,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 1842.9560369986575,
+        "active_slots": 3,
+        "decoding_slots": 2,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 1.7,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5160.2,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 4,
+              "elapsed_s": 0.9,
+              "tok_s": 4.5
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 0.9,
+              "tok_s": 41.3
+            },
+            {
+              "slot": 2,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.0,
+              "tok_s": null
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 5,
+          "waiting": 5,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 2400.987350003561,
+        "active_slots": 3,
+        "decoding_slots": 2,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 2.2,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5160.2,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 4,
+              "elapsed_s": 1.5,
+              "tok_s": 2.8
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 1.4,
+              "tok_s": 3.3
+            },
+            {
+              "slot": 2,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.6,
+              "tok_s": null
+            },
+            {
+              "slot": 3,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 5,
+          "waiting": 5,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 2994.5537199964747,
+        "active_slots": 4,
+        "decoding_slots": 3,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3994,
+          "prompt_total": 3995,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 2.8,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5141.4,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 5,
+              "elapsed_s": 2.1,
+              "tok_s": 2.5
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 3,
+              "elapsed_s": 2.0,
+              "tok_s": 2.6
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 2,
+              "elapsed_s": 1.2,
+              "tok_s": 6.1
+            },
+            {
+              "slot": 3,
+              "state": "reading",
+              "prompt_tokens": 3989,
+              "generated": 0,
+              "elapsed_s": 0.3,
+              "tok_s": null
+            },
+            {
+              "slot": 4,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 4,
+          "waiting": 4,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 3554.8340550158173,
+        "active_slots": 5,
+        "decoding_slots": 4,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 3.4,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5175.2,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 6,
+              "elapsed_s": 2.6,
+              "tok_s": 2.3
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 4,
+              "elapsed_s": 2.6,
+              "tok_s": 2.3
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 3,
+              "elapsed_s": 1.8,
+              "tok_s": 3.3
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 0.9,
+              "tok_s": 24.1
+            },
+            {
+              "slot": 4,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.1,
+              "tok_s": null
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 3,
+          "waiting": 3,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 4114.464929996757,
+        "active_slots": 5,
+        "decoding_slots": 4,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 3.9,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5175.2,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 6,
+              "elapsed_s": 3.2,
+              "tok_s": 1.9
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 4,
+              "elapsed_s": 3.2,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 3,
+              "elapsed_s": 2.3,
+              "tok_s": 2.0
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 1.5,
+              "tok_s": 3.1
+            },
+            {
+              "slot": 4,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.6,
+              "tok_s": null
+            },
+            {
+              "slot": 5,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 3,
+          "waiting": 3,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 4674.342665995937,
+        "active_slots": 6,
+        "decoding_slots": 5,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3994,
+          "prompt_total": 3995,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 4.5,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5154.5,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 7,
+              "elapsed_s": 3.8,
+              "tok_s": 1.9
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 5,
+              "elapsed_s": 3.7,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 4,
+              "elapsed_s": 2.9,
+              "tok_s": 2.0
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 3,
+              "elapsed_s": 2.0,
+              "tok_s": 2.5
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 2,
+              "elapsed_s": 1.2,
+              "tok_s": 5.5
+            },
+            {
+              "slot": 5,
+              "state": "reading",
+              "prompt_tokens": 3989,
+              "generated": 0,
+              "elapsed_s": 0.4,
+              "tok_s": null
+            },
+            {
+              "slot": 6,
+              "state": "idle",
+              "held_tokens": 0
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 2,
+          "waiting": 2,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 5238.608450017637,
+        "active_slots": 7,
+        "decoding_slots": 6,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 5.0,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5148.5,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 8,
+              "elapsed_s": 4.3,
+              "tok_s": 1.9
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 6,
+              "elapsed_s": 4.3,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 5,
+              "elapsed_s": 3.4,
+              "tok_s": 1.9
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 4,
+              "elapsed_s": 2.6,
+              "tok_s": 2.3
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 3,
+              "elapsed_s": 1.8,
+              "tok_s": 3.2
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 0.9,
+              "tok_s": 23.7
+            },
+            {
+              "slot": 6,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.1,
+              "tok_s": null
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 1,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 5798.634626000421,
+        "active_slots": 7,
+        "decoding_slots": 6,
+        "live": {
+          "state": "reading",
+          "queued": 0,
+          "phase": "reading the prompt",
+          "prompt_tokens": 3995,
+          "prompt_read": 3988,
+          "prompt_total": 3989,
+          "generated": 0,
+          "max_tokens": 256,
+          "elapsed_s": 5.6,
+          "tok_s": null,
+          "tok_s_mean": null,
+          "prefill_tok_s_mean": 5148.5,
+          "tok_s_window_s": null,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 8,
+              "elapsed_s": 4.9,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 6,
+              "elapsed_s": 4.8,
+              "tok_s": 1.5
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 5,
+              "elapsed_s": 4.0,
+              "tok_s": 1.6
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 4,
+              "elapsed_s": 3.2,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 3,
+              "elapsed_s": 2.3,
+              "tok_s": 2.0
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 2,
+              "elapsed_s": 1.5,
+              "tok_s": 3.1
+            },
+            {
+              "slot": 6,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.6,
+              "tok_s": null
+            },
+            {
+              "slot": 7,
+              "state": "idle",
+              "held_tokens": 0
+            }
+          ],
+          "outside_slots": 1,
+          "waiting": 1,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 6405.551050003851,
+        "active_slots": 8,
+        "decoding_slots": 7,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 2,
+          "max_tokens": 256,
+          "elapsed_s": 6.2,
+          "tok_s": 12.6,
+          "tok_s_mean": 15.1,
+          "prefill_tok_s_mean": 5181.3,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 9,
+              "elapsed_s": 5.5,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 7,
+              "elapsed_s": 5.4,
+              "tok_s": 1.5
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 6,
+              "elapsed_s": 4.6,
+              "tok_s": 1.6
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 5,
+              "elapsed_s": 3.8,
+              "tok_s": 1.7
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 4,
+              "elapsed_s": 2.9,
+              "tok_s": 1.9
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 3,
+              "elapsed_s": 2.1,
+              "tok_s": 2.4
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 2,
+              "elapsed_s": 1.3,
+              "tok_s": 4.8
+            },
+            {
+              "slot": 7,
+              "state": "reading",
+              "prompt_tokens": 3995,
+              "generated": 0,
+              "elapsed_s": 0.4,
+              "tok_s": null
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 6964.773811021587,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 8,
+          "max_tokens": 256,
+          "elapsed_s": 6.8,
+          "tok_s": 59.1,
+          "tok_s_mean": 69.9,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 15,
+              "elapsed_s": 6.1,
+              "tok_s": 2.5
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 13,
+              "elapsed_s": 6.0,
+              "tok_s": 2.5
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 12,
+              "elapsed_s": 5.2,
+              "tok_s": 2.8
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 11,
+              "elapsed_s": 4.3,
+              "tok_s": 3.1
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 10,
+              "elapsed_s": 3.5,
+              "tok_s": 3.8
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 9,
+              "elapsed_s": 2.7,
+              "tok_s": 5.0
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 8,
+              "elapsed_s": 1.8,
+              "tok_s": 8.2
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 7,
+              "elapsed_s": 1.0,
+              "tok_s": 54.8
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 7522.055123001337,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 39,
+          "max_tokens": 256,
+          "elapsed_s": 7.3,
+          "tok_s": 438.9,
+          "tok_s_mean": 140.4,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 46,
+              "elapsed_s": 6.6,
+              "tok_s": 7.0
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 44,
+              "elapsed_s": 6.6,
+              "tok_s": 7.7
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 43,
+              "elapsed_s": 5.7,
+              "tok_s": 8.8
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 42,
+              "elapsed_s": 4.9,
+              "tok_s": 10.4
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 41,
+              "elapsed_s": 4.1,
+              "tok_s": 12.8
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 40,
+              "elapsed_s": 3.2,
+              "tok_s": 16.9
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 39,
+              "elapsed_s": 2.4,
+              "tok_s": 25.5
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 38,
+              "elapsed_s": 1.5,
+              "tok_s": 55.5
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 8079.595279006753,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 69,
+          "max_tokens": 256,
+          "elapsed_s": 7.9,
+          "tok_s": 433.2,
+          "tok_s_mean": 179.1,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 76,
+              "elapsed_s": 7.2,
+              "tok_s": 10.7
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 74,
+              "elapsed_s": 7.1,
+              "tok_s": 11.8
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 73,
+              "elapsed_s": 6.3,
+              "tok_s": 13.4
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 72,
+              "elapsed_s": 5.4,
+              "tok_s": 15.6
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 71,
+              "elapsed_s": 4.6,
+              "tok_s": 18.8
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 70,
+              "elapsed_s": 3.8,
+              "tok_s": 23.9
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 69,
+              "elapsed_s": 2.9,
+              "tok_s": 33.1
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 68,
+              "elapsed_s": 2.1,
+              "tok_s": 54.7
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 8648.50815400132,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 99,
+          "max_tokens": 256,
+          "elapsed_s": 8.5,
+          "tok_s": 423.7,
+          "tok_s_mean": 207.1,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 106,
+              "elapsed_s": 7.7,
+              "tok_s": 13.8
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 104,
+              "elapsed_s": 7.7,
+              "tok_s": 15.2
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 103,
+              "elapsed_s": 6.8,
+              "tok_s": 17.1
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 102,
+              "elapsed_s": 6.0,
+              "tok_s": 19.7
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 101,
+              "elapsed_s": 5.2,
+              "tok_s": 23.3
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 100,
+              "elapsed_s": 4.3,
+              "tok_s": 28.7
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 99,
+              "elapsed_s": 3.5,
+              "tok_s": 37.4
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 98,
+              "elapsed_s": 2.6,
+              "tok_s": 54.3
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 9258.06128201657,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 132,
+          "max_tokens": 256,
+          "elapsed_s": 9.1,
+          "tok_s": 428.3,
+          "tok_s_mean": 230.8,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 139,
+              "elapsed_s": 8.3,
+              "tok_s": 16.8
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 137,
+              "elapsed_s": 8.3,
+              "tok_s": 18.4
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 136,
+              "elapsed_s": 7.5,
+              "tok_s": 20.5
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 135,
+              "elapsed_s": 6.6,
+              "tok_s": 23.3
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 134,
+              "elapsed_s": 5.8,
+              "tok_s": 27.1
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 133,
+              "elapsed_s": 4.9,
+              "tok_s": 32.4
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 132,
+              "elapsed_s": 4.1,
+              "tok_s": 40.4
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 131,
+              "elapsed_s": 3.3,
+              "tok_s": 54.1
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 9817.860245006159,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 161,
+          "max_tokens": 256,
+          "elapsed_s": 9.6,
+          "tok_s": 427.5,
+          "tok_s_mean": 246.6,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 168,
+              "elapsed_s": 8.9,
+              "tok_s": 19.0
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 166,
+              "elapsed_s": 8.9,
+              "tok_s": 20.7
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 165,
+              "elapsed_s": 8.0,
+              "tok_s": 23.0
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 164,
+              "elapsed_s": 7.2,
+              "tok_s": 25.8
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 163,
+              "elapsed_s": 6.3,
+              "tok_s": 29.6
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 162,
+              "elapsed_s": 5.5,
+              "tok_s": 34.7
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 161,
+              "elapsed_s": 4.7,
+              "tok_s": 42.1
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 160,
+              "elapsed_s": 3.8,
+              "tok_s": 53.7
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 10375.39969899808,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 191,
+          "max_tokens": 256,
+          "elapsed_s": 10.2,
+          "tok_s": 427.0,
+          "tok_s_mean": 261.2,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 198,
+              "elapsed_s": 9.5,
+              "tok_s": 21.0
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 196,
+              "elapsed_s": 9.4,
+              "tok_s": 22.8
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 195,
+              "elapsed_s": 8.6,
+              "tok_s": 25.2
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 194,
+              "elapsed_s": 7.7,
+              "tok_s": 28.1
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 193,
+              "elapsed_s": 6.9,
+              "tok_s": 31.8
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 192,
+              "elapsed_s": 6.1,
+              "tok_s": 36.8
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 191,
+              "elapsed_s": 5.2,
+              "tok_s": 43.6
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 190,
+              "elapsed_s": 4.4,
+              "tok_s": 53.7
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 10933.45665500965,
+        "active_slots": 8,
+        "decoding_slots": 8,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 220,
+          "max_tokens": 256,
+          "elapsed_s": 10.7,
+          "tok_s": 420.6,
+          "tok_s_mean": 272.3,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 8,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "decoding",
+              "prompt_tokens": 3990,
+              "generated": 227,
+              "elapsed_s": 10.0,
+              "tok_s": 22.8
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 225,
+              "elapsed_s": 10.0,
+              "tok_s": 24.6
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 224,
+              "elapsed_s": 9.1,
+              "tok_s": 27.0
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 223,
+              "elapsed_s": 8.3,
+              "tok_s": 29.9
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 222,
+              "elapsed_s": 7.5,
+              "tok_s": 33.5
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 221,
+              "elapsed_s": 6.6,
+              "tok_s": 38.2
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 220,
+              "elapsed_s": 5.8,
+              "tok_s": 44.5
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 219,
+              "elapsed_s": 4.9,
+              "tok_s": 53.5
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      },
+      {
+        "elapsed_ms": 11492.81824802165,
+        "active_slots": 7,
+        "decoding_slots": 7,
+        "live": {
+          "state": "generating",
+          "queued": 0,
+          "phase": "answering",
+          "prompt_tokens": 3995,
+          "prompt_read": null,
+          "prompt_total": null,
+          "generated": 250,
+          "max_tokens": 256,
+          "elapsed_s": 11.3,
+          "tok_s": 368.5,
+          "tok_s_mean": 258.7,
+          "prefill_tok_s_mean": 5173.9,
+          "tok_s_window_s": 2.0,
+          "parallel": 8,
+          "running": 7,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle",
+              "held_tokens": 4244
+            },
+            {
+              "slot": 1,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 255,
+              "elapsed_s": 10.5,
+              "tok_s": 26.3
+            },
+            {
+              "slot": 2,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 254,
+              "elapsed_s": 9.7,
+              "tok_s": 28.7
+            },
+            {
+              "slot": 3,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 253,
+              "elapsed_s": 8.9,
+              "tok_s": 31.5
+            },
+            {
+              "slot": 4,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 252,
+              "elapsed_s": 8.0,
+              "tok_s": 35.1
+            },
+            {
+              "slot": 5,
+              "state": "decoding",
+              "prompt_tokens": 3989,
+              "generated": 251,
+              "elapsed_s": 7.2,
+              "tok_s": 39.6
+            },
+            {
+              "slot": 6,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 250,
+              "elapsed_s": 6.3,
+              "tok_s": 45.5
+            },
+            {
+              "slot": 7,
+              "state": "decoding",
+              "prompt_tokens": 3995,
+              "generated": 249,
+              "elapsed_s": 5.5,
+              "tok_s": 53.5
+            }
+          ],
+          "outside_slots": 0,
+          "waiting": 0,
+          "admitting": 0
+        }
+      }
+    ],
+    "metric_scope": "real usage completion tokens / total time from synchronized client release through final DONE",
+    "ttft_scope": "first nonempty visible-content SSE delta; chunks are never treated as tokens",
+    "common_token_window_rate": null,
+    "common_token_window_note": "SSE chunks do not provide token arrival timestamps; native harness supplies that separate metric"
+  },
+  "final": {
+    "health": {
+      "status": "ok",
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next",
+      "images": true,
+      "api_key": true,
+      "loaded": true,
+      "service": "strata"
+    },
+    "metrics": {
+      "engine": {
+        "model": "qwen3.8-flash-next",
+        "max_context": 131072,
+        "images": true,
+        "version": "0.1.50",
+        "logit_bias": 1,
+        "context": 131072,
+        "kv": "int8",
+        "kv_resident": 0,
+        "expert_slots": 24576,
+        "expert_cache_mib": 47962,
+        "expert_slots_primary": 24576,
+        "expert_cache_primary_mib": 47962,
+        "spec": 8,
+        "mtp_max": 6,
+        "lookup": 3,
+        "vram_free_mib": 9719,
+        "cvec": "project:4-44",
+        "arena_mib": 47962,
+        "pool_workers": 12,
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.50",
+        "conversation_cache_mib": 0,
+        "conversation_cache_slots": 4,
+        "conversation_cache_min_free_mib": 2560,
+        "conversation_cache_min_tokens": 0,
+        "tail_role_token": -1,
+        "vram_elastic": 0,
+        "prefill_cap": 32768,
+        "prefill_stages": 1,
+        "stream_all_min": 1024,
+        "prefill_pipe": 0,
+        "batch_slots": 8,
+        "slot_cache": 1,
+        "batch_groups": 1,
+        "engine": "0.1.50"
+      },
+      "live": {
+        "state": "idle",
+        "queued": 0,
+        "phase": null,
+        "prompt_tokens": null,
+        "prompt_read": null,
+        "prompt_total": null,
+        "generated": null,
+        "max_tokens": null,
+        "elapsed_s": null,
+        "tok_s": null,
+        "tok_s_mean": null,
+        "prefill_tok_s_mean": null,
+        "tok_s_window_s": null,
+        "parallel": 8,
+        "running": 0,
+        "slots": [
+          {
+            "slot": 0,
+            "state": "idle",
+            "held_tokens": 4244
+          },
+          {
+            "slot": 1,
+            "state": "idle",
+            "held_tokens": 4244
+          },
+          {
+            "slot": 2,
+            "state": "idle",
+            "held_tokens": 4250
+          },
+          {
+            "slot": 3,
+            "state": "idle",
+            "held_tokens": 4244
+          },
+          {
+            "slot": 4,
+            "state": "idle",
+            "held_tokens": 4250
+          },
+          {
+            "slot": 5,
+            "state": "idle",
+            "held_tokens": 4244
+          },
+          {
+            "slot": 6,
+            "state": "idle",
+            "held_tokens": 4250
+          },
+          {
+            "slot": 7,
+            "state": "idle",
+            "held_tokens": 4250
+          }
+        ],
+        "outside_slots": 0,
+        "waiting": 0,
+        "admitting": 0
+      },
+      "requests": [
+        {
+          "projection": true,
+          "time": 1793748427.7808268,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3995,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3995,
+          "prompt_read": 3995,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 772.0,
+          "decode_ms": 4812.1,
+          "decode_tok_s": 53.2,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7808585,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3995,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3995,
+          "prompt_read": 3995,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 770.9,
+          "decode_ms": 5642.8,
+          "decode_tok_s": 45.4,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7805772,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3989,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3989,
+          "prompt_read": 3989,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 774.6,
+          "decode_ms": 6466.6,
+          "decode_tok_s": 39.6,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7756724,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3995,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3995,
+          "prompt_read": 3995,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 774.9,
+          "decode_ms": 7291.3,
+          "decode_tok_s": 35.1,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7742417,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3989,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3989,
+          "prompt_read": 3989,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 770.6,
+          "decode_ms": 8116.3,
+          "decode_tok_s": 31.5,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7454257,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3995,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3995,
+          "prompt_read": 3995,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 776.8,
+          "decode_ms": 8928.4,
+          "decode_tok_s": 28.7,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.7197368,
+          "duration_s": 11.4,
+          "finish": "length",
+          "prompt_tokens": 3989,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3989,
+          "prompt_read": 3989,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 772.8,
+          "decode_ms": 9746.5,
+          "decode_tok_s": 26.3,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748427.6994083,
+          "duration_s": 11.3,
+          "finish": "length",
+          "prompt_tokens": 3989,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3989,
+          "prompt_read": 1,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 255,
+          "prompt_ms": 0.2,
+          "decode_ms": 10536.7,
+          "decode_tok_s": 24.2,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 0,
+          "drafts_accepted": 0
+        },
+        {
+          "projection": true,
+          "time": 1793748425.5767136,
+          "duration_s": 1.9,
+          "finish": "length",
+          "prompt_tokens": 3988,
+          "reused": 0,
+          "output_tokens": 256,
+          "prompt_total": 3988,
+          "prompt_read": 3988,
+          "reasoning_recoveries": 0,
+          "reasoning_repeat_coverage": 0.0,
+          "engine_generated": 256,
+          "prompt_ms": 1062.9,
+          "decode_ms": 831.1,
+          "decode_tok_s": 308.0,
+          "hit_rate": null,
+          "pcie_share": null,
+          "ram_blobs": 0,
+          "file_blobs": 0,
+          "file_mb": 0,
+          "drafts_offered": 216,
+          "drafts_accepted": 192
+        }
+      ],
+      "conversation_cache": {
+        "enabled": false,
+        "budget_mib": 0,
+        "slots": 4,
+        "parked": 0,
+        "bytes": 0,
+        "evictions": 0,
+        "parks": 0,
+        "restores": 0,
+        "last_event": null,
+        "last_tokens": null,
+        "last_at": null,
+        "requests": 9,
+        "requests_reused": 0,
+        "reused_tokens": 0,
+        "prompt_tokens": 35924,
+        "last_reused": 0,
+        "last_prompt": 3995
+      },
+      "requests_kept": 9,
+      "totals": {
+        "since": 1793748425.1048017,
+        "requests": 9,
+        "prompt_tokens": 35924,
+        "reused": 0,
+        "output_tokens": 2304,
+        "prompt_ms": 6475.7,
+        "decode_ms": 62371.80000000001,
+        "drafts_offered": 216,
+        "drafts_accepted": 192
+      },
+      "hardware": {
+        "gpu_util": 99,
+        "gpu_mem_used": 92646408192,
+        "gpu_mem_total": 102641958912,
+        "gpu_temp": 58,
+        "gpu_power": 430.618,
+        "gpu_power_limit": 550.0,
+        "gpu_pcie_gen": 5,
+        "gpu_pcie_gen_max": 5,
+        "gpu_pcie_width": 16,
+        "gpu_pcie_rx_mb": 104.3232421875,
+        "gpu_pcie_tx_mb": 53.7158203125,
+        "cpu": 11.7,
+        "ram_used": 14421229568,
+        "ram_total": 66843471872,
+        "disk_read_mb": 262.12718789825954,
+        "disk_write_mb": 0.48698155665271514,
+        "tok_s": 424.44227611461156,
+        "tok_s_mean": 277.13981420701293,
+        "prefill_tok_s_mean": 5173.9
+      },
+      "hardware_static": {
+        "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "gpu_count": 1,
+        "gpu_note": null,
+        "cpu_name": "Intel(R) Core(TM) Ultra 9 285K",
+        "cores": 24,
+        "threads": 24,
+        "psutil": true
+      },
+      "history": {
+        "gpu_util": [
+          7,
+          100,
+          100,
+          100,
+          100,
+          100,
+          52,
+          85,
+          100,
+          100,
+          99,
+          99,
+          99,
+          99
+        ],
+        "gpu_mem_used": [
+          92450848768,
+          92513763328,
+          92557475840,
+          92557737984,
+          92564094976,
+          92580610048,
+          92586835968,
+          92593324032,
+          92599746560,
+          92616261632,
+          92616458240,
+          92616523776,
+          92616523776,
+          92646408192
+        ],
+        "gpu_temp": [
+          42,
+          50,
+          51,
+          54,
+          55,
+          57,
+          52,
+          53,
+          57,
+          58,
+          57,
+          57,
+          57,
+          58
+        ],
+        "gpu_power": [
+          95.44,
+          146.01,
+          399.57,
+          374.59,
+          414.36,
+          422.82,
+          402.05,
+          395.08,
+          417.03,
+          419.85,
+          419.68,
+          427.25,
+          430.07,
+          430.62
+        ],
+        "gpu_pcie_rx_mb": [
+          51.24,
+          125.4,
+          141.37,
+          154.92,
+          40.0,
+          168.16,
+          176.12,
+          212.98,
+          43.38,
+          104.53,
+          81.27,
+          131.29,
+          176.57,
+          104.32
+        ],
+        "cpu": [
+          0.0,
+          7.7,
+          12.4,
+          13.9,
+          6.7,
+          7.5,
+          9.0,
+          8.3,
+          6.9,
+          7.3,
+          8.3,
+          7.9,
+          7.5,
+          11.7
+        ],
+        "ram_used": [
+          12245635072,
+          12536741888,
+          12871401472,
+          13067440128,
+          13162287104,
+          13480951808,
+          13636079616,
+          13729144832,
+          13895602176,
+          14146211840,
+          14194282496,
+          14242279424,
+          14251253760,
+          14421229568
+        ],
+        "disk_read_mb": [
+          null,
+          275.12,
+          222.99,
+          103.94,
+          9.41,
+          32.85,
+          22.18,
+          14.78,
+          6.16,
+          4.34,
+          68.26,
+          15.03,
+          14.44,
+          262.13
+        ],
+        "tok_s": [
+          0.0,
+          0.0,
+          279.03,
+          0.0,
+          7.52,
+          12.52,
+          9.44,
+          9.03,
+          9.42,
+          67.0,
+          433.28,
+          426.79,
+          424.25,
+          424.44
+        ],
+        "prefill_tok_s_mean": [
+          0.0,
+          null,
+          3751.4,
+          3751.4,
+          5160.2,
+          5141.4,
+          5175.2,
+          5154.5,
+          5642.1,
+          5173.9,
+          5173.9,
+          5173.9,
+          5173.9,
+          5173.9
+        ]
+      },
+      "time": 1793748439.2290425
+    },
+    "status": {
+      "service": "strata",
+      "model": "qwen3.8-flash-next",
+      "loaded": true,
+      "auto_load": true,
+      "structured_output": {
+        "formats": [
+          "json_object",
+          "json_schema"
+        ],
+        "method": "prompt_and_validate",
+        "constrained_decoding": false,
+        "stream_buffered": true
+      },
+      "engine": "0.1.50",
+      "started": 1793748425,
+      "uptime_s": 14,
+      "cache_max_tokens": 131072,
+      "context": {
+        "native": 131072,
+        "max_positions": 131072
+      },
+      "concurrency": {
+        "serving": 8,
+        "requested": 8
+      },
+      "dialects": [
+        "/v1/chat/completions",
+        "/v1/messages",
+        "/v1/responses"
+      ],
+      "vision": {
+        "enabled": true,
+        "available": true,
+        "error": null
+      },
+      "activity": {
+        "requests": 9,
+        "in_flight": 0,
+        "last_request_at": 1793748439
+      },
+      "last_timings": {
+        "cache_n": 0,
+        "prompt_n": 3995,
+        "prompt_ms": 772.0,
+        "prompt_per_token_ms": 0.193,
+        "prompt_per_second": 5174.9,
+        "predicted_n": 256,
+        "predicted_ms": 4812.1,
+        "predicted_per_token_ms": 18.797,
+        "predicted_per_second": 53.2,
+        "draft_n": 0,
+        "draft_n_accepted": 0,
+        "at": 1793748439
+      },
+      "vram": {
+        "elastic": false
+      },
+      "machine": {
+        "at": 1793748439,
+        "gpu": {
+          "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+          "used_mib": 88354.0,
+          "total_mib": 97887.0,
+          "util_pct": 99,
+          "temp_c": 58,
+          "power_w": 430.618
+        },
+        "ram": {
+          "used_gib": 13.4,
+          "total_gib": 62.3
+        }
+      }
+    },
+    "identity": {
+      "wrapper": {
+        "pid": 151063,
+        "start_ticks": "16866571",
+        "exe": "/usr/bin/python3.12",
+        "argv": [
+          "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+          "-m",
+          "serve.server",
+          "--engine",
+          "strata",
+          "--config",
+          "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-throughput-final-r2/baseline/candidate-private.json",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18023"
+        ]
+      },
+      "engine": {
+        "pid": 151158,
+        "start_ticks": "16866835",
+        "exe": "/opt/onyx-strata-0150-candidate/strata",
+        "argv": [
+          "/opt/onyx-strata-0150-candidate/strata",
+          "--serve",
+          "--pack",
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+          "--native",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--ple-gguf",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "--expert-profile",
+          "/home/USER/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+          "--expert-cache",
+          "auto",
+          "--prefill",
+          "32768",
+          "--spec",
+          "6",
+          "--spec-min-p",
+          "0.5",
+          "--mtp",
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--vision",
+          "--vram-reserve-mib",
+          "700",
+          "--control-vector-scaled",
+          "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+          "--control-vector-layer-range",
+          "4",
+          "44",
+          "--cvec-mode",
+          "project",
+          "--cvec-dir",
+          "per-layer",
+          "--pool-workers",
+          "12",
+          "--pcie-frac",
+          "0",
+          "--no-prefill-borrow",
+          "--ple-io",
+          "ram",
+          "--kv-resident",
+          "131072",
+          "--conversation-cache-mib",
+          "0",
+          "--batch",
+          "8"
+        ]
+      },
+      "vision": {
+        "pid": 151067,
+        "start_ticks": "16866605",
+        "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+        "argv": [
+          "/opt/onyx-strata-0150-candidate/strata-vision",
+          "--mmproj",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+          "--model",
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--gpu",
+          "--max-tokens",
+          "1024"
+        ]
+      },
+      "boot_id": "<redacted-uuid>",
+      "process_group": 151063,
+      "loopback_listener_verified": true
+    },
+    "startup_ms": 94.66762500233017,
+    "authentication_rejection_verified": true
+  },
+  "final_loaded_libraries": {
+    "engine": [
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+        "matched_bundle": true
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "size": 236616,
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "size": 2129424,
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "size": 112475080,
+        "sha256": "85a8cc8cf00419ceb295ec62c481d05b4cdbdab10f25c5375d6d24bdbe00b4d9",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "size": 14408,
+        "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "size": 183024,
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "size": 952616,
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "size": 14408,
+        "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "size": 14624,
+        "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "size": 2592224,
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "matched_bundle": false
+      }
+    ],
+    "vision": [
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+        "matched_bundle": true
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+        "matched_bundle": true
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "size": 236616,
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "size": 2129424,
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libcuda.so.615.71.09",
+        "size": 112475080,
+        "sha256": "85a8cc8cf00419ceb295ec62c481d05b4cdbdab10f25c5375d6d24bdbe00b4d9",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "size": 14408,
+        "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "size": 183024,
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "size": 952616,
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "size": 14408,
+        "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "size": 14624,
+        "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+        "matched_bundle": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "size": 2592224,
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "matched_bundle": false
+      }
+    ]
+  },
+  "owned_process_group_empty": true,
+  "private_credential_removed": true,
+  "telemetry": {
+    "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-throughput-final-r2/baseline/telemetry.jsonl",
+    "interval_seconds": 1,
+    "samples": 68,
+    "minimum_mem_available_kib": 51058412,
+    "errors": []
+  },
+  "finished_at": "2026-11-03T23:27:21.033470+00:00"
+}

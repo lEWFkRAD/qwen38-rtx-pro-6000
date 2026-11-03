@@ -1,0 +1,1201 @@
+{
+  "scope": "isolated stock-engine qualification through the retained production API wrapper and matched official vision encoder",
+  "production_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "production_contract_sha256": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+  "manifest": {
+    "retained_python": "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+    "runtime": "/opt/onyx-strata-0142/runtime",
+    "sha256": {
+      "/etc/systemd/system/qwen38-flash-next-strata.service": "9130bd693453a67390850c3728b45a66d37dbda33b6a6422bcaa4b386cb00ab1",
+      "/opt/onyx-strata-0142/runtime/serve/server.py": "5d82438ee7619fcf0582c49ddd1c5c7b0c07abb7950cedf62cf0fa2806f2d9a0",
+      "/opt/onyx-strata-0142/runtime/serve/frontend.py": "b21f0413141f87bd08eb084420ddc597b8cbc008b64b14b916db3de365595b4d",
+      "/opt/onyx-strata-0142/runtime/serve/onyx_readiness.py": "bb0c48cd54bc8a6858b3e0358dc81fa23dcec04518734cebfc384f6c6558547c",
+      "/opt/onyx-strata-0150-candidate/strata-vision": "cebdf0f985fe5de5428993835f8d60efab4ecabbde8c723e0f64f47bc24ef0a0",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision": "bf6c2a1ae8a33100cc9afb6d44c83f893d6ae5d2ab5d1ff17095d9059adc729b",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so": "57ed188594e7d236076535c25c1cf7ab74894c90706dac7f1679c66054d427c6"
+    },
+    "vision": {
+      "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+      "gpu": true,
+      "max_tokens": 1024,
+      "mmproj": "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf"
+    },
+    "unit_exec_start_matched": true,
+    "production_pinned_model_metadata": {
+      "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.bin": {
+        "size": 116099072,
+        "mtime_ns": 1791211801837496350
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.txt": {
+        "size": 1851,
+        "mtime_ns": 1791211801838417769
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/draft_vocab.bin": {
+        "size": 425196,
+        "mtime_ns": 1791211802428405277
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/experts.bin": {
+        "size": 707788800,
+        "mtime_ns": 1791211801251491699
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/conversions.json": {
+        "size": 306,
+        "mtime_ns": 1791211091407792730
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/dense.bin": {
+        "size": 1538035200,
+        "mtime_ns": 1791211091405258524
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/experts.bin": {
+        "size": 50294988800,
+        "mtime_ns": 1791215118532011987
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/index.txt": {
+        "size": 93685,
+        "mtime_ns": 1791211091407539031
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/native_experts.txt": {
+        "size": 3304,
+        "mtime_ns": 1791211091907551187
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/chat_template.jinja": {
+        "size": 9993,
+        "mtime_ns": 1791211091886110655
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/merges.txt": {
+        "size": 3353258,
+        "mtime_ns": 1791211091787261000
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/token_type.json": {
+        "size": 744960,
+        "mtime_ns": 1791211091793261039
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/tokenizer.json": {
+        "size": 541,
+        "mtime_ns": 1791211091794214177
+      },
+      "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/vocab.json": {
+        "size": 5737005,
+        "mtime_ns": 1791211091723260585
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/.gitignore": {
+        "size": 1,
+        "mtime_ns": 1791207414399304129
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/CACHEDIR.TAG": {
+        "size": 191,
+        "mtime_ns": 1791207414343035481
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791207416008614306
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791207416008972019
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208808377681460
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791208808377986391
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208206639771907
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.metadata": {
+        "size": 123,
+        "mtime_ns": 1791208206640132710
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.lock": {
+        "size": 0,
+        "mtime_ns": 1791208207963202676
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208207963560711
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.lock": {
+        "size": 0,
+        "mtime_ns": 1791208208285215868
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208208285554620
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.lock": {
+        "size": 0,
+        "mtime_ns": 1791208208616369199
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.metadata": {
+        "size": 101,
+        "mtime_ns": 1791208208616726973
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.lock": {
+        "size": 0,
+        "mtime_ns": 1791208352887569986
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.metadata": {
+        "size": 125,
+        "mtime_ns": 1791208352887870334
+      },
+      "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/trees/d4af3be5701549435e0770d625f79dd2def1358f.json": {
+        "size": 4561,
+        "mtime_ns": 1791207414340962449
+      },
+      "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": {
+        "size": 483520,
+        "mtime_ns": 1791207416006953386
+      },
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "size": 54817524224,
+        "mtime_ns": 1791208807889408739
+      },
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.done": {
+        "size": 48,
+        "mtime_ns": 1791211089925698653
+      },
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "size": 28800138432,
+        "mtime_ns": 1791208206532440542
+      },
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.done": {
+        "size": 48,
+        "mtime_ns": 1791211089926007030
+      },
+      "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+        "size": 907543008,
+        "mtime_ns": 1791208352848419485
+      },
+      "/home/USER/model-tests/strata-20261005/model/LICENSE": {
+        "size": 3235,
+        "mtime_ns": 1791208207961449518
+      },
+      "/home/USER/model-tests/strata-20261005/model/README.md": {
+        "size": 13223,
+        "mtime_ns": 1791208208284451550
+      },
+      "/home/USER/model-tests/strata-20261005/model/SHA256SUMS": {
+        "size": 1907,
+        "mtime_ns": 1791208208615453632
+      },
+      "/home/USER/model-tests/strata-20261005/model/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+        "size": 907543008,
+        "mtime_ns": 1791208352848419485
+      }
+    }
+  },
+  "private_bind": "127.0.0.1:18025",
+  "gpu_work_started": true,
+  "preserved_features": {
+    "parallel": 8,
+    "fit_max_tokens": true,
+    "reasoning_loop_recovery": "recover",
+    "reasoning_close_retry": true,
+    "sampling": {
+      "experimental_speed_projection": true
+    }
+  },
+  "private_configuration_changes": [
+    "candidate decoder executable",
+    "matched candidate vision/libraries and explicit tuning profile",
+    "loopback host/private port",
+    "fresh random authentication; production compatibility keys excluded",
+    "private log destination",
+    "browser disabled"
+  ],
+  "admission": {
+    "private_wrapper_ONYX_STRATA_READINESS_GATE": "0",
+    "production_gate_unchanged": true,
+    "reason": "retained admission paths are deliberately fixed to production, whose owned HOLD remains present",
+    "replacement": [
+      "loopback-only listener and undisclosed random API key",
+      "exact owned production HOLD and inactive production throughout",
+      "exact wrapper/decoder/encoder PID, start ticks, executable and arguments",
+      "eight slots,131072 context,full resident INT8 and24576 experts before inference",
+      "production config/contract hashes unchanged",
+      "known synthetic requests only"
+    ]
+  },
+  "cases": [
+    {
+      "id": "unauthenticated_status_rejected",
+      "status": "passed",
+      "http_status": 401,
+      "wall_ms": 14.003368996782228,
+      "response": {
+        "error": {
+          "type": "authentication_error",
+          "message": "missing or wrong API key"
+        }
+      }
+    },
+    {
+      "id": "plain_exact_marker",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 184.38524199882522,
+      "response": {
+        "id": "chatcmpl-d85e4e9e180f4a5c8d4b8289",
+        "object": "chat.completion",
+        "created": 1793749202,
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "STRATA_0156_API_OK"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 24,
+          "completion_tokens": 10,
+          "total_tokens": 34,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 24,
+          "prompt_ms": 115.1,
+          "prompt_per_token_ms": 4.796,
+          "prompt_per_second": 208.5,
+          "predicted_n": 10,
+          "predicted_ms": 36.9,
+          "predicted_per_token_ms": 3.69,
+          "predicted_per_second": 271.0,
+          "draft_n": 12,
+          "draft_n_accepted": 9
+        }
+      }
+    },
+    {
+      "id": "forced_tool_call",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 665.9232789825182,
+      "response": {
+        "id": "chatcmpl-763c3865657a4ed186418f4f",
+        "object": "chat.completion",
+        "created": 1793749202,
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "call_88a0f5edca18425dbc7f945c",
+                  "type": "function",
+                  "function": {
+                    "name": "engine_probe",
+                    "arguments": "{\"marker\":\"STRATA_0156_API_TOOL_OK\",\"count\":7}"
+                  }
+                }
+              ]
+            },
+            "finish_reason": "tool_calls"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 313,
+          "completion_tokens": 38,
+          "total_tokens": 351,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 313,
+          "prompt_ms": 465.7,
+          "prompt_per_token_ms": 1.488,
+          "prompt_per_second": 672.1,
+          "predicted_n": 38,
+          "predicted_ms": 116.4,
+          "predicted_per_token_ms": 3.063,
+          "predicted_per_second": 326.5,
+          "draft_n": 40,
+          "draft_n_accepted": 33
+        }
+      }
+    },
+    {
+      "id": "high_reasoning_arithmetic",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 376.2167410168331,
+      "response": {
+        "id": "chatcmpl-6d7c24d4f8b24319ab3ed3c8",
+        "object": "chat.completion",
+        "created": 1793749203,
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "323",
+              "reasoning_content": "We need answer user: \"Calculate 17 times 19 carefully. Put only the decimal integer in your final answer.\" Need final only integer. Compute 17*19 = 323. Ensure final only decimal integer.\n"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 72,
+          "completion_tokens": 57,
+          "total_tokens": 129,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 72,
+          "prompt_ms": 114.8,
+          "prompt_per_token_ms": 1.594,
+          "prompt_per_second": 627.2,
+          "predicted_n": 57,
+          "predicted_ms": 232.3,
+          "predicted_per_token_ms": 4.075,
+          "predicted_per_second": 245.4,
+          "draft_n": 70,
+          "draft_n_accepted": 43
+        }
+      }
+    },
+    {
+      "id": "fresh_image_color",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 437.4996349797584,
+      "response": {
+        "id": "chatcmpl-7398fa433ca44f17be12a77b",
+        "object": "chat.completion",
+        "created": 1793749204,
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "green"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 608,
+          "completion_tokens": 2,
+          "total_tokens": 610,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 608,
+          "prompt_ms": 219.7,
+          "prompt_per_token_ms": 0.361,
+          "prompt_per_second": 2767.4,
+          "predicted_n": 2,
+          "predicted_ms": 18.2,
+          "predicted_per_token_ms": 9.1,
+          "predicted_per_second": 109.9,
+          "draft_n": 5,
+          "draft_n_accepted": 4
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "standalone private test; no production-readiness receipt or promotion claim",
+    "finite API compatibility canaries; no statistical speed benchmark"
+  ],
+  "started_at": "2026-11-03T23:39:13.281224+00:00",
+  "owner": "<maintenance-owner>",
+  "status": "passed",
+  "image": {
+    "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-features-final-r1/fresh-square.png",
+    "sha256": "f293868f061c2370c01d757bc291dcf11b9b8693d1826a4e0131c031f2377fd5",
+    "width": 768,
+    "height": 768,
+    "expected_center_square": "green",
+    "background": "blue"
+  },
+  "identity": {
+    "wrapper": {
+      "pid": 172304,
+      "start_ticks": "16944660",
+      "exe": "/usr/bin/python3.12",
+      "argv": [
+        "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+        "-m",
+        "serve.server",
+        "--engine",
+        "strata",
+        "--config",
+        "/home/USER/Documents/strata-0156-tuning-20261103/receipts/api-features-final-r1/candidate-private.json",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "18025"
+      ]
+    },
+    "engine": {
+      "pid": 172375,
+      "start_ticks": "16944811",
+      "exe": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+      "argv": [
+        "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+        "--serve",
+        "--pack",
+        "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+        "--native",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--ple-gguf",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "--expert-profile",
+        "/home/USER/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "32768",
+        "--spec",
+        "6",
+        "--spec-min-p",
+        "0.5",
+        "--mtp",
+        "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--vision",
+        "--vram-reserve-mib",
+        "700",
+        "--control-vector-scaled",
+        "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+        "--control-vector-layer-range",
+        "4",
+        "44",
+        "--cvec-mode",
+        "project",
+        "--cvec-dir",
+        "per-layer",
+        "--pool-workers",
+        "12",
+        "--pcie-frac",
+        "0",
+        "--no-prefill-borrow",
+        "--ple-io",
+        "ram",
+        "--kv-resident",
+        "131072",
+        "--conversation-cache-mib",
+        "0",
+        "--batch",
+        "8"
+      ]
+    },
+    "vision": {
+      "pid": 172322,
+      "start_ticks": "16944697",
+      "exe": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision",
+      "argv": [
+        "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision",
+        "--mmproj",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+        "--model",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--gpu",
+        "--max-tokens",
+        "1024"
+      ]
+    },
+    "boot_id": "<redacted-uuid>",
+    "process_group": 172304,
+    "loopback_listener_verified": true
+  },
+  "initial_health": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next",
+    "images": true,
+    "api_key": true,
+    "loaded": true,
+    "service": "strata"
+  },
+  "initial_metrics": {
+    "engine": {
+      "model": "qwen3.8-flash-next",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.56",
+      "logit_bias": 1,
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 24576,
+      "expert_cache_mib": 47962,
+      "expert_slots_primary": 24576,
+      "expert_cache_primary_mib": 47962,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3,
+      "vram_free_mib": 12637,
+      "cvec": "project:4-44",
+      "arena_mib": 47962,
+      "pool_workers": 12,
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "conversation_cache_slots": 4,
+      "conversation_cache_min_free_mib": 2560,
+      "conversation_cache_min_tokens": 0,
+      "tail_role_token": -1,
+      "vram_elastic": 0,
+      "prefill_cap": 32768,
+      "prefill_stages": 1,
+      "stream_all_min": 1024,
+      "prefill_pipe": 0,
+      "batch_slots": 8,
+      "slot_cache": 1,
+      "batch_groups": 1,
+      "engine": "0.1.56"
+    },
+    "live": {
+      "state": "idle",
+      "queued": 0,
+      "phase": null,
+      "prompt_tokens": null,
+      "prompt_read": null,
+      "prompt_total": null,
+      "generated": null,
+      "max_tokens": null,
+      "elapsed_s": null,
+      "tok_s": null,
+      "tok_s_mean": null,
+      "prefill_tok_s_mean": null,
+      "tok_s_window_s": null,
+      "parallel": 8,
+      "running": 0,
+      "slots": [
+        {
+          "slot": 0,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 1,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 2,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 3,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 4,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 5,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 6,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 7,
+          "state": "idle",
+          "held_tokens": 0
+        }
+      ],
+      "outside_slots": 0,
+      "waiting": 0,
+      "admitting": 0
+    },
+    "requests": [],
+    "conversation_cache": {
+      "enabled": false,
+      "budget_mib": 0,
+      "slots": 4,
+      "parked": 0,
+      "bytes": 0,
+      "evictions": 0,
+      "parks": 0,
+      "restores": 0,
+      "last_event": null,
+      "last_tokens": null,
+      "last_at": null,
+      "requests": 0,
+      "requests_reused": 0,
+      "reused_tokens": 0,
+      "prompt_tokens": 0,
+      "last_reused": null,
+      "last_prompt": null
+    },
+    "requests_kept": 0,
+    "totals": {
+      "since": 1793749201.8009725,
+      "requests": 0,
+      "prompt_tokens": 0,
+      "reused": 0,
+      "output_tokens": 0,
+      "prompt_ms": 0.0,
+      "decode_ms": 0.0,
+      "drafts_offered": 0,
+      "drafts_accepted": 0
+    },
+    "hardware": {
+      "gpu_util": 6,
+      "gpu_mem_used": 89390383104,
+      "gpu_mem_total": 102641958912,
+      "gpu_temp": 42,
+      "gpu_power": 94.847,
+      "gpu_power_limit": 550.0,
+      "gpu_pcie_gen": 5,
+      "gpu_pcie_gen_max": 5,
+      "gpu_pcie_width": 16,
+      "gpu_pcie_rx_mb": 62.5654296875,
+      "gpu_pcie_tx_mb": 11.814453125,
+      "cpu": 0.0,
+      "ram_used": 13477662720,
+      "ram_total": 66843471872,
+      "disk_read_mb": null,
+      "disk_write_mb": null,
+      "tok_s": 0.0,
+      "tok_s_mean": 0,
+      "prefill_tok_s_mean": 0.0
+    },
+    "hardware_static": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "gpu_count": 1,
+      "gpu_note": null,
+      "cpu_name": "Intel(R) Core(TM) Ultra 9 285K",
+      "cores": 24,
+      "threads": 24,
+      "psutil": true
+    },
+    "history": {
+      "gpu_util": [
+        6
+      ],
+      "gpu_mem_used": [
+        89390383104
+      ],
+      "gpu_temp": [
+        42
+      ],
+      "gpu_power": [
+        94.85
+      ],
+      "gpu_pcie_rx_mb": [
+        62.57
+      ],
+      "cpu": [
+        0.0
+      ],
+      "ram_used": [
+        13477662720
+      ],
+      "disk_read_mb": [
+        null
+      ],
+      "tok_s": [
+        0.0
+      ],
+      "prefill_tok_s_mean": [
+        0.0
+      ]
+    },
+    "time": 1793749202.241823
+  },
+  "initial_status": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.56",
+    "started": 1793749201,
+    "uptime_s": 0,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 8,
+      "requested": 8
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": true,
+      "available": true,
+      "error": null
+    },
+    "activity": {
+      "requests": 0,
+      "in_flight": 0,
+      "last_request_at": null
+    },
+    "last_timings": null,
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1793749202,
+      "gpu": {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "used_mib": 85249.0,
+        "total_mib": 97887.0,
+        "util_pct": 6,
+        "temp_c": 42,
+        "power_w": 94.847
+      },
+      "ram": {
+        "used_gib": 12.6,
+        "total_gib": 62.3
+      }
+    }
+  },
+  "startup_ms": 48905.43474498554,
+  "native_lsa_disabled_verified": true,
+  "final_health": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next",
+    "images": true,
+    "api_key": true,
+    "loaded": true,
+    "service": "strata"
+  },
+  "final_metrics": {
+    "engine": {
+      "model": "qwen3.8-flash-next",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.56",
+      "logit_bias": 1,
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 24576,
+      "expert_cache_mib": 47962,
+      "expert_slots_primary": 24576,
+      "expert_cache_primary_mib": 47962,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3,
+      "vram_free_mib": 12637,
+      "cvec": "project:4-44",
+      "arena_mib": 47962,
+      "pool_workers": 12,
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "conversation_cache_slots": 4,
+      "conversation_cache_min_free_mib": 2560,
+      "conversation_cache_min_tokens": 0,
+      "tail_role_token": -1,
+      "vram_elastic": 0,
+      "prefill_cap": 32768,
+      "prefill_stages": 1,
+      "stream_all_min": 1024,
+      "prefill_pipe": 0,
+      "batch_slots": 8,
+      "slot_cache": 1,
+      "batch_groups": 1,
+      "engine": "0.1.56"
+    },
+    "live": {
+      "state": "idle",
+      "queued": 0,
+      "phase": null,
+      "prompt_tokens": null,
+      "prompt_read": null,
+      "prompt_total": null,
+      "generated": null,
+      "max_tokens": null,
+      "elapsed_s": null,
+      "tok_s": null,
+      "tok_s_mean": null,
+      "prefill_tok_s_mean": null,
+      "tok_s_window_s": null,
+      "parallel": 8,
+      "running": 0,
+      "slots": [
+        {
+          "slot": 0,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 1,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 2,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 3,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 4,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 5,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 6,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 7,
+          "state": "idle",
+          "held_tokens": 0
+        }
+      ],
+      "outside_slots": 0,
+      "waiting": 0,
+      "admitting": 0
+    },
+    "requests": [
+      {
+        "projection": true,
+        "time": 1793749204.0994835,
+        "duration_s": 0.3,
+        "finish": "stop",
+        "prompt_tokens": 608,
+        "reused": 0,
+        "output_tokens": 2,
+        "prompt_total": 608,
+        "prompt_read": 608,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 2,
+        "prompt_ms": 219.7,
+        "decode_ms": 18.2,
+        "decode_tok_s": 109.9,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 5,
+        "drafts_accepted": 4
+      },
+      {
+        "projection": true,
+        "time": 1793749203.471666,
+        "duration_s": 0.3,
+        "finish": "stop",
+        "prompt_tokens": 72,
+        "reused": 0,
+        "output_tokens": 57,
+        "prompt_total": 72,
+        "prompt_read": 72,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 57,
+        "prompt_ms": 114.8,
+        "decode_ms": 232.3,
+        "decode_tok_s": 245.4,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 70,
+        "drafts_accepted": 43
+      },
+      {
+        "projection": true,
+        "time": 1793749202.7682283,
+        "duration_s": 0.6,
+        "finish": "stop",
+        "prompt_tokens": 313,
+        "reused": 0,
+        "output_tokens": 38,
+        "prompt_total": 313,
+        "prompt_read": 313,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 38,
+        "prompt_ms": 465.7,
+        "decode_ms": 116.4,
+        "decode_tok_s": 326.5,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 40,
+        "drafts_accepted": 33
+      },
+      {
+        "projection": true,
+        "time": 1793749202.442004,
+        "duration_s": 0.2,
+        "finish": "stop",
+        "prompt_tokens": 24,
+        "reused": 0,
+        "output_tokens": 10,
+        "prompt_total": 24,
+        "prompt_read": 24,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 10,
+        "prompt_ms": 115.1,
+        "decode_ms": 36.9,
+        "decode_tok_s": 271.0,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 12,
+        "drafts_accepted": 9
+      }
+    ],
+    "conversation_cache": {
+      "enabled": false,
+      "budget_mib": 0,
+      "slots": 4,
+      "parked": 0,
+      "bytes": 0,
+      "evictions": 0,
+      "parks": 0,
+      "restores": 0,
+      "last_event": null,
+      "last_tokens": null,
+      "last_at": null,
+      "requests": 4,
+      "requests_reused": 0,
+      "reused_tokens": 0,
+      "prompt_tokens": 1017,
+      "last_reused": 0,
+      "last_prompt": 608
+    },
+    "requests_kept": 4,
+    "totals": {
+      "since": 1793749201.8009725,
+      "requests": 4,
+      "prompt_tokens": 1017,
+      "reused": 0,
+      "output_tokens": 107,
+      "prompt_ms": 915.3,
+      "decode_ms": 403.8,
+      "drafts_offered": 127,
+      "drafts_accepted": 89
+    },
+    "hardware": {
+      "gpu_util": 26,
+      "gpu_mem_used": 89591513088,
+      "gpu_mem_total": 102641958912,
+      "gpu_temp": 49,
+      "gpu_power": 241.749,
+      "gpu_power_limit": 550.0,
+      "gpu_pcie_gen": 5,
+      "gpu_pcie_gen_max": 5,
+      "gpu_pcie_width": 16,
+      "gpu_pcie_rx_mb": 42.8955078125,
+      "gpu_pcie_tx_mb": 11.3076171875,
+      "cpu": 6.4,
+      "ram_used": 14141100032,
+      "ram_total": 66843471872,
+      "disk_read_mb": 76.943251019856,
+      "disk_write_mb": 0.0786894064194495,
+      "tok_s": 0.0,
+      "tok_s_mean": 0,
+      "prefill_tok_s_mean": 0.0
+    },
+    "hardware_static": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "gpu_count": 1,
+      "gpu_note": null,
+      "cpu_name": "Intel(R) Core(TM) Ultra 9 285K",
+      "cores": 24,
+      "threads": 24,
+      "psutil": true
+    },
+    "history": {
+      "gpu_util": [
+        6,
+        25,
+        26
+      ],
+      "gpu_mem_used": [
+        89390383104,
+        89424003072,
+        89591513088
+      ],
+      "gpu_temp": [
+        42,
+        46,
+        49
+      ],
+      "gpu_power": [
+        94.85,
+        117.83,
+        241.75
+      ],
+      "gpu_pcie_rx_mb": [
+        62.57,
+        184.18,
+        42.9
+      ],
+      "cpu": [
+        0.0,
+        5.4,
+        6.4
+      ],
+      "ram_used": [
+        13477662720,
+        13773164544,
+        14141100032
+      ],
+      "disk_read_mb": [
+        null,
+        115.48,
+        76.94
+      ],
+      "tok_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prefill_tok_s_mean": [
+        0.0,
+        199.8,
+        0.0
+      ]
+    },
+    "time": 1793749204.37786
+  },
+  "final_status": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.56",
+    "started": 1793749201,
+    "uptime_s": 2,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 8,
+      "requested": 8
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": true,
+      "available": true,
+      "error": null
+    },
+    "activity": {
+      "requests": 4,
+      "in_flight": 0,
+      "last_request_at": 1793749204
+    },
+    "last_timings": {
+      "cache_n": 0,
+      "prompt_n": 608,
+      "prompt_ms": 219.7,
+      "prompt_per_token_ms": 0.361,
+      "prompt_per_second": 2767.4,
+      "predicted_n": 2,
+      "predicted_ms": 18.2,
+      "predicted_per_token_ms": 9.1,
+      "predicted_per_second": 109.9,
+      "draft_n": 5,
+      "draft_n_accepted": 4,
+      "at": 1793749204
+    },
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1793749204,
+      "gpu": {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "used_mib": 85441.0,
+        "total_mib": 97887.0,
+        "util_pct": 26,
+        "temp_c": 49,
+        "power_w": 241.749
+      },
+      "ram": {
+        "used_gib": 13.2,
+        "total_gib": 62.3
+      }
+    }
+  },
+  "owned_process_group_empty": true,
+  "private_credential_file_removed": true,
+  "finished_at": "2026-11-03T23:40:05.406683+00:00"
+}

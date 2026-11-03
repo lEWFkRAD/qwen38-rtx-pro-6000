@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "validated_benchmarked_candidate_not_deployed",
+  "base_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "changes": {
+    "exe": "<INSTALL_ROOT>/strata",
+    "lib_dirs": [
+      "<INSTALL_ROOT>"
+    ],
+    "vision.exe": "<INSTALL_ROOT>/strata-vision",
+    "env": {
+      "STRATA_CKPT_POOL": "1",
+      "STRATA_CKPT_POOL_READY": "4",
+      "STRATA_SLOT_CKPT_MOVE": "1",
+      "STRATA_SLOT_COPY_DIRECT": "1",
+      "STRATA_SLOT_COPY_BATCHSYNC": "1",
+      "STRATA_BATCH_GDN_GROUPS": "1",
+      "STRATA_BATCH_ATTN_ROWS": "1",
+      "STRATA_BATCH_SELF_COMMIT": "1",
+      "STRATA_QSA_SLOTS": "1",
+      "STRATA_GDN_TC": "1",
+      "STRATA_GDN_CONVL2": "2",
+      "STRATA_PF_FUSED": "1"
+    }
+  },
+  "preserved": {
+    "model": "sameIQ3_S/controlvector4..44projectperlayer",
+    "parallel": 8,
+    "max_context": 131072,
+    "kv": "int8",
+    "kv_resident": 131072,
+    "gpu_experts": 24576,
+    "mtp_spec": 6,
+    "prefill": 32768,
+    "batch_decode_share": 0.75,
+    "api_wrapper": "retained0.1.42withcurrentrecovery/fitmaxbehavior"
+  },
+  "tested_engine_sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+  "tested_vision_sha256": "bf6c2a1ae8a33100cc9afb6d44c83f893d6ae5d2ab5d1ff17095d9059adc729b",
+  "exact_profile": "profiles/fused_prefill.json",
+  "production_changed": false,
+  "owned_maintenance_hold_preserved": true,
+  "note": "This is a reviewable merge overlay, not a replacement private config. Deployment must install the matched verified bundle and refresh retained recovery hashes; this benchmark does not restore production.",
+  "final_api_features": "passed: exact text, forced tool arguments, high reasoning, fresh green-square image, auth rejection"
+}

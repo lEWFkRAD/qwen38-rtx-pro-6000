@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-11-03T23:11:53.765836+00:00",
+  "profile": "fused_prefill",
+  "profile_sha256": "ba71b5414df050787bab60aff7b0de0f2a4acf198e421d905a19d44b7915d761",
+  "stage": "frozen_before_fresh_heldout_confirmation",
+  "basis": "No new screening quality failure; best screened8requestwhole throughput and4Kprefill, similar/better solo. Incremental fused-prefill gain is small in several metrics and not statistically established. Mostgaincomesfromparallel9/GDN.",
+  "control_report": "receipts/parallel9-screen-r1/report.json",
+  "candidate_screen": "receipts/fused-screen-r1/report.json",
+  "required_remaining": [
+    "3pairedAB/BA/ABfreshheldoutconfirmations512tokens",
+    "32K/125Kretrieval",
+    "4active+32Kjoinermixedlatency",
+    "retainedAPItools/reasoning/image",
+    "actualauthenticatedAPI4Ksoloand8requeststreams"
+  ],
+  "production_promotion": false
+}

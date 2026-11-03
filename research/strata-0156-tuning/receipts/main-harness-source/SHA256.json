@@ -1,0 +1,8 @@
+{
+  "benchmark_strata.py": "dabd66ab5527f064fe9a630f6026a1b5277ab5c18dde2126a801b2b0ab53aca1",
+  "api_canary.py": "90a7c76d5cb008c882fddb394957edafab2b4fd1ea94d40963be0778530b83e6",
+  "profiles.json": "16b81599f1e31b043c1c1d2d0b4462a0e8b401deba80bbee4514e556129cd3a0",
+  "campaign.json": "85d546cd690b9b16c15b6b3ee86e049647e1704ac6316ebbe42940ec70c7b84c",
+  "quality-fixtures.json": "18e39c945fd738034a988f496b31f1a962371b8c9679a31894d685a6e54b7098",
+  "test_benchmark_strata.py": "2abbb1499e440fcb15bc31e012fdca0a7a51cf827a7a0ec51bc9fb156b05e325"
+}

@@ -1,0 +1,87 @@
+{
+  "control": {
+    "name": "official0150_current",
+    "env": {},
+    "arg_overrides": {},
+    "executable": "/opt/onyx-strata-0150-candidate/strata",
+    "lib_dirs": [
+      "/opt/onyx-strata-0150-candidate"
+    ],
+    "sha256": "ae49d5da81b9b65d50af1108c4b3f8b289ee198d9992d66268b7e885cf1a4776",
+    "library_manifest": [
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e"
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515"
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0"
+      },
+      {
+        "path": "/opt/onyx-strata-0150-candidate/libstrata_kq.so",
+        "resolved_path": "/opt/onyx-strata-0150-candidate/libstrata_kq.so",
+        "size": 35881360,
+        "sha256": "b6ea0d34572f8b5cc1283ac91a504b1be688cd32a75d7cf7c3a510f5f8533817"
+      }
+    ]
+  },
+  "candidate": {
+    "name": "fused_prefill",
+    "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+    "sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+    "lib_dirs": [
+      "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+    ],
+    "env": {
+      "STRATA_CKPT_POOL": "1",
+      "STRATA_CKPT_POOL_READY": "4",
+      "STRATA_SLOT_CKPT_MOVE": "1",
+      "STRATA_SLOT_COPY_DIRECT": "1",
+      "STRATA_SLOT_COPY_BATCHSYNC": "1",
+      "STRATA_BATCH_GDN_GROUPS": "1",
+      "STRATA_BATCH_ATTN_ROWS": "1",
+      "STRATA_BATCH_SELF_COMMIT": "1",
+      "STRATA_QSA_SLOTS": "1",
+      "STRATA_GDN_TC": "1",
+      "STRATA_GDN_CONVL2": "2",
+      "STRATA_PF_FUSED": "1"
+    },
+    "arg_overrides": {},
+    "library_manifest": [
+      {
+        "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "size": 54177976,
+        "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e"
+      },
+      {
+        "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+        "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+        "size": 541607888,
+        "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515"
+      },
+      {
+        "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "size": 704288,
+        "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0"
+      },
+      {
+        "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+        "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+        "size": 35881360,
+        "sha256": "57ed188594e7d236076535c25c1cf7ab74894c90706dac7f1679c66054d427c6"
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "note": "Core adapter helpers frozen throughout this run; main-only shared-lock spelling was aligned after the initial driver imported the module. These are the retained source and input files.",
+  "sha256": {
+    "benchmark_strata.py": "233890d0f5172cf8205ef94a2310310f86588c969e266b82199f071c6dfb442e",
+    "initial_comparison.py": "90d81f0a8dc8375e906235126996547c91937cfcb3dad11745ea606201b07dc9",
+    "profiles.json": "16b81599f1e31b043c1c1d2d0b4462a0e8b401deba80bbee4514e556129cd3a0",
+    "quality-fixtures.json": "18e39c945fd738034a988f496b31f1a962371b8c9679a31894d685a6e54b7098"
+  }
+}

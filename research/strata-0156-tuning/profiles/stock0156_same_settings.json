@@ -1,0 +1,10 @@
+{
+  "name": "stock0156_same_settings",
+  "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+  "sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+  "lib_dirs": [
+    "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+  ],
+  "env": {},
+  "arg_overrides": {}
+}

@@ -1,0 +1,212 @@
+[
+  {
+    "profile": "fused_prefill.json",
+    "retained_wrapper_engine_argv_matches": true,
+    "effective_engine_args_sha256": "db2b1237f9f0dcb45d1fe177b5695a3a4360ffe536e46b2e2e9a44aca5e30c6c",
+    "profile_environment_matches": true,
+    "lsa_maps_absent": true,
+    "ld_library_path_first": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "loader_only_dependency_resolution": {
+      "strata": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "strata-vision": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libcuda.so.1": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "libstrata_kq.so": {
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6"
+      }
+    },
+    "gpu_initialization": false
+  },
+  {
+    "profile": "latency_chunks_if_needed.json",
+    "retained_wrapper_engine_argv_matches": true,
+    "effective_engine_args_sha256": "ef1d79347c21f7061f67997c45abac62087444f814d59035de93aaf6aa1a97c4",
+    "profile_environment_matches": true,
+    "lsa_maps_absent": true,
+    "ld_library_path_first": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "loader_only_dependency_resolution": {
+      "strata": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "strata-vision": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libcuda.so.1": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "libstrata_kq.so": {
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6"
+      }
+    },
+    "gpu_initialization": false
+  },
+  {
+    "profile": "parallel9.json",
+    "retained_wrapper_engine_argv_matches": true,
+    "effective_engine_args_sha256": "db2b1237f9f0dcb45d1fe177b5695a3a4360ffe536e46b2e2e9a44aca5e30c6c",
+    "profile_environment_matches": true,
+    "lsa_maps_absent": true,
+    "ld_library_path_first": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "loader_only_dependency_resolution": {
+      "strata": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "strata-vision": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libcuda.so.1": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "libstrata_kq.so": {
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6"
+      }
+    },
+    "gpu_initialization": false
+  },
+  {
+    "profile": "recommended_gdn.json",
+    "retained_wrapper_engine_argv_matches": true,
+    "effective_engine_args_sha256": "db2b1237f9f0dcb45d1fe177b5695a3a4360ffe536e46b2e2e9a44aca5e30c6c",
+    "profile_environment_matches": true,
+    "lsa_maps_absent": true,
+    "ld_library_path_first": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "loader_only_dependency_resolution": {
+      "strata": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "strata-vision": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libcuda.so.1": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "libstrata_kq.so": {
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6"
+      }
+    },
+    "gpu_initialization": false
+  },
+  {
+    "profile": "stock0156_same_settings.json",
+    "retained_wrapper_engine_argv_matches": true,
+    "effective_engine_args_sha256": "db2b1237f9f0dcb45d1fe177b5695a3a4360ffe536e46b2e2e9a44aca5e30c6c",
+    "profile_environment_matches": true,
+    "lsa_maps_absent": true,
+    "ld_library_path_first": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+    "loader_only_dependency_resolution": {
+      "strata": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "strata-vision": {
+        "libcudart.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+        "libcublas.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+        "libcuda.so.1": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6",
+        "libdl.so.2": "/lib/x86_64-linux-gnu/libdl.so.2",
+        "libpthread.so.0": "/lib/x86_64-linux-gnu/libpthread.so.0",
+        "librt.so.1": "/lib/x86_64-linux-gnu/librt.so.1",
+        "libcublasLt.so.13": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13"
+      },
+      "libstrata_kq.so": {
+        "libstdc++.so.6": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+        "libm.so.6": "/lib/x86_64-linux-gnu/libm.so.6",
+        "libgcc_s.so.1": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "libc.so.6": "/lib/x86_64-linux-gnu/libc.so.6"
+      }
+    },
+    "gpu_initialization": false
+  }
+]

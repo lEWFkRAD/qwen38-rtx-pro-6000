@@ -1,0 +1,20 @@
+test_lower_is_better_ratio_uses_observed_latency (__main__.ComparisonTests.test_lower_is_better_ratio_uses_observed_latency) ... ok
+test_marker_failure_or_incomplete_cleanup_blocks_comparison (__main__.ComparisonTests.test_marker_failure_or_incomplete_cleanup_blocks_comparison) ... ok
+test_counts_only_inside_and_distinguishes_censored_gaps (__main__.IntervalTests.test_counts_only_inside_and_distinguishes_censored_gaps) ... ok
+test_invalid_intervals_and_clocks_refused (__main__.IntervalTests.test_invalid_intervals_and_clocks_refused) ... ok
+test_no_arrival_reports_whole_interval_silence (__main__.IntervalTests.test_no_arrival_reports_whole_interval_silence) ... ok
+test_observed_cross_boundary_pair_is_separate_from_clipped_silence (__main__.IntervalTests.test_observed_cross_boundary_pair_is_separate_from_clipped_silence) ... ok
+test_single_arrival_does_not_invent_complete_gap (__main__.IntervalTests.test_single_arrival_does_not_invent_complete_gap) ... ok
+test_background_early_completion_refused (__main__.ProtocolTests.test_background_early_completion_refused) ... ok
+test_background_natural_finish_after_join_is_still_unqualified (__main__.ProtocolTests.test_background_natural_finish_after_join_is_still_unqualified) ... ok
+test_joiner_output_count_mismatch_refused (__main__.ProtocolTests.test_joiner_output_count_mismatch_refused) ... ok
+test_no_joiner_continuation_refused (__main__.ProtocolTests.test_no_joiner_continuation_refused) ... ok
+test_success_waits_for_all_four_then_joins_and_drains_only_owned_slots (__main__.ProtocolTests.test_success_waits_for_all_four_then_joins_and_drains_only_owned_slots) ... ok
+test_unadmitted_slot_token_refused (__main__.ProtocolTests.test_unadmitted_slot_token_refused) ... ok
+test_wrong_marker_stays_quality_failure_with_clean_protocol (__main__.ProtocolTests.test_wrong_marker_stays_quality_failure_with_clean_protocol) ... ok
+test_wrong_slot_admission_refused (__main__.ProtocolTests.test_wrong_slot_admission_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.001s
+
+OK

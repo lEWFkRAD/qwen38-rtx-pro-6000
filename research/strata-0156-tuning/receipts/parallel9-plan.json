@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "phase": "full",
+  "stage": "tuning",
+  "quality_seed": 202611041,
+  "context": 131072,
+  "slots": 8,
+  "gpu_work_started": false,
+  "production_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "production_contract_sha256": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+  "profiles_sha256": "16b81599f1e31b043c1c1d2d0b4462a0e8b401deba80bbee4514e556129cd3a0",
+  "tokenizer_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+    "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+    "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+  },
+  "schedule": [
+    {
+      "pair": 1,
+      "role": "candidate",
+      "profile": "parallel9",
+      "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+      "expected_sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+      "args": [
+        "--pack",
+        "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s",
+        "--native",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--ple-gguf",
+        "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "--expert-profile",
+        "/home/USER/model-tests/strata-20261005/Strata/data/expert-profile.bin",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "32768",
+        "--spec",
+        "6",
+        "--spec-min-p",
+        "0.5",
+        "--mtp",
+        "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--vision",
+        "--vram-reserve-mib",
+        "700",
+        "--control-vector-scaled",
+        "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf:1.0",
+        "--control-vector-layer-range",
+        "4",
+        "44",
+        "--cvec-mode",
+        "project",
+        "--cvec-dir",
+        "per-layer",
+        "--pool-workers",
+        "12",
+        "--pcie-frac",
+        "0",
+        "--no-prefill-borrow",
+        "--ple-io",
+        "ram",
+        "--kv-resident",
+        "131072",
+        "--conversation-cache-mib",
+        "0",
+        "--batch",
+        "8"
+      ],
+      "env": {
+        "STRATA_ADMIT_ROTATE": "1",
+        "STRATA_ADMIT_ROTATE_QUANTUM": "32768",
+        "STRATA_ARENA_MMAP": "1",
+        "STRATA_SLOT_QUEUE": "1",
+        "STRATA_VERIFY_ALL_RESIDENT": "1",
+        "STRATA_BATCH_DECODE_SHARE": "0.75",
+        "STRATA_BATCH_SELF_COMMIT": "1",
+        "STRATA_OWNED_PRICE": "exact",
+        "STRATA_PF_FUSED": "0",
+        "STRATA_QSA_SLOTS": "1",
+        "STRATA_SLOT_COPY_BATCHSYNC": "1",
+        "STRATA_SLOT_COPY_DIRECT": "1",
+        "STRATA_CKPT_POOL": "1",
+        "STRATA_CKPT_POOL_READY": "4",
+        "STRATA_SLOT_CKPT_MOVE": "1",
+        "STRATA_BATCH_GDN_GROUPS": "1",
+        "STRATA_BATCH_ATTN_ROWS": "1",
+        "LD_LIBRARY_PATH": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56",
+        "CUDA_VISIBLE_DEVICES": "0",
+        "CUDA_MODULE_LOADING": "EAGER",
+        "OMP_NUM_THREADS": "2",
+        "MKL_NUM_THREADS": "2",
+        "OPENBLAS_NUM_THREADS": "2",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "lib_dirs": [
+        "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+      ],
+      "library_manifest": [
+        {
+          "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+          "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+          "size": 54177976,
+          "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e"
+        },
+        {
+          "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+          "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+          "size": 541607888,
+          "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515"
+        },
+        {
+          "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+          "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+          "size": 704288,
+          "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0"
+        },
+        {
+          "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+          "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+          "size": 35881360,
+          "sha256": "57ed188594e7d236076535c25c1cf7ab74894c90706dac7f1679c66054d427c6"
+        }
+      ]
+    }
+  ],
+  "quality_cases": [
+    {
+      "id": "exact_canary",
+      "expected": "STRATA_STOCK_OK_202611041",
+      "max_new": 48,
+      "prompt_tokens": 47,
+      "token_sha256": "58346ee0a84b9ebba28520bbf790f8a6844f9336f013353fea45fc709cc2e021"
+    },
+    {
+      "id": "retrieval_4k",
+      "expected": "CHECK_202611042_5AE4A524CFBE",
+      "max_new": 64,
+      "prompt_tokens": 4076,
+      "token_sha256": "82c543dd964a7f5af431041756761bb9f9835cb322f68f3c7b5c95578332331b"
+    },
+    {
+      "id": "accepted_prefix_reuse",
+      "expected": "CHECK_202611042_5AE4A524CFBE",
+      "max_new": 64,
+      "prompt_tokens": 4076,
+      "token_sha256": "82c543dd964a7f5af431041756761bb9f9835cb322f68f3c7b5c95578332331b"
+    },
+    {
+      "id": "retrieval_16k",
+      "expected": "CHECK_202611058_25C4A40CF9D2",
+      "max_new": 64,
+      "prompt_tokens": 16078,
+      "token_sha256": "e9b0a2f152760815942342f061cd9465bf0888ea2282e17d8f97683e330a6059"
+    },
+    {
+      "id": "code_exact",
+      "expected": "948",
+      "max_new": 48,
+      "prompt_tokens": 78,
+      "token_sha256": "575c8c72fbf1172255d2640b4d79f7849cb503db3ade3e916e87294dea838b64"
+    },
+    {
+      "id": "known_code_208",
+      "expected": "208",
+      "max_new": 48,
+      "prompt_tokens": 64,
+      "token_sha256": "ce2b4cb698481c42018612148d26a0297b06e0f7d14f6688450f6d47a0964f10"
+    },
+    {
+      "id": "json_structure",
+      "expected": "{\"marker\":\"fresh-202611041\",\"count\":2,\"ready\":true}",
+      "max_new": 80,
+      "prompt_tokens": 69,
+      "token_sha256": "61ac1ec30082d5aefe7cc6088fbf5f16be0f398d4230b072a98a247b5369a766"
+    }
+  ],
+  "quality_separation": "tuning and heldout use distinct corpus seeds; further tuning after heldout consumption requires a new heldout seed",
+  "performance": {
+    "streams": 8,
+    "requested_output_tokens_each": 256,
+    "solo_output_tokens": 384,
+    "common_window_trim_seconds": 0.25,
+    "common_window_speed_requirements": {
+      "minimum_seconds": 0.5,
+      "minimum_tokens_each": 32
+    },
+    "order": "AB, BA, AB for three paired rounds",
+    "cancel_after_three_tokens": false
+  },
+  "limitations": [
+    "finite synthetic quality fixtures",
+    "native CLI only; API/vision qualification is separate",
+    "no mixed-load 32k joiner gate; latency_chunks profile is diagnostic until independently qualified",
+    "no service, recovery, power-policy or production promotion changes"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "pairs": 3,
+  "order": "A,B / B,A / A,B",
+  "all_infrastructure_passed": true,
+  "quality_regressions": [],
+  "source": "receipts/final-heldout-r1/report.json",
+  "solo": {
+    "baseline_steady_tps": 220.53871816179534,
+    "tuned_steady_tps": 239.01272834185338,
+    "steady_gain_pct": 8.3767650116225,
+    "baseline_whole_tps": 209.31417336501502,
+    "tuned_whole_tps": 218.50875722211438,
+    "whole_gain_pct": 4.392719188234451,
+    "paired_steady_ratios": [
+      1.095977423168828,
+      1.0793934216653458,
+      1.084187705223647
+    ]
+  },
+  "sustained": {
+    "baseline_steady_tps": 433.1259951428949,
+    "tuned_steady_tps": 457.28148705296576,
+    "steady_gain_pct": 5.577012735543985,
+    "baseline_whole_tps": 369.7174778612894,
+    "tuned_whole_tps": 412.5953913790536,
+    "whole_gain_pct": 11.597480802314442,
+    "paired_steady_ratios": [
+      1.0454478740784738,
+      1.0624601805182372,
+      1.059184722898021
+    ]
+  },
+  "heldout_retrieval_32k": {
+    "control": 4462.035548000131,
+    "candidate": 4019.5464749995153,
+    "time_reduction_pct": 9.916753648431541
+  },
+  "heldout_retrieval_125k": {
+    "control": 16869.53392199939,
+    "candidate": 14919.289414974628,
+    "time_reduction_pct": 11.560749194626352
+  }
+}

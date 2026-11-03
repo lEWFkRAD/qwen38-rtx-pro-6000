@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-11-03T23:41:05.029888+00:00",
+  "production_hashes": {
+    "/etc/onyx-inference/strata-server.json": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+    "/etc/onyx-inference/strata.json": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+    "/etc/onyx-inference/strata-server.shared-settings.json": "376f90ea31c61c38d951df42b85fc8bf892c92984de96060b0f2777403724416"
+  },
+  "unchanged": true,
+  "maintenance": {
+    "attempts": [
+      1793710099.7349627,
+      1793714835.5615344
+    ],
+    "capacity_block": null,
+    "hold": {
+      "at": "2026-11-03T20:33:04.058440+00:00",
+      "kind": "owned-strata-maintenance",
+      "owner": "<maintenance-owner>",
+      "reason": "Jeff requested production pause to resume native Strata LSA integration",
+      "version": 1
+    },
+    "reason": "operator HOLD present; remove explicitly to resume",
+    "status": "maintenance"
+  },
+  "production_service": "MainPID=0\nActiveState=inactive\nSubState=dead",
+  "sunshine": "MainPID=0\nActiveState=inactive\nSubState=dead",
+  "gpu_compute_apps": "",
+  "gpu": "95401 MiB, 40, 550.00 W, 615.71.09",
+  "private_credential_files_remaining": 0,
+  "production_promotion": false,
+  "model_weights_trained": false,
+  "LSA_used": false
+}

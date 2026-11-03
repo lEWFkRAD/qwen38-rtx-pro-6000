@@ -15,3 +15,8 @@ research/strata-lsa/**/*.patch -whitespace
 # Retain whitespace in historical evidence and the original calibration script.
 research/strata-lsa/**/receipts/** -whitespace
 research/strata-lsa/preparation/flashnext-maps/gpu_map_smoke.py -whitespace
+
+# Preserve signed upstream metadata and historical benchmark receipts exactly.
+research/strata-0156-tuning/provenance/** -text -whitespace
+research/strata-0156-tuning/receipts/** -whitespace
+research/strata-0156-tuning/benchmark_strata.py whitespace=-blank-at-eof

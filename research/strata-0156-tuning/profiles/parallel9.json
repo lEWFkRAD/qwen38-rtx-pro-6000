@@ -1,0 +1,20 @@
+{
+  "name": "parallel9",
+  "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+  "sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+  "lib_dirs": [
+    "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+  ],
+  "env": {
+    "STRATA_CKPT_POOL": "1",
+    "STRATA_CKPT_POOL_READY": "4",
+    "STRATA_SLOT_CKPT_MOVE": "1",
+    "STRATA_SLOT_COPY_DIRECT": "1",
+    "STRATA_SLOT_COPY_BATCHSYNC": "1",
+    "STRATA_BATCH_GDN_GROUPS": "1",
+    "STRATA_BATCH_ATTN_ROWS": "1",
+    "STRATA_BATCH_SELF_COMMIT": "1",
+    "STRATA_QSA_SLOTS": "1"
+  },
+  "arg_overrides": {}
+}

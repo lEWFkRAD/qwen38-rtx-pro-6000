@@ -13,6 +13,17 @@ Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
+## November 3 — stock Strata 0.1.56 benchmark and tuning
+
+The [stock-engine benchmark package](research/strata-0156-tuning/) contains the
+selected serving profile, code, tests and complete synthetic receipts. Three
+matched alternating pairs measured eight-stream whole-request throughput of
+369.7 versus 412.6 tokens/s (+11.6%) and a 125K-token retrieval request at
+16.87 versus 14.92 seconds. A separate API spot measured +23.9% on its 4K-input
+workload. Capacity remains eight × 131,072; known arithmetic failures remain.
+[Results and limitations](research/strata-0156-tuning/RESULTS.md). Production was
+not upgraded; LSA was excluded from this campaign.
+
 ## November 3 research — native Strata LSA
 
 The [native LSA research package](research/strata-lsa/) includes the optional

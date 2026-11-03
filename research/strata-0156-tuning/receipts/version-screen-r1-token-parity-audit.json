@@ -1,0 +1,110 @@
+{
+  "input_reports": [
+    {
+      "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/version-screen-r1/official0150_current-report.json",
+      "sha256": "e7ca17b2f25505cee2791f527444c0563314d5f737096822bc51823adadeec04"
+    },
+    {
+      "path": "/home/USER/Documents/strata-0156-tuning-20261103/receipts/version-screen-r1/stock0156_same_settings-report.json",
+      "sha256": "a6b59a7b4bd18e827cb16372d67d019f0cdd3aa3c03421306ec7cc0545c9e0b1"
+    }
+  ],
+  "same_args": true,
+  "same_environment": true,
+  "parity": [
+    {
+      "stream": "solo",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 7
+    },
+    {
+      "stream": "slot0",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 22
+    },
+    {
+      "stream": "slot1",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 29
+    },
+    {
+      "stream": "slot2",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 14
+    },
+    {
+      "stream": "slot3",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 93
+    },
+    {
+      "stream": "slot4",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 213
+    },
+    {
+      "stream": "slot5",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 91
+    },
+    {
+      "stream": "slot6",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 99
+    },
+    {
+      "stream": "slot7",
+      "old_tokens": 256,
+      "new_tokens": 256,
+      "output_ids_equal": false,
+      "common_prefix_tokens": 8
+    }
+  ],
+  "solo_native": {
+    "old": {
+      "generated": 256,
+      "prompt_tokens": 3988,
+      "prompt_ms": 783.5,
+      "decode_ms": 786.0,
+      "finish": "length",
+      "drafts_accepted": 193,
+      "drafts_offered": 209,
+      "reused_tokens": 0,
+      "raw": "DONE 256 3988 783.5 786.0 length 193 209 0 0 0 0 0 0.0 3988 0 chunk=3981 experts_streamed=0",
+      "read_tokens": 3988
+    },
+    "new": {
+      "generated": 256,
+      "prompt_tokens": 3988,
+      "prompt_ms": 769.3,
+      "decode_ms": 1058.3,
+      "finish": "length",
+      "drafts_accepted": 159,
+      "drafts_offered": 263,
+      "reused_tokens": 0,
+      "raw": "DONE 256 3988 769.3 1058.3 length 159 263 0 0 0 0 0 0.0 3988 0 chunk=3981 experts_streamed=0",
+      "read_tokens": 3988
+    }
+  },
+  "interpretation": "All trajectories diverge; observed solo acceptance change is not an identical-output-text comparison. No verified MTP default-policy or penalty root cause from bounded static audit.",
+  "production_config_sampling_whitelist": {
+    "experimental_speed_projection": true
+  },
+  "gpu_work_started": false
+}

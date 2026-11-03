@@ -1,0 +1,573 @@
+{
+  "scope": "finite eight-client retained-wrapper API throughput spot; no statistical benchmark or promotion claim",
+  "sampling": {
+    "experimental_speed_projection": true
+  },
+  "request_sampling_overrides": {},
+  "thinking": "disabled explicitly to match native no-thinking inputs",
+  "streams": 8,
+  "context": 131072,
+  "engine_slots": 8,
+  "max_completion_tokens_each": 256,
+  "fixture_origin": {
+    "seed": 202611147,
+    "fresh_heldout": true,
+    "scope": "new synthetic API-only inputs frozen across arms"
+  },
+  "tokenizer_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+    "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+    "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+  },
+  "inputs": [
+    {
+      "id": "api-heldout-202611147-0",
+      "prompt_tokens": 4002,
+      "token_sha256": "0800be234e6919f29d5a1a628342dab251e9e68ff6d675f6b0dcea557408dbc4"
+    },
+    {
+      "id": "api-heldout-202611147-1",
+      "prompt_tokens": 4008,
+      "token_sha256": "24279d7ebb6a0463c62d18be1a3cbe1cadc99e4dab0b6d6378434b42de19f492"
+    },
+    {
+      "id": "api-heldout-202611147-2",
+      "prompt_tokens": 4002,
+      "token_sha256": "9ab359a7941cacca9a0910d4d042eff7715d6b74920a3b2f737b7786df513f0a"
+    },
+    {
+      "id": "api-heldout-202611147-3",
+      "prompt_tokens": 4008,
+      "token_sha256": "86d4b56ed9728426fb325791e8c4babdf300d2e7f311b73583acd22266fc008e"
+    },
+    {
+      "id": "api-heldout-202611147-4",
+      "prompt_tokens": 4002,
+      "token_sha256": "e1a269fc9906b07ffe38dccd6323cc893c2655b1b53e95e6b840f136448aea90"
+    },
+    {
+      "id": "api-heldout-202611147-5",
+      "prompt_tokens": 4008,
+      "token_sha256": "812f671409b5c70dd291b7b1c2ed48454f5bc70036b6e779f102886b2edfa6d7"
+    },
+    {
+      "id": "api-heldout-202611147-6",
+      "prompt_tokens": 4002,
+      "token_sha256": "d564d079f4eef4c124fba1a55534eac836c038a801c29d106be9265b075caf44"
+    },
+    {
+      "id": "api-heldout-202611147-7",
+      "prompt_tokens": 4008,
+      "token_sha256": "36aa5b5e0ebcb5a489479b3d2a96c8923a8478d7e257f5a966796239956bae7b"
+    }
+  ],
+  "solo_input": {
+    "id": "api-heldout-202611147-8",
+    "prompt_tokens": 4002,
+    "token_sha256": "e7590547db36079001d5ea8fdf82958ed6bcd9e0bbe8fed6bc59eb01ab84a081"
+  },
+  "request_order": "one4000-token solo256 response within8slotallocation, then8concurrent4000-token256 responses",
+  "arms": [
+    {
+      "role": "baseline",
+      "engine": "/opt/onyx-strata-0150-candidate/strata",
+      "settings": {
+        "vision": "/opt/onyx-strata-0150-candidate/strata-vision",
+        "lib_dirs": [
+          "/opt/onyx-strata-0150-candidate"
+        ],
+        "profile": {
+          "env": {},
+          "arg_overrides": {}
+        },
+        "library_files": [
+          "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+          "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+          "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+          "/opt/onyx-strata-0150-candidate/libstrata_kq.so"
+        ],
+        "library_manifest": [
+          {
+            "path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+            "resolved_path": "/opt/onyx-strata-0150-candidate/libcublas.so.13",
+            "size": 54177976,
+            "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e"
+          },
+          {
+            "path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+            "resolved_path": "/opt/onyx-strata-0150-candidate/libcublasLt.so.13",
+            "size": 541607888,
+            "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515"
+          },
+          {
+            "path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+            "resolved_path": "/opt/onyx-strata-0150-candidate/libcudart.so.13",
+            "size": 704288,
+            "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0"
+          },
+          {
+            "path": "/opt/onyx-strata-0150-candidate/libstrata_kq.so",
+            "resolved_path": "/opt/onyx-strata-0150-candidate/libstrata_kq.so",
+            "size": 35881360,
+            "sha256": "b6ea0d34572f8b5cc1283ac91a504b1be688cd32a75d7cf7c3a510f5f8533817"
+          }
+        ]
+      },
+      "manifest": {
+        "retained_python": "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+        "runtime": "/opt/onyx-strata-0142/runtime",
+        "sha256": {
+          "/etc/systemd/system/qwen38-flash-next-strata.service": "9130bd693453a67390850c3728b45a66d37dbda33b6a6422bcaa4b386cb00ab1",
+          "/opt/onyx-strata-0142/runtime/serve/server.py": "5d82438ee7619fcf0582c49ddd1c5c7b0c07abb7950cedf62cf0fa2806f2d9a0",
+          "/opt/onyx-strata-0142/runtime/serve/frontend.py": "b21f0413141f87bd08eb084420ddc597b8cbc008b64b14b916db3de365595b4d",
+          "/opt/onyx-strata-0142/runtime/serve/onyx_readiness.py": "bb0c48cd54bc8a6858b3e0358dc81fa23dcec04518734cebfc384f6c6558547c",
+          "/opt/onyx-strata-0150-candidate/strata-vision": "cebdf0f985fe5de5428993835f8d60efab4ecabbde8c723e0f64f47bc24ef0a0",
+          "/opt/onyx-strata-0150-candidate/strata": "ae49d5da81b9b65d50af1108c4b3f8b289ee198d9992d66268b7e885cf1a4776",
+          "/opt/onyx-strata-0150-candidate/libcublas.so.13": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+          "/opt/onyx-strata-0150-candidate/libcublasLt.so.13": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+          "/opt/onyx-strata-0150-candidate/libcudart.so.13": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+          "/opt/onyx-strata-0150-candidate/libstrata_kq.so": "b6ea0d34572f8b5cc1283ac91a504b1be688cd32a75d7cf7c3a510f5f8533817"
+        },
+        "vision": {
+          "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+          "gpu": true,
+          "max_tokens": 1024,
+          "mmproj": "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+          "model": "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf"
+        },
+        "unit_exec_start_matched": true,
+        "production_pinned_model_metadata": {
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.bin": {
+            "size": 116099072,
+            "mtime_ns": 1791211801837496350
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.txt": {
+            "size": 1851,
+            "mtime_ns": 1791211801838417769
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/draft_vocab.bin": {
+            "size": 425196,
+            "mtime_ns": 1791211802428405277
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/experts.bin": {
+            "size": 707788800,
+            "mtime_ns": 1791211801251491699
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/conversions.json": {
+            "size": 306,
+            "mtime_ns": 1791211091407792730
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/dense.bin": {
+            "size": 1538035200,
+            "mtime_ns": 1791211091405258524
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/experts.bin": {
+            "size": 50294988800,
+            "mtime_ns": 1791215118532011987
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/index.txt": {
+            "size": 93685,
+            "mtime_ns": 1791211091407539031
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/native_experts.txt": {
+            "size": 3304,
+            "mtime_ns": 1791211091907551187
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/chat_template.jinja": {
+            "size": 9993,
+            "mtime_ns": 1791211091886110655
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/merges.txt": {
+            "size": 3353258,
+            "mtime_ns": 1791211091787261000
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/token_type.json": {
+            "size": 744960,
+            "mtime_ns": 1791211091793261039
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/tokenizer.json": {
+            "size": 541,
+            "mtime_ns": 1791211091794214177
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/vocab.json": {
+            "size": 5737005,
+            "mtime_ns": 1791211091723260585
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/.gitignore": {
+            "size": 1,
+            "mtime_ns": 1791207414399304129
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/CACHEDIR.TAG": {
+            "size": 191,
+            "mtime_ns": 1791207414343035481
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791207416008614306
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791207416008972019
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208808377681460
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791208808377986391
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208206639771907
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.metadata": {
+            "size": 123,
+            "mtime_ns": 1791208206640132710
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.lock": {
+            "size": 0,
+            "mtime_ns": 1791208207963202676
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208207963560711
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.lock": {
+            "size": 0,
+            "mtime_ns": 1791208208285215868
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208208285554620
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.lock": {
+            "size": 0,
+            "mtime_ns": 1791208208616369199
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208208616726973
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208352887569986
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791208352887870334
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/trees/d4af3be5701549435e0770d625f79dd2def1358f.json": {
+            "size": 4561,
+            "mtime_ns": 1791207414340962449
+          },
+          "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": {
+            "size": 483520,
+            "mtime_ns": 1791207416006953386
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+            "size": 54817524224,
+            "mtime_ns": 1791208807889408739
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.done": {
+            "size": 48,
+            "mtime_ns": 1791211089925698653
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+            "size": 28800138432,
+            "mtime_ns": 1791208206532440542
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.done": {
+            "size": 48,
+            "mtime_ns": 1791211089926007030
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+            "size": 907543008,
+            "mtime_ns": 1791208352848419485
+          },
+          "/home/USER/model-tests/strata-20261005/model/LICENSE": {
+            "size": 3235,
+            "mtime_ns": 1791208207961449518
+          },
+          "/home/USER/model-tests/strata-20261005/model/README.md": {
+            "size": 13223,
+            "mtime_ns": 1791208208284451550
+          },
+          "/home/USER/model-tests/strata-20261005/model/SHA256SUMS": {
+            "size": 1907,
+            "mtime_ns": 1791208208615453632
+          },
+          "/home/USER/model-tests/strata-20261005/model/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+            "size": 907543008,
+            "mtime_ns": 1791208352848419485
+          }
+        }
+      }
+    },
+    {
+      "role": "candidate",
+      "engine": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+      "settings": {
+        "vision": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision",
+        "lib_dirs": [
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+        ],
+        "profile": {
+          "name": "parallel9",
+          "executable": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata",
+          "sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+          "lib_dirs": [
+            "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56"
+          ],
+          "env": {
+            "STRATA_CKPT_POOL": "1",
+            "STRATA_CKPT_POOL_READY": "4",
+            "STRATA_SLOT_CKPT_MOVE": "1",
+            "STRATA_SLOT_COPY_DIRECT": "1",
+            "STRATA_SLOT_COPY_BATCHSYNC": "1",
+            "STRATA_BATCH_GDN_GROUPS": "1",
+            "STRATA_BATCH_ATTN_ROWS": "1",
+            "STRATA_BATCH_SELF_COMMIT": "1",
+            "STRATA_QSA_SLOTS": "1"
+          },
+          "arg_overrides": {}
+        },
+        "library_files": [
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so"
+        ],
+        "library_manifest": [
+          {
+            "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+            "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13",
+            "size": 54177976,
+            "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e"
+          },
+          {
+            "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+            "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13",
+            "size": 541607888,
+            "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515"
+          },
+          {
+            "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+            "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13",
+            "size": 704288,
+            "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0"
+          },
+          {
+            "path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+            "resolved_path": "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so",
+            "size": 35881360,
+            "sha256": "57ed188594e7d236076535c25c1cf7ab74894c90706dac7f1679c66054d427c6"
+          }
+        ]
+      },
+      "manifest": {
+        "retained_python": "/home/USER/model-tests/strata-20261005/Strata/.venv/bin/python",
+        "runtime": "/opt/onyx-strata-0142/runtime",
+        "sha256": {
+          "/etc/systemd/system/qwen38-flash-next-strata.service": "9130bd693453a67390850c3728b45a66d37dbda33b6a6422bcaa4b386cb00ab1",
+          "/opt/onyx-strata-0142/runtime/serve/server.py": "5d82438ee7619fcf0582c49ddd1c5c7b0c07abb7950cedf62cf0fa2806f2d9a0",
+          "/opt/onyx-strata-0142/runtime/serve/frontend.py": "b21f0413141f87bd08eb084420ddc597b8cbc008b64b14b916db3de365595b4d",
+          "/opt/onyx-strata-0142/runtime/serve/onyx_readiness.py": "bb0c48cd54bc8a6858b3e0358dc81fa23dcec04518734cebfc384f6c6558547c",
+          "/opt/onyx-strata-0150-candidate/strata-vision": "cebdf0f985fe5de5428993835f8d60efab4ecabbde8c723e0f64f47bc24ef0a0",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/strata-vision": "bf6c2a1ae8a33100cc9afb6d44c83f893d6ae5d2ab5d1ff17095d9059adc729b",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublas.so.13": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcublasLt.so.13": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libcudart.so.13": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+          "/home/USER/Documents/strata-0156-tuning-20261103/official-engine-0.1.56/libstrata_kq.so": "57ed188594e7d236076535c25c1cf7ab74894c90706dac7f1679c66054d427c6"
+        },
+        "vision": {
+          "exe": "/opt/onyx-strata-0150-candidate/strata-vision",
+          "gpu": true,
+          "max_tokens": 1024,
+          "mmproj": "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+          "model": "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf"
+        },
+        "unit_exec_start_matched": true,
+        "production_pinned_model_metadata": {
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.bin": {
+            "size": 116099072,
+            "mtime_ns": 1791211801837496350
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/dense.txt": {
+            "size": 1851,
+            "mtime_ns": 1791211801838417769
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/draft_vocab.bin": {
+            "size": 425196,
+            "mtime_ns": 1791211802428405277
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/mtp/rt/experts.bin": {
+            "size": 707788800,
+            "mtime_ns": 1791211801251491699
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/conversions.json": {
+            "size": 306,
+            "mtime_ns": 1791211091407792730
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/dense.bin": {
+            "size": 1538035200,
+            "mtime_ns": 1791211091405258524
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/experts.bin": {
+            "size": 50294988800,
+            "mtime_ns": 1791215118532011987
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/index.txt": {
+            "size": 93685,
+            "mtime_ns": 1791211091407539031
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/native_experts.txt": {
+            "size": 3304,
+            "mtime_ns": 1791211091907551187
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/chat_template.jinja": {
+            "size": 9993,
+            "mtime_ns": 1791211091886110655
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/merges.txt": {
+            "size": 3353258,
+            "mtime_ns": 1791211091787261000
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/token_type.json": {
+            "size": 744960,
+            "mtime_ns": 1791211091793261039
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/tokenizer.json": {
+            "size": 541,
+            "mtime_ns": 1791211091794214177
+          },
+          "/home/USER/model-tests/strata-20261005/Strata-data/packs/iq3_s/tokenizer/vocab.json": {
+            "size": 5737005,
+            "mtime_ns": 1791211091723260585
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/.gitignore": {
+            "size": 1,
+            "mtime_ns": 1791207414399304129
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/CACHEDIR.TAG": {
+            "size": 191,
+            "mtime_ns": 1791207414343035481
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791207416008614306
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791207416008972019
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208808377681460
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791208808377986391
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208206639771907
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.metadata": {
+            "size": 123,
+            "mtime_ns": 1791208206640132710
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.lock": {
+            "size": 0,
+            "mtime_ns": 1791208207963202676
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/LICENSE.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208207963560711
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.lock": {
+            "size": 0,
+            "mtime_ns": 1791208208285215868
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/README.md.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208208285554620
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.lock": {
+            "size": 0,
+            "mtime_ns": 1791208208616369199
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/SHA256SUMS.metadata": {
+            "size": 101,
+            "mtime_ns": 1791208208616726973
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.lock": {
+            "size": 0,
+            "mtime_ns": 1791208352887569986
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/download/mmproj-Qwen3.8-Flash-Next-BF16.gguf.metadata": {
+            "size": 125,
+            "mtime_ns": 1791208352887870334
+          },
+          "/home/USER/model-tests/strata-20261005/model/.cache/huggingface/trees/d4af3be5701549435e0770d625f79dd2def1358f.json": {
+            "size": 4561,
+            "mtime_ns": 1791207414340962449
+          },
+          "/home/USER/model-tests/strata-20261005/model/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf": {
+            "size": 483520,
+            "mtime_ns": 1791207416006953386
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+            "size": 54817524224,
+            "mtime_ns": 1791208807889408739
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf.done": {
+            "size": 48,
+            "mtime_ns": 1791211089925698653
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+            "size": 28800138432,
+            "mtime_ns": 1791208206532440542
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf.done": {
+            "size": 48,
+            "mtime_ns": 1791211089926007030
+          },
+          "/home/USER/model-tests/strata-20261005/model/IQ3_S/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+            "size": 907543008,
+            "mtime_ns": 1791208352848419485
+          },
+          "/home/USER/model-tests/strata-20261005/model/LICENSE": {
+            "size": 3235,
+            "mtime_ns": 1791208207961449518
+          },
+          "/home/USER/model-tests/strata-20261005/model/README.md": {
+            "size": 13223,
+            "mtime_ns": 1791208208284451550
+          },
+          "/home/USER/model-tests/strata-20261005/model/SHA256SUMS": {
+            "size": 1907,
+            "mtime_ns": 1791208208615453632
+          },
+          "/home/USER/model-tests/strata-20261005/model/mmproj-Qwen3.8-Flash-Next-BF16.gguf": {
+            "size": 907543008,
+            "mtime_ns": 1791208352848419485
+          }
+        }
+      }
+    }
+  ],
+  "private_bind": "127.0.0.1:18023",
+  "production_config_sha256": "a73d0dc2ddbf644d1d9f7520d639499e73c7c0f71d38e3d502a05d540464d4a9",
+  "production_contract_sha256": "998954a2bf7f26634dead0950d4b52bb16041d6a7b4d609da7661bb38a14c911",
+  "total_seconds": 900,
+  "private_gate_override": {
+    "ONYX_STRATA_READINESS_GATE": "0",
+    "production_gate_unchanged": true,
+    "replacement": "exact owned HOLD/inactive production, private auth, process-bound capacity/PID admission"
+  },
+  "gpu_work_started": false
+}

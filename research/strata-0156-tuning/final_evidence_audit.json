@@ -1,0 +1,589 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-03T23:43:33.791295+00:00",
+  "status": "passed",
+  "audit_scope": "independent CPU-only recomputation and persisted-evidence inspection; no new model or GPU test",
+  "checks": {
+    "native_three_complete_pairs": true,
+    "native_1_control_capacity_cleanup": true,
+    "native_1_candidate_capacity_cleanup": true,
+    "native_2_candidate_capacity_cleanup": true,
+    "native_2_control_capacity_cleanup": true,
+    "native_3_control_capacity_cleanup": true,
+    "native_3_candidate_capacity_cleanup": true,
+    "native_raw_protocol_counts_match_all_reports": true,
+    "native_metrics_independently_recomputed": true,
+    "shared_arithmetic_failures_preserved_with_correct_expectations": true,
+    "native_official_engine_and_loaded_bundle_identity": true,
+    "native_periodic_telemetry_complete_and_memory_floor": true,
+    "native_no_exact_fixture_regression": true,
+    "api_actual_usage_counts_capacity_auth_cleanup_and_library_identity": true,
+    "mixed_and_interactive_actual_counts_capacity_marker_cleanup_verified": true,
+    "api_features_exact_text_tool_reasoning323_image_green_and_auth": true,
+    "all_experiments_same_production_config_contract": true,
+    "current_three_production_files_unchanged": true,
+    "final_no_promotion_weights_or_LSA": true,
+    "recorded_final_services_inactive_gpu_empty_credentials_removed": true,
+    "recorded_owned_HOLD_preserved": true,
+    "api-throughput-final-r1_failure_receipt_preserved": true,
+    "api-throughput-final-r2_failure_receipt_preserved": true,
+    "mixed-final-r1_failure_receipt_preserved": true,
+    "initial_final_three_config_hashes_equal": true,
+    "benchmark_strata.py_matches_recorded_mixed_source_hash": true,
+    "mixed_latency.py_matches_recorded_mixed_source_hash": true,
+    "feature_image_file_hash_matches_report": true
+  },
+  "counts": {
+    "native_pairs": 3,
+    "native_arms": 6,
+    "native_quality_observations": 36,
+    "native_quality_passes": 24,
+    "native_quality_failures": 12,
+    "native_performance_counts": [
+      {
+        "pair": 1,
+        "role": "control",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      },
+      {
+        "pair": 1,
+        "role": "candidate",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      },
+      {
+        "pair": 2,
+        "role": "candidate",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      },
+      {
+        "pair": 2,
+        "role": "control",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      },
+      {
+        "pair": 3,
+        "role": "control",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      },
+      {
+        "pair": 3,
+        "role": "candidate",
+        "solo_tokens": 512,
+        "eight_stream_tokens": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ]
+      }
+    ],
+    "API_usage_counts": [
+      {
+        "role": "baseline",
+        "section": "solo",
+        "completion_tokens": [
+          256
+        ],
+        "whole_tps": 140.54675352097618,
+        "first_content_ttft_ms": [
+          1042.7989960007835
+        ]
+      },
+      {
+        "role": "baseline",
+        "section": "throughput",
+        "completion_tokens": [
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256
+        ],
+        "whole_tps": 178.84758583331003,
+        "first_content_ttft_ms": [
+          3353.446853987407,
+          856.0989319812506,
+          5019.897801015759,
+          1693.1870769767556,
+          5857.197954988806,
+          4183.065434976015,
+          2519.226078991778,
+          6686.51771300938
+        ]
+      },
+      {
+        "role": "candidate",
+        "section": "solo",
+        "completion_tokens": [
+          256
+        ],
+        "whole_tps": 148.6475914100226,
+        "first_content_ttft_ms": [
+          838.0550879810471
+        ]
+      },
+      {
+        "role": "candidate",
+        "section": "throughput",
+        "completion_tokens": [
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256
+        ],
+        "whole_tps": 221.62190595228816,
+        "first_content_ttft_ms": [
+          3527.7242609881796,
+          1242.6700190117117,
+          2957.911047997186,
+          4674.737747991458,
+          2379.633170989109,
+          4097.471215005498,
+          1810.5347380042076,
+          654.1486360074487
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "receipt": "mixed-final-r2",
+        "profile": "official0150_current",
+        "prefill_chunk": "32768",
+        "joiner_tokens": 32076,
+        "joiner_ttft_ms": 4146.31612598896,
+        "joiner_completion_ms": 4494.0344439819455,
+        "background_tokens": [
+          57,
+          57,
+          57,
+          57
+        ],
+        "max_silent_interval_ms": 4184.385984990513
+      },
+      {
+        "receipt": "mixed-final-r2",
+        "profile": "fused_prefill",
+        "prefill_chunk": "32768",
+        "joiner_tokens": 32076,
+        "joiner_ttft_ms": 3641.5728389983997,
+        "joiner_completion_ms": 3935.1008079829626,
+        "background_tokens": [
+          56,
+          56,
+          56,
+          56
+        ],
+        "max_silent_interval_ms": 3655.493428988848
+      },
+      {
+        "receipt": "interactive8k-mixed-screen-r1",
+        "profile": "interactive8k",
+        "prefill_chunk": "8192",
+        "joiner_tokens": 32076,
+        "joiner_ttft_ms": 5966.083650011569,
+        "joiner_completion_ms": 6263.174516003346,
+        "background_tokens": [
+          245,
+          245,
+          245,
+          245
+        ],
+        "max_silent_interval_ms": 980.9153990063351
+      }
+    ],
+    "API_feature_cases": 5
+  },
+  "native_performance": {
+    "solo": {
+      "baseline_steady_tps": 220.53871816179534,
+      "candidate_steady_tps": 239.01272834185338,
+      "steady_gain_percent": 8.3767650116225,
+      "baseline_whole_tps": 209.31417336501502,
+      "candidate_whole_tps": 218.50875722211438,
+      "whole_gain_percent": 4.392719188234451
+    },
+    "sustained": {
+      "baseline_steady_tps": 433.1259951428949,
+      "candidate_steady_tps": 457.28148705296576,
+      "steady_gain_percent": 5.577012735543985,
+      "baseline_whole_tps": 369.7174778612894,
+      "candidate_whole_tps": 412.5953913790536,
+      "whole_gain_percent": 11.597480802314442
+    }
+  },
+  "near_capacity_retrieval_median_seconds": {
+    "control": 16.86953392199939,
+    "candidate": 14.919289414974628
+  },
+  "quality_failure_observations": [
+    {
+      "pair": 1,
+      "role": "control",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "594"
+    },
+    {
+      "pair": 1,
+      "role": "control",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    },
+    {
+      "pair": 1,
+      "role": "candidate",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "590"
+    },
+    {
+      "pair": 1,
+      "role": "candidate",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    },
+    {
+      "pair": 2,
+      "role": "candidate",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "590"
+    },
+    {
+      "pair": 2,
+      "role": "candidate",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    },
+    {
+      "pair": 2,
+      "role": "control",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "594"
+    },
+    {
+      "pair": 2,
+      "role": "control",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    },
+    {
+      "pair": 3,
+      "role": "control",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "594"
+    },
+    {
+      "pair": 3,
+      "role": "control",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    },
+    {
+      "pair": 3,
+      "role": "candidate",
+      "case": "code_exact",
+      "expected": "670",
+      "actual": "590"
+    },
+    {
+      "pair": 3,
+      "role": "candidate",
+      "case": "known_code_208",
+      "expected": "208",
+      "actual": "188"
+    }
+  ],
+  "output_trajectory_checks": [
+    {
+      "pair": 1,
+      "solo_output_equal": false,
+      "batch_streams_output_equal": 0
+    },
+    {
+      "pair": 2,
+      "solo_output_equal": false,
+      "batch_streams_output_equal": 0
+    },
+    {
+      "pair": 3,
+      "solo_output_equal": false,
+      "batch_streams_output_equal": 0
+    }
+  ],
+  "source_labels": {
+    "baseline_engine": {
+      "version": "0.1.50",
+      "build_id": "1aff6d14117b+cuda13.0"
+    },
+    "candidate_engine": {
+      "version": "0.1.56",
+      "build_id": "06698c674673+cuda13.0",
+      "profile": "fused_prefill",
+      "LSA": false
+    },
+    "API_runtime": "retained production0.1.42 wrapper; independently packaged0.1.56 Control was not used for theseAPI tests"
+  },
+  "interpretation_limits": [
+    "Finite synthetic suite; shared arithmetic failures remain failed, so this is not a general model-quality pass.",
+    "Native speed results are medians of threepaired runs; no statistical confidence claim.",
+    "API and mixed-load results are single paired spots, with different API/native input scopes.",
+    "Generated open-ended trajectories differ; tokens-per-second is workload observation rather than identical-token replay.",
+    "API prompt fixtures reuse initial native inputs and are not an unseen quality holdout.",
+    "131072context and8allocated resident slots were checked; near-capacity retrieval was one request, not8simultaneous125kprompts.",
+    "interactive8k infrastructure/marker check passed, but its joining request was slower; diagnostic was rejected as a tuning choice.",
+    "Harnessr1/r2path/port issues and mixedr1metadata issue are preserved; their receipts do not establish engine regressions.",
+    "No production promotion, model-weight training, or LSA use occurred."
+  ],
+  "findings": [],
+  "sources": {
+    "receipts/final-heldout-r1/report.json": {
+      "bytes": 1851129,
+      "sha256": "2dad5e5ac1579b344e3743988ed5cd8508ab62294ecd7c3cd93575842989a5d5"
+    },
+    "receipts/api-throughput-final-r3/report.json": {
+      "bytes": 269199,
+      "sha256": "68254809cc065838f59baae752fb4f6a9f1434807d298e52652922815fa559e8"
+    },
+    "receipts/mixed-final-r2/report.json": {
+      "bytes": 72525,
+      "sha256": "9dfe533d17f6f0f064d3d36ba290985eeb15c533a0d5fa5b2f004d7623966401"
+    },
+    "receipts/interactive8k-mixed-screen-r1/report.json": {
+      "bytes": 63460,
+      "sha256": "a04367dca35aa3b0f9410e773594ae5803778efffa64d33233d28f9253afe479"
+    },
+    "receipts/api-features-final-r1/report.json": {
+      "bytes": 35845,
+      "sha256": "cd20b511144189ad940bdf24fb1d10117581f375e2ccd743ebbee1161327e5f6"
+    },
+    "receipts/final-state.json": {
+      "bytes": 1290,
+      "sha256": "ff28bedf2bc36b0b590f2628b295093a93a90f6a96a2f0215036410cf9b2c235"
+    },
+    "receipts/initial-state.json": {
+      "bytes": 4777,
+      "sha256": "1b7fb9d7da6a14e66a661a37265d90b76e1ea02e365b05c79f976d88c7bfc992"
+    },
+    "receipts/final-heldout-r1/fixtures.json": {
+      "bytes": 2523147,
+      "sha256": "825f0acfe99d1ec40a567a5fef8c9942b3f9e7bc2d0d6e90569e1ad16243dc25"
+    },
+    "receipts/mixed-final-r2/fixtures.json": {
+      "bytes": 456135,
+      "sha256": "549fc99c15e1b2ddc463a496de194f3bfce5a657e90ac363beb86b4e1e4b168a"
+    },
+    "receipts/interactive8k-mixed-screen-r1/fixtures.json": {
+      "bytes": 456135,
+      "sha256": "549fc99c15e1b2ddc463a496de194f3bfce5a657e90ac363beb86b4e1e4b168a"
+    },
+    "receipts/final-heldout-r1/profiles.frozen.json": {
+      "bytes": 3752,
+      "sha256": "bcfcce2f93c315f066e6d1f1eafe2f97483152ade3409aba875459990b0c5c9d"
+    },
+    "receipts/api-throughput-final-plan.json": {
+      "bytes": 29407,
+      "sha256": "1658708d5def52494f11c4d05586af0a55d835a4eb9f77826f016b819779a35d"
+    },
+    "HARNESS-CORRECTIONS.md": {
+      "bytes": 1502,
+      "sha256": "05310725ee87cf24a43bdd2d73f4886df36065b1dacc17f1f2b55007f26d597f"
+    },
+    "/opt/onyx-strata-0150-candidate/engine-component.json": {
+      "bytes": 1711,
+      "sha256": "5e107e5d1ab0acfcc13d81804d93b6dfcea0968d31be1b8d74fbc38bfbbf8631"
+    },
+    "official-engine-0.1.56/engine-component.json": {
+      "bytes": 2012,
+      "sha256": "02497065b6118a4b7639f834571b5ac5fe9591a56c57f687617127eca5ed2989"
+    },
+    "receipts/final-heldout-r1/pair-01-control-telemetry.jsonl": {
+      "bytes": 36237,
+      "sha256": "ee818276e269836a6410ee514599d2a1252c57fbf41dde19741055b4273bc1dc"
+    },
+    "receipts/final-heldout-r1/pair-01-control/engine.stdout.log": {
+      "bytes": 46083,
+      "sha256": "35d98cd388da03fadc702486a2e19daf047c9135d78103b75e482180c85f9c79"
+    },
+    "receipts/final-heldout-r1/pair-01-candidate-telemetry.jsonl": {
+      "bytes": 34918,
+      "sha256": "07c6915858f509ed78b0c7803803815cf924b16a23dadd0adcd35a3e54a0f8e5"
+    },
+    "receipts/final-heldout-r1/pair-01-candidate/engine.stdout.log": {
+      "bytes": 46133,
+      "sha256": "c4d1e14b45635e3674b98c4742ae37f41c62f2f503cacd1aaeb8a230d918fbc3"
+    },
+    "receipts/final-heldout-r1/pair-02-candidate-telemetry.jsonl": {
+      "bytes": 34925,
+      "sha256": "4265b5e96c70948954ea373962513c2b9c4b008a59e77b7731372ee77a24602f"
+    },
+    "receipts/final-heldout-r1/pair-02-candidate/engine.stdout.log": {
+      "bytes": 46134,
+      "sha256": "e032962ec60f2ce02baf2e650d1842954fcb9c635d67ff738b9a8d3d574d8ae4"
+    },
+    "receipts/final-heldout-r1/pair-02-control-telemetry.jsonl": {
+      "bytes": 35813,
+      "sha256": "cd42508654ae2128b46611325f3ccfbc485536dd09217568832ffc4f479643a4"
+    },
+    "receipts/final-heldout-r1/pair-02-control/engine.stdout.log": {
+      "bytes": 46083,
+      "sha256": "3c250b0268224ce86834753fc29194f901adcd7dbadbbd32451cb4060557d3ed"
+    },
+    "receipts/final-heldout-r1/pair-03-control-telemetry.jsonl": {
+      "bytes": 36251,
+      "sha256": "5aa60c86261cc78abc29aa2012aabb6d9581c564da7989d26e3648487af5971a"
+    },
+    "receipts/final-heldout-r1/pair-03-control/engine.stdout.log": {
+      "bytes": 46083,
+      "sha256": "242db149b7d390d9264ee65cf91581410d296d6464a4622005bdb66d0ef24926"
+    },
+    "receipts/final-heldout-r1/pair-03-candidate-telemetry.jsonl": {
+      "bytes": 34944,
+      "sha256": "0bc6bb7fa246f836ac9aa20fee217dc2df678e602536dfcb41ba04e2302e8c66"
+    },
+    "receipts/final-heldout-r1/pair-03-candidate/engine.stdout.log": {
+      "bytes": 46135,
+      "sha256": "aa94129063a8f71ee5c7c741fbc7925b73cc01606218bb1060f6462564f3b687"
+    },
+    "receipts/api-throughput-final-r3/baseline/telemetry.jsonl": {
+      "bytes": 27791,
+      "sha256": "684cdb6ba3bf6ba3608947eb7290344b5383c6f33af3f02469b210bf63aec545"
+    },
+    "receipts/api-throughput-final-r3/candidate/telemetry.jsonl": {
+      "bytes": 26921,
+      "sha256": "a6839ccc61c5ba325d9f6eab78e29e4640898e930a9b5449a6d7ee98be736cc6"
+    },
+    "receipts/mixed-final-r2/official0150_current-telemetry.jsonl": {
+      "bytes": 23822,
+      "sha256": "bcccf59ac92b2e28e0c25225043ba42b41f97ff4569aa317908a15200bceb158"
+    },
+    "receipts/mixed-final-r2/official0150_current/engine.stdout.log": {
+      "bytes": 3787,
+      "sha256": "aa7fd98299590f9532e32fba04eb2f5437117ae04aa51d660ab963a8f3eb9cc9"
+    },
+    "receipts/mixed-final-r2/fused_prefill-telemetry.jsonl": {
+      "bytes": 22943,
+      "sha256": "7d32749a9582474ee75b7bd8b680f9309aebefb0e0dc0843dc5682bfbff2f5d0"
+    },
+    "receipts/mixed-final-r2/fused_prefill/engine.stdout.log": {
+      "bytes": 3750,
+      "sha256": "d7f7be152cf3c1611d2c81584e983cce714df109a1ba60493c56116aaea11ec1"
+    },
+    "receipts/interactive8k-mixed-screen-r1/interactive8k-telemetry.jsonl": {
+      "bytes": 26468,
+      "sha256": "17d909fe68cbf078c3ff9c64b355139a22075186b71f2cbc0eccb2ec4c3cf71a"
+    },
+    "receipts/interactive8k-mixed-screen-r1/interactive8k/engine.stdout.log": {
+      "bytes": 11099,
+      "sha256": "cc7677aa7b129b1d5f3983f35d44c5a39ea0fc0f14791d74704b82574e855126"
+    },
+    "receipts/api-features-final-r1/fresh-square.png": {
+      "bytes": 3475,
+      "sha256": "f293868f061c2370c01d757bc291dcf11b9b8693d1826a4e0131c031f2377fd5"
+    },
+    "receipts/api-throughput-final-r1/report.json": {
+      "bytes": 3988,
+      "sha256": "d0764c4c1d58c706b21f815a0f26e9a20f5cc04cfc2d5a5ac9a09f640863d262"
+    },
+    "receipts/api-throughput-final-r2/report.json": {
+      "bytes": 143268,
+      "sha256": "7bf71805360b03dc40b06345e8395deacb0b720f1b768dc3a1e19d46256f9adc"
+    },
+    "receipts/mixed-final-r1/report.json": {
+      "bytes": 19693,
+      "sha256": "97baf36a09d2c9dc371183d10a47b22d7399d22b4f0fd8caa4248a5039ca6424"
+    },
+    "benchmark_strata.py": {
+      "bytes": 61478,
+      "sha256": "dabd66ab5527f064fe9a630f6026a1b5277ab5c18dde2126a801b2b0ab53aca1"
+    },
+    "mixed_latency.py": {
+      "bytes": 25352,
+      "sha256": "8b8ea4ce40c922b827719b424ec285f6273d3397ff97f2676f6a1e2c3e1e348a"
+    },
+    "api_canary.py": {
+      "bytes": 28124,
+      "sha256": "52cccc17eeb3c3e360746b27f9e4a254f62481f0bce45234fbea65de16d8e286"
+    },
+    "api_throughput.py": {
+      "bytes": 29042,
+      "sha256": "d55c104da6e87222ca15f61aa7dde8662b1365f2b997ff4e783ae2403cf73560"
+    },
+    "receipts/official-bundle-verification.json": {
+      "bytes": 5443,
+      "sha256": "8d79fbefe26fe62cc6a69eaea35ed7877f4b8aab23c85751a70c26c9ab2b4b8f"
+    },
+    "receipts/independent-openssl-verification.json": {
+      "bytes": 547,
+      "sha256": "5522d618b6b7cb3b0bd31dfaeb1f5b80fd8f6df01f63b52482b9bdfdc5173790"
+    }
+  }
+}

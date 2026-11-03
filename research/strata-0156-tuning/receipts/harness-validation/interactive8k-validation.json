@@ -1,0 +1,29 @@
+{
+  "mixed": {
+    "sha256": "5c561db6ebaa2e00495d68aa06d2acb470b81c3039608870d2bfb857bef153bb",
+    "settings": [
+      {
+        "name": "fused_prefill",
+        "prefill": "32768",
+        "decode_share": "0.75"
+      },
+      {
+        "name": "interactive8k",
+        "prefill": "8192",
+        "decode_share": "0.75"
+      }
+    ],
+    "gpu_work_started": false
+  },
+  "main": {
+    "sha256": "95106d96c75fef2ecd739a9e5ca037d3c3e11a57913dc3b0c044e73be1e77743",
+    "settings": {
+      "candidate": "interactive8k",
+      "prefill": "8192",
+      "decode_share": "0.75"
+    },
+    "gpu_work_started": false
+  },
+  "benchmark_sha256": "dabd66ab5527f064fe9a630f6026a1b5277ab5c18dde2126a801b2b0ab53aca1",
+  "mixed_sha256": "8b8ea4ce40c922b827719b424ec285f6273d3397ff97f2676f6a1e2c3e1e348a"
+}

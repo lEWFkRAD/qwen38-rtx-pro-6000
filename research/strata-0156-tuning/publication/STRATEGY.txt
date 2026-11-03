@@ -1,0 +1,52 @@
+Publication scope: research/strata-0156-tuning
+
+This is a local staging strategy. It does not commit, push, change production,
+copy current running receipts, or write inside the existing publication repo.
+
+Retain the owned Python scripts, tests, profiles, plans, dated notes, arithmetic
+and CPU audits, all finalized raw synthetic fixtures/output/logs/telemetry, and
+final native/API/mixed-load reports. Preserve baseline model errors as failures,
+paired performance results, evidence limits, rejected profiles, and source
+snapshots used by earlier runs. Include the synthetic fresh-square PNG.
+
+Omit official engine/control trees and their vendor executables/libraries/Python
+environment, downloaded asset archives, model weights, caches, locks, partials,
+private API candidate configurations, and unrelated wiki/operational backups.
+The small public feed/signature, component/build/control manifests, public update
+keys and upstream SHA256SUMS are selected exceptions to vendor-tree exclusion.
+Download URLs, package hashes, key IDs, signed-feed/component verification and
+independent OpenSSL evidence remain in the published provenance/receipts. Do not
+upload the 667 MB engine package or 100 MB control package again.
+
+stage_publication.py defaults to filename/size inventory only. --self-test uses
+synthetic values and its own source, reads no receipts, and starts no GPU work.
+Neither mode stages files. After the root confirms all GPU work and API cleanup
+are complete, use --execute with the reviewed repository path and HEAD commit.
+The driver independently refuses resident GPU compute processes, active benchmark
+drivers, unfinished receipt reports or remaining candidate-private.json files.
+It also requires a clean repository at the explicit reviewed commit, checks it
+again after staging, and checks that the entire source artifact set/hashes stayed
+unchanged. It never fetches or writes the repository. Refresh/review remote state
+separately immediately before the later root-owned copy/commit/push.
+
+Output is a fresh publication/.stages/<UTC>/research/strata-0156-tuning subtree.
+Review it before copying to the repo. Its publication manifest records every
+original source path relative to this experiment, original full-content SHA256,
+published SHA256, byte sizes, normalization, redaction counts, exclusions, and
+the reviewed repository baseline. SHA256SUMS verifies all published files except
+the checksum file itself. JSON values and raw synthetic evidence are retained,
+with homes, private fleet IPs/hostnames, UUIDs, maintenance owners and any actual
+credential values redacted. Boolean api_key feature flags remain booleans.
+Text uses UTF-8 and LF. Explicitly selected public upstream metadata preserves
+its field values and whitespace apart from line endings; the already-LF feed
+remains byte-identical. Original signed-file hashes remain recorded, and originals
+can be fetched from pinned public URLs to verify raw hashes changed by CRLF->LF.
+
+Operator-specific public source paths are placeholders. Reproduction requires
+setting the model/config/runtime paths for the reader's machine and downloading
+the pinned upstream dependencies; these dependencies are not our benchmark code.
+The existing production configuration and maintenance owner must never be copied
+as runnable public configuration. The later final summary should state which
+version/profile actually qualified, all shared/new quality failures, test scope,
+any throughput/latency tradeoff, and whether production was changed or remained
+paused. Do not infer those outcomes before final receipts exist.
