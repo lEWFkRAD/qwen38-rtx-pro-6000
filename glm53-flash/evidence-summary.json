@@ -1,0 +1,569 @@
+{
+  "schema": "glm53-flash-public-progress-evidence/v1",
+  "report_date_utc": "2026-09-04",
+  "scope": "Allowlisted derivative of saved experimental llama.cpp receipts; not a Colibri benchmark or a deployment acceptance.",
+  "projection_policy": "Only explicitly selected metrics, hashes and source identifiers; original prompts, outputs, endpoints, machine paths, identities and service configuration omitted.",
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpu_count": 1,
+    "nominal_vram_gb": 96,
+    "cpu_model": "Intel Core Ultra 9 285K",
+    "host_ram_gib_reported": 62,
+    "cpu_ram_inventory_date": "2026-09-03",
+    "cpu_ram_inventory_note": "Prior canary report inventory; not freshly measured during this receipt projection.",
+    "storage_device": null,
+    "incomplete_fields_note": "Storage device and exact installed RAM bytes were not recorded in the reviewed sources. The configured 16 CPU threads and 52 GiB container memory limit are not hardware inventory.",
+    "os_family": "Linux",
+    "nvidia_driver_version_observed_in_profile": "610.43.02",
+    "nsight_systems_export_version_observed": "2026.4.1.191"
+  },
+  "target": {
+    "concurrent_users": 4,
+    "prefix_tokens_each": 89400,
+    "sampled_seed_tokens_each": 1,
+    "measured_output_tokens_each": 512,
+    "minimum_common_window_generated_tokens_per_second_each": 60
+  },
+  "method": {
+    "rate_denominator": "latest last output minus earliest first output across all four streams",
+    "rate_numerator": "For each user, streamed token count minus tokens in that user's first output chunk; the first chunk establishes the start boundary.",
+    "prefix_preparation": "Sequential full-prefix one-token prefills; append exact sampled seed; four-way barrier before measured requests.",
+    "prefix_preparation_in_decode_rate": false,
+    "independent_full_benchmark_warmup_runs": 0,
+    "prior_short_correctness_checks": true,
+    "repeated_run_median": null,
+    "reason_median_unavailable": "One measured run per configuration with different prompt nonces.",
+    "generated_tokens_include_reasoning": true,
+    "historical_template_setting": "enable_thinking=false was ignored by this exact template; reasoning_effort controls the later finite task."
+  },
+  "sustained_runs": [
+    {
+      "id": "q8-bf16-depth3",
+      "original_receipt_sha256": "33a27e320e2a24edee1c8e9baed9a614079267c7892c1ec9a27dfc552cbb2718",
+      "runtime_snapshot": "v8",
+      "target_cache": "q8_0",
+      "draft_weights": "bf16",
+      "draft_family": "DFlash2",
+      "native_draft_max": 3,
+      "measured_run_count": 1,
+      "common_decode_window_seconds": 14.473218324943446,
+      "common_window_generated_tokens_per_second_each": 35.30659101019239,
+      "four_way_output_overlap_seconds": 12.766964231035672,
+      "ignore_eos": false,
+      "all_four_accounting_passed": true,
+      "streamed_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "first_output_chunk_token_counts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "rate_numerator_tokens": [
+        511,
+        511,
+        511,
+        511
+      ],
+      "reported_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "prefix_cache_tokens": [
+        89400,
+        89400,
+        89400,
+        89400
+      ],
+      "evaluated_append_tokens": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_cache_tokens": [
+        89912,
+        89912,
+        89912,
+        89912
+      ],
+      "stop_types": [
+        "limit",
+        "limit",
+        "limit",
+        "limit"
+      ],
+      "speed_target_passed": false,
+      "useful_answer_acceptance": false
+    },
+    {
+      "id": "q8-q8-depth3",
+      "original_receipt_sha256": "6c7b54fa0d6ff9aaea3a31f14ff37e239023ced76e1a0f17a72e03db786741aa",
+      "runtime_snapshot": "v8",
+      "target_cache": "q8_0",
+      "draft_weights": "q8_0",
+      "draft_family": "DFlash2",
+      "native_draft_max": 3,
+      "measured_run_count": 1,
+      "common_decode_window_seconds": 14.145857224008068,
+      "common_window_generated_tokens_per_second_each": 36.12365033154307,
+      "four_way_output_overlap_seconds": 12.558695700019598,
+      "ignore_eos": false,
+      "all_four_accounting_passed": true,
+      "streamed_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "first_output_chunk_token_counts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "rate_numerator_tokens": [
+        511,
+        511,
+        511,
+        511
+      ],
+      "reported_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "prefix_cache_tokens": [
+        89400,
+        89400,
+        89400,
+        89400
+      ],
+      "evaluated_append_tokens": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_cache_tokens": [
+        89912,
+        89912,
+        89912,
+        89912
+      ],
+      "stop_types": [
+        "limit",
+        "limit",
+        "limit",
+        "limit"
+      ],
+      "speed_target_passed": false,
+      "useful_answer_acceptance": false
+    },
+    {
+      "id": "q4-q8-depth7",
+      "original_receipt_sha256": "218e9c5ce561961a29f6f8825f3caa598bf5dd901e58330ded985bcd2372e0fa",
+      "runtime_snapshot": "v9",
+      "target_cache": "q4_0",
+      "draft_weights": "q8_0",
+      "draft_family": "DFlash2",
+      "native_draft_max": 7,
+      "measured_run_count": 1,
+      "common_decode_window_seconds": 20.183238934958354,
+      "common_window_generated_tokens_per_second_each": 25.31803748876614,
+      "four_way_output_overlap_seconds": 17.205016429070383,
+      "ignore_eos": false,
+      "all_four_accounting_passed": true,
+      "streamed_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "first_output_chunk_token_counts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "rate_numerator_tokens": [
+        511,
+        511,
+        511,
+        511
+      ],
+      "reported_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "prefix_cache_tokens": [
+        89400,
+        89400,
+        89400,
+        89400
+      ],
+      "evaluated_append_tokens": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_cache_tokens": [
+        89912,
+        89912,
+        89912,
+        89912
+      ],
+      "stop_types": [
+        "limit",
+        "limit",
+        "limit",
+        "limit"
+      ],
+      "speed_target_passed": false,
+      "useful_answer_acceptance": false
+    },
+    {
+      "id": "q4-q8-depth3",
+      "original_receipt_sha256": "c4c2336166a621678c2d50d18a309c0e97f7b2915c9b2956af15f4ac807c88f2",
+      "runtime_snapshot": "v9",
+      "target_cache": "q4_0",
+      "draft_weights": "q8_0",
+      "draft_family": "DFlash2",
+      "native_draft_max": 3,
+      "measured_run_count": 1,
+      "common_decode_window_seconds": 14.363178679021075,
+      "common_window_generated_tokens_per_second_each": 35.57708299948736,
+      "four_way_output_overlap_seconds": 12.568365555023775,
+      "ignore_eos": false,
+      "all_four_accounting_passed": true,
+      "streamed_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "first_output_chunk_token_counts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "rate_numerator_tokens": [
+        511,
+        511,
+        511,
+        511
+      ],
+      "reported_token_counts": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "prefix_cache_tokens": [
+        89400,
+        89400,
+        89400,
+        89400
+      ],
+      "evaluated_append_tokens": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_cache_tokens": [
+        89912,
+        89912,
+        89912,
+        89912
+      ],
+      "stop_types": [
+        "limit",
+        "limit",
+        "limit",
+        "limit"
+      ],
+      "speed_target_passed": false,
+      "useful_answer_acceptance": false
+    }
+  ],
+  "best_run": {
+    "id": "q8-q8-depth3",
+    "stream_start_policy": "four-way barrier",
+    "slot_allocated_context_tokens": 90112,
+    "input_tokens_including_seed": 89401,
+    "first_output_chunk_tokens_each": 1,
+    "rate_numerator_tokens_each": 511,
+    "warm_append_ttft_seconds_by_slot": [
+      0.07199116505216807,
+      0.18662435095757246,
+      0.0725029930472374,
+      0.0731493360362947
+    ],
+    "prefill_seconds_by_slot": [
+      144.90682875690982,
+      147.0442209020257,
+      148.51608867093455,
+      148.55099408805836
+    ],
+    "prefill_tokens_per_second_by_slot": [
+      617.0436824272462,
+      608.0821752729124,
+      602.0284358232535,
+      601.9037731590304
+    ],
+    "target_layers_gpu_offloaded": 46,
+    "target_layers_total": 46,
+    "cpu_expert_spill_configured": false,
+    "draft_gpu_weight_mib": 1187.23,
+    "bf16_draft_gpu_weight_mib": 2234.07,
+    "draft_gpu_weight_saving_mib": 1046.84,
+    "peak_vram_verified": false
+  },
+  "numerical_validation": {
+    "audit_sha256": "5748510cb24fcb5a893f25814e696a9c0833fe6452de9ed66524a48ee26bb3f6",
+    "v7_stages_passed": 11,
+    "v8_stages_passed": 13,
+    "stages_total": 13,
+    "absolute_error_limit_unchanged": 0.0003,
+    "relative_l2_error_limit_unchanged": 0.001,
+    "q8_long_parity_max_absolute_error_v7": 0.00190997124,
+    "q8_long_parity_max_absolute_error_v8": 1.12354755e-05,
+    "key_mask_mismatches": 0,
+    "independent_sampled_fp64_oracle": true,
+    "semantic_acceptance_implied": false
+  },
+  "finite_quality": {
+    "audit_sha256": "2018b13dea8ddbe03dc0a14466add923c9f9831dc21a39320a413da4d684f4b3",
+    "prefix_tokens_each": 4096,
+    "all_reconstructed_goldens_match": true,
+    "matrix_complete": true,
+    "arms": [
+      {
+        "reasoning_effort": "high",
+        "speculation": "none",
+        "original_receipt_sha256": "9ddd843a86b28483af9389ce2a627cf869119a959a74428a33102f883246a600",
+        "requested_rows": 32,
+        "correct_rows": 31,
+        "correct_rows_per_slot": [
+          8,
+          7,
+          8,
+          8
+        ],
+        "false_release_decisions": 1,
+        "missing_complete_rows": 0,
+        "generated_token_counts": [
+          328,
+          331,
+          453,
+          346
+        ],
+        "stop_types": [
+          "eos",
+          "eos",
+          "eos",
+          "eos"
+        ],
+        "all_four_accounting_passed": true,
+        "whole_response_quality_passed": false,
+        "repetition_heuristic_failed_slots": [
+          2
+        ]
+      },
+      {
+        "reasoning_effort": "low",
+        "speculation": "none",
+        "original_receipt_sha256": "0637e08b5b2e54433442ef098127df4373421398a400a63fcf79a4199cb30c2b",
+        "requested_rows": 32,
+        "correct_rows": 27,
+        "correct_rows_per_slot": [
+          5,
+          7,
+          7,
+          8
+        ],
+        "false_release_decisions": 5,
+        "missing_complete_rows": 0,
+        "generated_token_counts": [
+          258,
+          218,
+          262,
+          261
+        ],
+        "stop_types": [
+          "eos",
+          "eos",
+          "eos",
+          "eos"
+        ],
+        "all_four_accounting_passed": true,
+        "whole_response_quality_passed": false,
+        "repetition_heuristic_failed_slots": []
+      },
+      {
+        "reasoning_effort": "high",
+        "speculation": "q8-dflash3",
+        "original_receipt_sha256": "202f38c011c7e797624d84ff1e991a016387663a30079d42eb4b9345d00f75c6",
+        "requested_rows": 32,
+        "correct_rows": 31,
+        "correct_rows_per_slot": [
+          8,
+          7,
+          8,
+          8
+        ],
+        "false_release_decisions": 1,
+        "missing_complete_rows": 0,
+        "generated_token_counts": [
+          479,
+          319,
+          373,
+          339
+        ],
+        "stop_types": [
+          "eos",
+          "eos",
+          "eos",
+          "eos"
+        ],
+        "all_four_accounting_passed": true,
+        "whole_response_quality_passed": false,
+        "repetition_heuristic_failed_slots": []
+      },
+      {
+        "reasoning_effort": "low",
+        "speculation": "q8-dflash3",
+        "original_receipt_sha256": "a7d79c04e667bb8878076a0c31caa0b95e06b9a989bc3b138536652e5f7fe5da",
+        "requested_rows": 32,
+        "correct_rows": 27,
+        "correct_rows_per_slot": [
+          5,
+          7,
+          7,
+          8
+        ],
+        "false_release_decisions": 5,
+        "missing_complete_rows": 0,
+        "generated_token_counts": [
+          256,
+          218,
+          262,
+          261
+        ],
+        "stop_types": [
+          "eos",
+          "eos",
+          "eos",
+          "eos"
+        ],
+        "all_four_accounting_passed": true,
+        "whole_response_quality_passed": false,
+        "repetition_heuristic_failed_slots": []
+      }
+    ],
+    "cross_mode_comparisons": [
+      {
+        "reasoning_effort": "low",
+        "all_rendered_prompt_hashes_equal": true,
+        "all_prompt_token_hashes_equal": true,
+        "final_answer_hashes_equal_per_slot": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "all_final_answer_hashes_equal": false
+      },
+      {
+        "reasoning_effort": "high",
+        "all_rendered_prompt_hashes_equal": true,
+        "all_prompt_token_hashes_equal": true,
+        "final_answer_hashes_equal_per_slot": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "all_final_answer_hashes_equal": true
+      }
+    ],
+    "remaining_high_error": "A record with expected quantity20 and received quantity21 was released despite the zero-difference release rule.",
+    "error_cause_assigned": false,
+    "eos_accounting": "Exact no-spec occupancy and source-proved configured-depth speculative occupancy bounds; limit-stop exactness unchanged; historical receipts not relabeled."
+  },
+  "profiling": {
+    "valid_current_runtime_traces": 0,
+    "bottleneck_established": false,
+    "late_capture": {
+      "original_audit_sha256": "a862365fb70dabc22562908ebffbd3e5fa093aa974c4c4a17e92224772fec0f6",
+      "accepted": false,
+      "failure": "capture began after all streams finished"
+    },
+    "stalled_capture": {
+      "forensic_audit_sha256": "b27c035d92a309b4ca18fb7167b08162677cba9e4dc10c2439562396557cce10",
+      "original_sustained_receipt_sha256": "db89f912031c3f2ddbdd020c42bf215fe63ff6e6820c793169b349d536636309",
+      "sqlite_sha256": "6f6eaa654d9744ba8588e2fce42998c47e20b16ad0fe4eea0cd9fe5c4de9bf09",
+      "capture_receipt_sha256": "23203a0fae6e90426e497e767ec4d7334857866419f042522520fecf0ddf0215",
+      "partial_generated_token_counts": [
+        13,
+        21,
+        14,
+        17
+      ],
+      "cuda_events_collected": false,
+      "stop_recording_handshake_timed_out": true,
+      "completed_512_token_accounting": false,
+      "exact_internal_cause_proved": false,
+      "actual_hes_or_software_method_proved": false,
+      "accepted": false
+    },
+    "next_workflow": {
+      "prepared": true,
+      "gpu_executed": false,
+      "requested_backend": "cuda-sw",
+      "start_after_prefills_while_idle": true,
+      "stop_after_decode": true,
+      "interior_four_way_roi_seconds": 3,
+      "short_actual_cuda_data_gate_before_long_profile": true
+    }
+  },
+  "provenance": {
+    "model_repository": "aj9o9/GLM-5.3-Flash-GGUF",
+    "model_revision": "07c62fcdeaf1c05d22bd123c3da8058a1b1e63e2",
+    "model_quantization": "AJ-IQ2_XXS",
+    "target_gguf_total_file_bytes": 87346006560,
+    "target_shard_sha256": [
+      "1fa0535ecddaee4ff127eb8ffd47d3855ca7efa1cc29c996c24da699c5fbe3f7",
+      "ab8abbde061254a7f6b1a16b3627c4b77e3084f52e3d9739ebaa515b9365945c"
+    ],
+    "runtime_repository": "ggml-org/llama.cpp",
+    "runtime_base_commit": "c9ddd6821c93871c53741344d35d1e440d60d9ea",
+    "required_cpu_moe_fix": "ae47dfdcb83de9426c3fc52ea4b08c12a5f0c6ad",
+    "runtime_cuda_architecture": "120a-real",
+    "runtime_builder_image": "lmsysorg/sglang@sha256:59f06adce6f91401adf443bd168d45fdb2044d77671fd591c7c57a29d851cbae",
+    "v8_snapshot_manifest_sha256": "6b9542d8a7a966f6ebc789b333e2eabfddd198165503d37b4d6b5e8b54efce06",
+    "v9_snapshot_manifest_sha256": "3aa4ee478e18ec94e70bcd2b1a562c9644f39babd42b6dfba28c61069af1320a",
+    "v8_final_cpu_source_patch_sha256": "9d84fdbffbeef057fd44091d2290377e5a13b26c2895dff9141e931b12f32e27",
+    "q8_draft_sha256": "d21f4f7166e5ade490479bb3886909bf37220bc618b4d8047c26400075d5f747",
+    "q8_draft_publicly_distributed": false,
+    "benchmark_source_sha256": "9ed1404e8ed1e1720fbc6fa86f2abf07ce486fab871ad34c0e3352f375a382b0",
+    "launcher_source_sha256": "826969eb3f13ed1aa16ef7a881c991f90acac5924dc3702e5a6cf6c671ffc4ca"
+  },
+  "overall": {
+    "speed_target_met": false,
+    "useful_answer_acceptance": false,
+    "deployment_acceptance": false
+  }
+}
