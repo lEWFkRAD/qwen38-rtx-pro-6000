@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "scope": "Post-promotion synthetic canary through the normal authenticated production gate; no process identities or configuration bodies included.",
+  "status": "passed",
+  "started_at": "2026-11-04T00:14:48.427590+00:00",
+  "finished_at": "2026-11-04T00:14:55.932942+00:00",
+  "normal_gate_preserved": true,
+  "identity_preserved": true,
+  "readiness_override_used": false,
+  "services_changed": false,
+  "health": {
+    "initial_health": {
+      "status": "ok",
+      "service": "strata",
+      "loaded": true,
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next",
+      "images": true,
+      "api_key": true,
+      "qualified": true
+    },
+    "final_health": {
+      "status": "ok",
+      "service": "strata",
+      "loaded": true,
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next",
+      "images": true,
+      "api_key": true,
+      "qualified": true
+    }
+  },
+  "engine": {
+    "initial_metrics": {
+      "model": "qwen3.8-flash-next",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.56",
+      "engine": "0.1.56",
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 24576,
+      "expert_cache_mib": 47962,
+      "expert_slots_primary": 24576,
+      "expert_cache_primary_mib": 47962,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3,
+      "cvec": "project:4-44",
+      "pool_workers": 12,
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "prefill_cap": 32768,
+      "prefill_stages": 1,
+      "batch_slots": 8,
+      "slot_cache": 1,
+      "batch_groups": 1
+    },
+    "final_metrics": {
+      "model": "qwen3.8-flash-next",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.56",
+      "engine": "0.1.56",
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 24576,
+      "expert_cache_mib": 47962,
+      "expert_slots_primary": 24576,
+      "expert_cache_primary_mib": 47962,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3,
+      "cvec": "project:4-44",
+      "pool_workers": 12,
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "prefill_cap": 32768,
+      "prefill_stages": 1,
+      "batch_slots": 8,
+      "slot_cache": 1,
+      "batch_groups": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "unauthenticated_status_rejected",
+      "status": "passed",
+      "http_status": 401,
+      "wall_ms": 11.75240200245753,
+      "response": {
+        "error": {
+          "type": "authentication_error"
+        }
+      }
+    },
+    {
+      "id": "plain_exact_marker",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 2683.2903850008734,
+      "response": {
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "STRATA_0156_API_OK"
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 24,
+          "completion_tokens": 10,
+          "total_tokens": 34,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "forced_tool_call",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 481.3579930050764,
+      "response": {
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "tool_calls",
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "type": "function",
+                  "function": {
+                    "name": "engine_probe",
+                    "arguments": "{\"marker\":\"STRATA_0156_API_TOOL_OK\",\"count\":7}"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 313,
+          "completion_tokens": 38,
+          "total_tokens": 351,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "high_reasoning_arithmetic",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 483.1819809915032,
+      "response": {
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "323",
+              "reasoning_content": "We need answer user: \"Calculate 17 times 19 carefully. Put only the decimal integer in your final answer.\" Need final only integer. Compute 17*19 = 323. Ensure final only decimal integer.\n"
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 72,
+          "completion_tokens": 57,
+          "total_tokens": 129,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "fresh_image_color",
+      "status": "passed",
+      "http_status": 200,
+      "wall_ms": 475.2201020019129,
+      "response": {
+        "model": "qwen3.8-flash-next",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "green"
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 608,
+          "completion_tokens": 2,
+          "total_tokens": 610,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "production_prefix_reuse",
+      "status": "passed",
+      "prompt_tokens": 3944,
+      "metadata_available": true,
+      "cached_tokens": 3937,
+      "responses": [
+        {
+          "http_status": 200,
+          "wall_ms": 731.3817770045716,
+          "response": {
+            "model": "qwen3.8-flash-next",
+            "choices": [
+              {
+                "index": 0,
+                "finish_reason": "stop",
+                "message": {
+                  "role": "assistant",
+                  "content": "STRATA_0156_PRODUCTION_CACHE_OK"
+                }
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 3944,
+              "completion_tokens": 12,
+              "total_tokens": 3956,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            }
+          }
+        },
+        {
+          "http_status": 200,
+          "wall_ms": 221.55050898436457,
+          "response": {
+            "model": "qwen3.8-flash-next",
+            "choices": [
+              {
+                "index": 0,
+                "finish_reason": "stop",
+                "message": {
+                  "role": "assistant",
+                  "content": "STRATA_0156_PRODUCTION_CACHE_OK"
+                }
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 3944,
+              "completion_tokens": 12,
+              "total_tokens": 3956,
+              "prompt_tokens_details": {
+                "cached_tokens": 3937
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

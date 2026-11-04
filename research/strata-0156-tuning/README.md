@@ -1,6 +1,8 @@
 # Stock Strata 0.1.56 benchmark and serving tuning
 
-The stock engine benchmark and settings tuning are complete. The recommended profile is `profiles/fused_prefill.json`; a reviewable serving overlay is `tuned-serving-overlay.json`. Production remains paused and was not upgraded. Read [RESULTS.md](RESULTS.md) for all decisions, tests and limitations.
+The stock engine benchmark and settings tuning are complete. The selected profile is `profiles/fused_prefill.json`; the serving overlay is `tuned-serving-overlay.json`. The profile was subsequently promoted on November 3 (November 4 UTC): production is healthy and all six live feature checks passed. Read the separate [deployment record](PROMOTION.md) for that outcome and [RESULTS.md](RESULTS.md) for the benchmark decisions, tests and limitations.
+
+`FINAL-SELECTION.json`, `receipts/final-state.json` and `PUBLICATION-MANIFEST.json` retain the historical pre-promotion campaign snapshot. The later promotion code and sanitized receipts are under `promotion/`; `SHA256SUMS.txt` covers the current package files. The original benchmark inputs, answers and timings remain unchanged.
 
 Three alternating matched pairs measured eight-stream whole-request output at 369.7 versus 412.6 tokens/s (+11.6%), and a 125K-token retrieval request at 16.87 versus 14.92 seconds. A separate real-API spot using eight roughly-4K prompts measured 178.8 versus 221.6 tokens/s (+23.9%); it is a different workload and a single spot, not a repeated statistical benchmark. Tools, reasoning and a fresh image passed. Context remains 131,072 tokens per slot.
 

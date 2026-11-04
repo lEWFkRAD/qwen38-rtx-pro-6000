@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-04T00:17:54.409964+00:00",
+  "scope": "Explicit small local public-promotion staging only; no repository modification or publishing. Normalizer invoked directly; no inventory or quiescence check executed.",
+  "normalizer": {
+    "relative_path": "publication/stage_publication.py",
+    "sha256": "705c5475737a1f21e05e76106735a5621f57ce50bb5c8ac596a4f24143983f08"
+  },
+  "files": [
+    {
+      "path": "production_canary.py",
+      "bytes": 13395,
+      "sha256": "64b9d3f0bfebd86bf68cb5972fa7e40ed1793836fe81a2a3a778658bf280756b",
+      "source": {
+        "relative_path": "promotion-20261103/production_canary.py",
+        "sha256": "64b9d3f0bfebd86bf68cb5972fa7e40ed1793836fe81a2a3a778658bf280756b"
+      },
+      "normalization_redactions": {}
+    },
+    {
+      "path": "deploy.py",
+      "bytes": 14708,
+      "sha256": "50c7108085e06deb30a3540d2aa0ab3cd6f30990e925f70618fb25d03883f62f",
+      "source": {
+        "relative_path": "promotion-20261103/deploy.py",
+        "sha256": "cc02bdeb5316625714e030e2151d9798b84ddd4235acf698797ffc32536c91df"
+      },
+      "normalization_redactions": {
+        "maintenance_owner": 1,
+        "operator_home": 1
+      }
+    },
+    {
+      "path": "live-canary.json",
+      "bytes": 7308,
+      "sha256": "064b672a4f0c628ff0a3cfe1f2f68ea850eafbb013570134991dffc6aac3616b",
+      "source": {
+        "relative_path": "promotion-20261103/production-canary-r1/report.json",
+        "sha256": "887075bc1011b7244d997e96c5ae63550f2ca3831ed9e382cc5f0f708685fa66",
+        "projection": "explicit whitelist; all private process identities, raw v1/status, raw config, request credentials and headers omitted"
+      },
+      "normalization_redactions": {}
+    },
+    {
+      "path": "audit-summary.json",
+      "bytes": 3077,
+      "sha256": "cefcc492a6b8b884890cfd59b006a73d0dc77fa2a66c403760ca7272e6a17556",
+      "source": {
+        "relative_path": "promotion-20261103/recovery-audit.json",
+        "sha256": "0445b57b511a799fa2bba057afa92f18d2e55d6f7b315d784ccbbcb983c9a852",
+        "projection": "dates/status and boolean checks only",
+        "independent_audit_added": true,
+        "independent_audit": {
+          "relative_path": "promotion-20261103/independent-live-audit.json",
+          "sha256": "b530fb30460a2bcfa2dc5b576cf938b2190dcb71daa4ca5151aa95e22d16ae4b"
+        }
+      },
+      "normalization_redactions": {}
+    }
+  ],
+  "checks": {
+    "python_AST_valid": true,
+    "JSON_valid": true,
+    "all_live_canary_cases_passed": true,
+    "normal_gate_preserved": true,
+    "identity_preserved_boolean_only": true,
+    "recovery_checks_all_passed": true,
+    "no_readiness_override": true,
+    "independent_live_audit_matches_expected_boolean_outcomes": true
+  },
+  "independent_live_audit_available": true
+}

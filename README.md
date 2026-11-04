@@ -21,8 +21,10 @@ matched alternating pairs measured eight-stream whole-request throughput of
 369.7 versus 412.6 tokens/s (+11.6%) and a 125K-token retrieval request at
 16.87 versus 14.92 seconds. A separate API spot measured +23.9% on its 4K-input
 workload. Capacity remains eight × 131,072; known arithmetic failures remain.
-[Results and limitations](research/strata-0156-tuning/RESULTS.md). Production was
-not upgraded; LSA was excluded from this campaign.
+[Results and limitations](research/strata-0156-tuning/RESULTS.md). The selected
+profile was subsequently promoted on November 3 (November 4 UTC), with normal
+readiness and all six production feature checks passing. See the
+[deployment record](research/strata-0156-tuning/PROMOTION.md). LSA remains deferred.
 
 ## November 3 research — native Strata LSA
 

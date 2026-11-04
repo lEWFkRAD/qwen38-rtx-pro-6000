@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only recovery and live-service audit check outcomes only; no service process identities, personal pins, configuration, or private state.",
+  "recovery_audit": {
+    "at": "2026-11-04T00:16:00.351975+00:00",
+    "kind": "independent read-only post-promotion recovery audit",
+    "status": "passed",
+    "checks": {
+      "expected_config_hashes": true,
+      "all_personal_baseline_pins_match": true,
+      "personal_primary_contract_matches": true,
+      "personal_promotion_points_to_new_backup": true,
+      "new_native_engine_selected": true,
+      "engine_package_identity": true,
+      "wrapper_source_retained": true,
+      "fused_profile_environment_matches": true,
+      "no_lsa_environment": true,
+      "original_prefill_spec_kv_capacity": true,
+      "decode_share_preserved": true,
+      "managed_gate_and_receipt_qualified": true,
+      "owned_hold_released": true,
+      "prior_attempt_history_preserved": true,
+      "exactly_one_authorized_start_attempt_added": true,
+      "recovery_healthy": true,
+      "sunshine_still_off_enabled": true
+    }
+  },
+  "independent_live_audit": {
+    "available": true,
+    "at": "2026-11-04T00:16:52.359068+00:00",
+    "kind": "independent-read-only-live-promotion-audit",
+    "status": "passed",
+    "checks": {
+      "static_contract_verified": true,
+      "managed_readiness_identity_matched": true,
+      "vision_available": true,
+      "lsa_enabled": false,
+      "credentials_stored": false,
+      "production_configs_copied": false,
+      "read_only_metadata_gets_only": true
+    },
+    "engine_capacity": {
+      "batch_slots": 8,
+      "context": 131072,
+      "kv": "int8",
+      "expert_slots": 24576,
+      "kv_resident": 0,
+      "spec": 8,
+      "mtp_max": 6,
+      "lookup": 3
+    },
+    "official_engine": "0.1.56",
+    "build_id": "06698c674673+cuda13.0",
+    "retained_wrapper": "0.1.42",
+    "matched_bundle_libraries": {
+      "decoder": [
+        {
+          "file": "libcublas.so.13",
+          "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+          "matched_bundle": true
+        },
+        {
+          "file": "libcublasLt.so.13",
+          "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+          "matched_bundle": true
+        },
+        {
+          "file": "libcudart.so.13",
+          "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+          "matched_bundle": true
+        }
+      ],
+      "vision": [
+        {
+          "file": "libcublas.so.13",
+          "sha256": "25cde432108543626df85d887c730bf2cab96803ca16f9654e4abc8d2b45833e",
+          "matched_bundle": true
+        },
+        {
+          "file": "libcublasLt.so.13",
+          "sha256": "1489aeb75d55ee55782798343ac66f57771d561cc1fe1e0491568deefa0e6515",
+          "matched_bundle": true
+        },
+        {
+          "file": "libcudart.so.13",
+          "sha256": "96c42e418cec19054186b9429c321603cc190bf26a18104e19408117a2a817b0",
+          "matched_bundle": true
+        }
+      ]
+    }
+  }
+}
