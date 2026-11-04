@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "at": "2026-11-04T11:18:45.562917+00:00",
+  "live_experiment_finished": true,
+  "normal_health_verified": true,
+  "static_contract_verified": true,
+  "configuration_and_personal_pins_unchanged": true,
+  "context": 262144,
+  "resident_slots": 8,
+  "prefill": 8192,
+  "expert_slots": 24576,
+  "images": true,
+  "idle_at_check": true,
+  "memory": {
+    "MemAvailable_mib": 12871.69921875,
+    "SwapFree_mib": 9263.05859375,
+    "gpu_free_mib": 1752.0,
+    "gpu_util_percent": 4.0,
+    "gpu_temperature_c": 42.0,
+    "gpu_power_w": 64.08
+  },
+  "sunshine": {
+    "MainPID": "0",
+    "ActiveState": "inactive",
+    "SubState": "dead"
+  },
+  "sunshine_read_verified": true,
+  "no_config_service_or_queue_changes": true
+}

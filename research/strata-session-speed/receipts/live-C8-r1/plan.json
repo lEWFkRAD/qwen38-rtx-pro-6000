@@ -1,0 +1,38 @@
+{
+  "status": "plan",
+  "started_at": "2026-11-04T11:16:54.106080+00:00",
+  "execute": true,
+  "context": 262144,
+  "slots": 8,
+  "prefill": 8192,
+  "ordinary_int8_full24576_vision_required": true,
+  "max_output_each": 1024,
+  "minimum_output_each_for_speed": 512,
+  "round_order": [
+    8,
+    8
+  ],
+  "synthetic_prompt_tokens": [
+    1215,
+    1350,
+    1489,
+    1624,
+    1763,
+    1898,
+    2037,
+    2171
+  ],
+  "fixture_sha256": "873fe8393c6add8df006f54ee4a673b6b7d4d5c2c9f04f7e3717692254a7c567",
+  "source_sha256": {
+    "runner": "dbcb06b8c5404ebc32ddf67f3cf8e70e0ba5de24ddd0d1746d137f46cc67564d",
+    "retained_production_canary": "64b9d3f0bfebd86bf68cb5972fa7e40ed1793836fe81a2a3a778658bf280756b",
+    "installed_contract_helper": "<approved-contract-helper-sha256>"
+  },
+  "scope": "Modest1–4K prompts only; no near-limit eight-deep stress, no new engine/configuration comparison.",
+  "sampling": "Inherited production sampling/projection, unchanged cvec; explicit reasoningnone only.",
+  "rate_scope": "Final SSE usage / whole request; post-first delivery rates approximate; no chunks-as-tokens.",
+  "normal_auth_gate_only": true,
+  "no_config_service_or_server_actions": true,
+  "raw_client_history_or_credentials_saved": false,
+  "rounds": []
+}

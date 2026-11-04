@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "at": "2026-11-04T09:53:12.234455+00:00",
+  "at": "2026-11-04T11:25:56.460903+00:00",
   "destination": "research/strata-session-speed",
   "files": [
     {
@@ -281,20 +281,20 @@
     {
       "source": "README.md",
       "published": "README.md",
-      "source_sha256": "3ec93b70e985f065ec0d0405f282256fdf91cd7aa2297dfc34621cea455a35b1",
-      "source_bytes": 1643,
-      "published_sha256": "3ec93b70e985f065ec0d0405f282256fdf91cd7aa2297dfc34621cea455a35b1",
-      "published_bytes": 1643,
+      "source_sha256": "dd3dd659a220666f5e3936352539fb5ad38b2737c11327d1fc4cdd678f51b0b3",
+      "source_bytes": 2917,
+      "published_sha256": "dd3dd659a220666f5e3936352539fb5ad38b2737c11327d1fc4cdd678f51b0b3",
+      "published_bytes": 2917,
       "projection": "source/text normalization",
       "redactions": {}
     },
     {
       "source": "RESULTS.md",
       "published": "RESULTS.md",
-      "source_sha256": "4d70751afa6a2b602952b3aaaf2d1a588c9897030d64a9093e514b7f8663e597",
-      "source_bytes": 5364,
-      "published_sha256": "4d70751afa6a2b602952b3aaaf2d1a588c9897030d64a9093e514b7f8663e597",
-      "published_bytes": 5364,
+      "source_sha256": "856c5144920e5e597f005d505818126578e9f9086385d208200984ebbfa6a7a6",
+      "source_bytes": 8713,
+      "published_sha256": "856c5144920e5e597f005d505818126578e9f9086385d208200984ebbfa6a7a6",
+      "published_bytes": 8713,
       "projection": "source/text normalization",
       "redactions": {}
     },
@@ -311,10 +311,10 @@
     {
       "source": "publication/SELECTION.json",
       "published": "publication/SELECTION.json",
-      "source_sha256": "e9dc65c136126b9d0932b6b0d50d3264827516765d4d9de9001d0317f9c8cee7",
-      "source_bytes": 3206,
-      "published_sha256": "e9dc65c136126b9d0932b6b0d50d3264827516765d4d9de9001d0317f9c8cee7",
-      "published_bytes": 3206,
+      "source_sha256": "e86ee81e5abc7466dfdd02fbb554492034b7b361865a58bd77ce6961ff137e6b",
+      "source_bytes": 4021,
+      "published_sha256": "e86ee81e5abc7466dfdd02fbb554492034b7b361865a58bd77ce6961ff137e6b",
+      "published_bytes": 4021,
       "projection": "source/text normalization",
       "redactions": {}
     },
@@ -349,10 +349,94 @@
       "published_bytes": 255,
       "projection": "structural report privacy filter",
       "redactions": {}
+    },
+    {
+      "source": "receipts/live-C8-r1/report.json",
+      "published": "receipts/live-C8-r1/report.json",
+      "source_sha256": "c8ee37140c7b2de4bb8e8eca02ad06653dbe0ea78b22741411b435e403dc9b9b",
+      "source_bytes": 338485,
+      "published_sha256": "c97a1fc0b5ec4cfeee77ba644b01ba901f9892797aafb99655950ec80fd8e6c5",
+      "published_bytes": 334794,
+      "projection": "structural report privacy filter",
+      "redactions": {
+        "approved-contract-helper-sha256": 1
+      }
+    },
+    {
+      "source": "receipts/live-C8-r1/fixtures.json",
+      "published": "receipts/live-C8-r1/fixtures.json",
+      "source_sha256": "154fd6bee1a4ac730e9b95fbb6298825ec091f592d466eb4500b315887ef8ee2",
+      "source_bytes": 35438,
+      "published_sha256": "154fd6bee1a4ac730e9b95fbb6298825ec091f592d466eb4500b315887ef8ee2",
+      "published_bytes": 35438,
+      "projection": "synthetic fixture",
+      "redactions": {}
+    },
+    {
+      "source": "receipts/live-C8-r1/plan.json",
+      "published": "receipts/live-C8-r1/plan.json",
+      "source_sha256": "67cc9ec7efbd263f71a943b73e6e554e34186357c2283081cba7fd0d9973bde3",
+      "source_bytes": 1297,
+      "published_sha256": "d3efda8ace8918b9a39d30c2f173c962f3e453b548f08da703bd2c16512ff526",
+      "published_bytes": 1263,
+      "projection": "structural report privacy filter",
+      "redactions": {
+        "approved-contract-helper-sha256": 1
+      }
+    },
+    {
+      "source": "c8-final-health-public.json",
+      "published": "c8-final-health-public.json",
+      "source_sha256": "e01143d61bec001a5b8876b016820403cc2166ff3838c93d31f2d26bc3001792",
+      "source_bytes": 741,
+      "published_sha256": "e01143d61bec001a5b8876b016820403cc2166ff3838c93d31f2d26bc3001792",
+      "published_bytes": 741,
+      "projection": "structural report privacy filter",
+      "redactions": {}
+    },
+    {
+      "source": "c8-analysis.json",
+      "published": "c8-analysis.json",
+      "source_sha256": "15a056f0b999f964bc5e0dad3c5823b51b186f655c7b2870439d030248422771",
+      "source_bytes": 4486,
+      "published_sha256": "15a056f0b999f964bc5e0dad3c5823b51b186f655c7b2870439d030248422771",
+      "published_bytes": 4486,
+      "projection": "structural report privacy filter",
+      "redactions": {}
+    },
+    {
+      "source": "c8-audit.json",
+      "published": "c8-audit.json",
+      "source_sha256": "52ead47a02f07bd49be3bc8cc40632675675a00099545c46482f3cd5efd40ae3",
+      "source_bytes": 5267,
+      "published_sha256": "01f2a028c4ff9942ab7952193dadeb32e665b8f66ac7eab6f2f40c0ef596dde3",
+      "published_bytes": 5264,
+      "projection": "structural report privacy filter",
+      "redactions": {}
+    },
+    {
+      "source": "c8_analyze.py",
+      "published": "c8_analyze.py",
+      "source_sha256": "3293e09ad7a35e062f649af9be96a4c1dbc91b1554a170b627f16c4918749756",
+      "source_bytes": 5973,
+      "published_sha256": "3293e09ad7a35e062f649af9be96a4c1dbc91b1554a170b627f16c4918749756",
+      "published_bytes": 5973,
+      "projection": "source/text normalization",
+      "redactions": {}
+    },
+    {
+      "source": "C8-BOTTLENECK.md",
+      "published": "C8-BOTTLENECK.md",
+      "source_sha256": "58de2cbcf4f07218dba1f361d3983d9f269cab95aacefea12eccb8432ecdcc3a",
+      "source_bytes": 4857,
+      "published_sha256": "58de2cbcf4f07218dba1f361d3983d9f269cab95aacefea12eccb8432ecdcc3a",
+      "published_bytes": 4857,
+      "projection": "source/text normalization",
+      "redactions": {}
     }
   ],
   "normalizer_source_sha256": "705c5475737a1f21e05e76106735a5621f57ce50bb5c8ac596a4f24143983f08",
-  "root_authority_sha256": "1d6dec28b47a6705b7eac49268e08fdb110589d3b74dfd8fd35d93ba894502a6",
+  "root_authority_sha256": "884be5e0a497361305978a800bb26890a3816213704b86b67123decfae3ecdff",
   "private_pin_roles": [
     "approved-contract-helper-sha256",
     "approved-personal-baseline-sha256",

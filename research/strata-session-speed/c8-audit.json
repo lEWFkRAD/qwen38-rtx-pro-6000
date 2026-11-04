@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-11-04T11:20:36.602232+00:00",
+  "status": "passed",
+  "source_report": "receipts/live-C8-r1/report.json",
+  "source_report_sha256": "c8ee37140c7b2de4bb8e8eca02ad06653dbe0ea78b22741411b435e403dc9b9b",
+  "fixture_seed": 2026110411,
+  "fixture_file_sha256": "154fd6bee1a4ac730e9b95fbb6298825ec091f592d466eb4500b315887ef8ee2",
+  "report_fixture_hash_matches_frozen_fixture": true,
+  "reported_runner_matches_current_source_sha256": true,
+  "context": 262144,
+  "allocated_slots": 8,
+  "observed_prompt_token_range": [
+    1215,
+    2171
+  ],
+  "ordinary_short_prompt_eight_decoding_qualified": true,
+  "deep_eight_near262K_generation_qualified": false,
+  "engine_or_settings_changed_for_this_measurement": false,
+  "new_tuning_gain_established": false,
+  "rounds": [
+    {
+      "label": "round1-C8",
+      "eligible": true,
+      "requests": 8,
+      "completion_tokens_each": 1024,
+      "total_completion_tokens": 8192,
+      "usage_and_completed_request_ledgers_match": true,
+      "whole_request_seconds": 20.841163220000453,
+      "aggregate_whole_request_tokens_s": 393.0682713591752,
+      "per_stream_whole_request_tokens_s": [
+        49.328643653554224,
+        49.27405008054341,
+        49.16923744522557,
+        49.431381523454235,
+        49.22020951754317,
+        49.150006363314276,
+        49.19263067852815,
+        49.13633211555489
+      ],
+      "per_stream_median_tokens_s": 49.20642009803566,
+      "per_stream_range_tokens_s": [
+        49.13633211555489,
+        49.431381523454235
+      ],
+      "ttft_median_ms": 1413.9967260125559,
+      "ttft_range_ms": [
+        428.74930598190986,
+        2523.5948690096848
+      ],
+      "eight_decoding_contiguous_sample_count": 72,
+      "eight_decoding_sample_span_seconds": 18.10176764600328,
+      "each_slot_observed_progress_tokens": [
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011
+      ],
+      "common_visible_output_overlap_seconds": 18.190610866004135,
+      "fairness_jain": 0.9999962828290732,
+      "reported_cached_prompt_tokens_each": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "no_contamination_observed": true,
+      "owned_HTTP_threads_drained": true
+    },
+    {
+      "label": "round2-C8",
+      "eligible": true,
+      "requests": 8,
+      "completion_tokens_each": 1024,
+      "total_completion_tokens": 8192,
+      "usage_and_completed_request_ledgers_match": true,
+      "whole_request_seconds": 19.35135771901696,
+      "aggregate_whole_request_tokens_s": 423.3294696397225,
+      "per_stream_whole_request_tokens_s": [
+        52.98605630954688,
+        53.05586647710255,
+        52.95911911691638,
+        52.91690728674745,
+        52.93463819072819,
+        53.01798177026204,
+        53.27483153878868,
+        53.09679085787599
+      ],
+      "per_stream_median_tokens_s": 53.00201903990446,
+      "per_stream_range_tokens_s": [
+        52.91690728674745,
+        53.27483153878868
+      ],
+      "ttft_median_ms": 541.1092529975576,
+      "ttft_range_ms": [
+        167.7820309996605,
+        1300.642896007048
+      ],
+      "eight_decoding_contiguous_sample_count": 71,
+      "eight_decoding_sample_span_seconds": 17.85090950797894,
+      "each_slot_observed_progress_tokens": [
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009
+      ],
+      "common_visible_output_overlap_seconds": 17.920247075002408,
+      "fairness_jain": 0.9999958193464621,
+      "reported_cached_prompt_tokens_each": [
+        0,
+        1343,
+        1482,
+        0,
+        0,
+        1891,
+        2030,
+        2164
+      ],
+      "no_contamination_observed": true,
+      "owned_HTTP_threads_drained": true
+    }
+  ],
+  "limitations": [
+    "Two baseline repetitions on the same approved engine/settings are measurements, not a before/after optimization.",
+    "Inputs are 1215–2171 tokens with 1024 output tokens each. This is not an eight-near 262K-context test.",
+    "Round 1 reports zero prefix-cache tokens; round 2 has five partially reused prompts and three with zero reported cache. Do not attribute the between-round difference to a single cause.",
+    "Whole-request rates include admission/prefill/queue/transport. Per-stream medians and aggregate throughput have different denominators.",
+    "Observed eight-slot states plus progress across contiguous samples establish overlapping ordinary decoding; they do not imply eight GPU kernels execute simultaneously.",
+    "SSE is buffered. Common visible-output overlap is not an exact token-counted steady-state window.",
+    "Same-length unfinished outside work cannot be fully excluded by this wrapper; no contamination was observed and both aggregate completion/output ledgers match.",
+    "Do not claim improvement versus older 28 TPS, the solo confidence screen, heterogeneous real traffic or prior different input/output budgets.",
+    "The pre-existing confidence screen remains ineligible and its arithmetic failures are unchanged."
+  ],
+  "new_live_requests_sent_by_auditor": 0,
+  "raw_probes_configuration_credentials_process_identifiers_or_client_content_included": false
+}

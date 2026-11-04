@@ -259,10 +259,11 @@ Alibaba Qwen, SGLang, NVIDIA, RadixArk, or FlashInfer.
 <!-- strata-session-speed:start -->
 ## November 4 — per-session generation-speed screen
 
-The existing speculative-confidence setting was descriptively fastest in the
-matched solo screen. Neither alternative earned promotion; all settings shared
-one arithmetic failure. Production remains at eight 262K sessions with its
-approved settings. Concurrent-load measurements yielded to real production
-traffic and do not supply a new C2/C4/C8 throughput claim.
+The unchanged eight-session, 262K production configuration completed two
+ordinary C8 baseline rounds at 49.2 and 53.0 tokens/s per session, including
+prompt processing and API overhead. All eight slots generated together for
+about 18 seconds on 1.2–2.2K-token prompts with 1024 output tokens each.
+These are new baseline measurements, not a tuning gain or eight deep-context
+qualification. Neither confidence-floor alternative earned promotion.
 [Method, code and complete results](research/strata-session-speed/RESULTS.md).
 <!-- strata-session-speed:end -->

@@ -134,6 +134,46 @@
       "source": "final-health-public.json",
       "kind": "report",
       "required": true
+    },
+    {
+      "source": "receipts/live-C8-r1/report.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "receipts/live-C8-r1/fixtures.json",
+      "kind": "fixture",
+      "required": true
+    },
+    {
+      "source": "receipts/live-C8-r1/plan.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "c8-final-health-public.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "c8-analysis.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "c8-audit.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "c8_analyze.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "C8-BOTTLENECK.md",
+      "kind": "text",
+      "required": true
     }
   ],
   "excluded": [

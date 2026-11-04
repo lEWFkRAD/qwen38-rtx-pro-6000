@@ -1,0 +1,161 @@
+{
+  "status": "passed",
+  "source": "receipts/live-C8-r1/report.json",
+  "source_report_sha256": "c8ee37140c7b2de4bb8e8eca02ad06653dbe0ea78b22741411b435e403dc9b9b",
+  "fixture_sha256": "873fe8393c6add8df006f54ee4a673b6b7d4d5c2c9f04f7e3717692254a7c567",
+  "started_at": "2026-11-04T11:16:54.106080+00:00",
+  "finished_at": "2026-11-04T11:17:36.709663+00:00",
+  "context_allocation": 262144,
+  "resident_slots": 8,
+  "prefill": 8192,
+  "input_tokens_each": [
+    1215,
+    1350,
+    1489,
+    1624,
+    1763,
+    1898,
+    2037,
+    2171
+  ],
+  "rounds": [
+    {
+      "label": "round1-C8",
+      "status": "passed",
+      "actual_sessions": 8,
+      "output_tokens_each": [
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "output_tokens_total": 8192,
+      "per_session_end_to_end_tokens_s": [
+        49.328643653554224,
+        49.27405008054341,
+        49.16923744522557,
+        49.431381523454235,
+        49.22020951754317,
+        49.150006363314276,
+        49.19263067852815,
+        49.13633211555489
+      ],
+      "per_session_end_to_end_summary": {
+        "min": 49.13633211555489,
+        "median": 49.20642009803566,
+        "max": 49.431381523454235,
+        "mean": 49.23781142221474
+      },
+      "aggregate_end_to_end_tokens_s": 393.0682713591752,
+      "whole_request_seconds": 20.841163220000453,
+      "ttft_ms": {
+        "min": 428.74930598190986,
+        "median": 1413.9967260125559,
+        "max": 2523.5948690096848,
+        "mean": 1431.3380312523805
+      },
+      "cached_prompt_tokens_each": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "eight_decoding_sample_count": 72,
+      "eight_decoding_observed_span_seconds": 18.10176764600328,
+      "observed_generated_progress_each_slot": [
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011,
+        1011
+      ],
+      "common_visible_output_interval_seconds": 18.190610866004135,
+      "fairness": 0.9999962828290732,
+      "exact_common_window_tokens_s": null,
+      "count_scope": "Final SSE usage tokens; SSE chunks are never treated as tokens."
+    },
+    {
+      "label": "round2-C8",
+      "status": "passed",
+      "actual_sessions": 8,
+      "output_tokens_each": [
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "output_tokens_total": 8192,
+      "per_session_end_to_end_tokens_s": [
+        52.98605630954688,
+        53.05586647710255,
+        52.95911911691638,
+        52.91690728674745,
+        52.93463819072819,
+        53.01798177026204,
+        53.27483153878868,
+        53.09679085787599
+      ],
+      "per_session_end_to_end_summary": {
+        "min": 52.91690728674745,
+        "median": 53.00201903990446,
+        "max": 53.27483153878868,
+        "mean": 53.03027394349602
+      },
+      "aggregate_end_to_end_tokens_s": 423.3294696397225,
+      "whole_request_seconds": 19.35135771901696,
+      "ttft_ms": {
+        "min": 167.7820309996605,
+        "median": 541.1092529975576,
+        "max": 1300.642896007048,
+        "mean": 610.8966111241898
+      },
+      "cached_prompt_tokens_each": [
+        0,
+        1343,
+        1482,
+        0,
+        0,
+        1891,
+        2030,
+        2164
+      ],
+      "eight_decoding_sample_count": 71,
+      "eight_decoding_observed_span_seconds": 17.85090950797894,
+      "observed_generated_progress_each_slot": [
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009,
+        1009
+      ],
+      "common_visible_output_interval_seconds": 17.920247075002408,
+      "fairness": 0.9999958193464621,
+      "exact_common_window_tokens_s": null,
+      "count_scope": "Final SSE usage tokens; SSE chunks are never treated as tokens."
+    }
+  ],
+  "scope": "Two unchanged-production eight-session short-prompt rounds, with 1024 output tokens per session.",
+  "eight_near_capacity_histories_qualified": false,
+  "tuning_gain_established": false,
+  "configuration_changed": false,
+  "comparison_limit": "The historical approximately 28 tokens/s/session API test used roughly 4K prompts and 256 output tokens. Different input, output and cache conditions prevent a speedup claim.",
+  "rate_limit": "Whole-request rates include prompt processing and admission. No exact steady token-arrival rate is inferred from buffered SSE delivery."
+}
