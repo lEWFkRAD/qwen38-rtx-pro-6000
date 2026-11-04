@@ -1,0 +1,1220 @@
+{
+  "status": "failed",
+  "started_at": "2026-11-04T09:24:47.939288+00:00",
+  "execute": true,
+  "context": 262144,
+  "slots": 8,
+  "prefill": 8192,
+  "ordinary_int8_full24576_vision_required": true,
+  "max_output_each": 1024,
+  "minimum_output_each_for_speed": 512,
+  "round_order": [
+    1,
+    4,
+    8,
+    8,
+    4,
+    1
+  ],
+  "synthetic_prompt_tokens": [
+    1213,
+    1348,
+    1487,
+    1622,
+    1761,
+    1896,
+    2035,
+    2169
+  ],
+  "fixture_sha256": "fa990b8a7d22cd7087d0f37c30a08baf38134fdb2f6af7ff06f7af81b4d5b6f0",
+  "source_sha256": {
+    "runner": "15f131b70f395c963debf4ff0b95aa53ff72f65a0d5139338539e35098a3ebed",
+    "retained_production_canary": "64b9d3f0bfebd86bf68cb5972fa7e40ed1793836fe81a2a3a778658bf280756b",
+    "installed_contract_helper": "<approved-contract-helper-sha256>"
+  },
+  "scope": "Modest1–4K prompts only; no near-limit eight-deep stress, no new engine/configuration comparison.",
+  "sampling": "Inherited production sampling/projection, unchanged cvec; explicit reasoningnone only.",
+  "rate_scope": "Final SSE usage / whole request; post-first delivery rates approximate; no chunks-as-tokens.",
+  "normal_auth_gate_only": true,
+  "no_config_service_or_server_actions": true,
+  "raw_client_history_or_credentials_saved": false,
+  "rounds": [
+    {
+      "label": "round1-C1",
+      "status": "passed",
+      "eligible_for_speed": true,
+      "concurrent_clients": 1,
+      "requested_output_each": 1024,
+      "minimum_observed_output_each": 512,
+      "requests": [
+        {
+          "id": "synthetic-speed-20261104-0",
+          "style": "prose",
+          "prompt_tokens": 1213,
+          "usage": {
+            "prompt_tokens": 1213,
+            "completion_tokens": 1024,
+            "total_tokens": 2237,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          },
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 1213,
+            "prompt_ms": 241.4,
+            "predicted_n": 1024,
+            "predicted_ms": 3692.0,
+            "predicted_per_second": 277.4,
+            "draft_n": 1047,
+            "draft_n_accepted": 660
+          },
+          "finish_reason": "length",
+          "output_sha256": "7e9548eb68dacc7f3388669d35405f741718d1dc491acfd3a3347480cf44f345",
+          "wall_ms": 3950.338783994084,
+          "ttft_ms": 264.11379798082635,
+          "post_first_token_tokens_s_approximation": 277.5531461064667,
+          "post_first_token_rate_scope": "Approximation from final usage and first/last visible SSE delivery; batching/buffering prevents exact token arrival timing.",
+          "sse_events_observed": 996,
+          "received_bytes": 219744,
+          "sent_after_release_ms": 0.010028015822172165,
+          "completed_after_release_ms": 3950.3488120099064
+        }
+      ],
+      "actual_completion_tokens_total": 1024,
+      "whole_request_seconds": 3.9503488120099064,
+      "whole_request_output_tokens_s": 259.21761564113547,
+      "per_stream_whole_request_tokens_s": [
+        259.21827367035604
+      ],
+      "per_stream_ttft_ms": [
+        264.11379798082635
+      ],
+      "jain_fairness_from_whole_request_rates": 1.0,
+      "release_spread_ms": 0.0,
+      "peak_observed_decoding_slots": 0,
+      "all_stream_decoding_samples_span_seconds": 0,
+      "samples": [
+        {
+          "elapsed_ms": 51.85634101508185,
+          "state": "reading",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 0,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 304.1361420182511,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 6,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 556.5396750171203,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 74,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 808.9468980033416,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 143,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 1061.205867008539,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 200,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 1313.44985801843,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 258,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 1566.0349650133867,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 338,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 1818.3520619932096,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 423,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 2085.0572689960245,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 505,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 2337.323567015119,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 567,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 2590.18478699727,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 630,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 2842.2787680174224,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 703,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 3094.1784669994377,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 778,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 3346.6732520028017,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 834,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 3599.1378120088484,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 908,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 3851.587155018933,
+          "state": "generating",
+          "running": 1,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 1,
+          "admitting": 0,
+          "outside_slots": 1,
+          "prompt_tokens": 1213,
+          "generated": 999,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        }
+      ],
+      "contaminated": false,
+      "contamination_reasons": [],
+      "traffic_correlation_scope": "Stable own SSE response IDs plus counts/unique synthetic prompt lengths; retained wrapper has no SSE-to-history ID join. Undetected same-length, unfinished outside work cannot be ruled out.",
+      "common_visible_output_interval_seconds": 3.685780594998505,
+      "exact_common_window_tokens_s": null,
+      "steady_rate_scope": "SSE delivery is buffered; no exact common token rate is inferred. Whole-request final usage is primary; post-first delivery estimates are approximate.",
+      "solo_observation": {
+        "active_native_slot_observed": false,
+        "migration_or_prompt_change_observed": false,
+        "max_running": 1,
+        "max_queued": 0,
+        "max_waiting": 0,
+        "max_admission_inflight": 1,
+        "totals_requests_delta": 1,
+        "totals_output_delta": 1024
+      },
+      "solo_request_tuning_eligible": true,
+      "owned_http_threads_drained": true,
+      "owned_http_handles_closed": 0,
+      "configuration_and_process_identity_preserved": true
+    },
+    {
+      "label": "round2-C4",
+      "status": "contaminated",
+      "eligible_for_speed": false,
+      "concurrent_clients": 4,
+      "requested_output_each": 1024,
+      "minimum_observed_output_each": 512,
+      "requests": [],
+      "actual_completion_tokens_total": 0,
+      "whole_request_seconds": null,
+      "whole_request_output_tokens_s": null,
+      "per_stream_whole_request_tokens_s": [],
+      "per_stream_ttft_ms": [],
+      "jain_fairness_from_whole_request_rates": null,
+      "release_spread_ms": 0,
+      "peak_observed_decoding_slots": 1,
+      "all_stream_decoding_samples_span_seconds": 0,
+      "samples": [
+        {
+          "elapsed_ms": 52.93051901389845,
+          "state": "idle",
+          "running": 0,
+          "queued": 0,
+          "waiting": 0,
+          "admission_inflight": 2,
+          "admitting": 0,
+          "outside_slots": 0,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "state": "idle"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "state": "idle"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 0,
+          "decoding_slots": 0,
+          "slot_states": [
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle",
+            "idle"
+          ]
+        },
+        {
+          "elapsed_ms": 305.2310270140879,
+          "state": "reading",
+          "running": 4,
+          "queued": 0,
+          "waiting": 2,
+          "admission_inflight": 4,
+          "admitting": 0,
+          "outside_slots": 2,
+          "prompt_tokens": 1487,
+          "generated": 0,
+          "slots": [
+            {
+              "slot": 0,
+              "state": "idle"
+            },
+            {
+              "slot": 1,
+              "state": "idle"
+            },
+            {
+              "slot": 2,
+              "prompt_tokens": 1214,
+              "generated": 3,
+              "state": "decoding"
+            },
+            {
+              "slot": 3,
+              "state": "idle"
+            },
+            {
+              "slot": 4,
+              "state": "idle"
+            },
+            {
+              "slot": 5,
+              "state": "idle"
+            },
+            {
+              "slot": 6,
+              "prompt_tokens": 1348,
+              "generated": 0,
+              "state": "reading"
+            },
+            {
+              "slot": 7,
+              "state": "idle"
+            }
+          ],
+          "active_slots": 2,
+          "decoding_slots": 1,
+          "slot_states": [
+            "idle",
+            "idle",
+            "decoding",
+            "idle",
+            "idle",
+            "idle",
+            "reading",
+            "idle"
+          ]
+        }
+      ],
+      "contaminated": true,
+      "contamination_reasons": [
+        "unknown active prompt length",
+        "final completed/output counters do not match owned SSE usage"
+      ],
+      "traffic_correlation_scope": "Stable own SSE response IDs plus counts/unique synthetic prompt lengths; retained wrapper has no SSE-to-history ID join. Undetected same-length, unfinished outside work cannot be ruled out.",
+      "common_visible_output_interval_seconds": 0,
+      "exact_common_window_tokens_s": null,
+      "steady_rate_scope": "SSE delivery is buffered; no exact common token rate is inferred. Whole-request final usage is primary; post-first delivery estimates are approximate.",
+      "solo_observation": {
+        "active_native_slot_observed": true,
+        "migration_or_prompt_change_observed": false,
+        "max_running": 4,
+        "max_queued": 0,
+        "max_waiting": 2,
+        "max_admission_inflight": 4,
+        "totals_requests_delta": 4,
+        "totals_output_delta": 4
+      },
+      "solo_request_tuning_eligible": false,
+      "owned_http_threads_drained": true,
+      "owned_http_handles_closed": 4,
+      "configuration_and_process_identity_preserved": true
+    }
+  ],
+  "initial_headroom": {
+    "MemAvailable_mib": 13106.625,
+    "SwapFree_mib": 9232.859375,
+    "gpu_free_mib": 1834.0,
+    "gpu_util_percent": 4.0,
+    "gpu_temperature_c": 35.0,
+    "gpu_power_w": 61.95
+  },
+  "error": "live round contaminated or not drained; no next round",
+  "finished_at": "2026-11-04T09:24:54.038763+00:00"
+}

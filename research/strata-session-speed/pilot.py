@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+"""One normal, bounded synthetic production completion; no service changes."""
+import importlib.util,json,sys,datetime,urllib.request,os
+from pathlib import Path
+sys.dont_write_bytecode=True
+R=Path(__file__).resolve().parent
+s=importlib.util.spec_from_file_location('normal_production_helpers','/home/USER/Documents/strata-0156-tuning-20261103/promotion-20261103/production_canary.py');P=importlib.util.module_from_spec(s);s.loader.exec_module(P)
+urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler({})))
+C=P.helper();c=C.load_config();server=json.loads(Path(c['server_config']).read_text());C.verify_static(c);g=P.Guard(C,c,server,180);g.check(force=True)
+before=C.request(c,'/metrics');e=before['engine'];live=before['live'];assert all(e.get(k)==v for k,v in {'context':262144,'batch_slots':8,'kv':'int8','kv_resident':0,'expert_slots':24576,'prefill_cap':8192}.items());assert all(live.get(k)==0 for k in ['running','queued','waiting','admission_inflight']),'Existing activity: pilot deferred'
+payload={'model':c['model'],'messages':[{'role':'user','content':'This is a fictional benchmark, not an action request. Write a complete and detailed operational runbook for a fictional lunar observatory inventory ledger. Use at least eighty numbered sections, each with at least five complete explanatory sentences and an invented worked example. Explain parsing, validation, audit trails, reconciliation, retention, monitoring, recovery, testing, access roles, and reporting. Do not use tools. Write the entire runbook; continue through every section.'}],'max_tokens':1024,'stream':False,'reasoning_effort':'none','chat_template_kwargs':{'enable_thinking':False}}
+result=P.request(C,c,g,'/v1/chat/completions',payload,120);after=C.request(c,'/metrics');g.check(force=True);v=result['response'];out=v['usage']['completion_tokens'];record={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'kind':'single synthetic pilot; not a repeated benchmark','status':'passed','configuration_unchanged':True,'identity_preserved':True,'context':262144,'slots':8,'usage':v['usage'],'finish_reason':v['choices'][0]['finish_reason'],'wall_ms':result['wall_ms'],'whole_request_tokens_per_second':out/(result['wall_ms']/1000),'timings':v.get('timings'),'initial_engine':e,'final_live':after['live'],'response':v,'performance_eligible':out>=512,'sampling':'inherited production; reasoning none; unchanged control vector'}
+os.umask(0o077);p=R/'pilot.private.json';assert not p.exists();p.write_text(json.dumps(record,indent=2)+'\n');print(json.dumps({k:record[k] for k in ['at','status','usage','finish_reason','wall_ms','whole_request_tokens_per_second','timings','performance_eligible']}))

@@ -1,0 +1,96 @@
+--- live_benchmark.py
++++ live_benchmark.py
+@@ -182,14 +182,61 @@
+  # Sampling/projection are inherited from the unchanged production configuration.
+  return out
+ 
++class ActivePromptCorrelation:
++ """Bound active slots to unique frozen inputs through source-backed promotion.
++
++ Retained server.py1351 sets prompt=list(ids)+out. On decoding,1446 exposes
++ cumulative generated=len(out), so 0<=slot_prompt-original<=generated.
++ Initial association must be unique; later generated growth never reassigns
++ the original. Only an observed idle state clears a binding. Reading an
++ already-promoted leg exposes generated0 before1446, so it remains unbound
++ pending a decoding observation rather than asserting ownership from no proof.
++ Final per-response SSE prompt counts and aggregate ledgers remain exact.
++ """
++ def __init__(self,initial_lengths):
++  self.initials=frozenset(initial_lengths);self.bindings={};self.pending={};self.events=[]
++ def observe(self,slots):
++  errors=[]
++  for row in slots:
++   slot=row.get('slot')
++   if type(slot) is not int or not 0<=slot<8:
++    errors.append('invalid slot identity');continue
++   if row.get('state')=='idle':
++    if slot in self.bindings:self.events.append({'slot':slot,'event':'idle_binding_cleared','original_prompt_tokens':self.bindings[slot]})
++    self.bindings.pop(slot,None);self.pending.pop(slot,None)
++  for row in slots:
++   slot=row.get('slot');state=row.get('state');length=row.get('prompt_tokens');generated=row.get('generated')
++   if state=='idle':continue
++   if type(slot) is not int or not 0<=slot<8:continue
++   if type(length) is not int or type(generated) is not int or length<1 or not 0<=generated<=MAX_OUTPUT:
++    errors.append('invalid slot prompt/generated counters');continue
++   prior=self.bindings.get(slot)
++   if prior is not None:
++    if not 0<=length-prior<=generated:
++     # The wrapper clears generated at the start of a promoted read. Keep the
++     # existing original binding until decoding can validate the new prefix.
++     if state=='reading' and generated==0 and 0<=length-prior<=MAX_OUTPUT:
++      self.pending[slot]=length;continue
++     errors.append('bound slot prompt violates owned output-count transform');continue
++    self.pending.pop(slot,None);continue
++   used=set(self.bindings.values())
++   candidates=[n for n in self.initials if n not in used and 0<=length-n<=generated]
++   if len(candidates)==1:
++    original=candidates[0];self.bindings[slot]=original;self.pending.pop(slot,None)
++    self.events.append({'slot':slot,'event':'bound','original_prompt_tokens':original,'slot_prompt_tokens':length,'generated_at_binding':generated,'promoted_prefix_tokens':length-original})
++   elif state=='reading' and generated==0 and any(0<=length-n<=MAX_OUTPUT for n in self.initials):
++    self.pending[slot]=length
++   else:errors.append('unknown or ambiguous active prompt length')
++  return errors
++
+ def run_round(ctx,cases,label,request_seconds=90,payload_overrides=None,min_output=MIN_OUTPUT):
+  n=len(cases)
+- if n not in (1,4,8) or not 15<=request_seconds<=120 or not 1<=min_output<=MAX_OUTPUT:raise Refusal('invalid bounded live round')
++ if n not in (1,2,4,8) or not 15<=request_seconds<=120 or not 1<=min_output<=MAX_OUTPUT:raise Refusal('invalid bounded live round')
+  if ctx.guard.deadline-time.monotonic()<request_seconds+5:raise Refusal('insufficient global deadline for this round and drain')
+  if len({x['prompt_tokens'] for x in cases})!=n:raise Refusal('distinct synthetic prompt lengths required for count-level traffic detection')
+  ctx.guard.check(force=True);before=ctx.metrics()
+  if not idle(before):raise Refusal('preexisting production traffic; no synthetic request sent')
+- allowed={x['prompt_tokens'] for x in cases};before_requests=counter(before,'requests');before_output=counter(before,'output_tokens')
++ allowed={x['prompt_tokens'] for x in cases};before_requests=counter(before,'requests');before_output=counter(before,'output_tokens');correlation=ActivePromptCorrelation(allowed)
+  events=queue.Queue();ready=queue.Queue();release=threading.Event();abort=threading.Event();handles={};lock=threading.Lock();first_seen=set();threads=[]
+  contaminated=[];samples=[];completed={};closed_handles=0;all_drained=False
+  def note(reason):
+@@ -249,14 +296,14 @@
+    if time.monotonic()>=next_sample:
+     m=ctx.metrics();view=safe_live(m);active=[x for x in view['slots'] if x['state']!='idle'];decoding=[x for x in active if x['state']=='decoding']
+     if (view.get('running') or 0)>n:note('running request count exceeds owned clients')
+-    if any(x.get('prompt_tokens') not in allowed for x in active):note('unknown active prompt length')
++    for reason in correlation.observe(view['slots']):note(reason)
+     if view.get('state') in ('reading','generating') and (view.get('prompt_tokens') is not None and view['prompt_tokens'] not in allowed):note('unknown foreground prompt length')
+     with lock:all_started=len(first_seen)==n
+     # The normal HTTP gate counts our POST for its entire SSE lifetime. Native
+     # queue/admitting counters can also contain our own work; positive is valid.
+     if any((view.get(k) or 0)>n for k in ('queued','waiting','admission_inflight','admitting')):note('queue/admission count exceeds owned client population')
+     if counter(m,'requests')-before_requests>n:note('unexpected completed-request ledger growth')
+-    sample={'elapsed_ms':(time.monotonic()-born)*1000,**view,'active_slots':len(active),'decoding_slots':len(decoding),'slot_states':[x['state'] for x in view['slots']]};samples.append(sample)
++    sample={'elapsed_ms':(time.monotonic()-born)*1000,**view,'active_slots':len(active),'decoding_slots':len(decoding),'slot_states':[x['state'] for x in view['slots']],'correlation_pending_reading_slots':sorted(correlation.pending)};samples.append(sample)
+     next_sample=time.monotonic()+.25
+     if contaminated:raise Refusal('external traffic or ambiguous live activity; stop owned streams')
+   for t in threads:t.join(timeout=.1)
+@@ -301,10 +348,10 @@
+  for r in rows:
+   r['sent_after_release_ms']=(r.pop('sent_at')-born)*1000;r['completed_after_release_ms']=(r.pop('completed_at')-born)*1000
+   for k in ('first_at','last_content_at'):r.pop(k,None)
+- return {'label':label,'status':'contaminated' if contaminated else 'passed' if eligible else 'ineligible','eligible_for_speed':eligible,'concurrent_clients':n,'requested_output_each':MAX_OUTPUT,'minimum_observed_output_each':min_output,'requests':rows,'actual_completion_tokens_total':total,'whole_request_seconds':duration,'whole_request_output_tokens_s':total/duration if duration and duration>0 else None,'per_stream_whole_request_tokens_s':rates,'per_stream_ttft_ms':[r['ttft_ms'] for r in rows],'jain_fairness_from_whole_request_rates':fairness,'release_spread_ms':max((r['sent_after_release_ms'] for r in rows),default=0)-min((r['sent_after_release_ms'] for r in rows),default=0),'peak_observed_decoding_slots':peak_decoding,'all_stream_decoding_samples_span_seconds':shared_span,'samples':samples,'contaminated':bool(contaminated),'contamination_reasons':contaminated,'traffic_correlation_scope':'Stable own SSE response IDs plus counts/unique synthetic prompt lengths; retained wrapper has no SSE-to-history ID join. Undetected same-length, unfinished outside work cannot be ruled out.','common_visible_output_interval_seconds':common_seconds,'exact_common_window_tokens_s':None,'steady_rate_scope':'SSE delivery is buffered; no exact common token rate is inferred. Whole-request final usage is primary; post-first delivery estimates are approximate.','solo_observation':solo,'solo_request_tuning_eligible':solo_tuning,'owned_http_threads_drained':all_drained,'owned_http_handles_closed':closed_handles,'configuration_and_process_identity_preserved':True}
++ return {'label':label,'status':'contaminated' if contaminated else 'passed' if eligible else 'ineligible','eligible_for_speed':eligible,'concurrent_clients':n,'requested_output_each':MAX_OUTPUT,'minimum_observed_output_each':min_output,'requests':rows,'actual_completion_tokens_total':total,'whole_request_seconds':duration,'whole_request_output_tokens_s':total/duration if duration and duration>0 else None,'per_stream_whole_request_tokens_s':rates,'per_stream_ttft_ms':[r['ttft_ms'] for r in rows],'jain_fairness_from_whole_request_rates':fairness,'release_spread_ms':max((r['sent_after_release_ms'] for r in rows),default=0)-min((r['sent_after_release_ms'] for r in rows),default=0),'peak_observed_decoding_slots':peak_decoding,'all_stream_decoding_samples_span_seconds':shared_span,'samples':samples,'contaminated':bool(contaminated),'contamination_reasons':contaminated,'traffic_correlation_scope':'Stable own SSE response IDs plus counts/unique synthetic prompt lengths; retained wrapper has no SSE-to-history ID join. Undetected same-length, unfinished outside work cannot be ruled out.','common_visible_output_interval_seconds':common_seconds,'exact_common_window_tokens_s':None,'steady_rate_scope':'SSE delivery is buffered; no exact common token rate is inferred. Whole-request final usage is primary; post-first delivery estimates are approximate.','solo_observation':solo,'solo_request_tuning_eligible':solo_tuning,'owned_http_threads_drained':all_drained,'owned_http_handles_closed':closed_handles,'configuration_and_process_identity_preserved':True,'slot_prompt_correlation':{'rule':'original<=slot_prompt_tokens<=original+generated; unique initial association, stable binding until observed idle; promoted reading pending until decoding proof','events':correlation.events,'pending_reading_slots_at_last_sample':sorted(correlation.pending)}}
+ 
+ def main():
+- ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--execute',action='store_true');mode.add_argument('--plan',action='store_true');ap.add_argument('--rounds',type=int,choices=(1,2),default=2);ap.add_argument('--concurrency',type=int,choices=(1,4,8));ap.add_argument('--total-seconds',type=int,default=480);ap.add_argument('--request-seconds',type=int,default=75);ap.add_argument('--seed',type=int,default=20261104);ap.add_argument('--output-dir',type=Path)
++ ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--execute',action='store_true');mode.add_argument('--plan',action='store_true');ap.add_argument('--rounds',type=int,choices=(1,2),default=2);ap.add_argument('--concurrency',type=int,choices=(1,2,4,8));ap.add_argument('--total-seconds',type=int,default=480);ap.add_argument('--request-seconds',type=int,default=75);ap.add_argument('--seed',type=int,default=20261104);ap.add_argument('--output-dir',type=Path)
+  a=ap.parse_args()
+  if not 60<=a.total_seconds<=480 or not 15<=a.request_seconds<=120:raise Refusal('deadline outside reviewed bounds')
+  directory=(a.output_dir or ROOT/'receipts'/dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%SZ')).resolve()

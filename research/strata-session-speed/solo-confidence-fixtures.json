@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "seed": 20261104,
+  "kind": "fresh fictional solo confidence inputs",
+  "cases": [
+    {
+      "id": "synthetic-speed-20261104-0",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-0.\nFictional parcel 00000: batch 776669; shelf 646; revision 214.\nFictional parcel 00001: batch 338659; shelf 379; revision 510.\nFictional parcel 00002: batch 620061; shelf 020; revision 233.\nFictional parcel 00003: batch 406150; shelf 006; revision 664.\nFictional parcel 00004: batch 903234; shelf 554; revision 600.\nFictional parcel 00005: batch 854859; shelf 960; revision 634.\nFictional parcel 00006: batch 726747; shelf 985; revision 075.\nFictional parcel 00007: batch 479627; shelf 384; revision 897.\nFictional parcel 00008: batch 029715; shelf 459; revision 890.\nFictional parcel 00009: batch 716362; shelf 164; revision 882.\nFictional parcel 00010: batch 573868; shelf 482; revision 722.\nFictional parcel 00011: batch 250943; shelf 855; revision 860.\nFictional parcel 00012: batch 852793; shelf 877; revision 118.\nFictional parcel 00013: batch 815627; shelf 292; revision 705.\nFictional parcel 00014: batch 305300; shelf 217; revision 113.\nFictional parcel 00015: batch 807433; shelf 698; revision 327.\nFictional parcel 00016: batch 577156; shelf 515; revision 509.\nFictional parcel 00017: batch 861438; shelf 538; revision 799.\nFictional parcel 00018: batch 517371; shelf 394; revision 544.\nFictional parcel 00019: batch 473827; shelf 320; revision 185.\nFictional parcel 00020: batch 775183; shelf 426; revision 765.\nFictional parcel 00021: batch 221317; shelf 157; revision 618.\nFictional parcel 00022: batch 231052; shelf 695; revision 037.\nFictional parcel 00023: batch 999249; shelf 919; revision 545.\nFictional parcel 00024: batch 330879; shelf 739; revision 504.\nFictional parcel 00025: batch 542427; shelf 012; revision 833.\nFictional parcel 00026: batch 536321; shelf 359; revision 505.\nFictional parcel 00027: batch 399456; shelf 447; revision 198.\nFictional parcel 00028: batch 259040; shelf 847; revision 675.\nFictional parcel 00029: batch 890000; shelf 826; revision 532.\nFictional parcel 00030: batch 827510; shelf 797; revision 012.\nFictional parcel 00031: batch 552596; shelf 766; revision 470.\nFictional parcel 00032: batch 559888; shelf 227; revision 564.\nFictional parcel 00033:\nWrite a detailed operations manual with at least60numbered sections, each with concrete procedures and examples, for this entirely fictional ledger. Cover validation, reconciliation, audit, retention, recovery, reporting, and testing. Start immediately and continue until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1213,
+      "token_sha256": "18f0fdb751e705873c40baecbefc068e073da356be14202dc77d82d690fd7bdb",
+      "style": "prose",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-1",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-1.\nFictional parcel 00000: batch 418205; shelf 940; revision 426.\nFictional parcel 00001: batch 375585; shelf 221; revision 259.\nFictional parcel 00002: batch 787089; shelf 205; revision 147.\nFictional parcel 00003: batch 897188; shelf 799; revision 713.\nFictional parcel 00004: batch 177032; shelf 175; revision 326.\nFictional parcel 00005: batch 938344; shelf 855; revision 131.\nFictional parcel 00006: batch 982883; shelf 868; revision 998.\nFictional parcel 00007: batch 466647; shelf 151; revision 476.\nFictional parcel 00008: batch 621905; shelf 728; revision 761.\nFictional parcel 00009: batch 593026; shelf 505; revision 284.\nFictional parcel 00010: batch 432535; shelf 398; revision 201.\nFictional parcel 00011: batch 900750; shelf 299; revision 706.\nFictional parcel 00012: batch 703137; shelf 771; revision 859.\nFictional parcel 00013: batch 061055; shelf 928; revision 621.\nFictional parcel 00014: batch 097872; shelf 076; revision 575.\nFictional parcel 00015: batch 692468; shelf 782; revision 974.\nFictional parcel 00016: batch 998119; shelf 546; revision 314.\nFictional parcel 00017: batch 646384; shelf 921; revision 964.\nFictional parcel 00018: batch 940211; shelf 116; revision 096.\nFictional parcel 00019: batch 589867; shelf 112; revision 412.\nFictional parcel 00020: batch 569268; shelf 604; revision 736.\nFictional parcel 00021: batch 525296; shelf 403; revision 330.\nFictional parcel 00022: batch 776818; shelf 144; revision 948.\nFictional parcel 00023: batch 686885; shelf 714; revision 071.\nFictional parcel 00024: batch 200496; shelf 209; revision 170.\nFictional parcel 00025: batch 748676; shelf 663; revision 477.\nFictional parcel 00026: batch 565650; shelf 150; revision 718.\nFictional parcel 00027: batch 292345; shelf 370; revision 792.\nFictional parcel 00028: batch 271722; shelf 295; revision 797.\nFictional parcel 00029: batch 466605; shelf 481; revision 698.\nFictional parcel 00030: batch 011733; shelf 506; revision 918.\nFictional parcel 00031: batch 616600; shelf 812; revision 829.\nFictional parcel 00032: batch 995787; shelf 436; revision 485.\nFictional parcel 00033: batch 167809; shelf 770; revision 314.\nFictional parcel 00034: batch 874193; shelf 966; revision 953.\nFictional parcel 00035: batch 822859; shelf 797; revision 524.\nFictional parcel 00036: batch 325811; shelf 678; revision 790.\nFictional parcel 00037: batch 303\nWrite a complete Python module and many detailed unit tests for this entirely fictional ledger: parsing, validation, filtering, grouping, statistics, JSON export, audit and recovery. Include docstrings and examples. Start immediately and keep implementing tests until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1348,
+      "token_sha256": "ba0d335264900e007fcf321e52efb5a3d420c845929e7de2d1f3977f27d0507f",
+      "style": "code",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    }
+  ],
+  "quality": [
+    {
+      "id": "exact_marker",
+      "messages": [
+        {
+          "role": "system",
+          "content": "Follow the requested exact output format."
+        },
+        {
+          "role": "user",
+          "content": "Reply with exactly SOLO_CONFIDENCE_20261104_OK and nothing else."
+        }
+      ],
+      "checker": "text",
+      "expected": "SOLO_CONFIDENCE_20261104_OK"
+    },
+    {
+      "id": "independent_code_result",
+      "messages": [
+        {
+          "role": "system",
+          "content": "Return only the requested JSON object, without Markdown."
+        },
+        {
+          "role": "user",
+          "content": "Evaluate Python: checksum = 17*19 - 23*7 + 11; values = sorted(set([7,2,5,7])). Return only JSON with keys checksum and values."
+        }
+      ],
+      "checker": "json",
+      "expected": {
+        "checksum": 173,
+        "values": [
+          2,
+          5,
+          7
+        ]
+      }
+    }
+  ]
+}

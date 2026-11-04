@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "destination": "research/strata-session-speed",
+  "files": [
+    {
+      "source": "EXPERIMENT.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "pilot.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "pilot.private.json",
+      "target": "pilot.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "live_benchmark-r1.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "live_benchmark.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "live_benchmark-r2-draft.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "test_live_benchmark.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "test_live_migration_r2.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "migration-r2.patch",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "migration-r2-provenance.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "solo_confidence.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "solo-confidence-fixtures.json",
+      "kind": "fixture",
+      "required": true
+    },
+    {
+      "source": "confidence-analysis.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "receipts/live-baseline-*/report.json",
+      "kind": "report"
+    },
+    {
+      "source": "receipts/live-baseline-*/fixtures.json",
+      "kind": "fixture"
+    },
+    {
+      "source": "receipts/live-baseline-*/plan.json",
+      "kind": "report"
+    },
+    {
+      "source": "receipts/solo-confidence-*/report.json",
+      "kind": "report"
+    },
+    {
+      "source": "receipts/baseline-cpu-plan-*/fixtures.json",
+      "kind": "fixture"
+    },
+    {
+      "source": "receipts/baseline-cpu-plan-*/plan.json",
+      "kind": "report"
+    },
+    {
+      "source": "DEPENDENCIES.md",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "CREDITS.md",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "README.md",
+      "kind": "text"
+    },
+    {
+      "source": "RESULTS.md",
+      "kind": "text"
+    },
+    {
+      "source": "publication/stage_publication.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "publication/SELECTION.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "wait_for_quiet.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "receipts/quiet-gap-deferred.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "final-health-public.json",
+      "kind": "report",
+      "required": true
+    }
+  ],
+  "excluded": [
+    "actual serving/personal configurations and credentials",
+    "initial/final readiness probes and process identities",
+    "raw model output text outside exact synthetic answers",
+    "actual client history and private operational aggregates",
+    "locks, caches, bytecode, publication stages and upload state",
+    "vendor binaries, model weights and runtime assets"
+  ]
+}

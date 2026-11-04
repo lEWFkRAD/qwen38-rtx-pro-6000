@@ -1,0 +1,46 @@
+{
+  "created_at": "2026-11-04T09:15:32.736520+00:00",
+  "user_objective": "Faster generation (tokens per second) per session",
+  "unchanged_capacity": {
+    "context": 262144,
+    "resident_slots": 8,
+    "kv": "ordinary INT8 fullyresident",
+    "expert_slots": 24576,
+    "vision": true,
+    "prefill": 8192
+  },
+  "sunshine": "must remain stopped",
+  "current_observational_baseline": {
+    "source": "historical aggregate observation; underlying private production records are excluded",
+    "substantial_reply_whole_request_median_tps": 94.6,
+    "p10": 71.6,
+    "p90": 271.0,
+    "scope": "last hour heterogeneous actual production requests; no controlled causal comparison",
+    "cached_prompt_token_fraction": 0.9459,
+    "default_output_allowance": 16384
+  },
+  "measurements": [
+    "Synthetic normal-API C1/C4/C8 with final SSE token usage, long actual outputs, per-stream rates and fairness",
+    "Solo request-local speculative confidence0.3/0.5/0.7, balanced repeat order, exact quality checks and native timings where valid"
+  ],
+  "rules": [
+    "Never count SSE chunks as tokens",
+    "Do not compare heterogeneous real-traffic rates against controlled benchmark rates as a speedup",
+    "Preserve all prior failed/inconclusive benchmark results",
+    "No output-shortening, reasoning removal, control-vector change or altered sampler presented as decoder improvement",
+    "No service mutation or restart during live baseline or request-local sweep",
+    "Reject or mark contaminated trials if external activity or batch migration prevents valid solo timing",
+    "Current full eight-deep simultaneous generation remains unqualified; modest prompt concurrency is a different scope"
+  ],
+  "promotion_gate": "A repeatable matched gain, no checked quality regression, full capacity/vision/auth/readiness preserved; no unmeasured universal throughput promise",
+  "predeclared_candidate_screen": {
+    "primary_comparison": "matched native generation tokens/s within each frozen style; whole-request rates reported separately",
+    "minimum_candidate_geometric_mean_gain_percent": 5,
+    "maximum_allowed_style_median_regression_percent": 0,
+    "all_short_quality_checks_required": true,
+    "all_timed_cells_need_valid_solo_native_clocks": true,
+    "minimum_screen_repeats_per_style_floor": 2,
+    "a_screen_winner_is_not_a_production_promotion": "requires fresh matched confirmation and validation of any global startup change at concurrent load",
+    "no_winner_outcome": "retain approved current settings and report that no repeatable gain was established"
+  }
+}

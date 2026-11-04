@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "at": "2026-11-04T09:47:18.992235+00:00",
+  "all_five_production_pins_unchanged": true,
+  "no_hold": true,
+  "production_context": 262144,
+  "slots": 8,
+  "no_persistent_tuning_change": true,
+  "live_experiment_finished": true
+}

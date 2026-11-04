@@ -1,0 +1,16 @@
+{
+  "status": "applied_and_frozen_after_root_solo_sweep_GO",
+  "active_source_sha256": "dbcb06b8c5404ebc32ddf67f3cf8e70e0ba5de24ddd0d1746d137f46cc67564d",
+  "archive_sha256": "15f131b70f395c963debf4ff0b95aa53ff72f65a0d5139338539e35098a3ebed",
+  "draft_sha256": "dbcb06b8c5404ebc32ddf67f3cf8e70e0ba5de24ddd0d1746d137f46cc67564d",
+  "installed_wrapper_source_sha256": "5d82438ee7619fcf0582c49ddd1c5c7b0c07abb7950cedf62cf0fa2806f2d9a0",
+  "source_rule": "generate_batched prompt=list(ids)+out at1351; active slot prompt_tokens=len(prompt) at1413; cumulative generated=len(out) afteradmission at1446.",
+  "accepted_transform": "original<=slotprompt<=original+generated, unique initial candidate, stable per-slot original binding, clear on observed idle",
+  "promoted_reading_phase": "generated reset0 before decoding proof, deferred unbound/pending (not accepted as owned) until decoding observation; exact final SSE usage and aggregate ledgers still required",
+  "concurrency2_supported": true,
+  "active_helper_unchanged": false,
+  "failed_r1_report_modified": false,
+  "draft_cpu_tests": "17/17 passed; actual mocked C1/C2 migration/foreign/finalusage cases",
+  "production_or_service_changes": false,
+  "requests_executed_by_adapter": false
+}

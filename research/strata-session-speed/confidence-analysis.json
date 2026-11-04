@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "prepared_at": "2026-11-04T09:32:32.607391+00:00",
+  "source_report": "receipts/solo-confidence-r1/report.json",
+  "source_report_sha256": "4c08ffe1db3201193984c1a05d9f443c8dc8a530f98f0ddf67880ff493bb78de",
+  "source_report_status_unchanged": "ineligible",
+  "status": "ineligible",
+  "promotion_qualified": false,
+  "faster_candidate_qualified": false,
+  "winner": null,
+  "decision": "No confidence change supported; retain default0.5. Descriptive timing favors it, but every floor fails the predeclared strict code-result quality check.",
+  "timing_evidence": {
+    "valid_solo_timed_requests": 12,
+    "repeats_per_style_floor": 2,
+    "styles": [
+      "code",
+      "prose"
+    ],
+    "output_tokens_each": 1024,
+    "all_timed_requests_finished_at_normal_length_cap": true,
+    "solo_tuning_eligible_each": true,
+    "all_timed_output_hashes_identical_within_each_style_across_floors": true,
+    "final_normal_health_and_capacity_verified": true,
+    "final_idle_observed": true,
+    "final_completed_request_counter_delta": 20,
+    "qualification_is_separate_from_timing_validity": true
+  },
+  "quality": [
+    {
+      "floor": 0.3,
+      "exact_marker_passed": true,
+      "code_result_passed": false,
+      "expected_checksum": 173,
+      "actual_checksum": 177,
+      "sorted_values_correct": true,
+      "observed_new_pass_fail_regression_vs_default": false,
+      "qualification_passed": false
+    },
+    {
+      "floor": 0.5,
+      "exact_marker_passed": true,
+      "code_result_passed": false,
+      "expected_checksum": 173,
+      "actual_checksum": 177,
+      "sorted_values_correct": true,
+      "observed_new_pass_fail_regression_vs_default": false,
+      "qualification_passed": false
+    },
+    {
+      "floor": 0.7,
+      "exact_marker_passed": true,
+      "code_result_passed": false,
+      "expected_checksum": 173,
+      "actual_checksum": 177,
+      "sorted_values_correct": true,
+      "observed_new_pass_fail_regression_vs_default": false,
+      "qualification_passed": false
+    }
+  ],
+  "cells": [
+    {
+      "style": "code",
+      "floor": 0.3,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        381.0,
+        377.3
+      ],
+      "median_native_decode_tokens_s": 379.15,
+      "median_whole_request_tokens_s": 367.4756056499466,
+      "median_wall_ms": 2786.6306670039194,
+      "cached_prompt_tokens_each": [
+        1341,
+        1341
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        1069,
+        1069
+      ],
+      "drafts_accepted_each": [
+        792,
+        792
+      ],
+      "pooled_draft_acceptance_fraction": 0.7408793264733395,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "3646bb412b0d48e7bcc92b84b342c26ba85c95c2507f09bb3df58dc001af9ac2"
+    },
+    {
+      "style": "code",
+      "floor": 0.5,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        395.0,
+        389.7
+      ],
+      "median_native_decode_tokens_s": 392.35,
+      "median_whole_request_tokens_s": 380.2779708744316,
+      "median_wall_ms": 2692.8765314951306,
+      "cached_prompt_tokens_each": [
+        1341,
+        1341
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        922,
+        922
+      ],
+      "drafts_accepted_each": [
+        784,
+        784
+      ],
+      "pooled_draft_acceptance_fraction": 0.8503253796095445,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "3646bb412b0d48e7bcc92b84b342c26ba85c95c2507f09bb3df58dc001af9ac2"
+    },
+    {
+      "style": "code",
+      "floor": 0.7,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        392.9,
+        389.6
+      ],
+      "median_native_decode_tokens_s": 391.25,
+      "median_whole_request_tokens_s": 379.40662410008304,
+      "median_wall_ms": 2698.9942275104113,
+      "cached_prompt_tokens_each": [
+        1341,
+        1341
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        835,
+        835
+      ],
+      "drafts_accepted_each": [
+        768,
+        768
+      ],
+      "pooled_draft_acceptance_fraction": 0.9197604790419162,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "3646bb412b0d48e7bcc92b84b342c26ba85c95c2507f09bb3df58dc001af9ac2"
+    },
+    {
+      "style": "prose",
+      "floor": 0.3,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        263.7,
+        261.8
+      ],
+      "median_native_decode_tokens_s": 262.75,
+      "median_whole_request_tokens_s": 257.3098919840469,
+      "median_wall_ms": 3979.683073994238,
+      "cached_prompt_tokens_each": [
+        1206,
+        1206
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        1393,
+        1393
+      ],
+      "drafts_accepted_each": [
+        676,
+        676
+      ],
+      "pooled_draft_acceptance_fraction": 0.4852835606604451,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "7e9548eb68dacc7f3388669d35405f741718d1dc491acfd3a3347480cf44f345"
+    },
+    {
+      "style": "prose",
+      "floor": 0.5,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        278.5,
+        277.6
+      ],
+      "median_native_decode_tokens_s": 278.05,
+      "median_whole_request_tokens_s": 271.8190149029982,
+      "median_wall_ms": 3767.2170035075396,
+      "cached_prompt_tokens_each": [
+        1206,
+        1206
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        1065,
+        1065
+      ],
+      "drafts_accepted_each": [
+        654,
+        654
+      ],
+      "pooled_draft_acceptance_fraction": 0.6140845070422535,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "7e9548eb68dacc7f3388669d35405f741718d1dc491acfd3a3347480cf44f345"
+    },
+    {
+      "style": "prose",
+      "floor": 0.7,
+      "repeats": 2,
+      "completion_tokens_each": 1024,
+      "native_decode_tokens_s_reported": [
+        276.6,
+        274.9
+      ],
+      "median_native_decode_tokens_s": 275.75,
+      "median_whole_request_tokens_s": 269.8727998321294,
+      "median_wall_ms": 3794.416665492463,
+      "cached_prompt_tokens_each": [
+        1206,
+        1206
+      ],
+      "new_prompt_tokens_each": [
+        7,
+        7
+      ],
+      "drafts_offered_each": [
+        774,
+        770
+      ],
+      "drafts_accepted_each": [
+        599,
+        599
+      ],
+      "pooled_draft_acceptance_fraction": 0.7759067357512953,
+      "same_output_hash_for_all_six_style_runs": true,
+      "style_output_sha256": "7e9548eb68dacc7f3388669d35405f741718d1dc491acfd3a3347480cf44f345"
+    }
+  ],
+  "candidate_vs_default": [
+    {
+      "style": "code",
+      "candidate_floor": 0.3,
+      "baseline_floor": 0.5,
+      "native_decode_ratio_of_medians": 0.9663565693895755,
+      "native_decode_change_percent": -3.364343061042452,
+      "whole_request_ratio_of_medians": 0.9663341918148807,
+      "whole_request_change_percent": -3.366580818511933
+    },
+    {
+      "style": "prose",
+      "candidate_floor": 0.3,
+      "baseline_floor": 0.5,
+      "native_decode_ratio_of_medians": 0.9449739255529581,
+      "native_decode_change_percent": -5.502607444704188,
+      "whole_request_ratio_of_medians": 0.9466221194123263,
+      "whole_request_change_percent": -5.337788058767368
+    },
+    {
+      "style": "code",
+      "candidate_floor": 0.7,
+      "baseline_floor": 0.5,
+      "native_decode_ratio_of_medians": 0.9971963807824645,
+      "native_decode_change_percent": -0.2803619217535469,
+      "whole_request_ratio_of_medians": 0.9977086582944972,
+      "whole_request_change_percent": -0.2291341705502825
+    },
+    {
+      "style": "prose",
+      "candidate_floor": 0.7,
+      "baseline_floor": 0.5,
+      "native_decode_ratio_of_medians": 0.9917281064556734,
+      "native_decode_change_percent": -0.8271893544326558,
+      "whole_request_ratio_of_medians": 0.9928400333892632,
+      "whole_request_change_percent": -0.7159966610736812
+    }
+  ],
+  "aggregate_candidate_vs_default": [
+    {
+      "candidate_floor": 0.3,
+      "equal_style_weight_geometric_native_median_ratio": 0.9556054420418276,
+      "equal_style_weight_geometric_native_change_percent": -4.439455795817238,
+      "equal_style_weight_geometric_whole_request_median_ratio": 0.9564273734666945,
+      "equal_style_weight_geometric_whole_request_change_percent": -4.357262653330551,
+      "four_paired_repeat_geometric_native_ratio": 0.9556081555571717,
+      "four_paired_repeat_geometric_native_change_percent": -4.439184444282828,
+      "four_paired_repeat_geometric_whole_request_ratio": 0.9564302276794053,
+      "four_paired_repeat_geometric_whole_request_change_percent": -4.356977232059467,
+      "native_repeat_direction": {
+        "candidate_faster": 0,
+        "candidate_slower": 4,
+        "exactly_equal": 0
+      },
+      "whole_request_repeat_direction": {
+        "candidate_faster": 0,
+        "candidate_slower": 4,
+        "exactly_equal": 0
+      },
+      "paired_repeats": [
+        {
+          "style": "code",
+          "round": 1,
+          "native_decode_ratio": 0.9645569620253165,
+          "native_decode_change_percent": -3.544303797468351,
+          "whole_request_ratio": 0.9643258300828589,
+          "whole_request_change_percent": -3.567416991714112
+        },
+        {
+          "style": "code",
+          "round": 2,
+          "native_decode_ratio": 0.9681806517834232,
+          "native_decode_change_percent": -3.1819348216576837,
+          "whole_request_ratio": 0.9683683261687,
+          "whole_request_change_percent": -3.1631673831299945
+        },
+        {
+          "style": "prose",
+          "round": 1,
+          "native_decode_ratio": 0.9468581687612208,
+          "native_decode_change_percent": -5.314183123877925,
+          "whole_request_ratio": 0.948805069143749,
+          "whole_request_change_percent": -5.119493085625104
+        },
+        {
+          "style": "prose",
+          "round": 2,
+          "native_decode_ratio": 0.9430835734870316,
+          "native_decode_change_percent": -5.691642651296835,
+          "whole_request_ratio": 0.9444344091804009,
+          "whole_request_change_percent": -5.556559081959911
+        }
+      ]
+    },
+    {
+      "candidate_floor": 0.7,
+      "equal_style_weight_geometric_native_median_ratio": 0.9944584850449235,
+      "equal_style_weight_geometric_native_change_percent": -0.5541514955076488,
+      "equal_style_weight_geometric_whole_request_median_ratio": 0.9952713688305646,
+      "equal_style_weight_geometric_whole_request_change_percent": -0.4728631169435449,
+      "four_paired_repeat_geometric_native_ratio": 0.9944636940139713,
+      "four_paired_repeat_geometric_native_change_percent": -0.5536305986028722,
+      "four_paired_repeat_geometric_whole_request_ratio": 0.9952754266570082,
+      "four_paired_repeat_geometric_whole_request_change_percent": -0.47245733429918113,
+      "native_repeat_direction": {
+        "candidate_faster": 0,
+        "candidate_slower": 4,
+        "exactly_equal": 0
+      },
+      "whole_request_repeat_direction": {
+        "candidate_faster": 1,
+        "candidate_slower": 3,
+        "exactly_equal": 0
+      },
+      "paired_repeats": [
+        {
+          "style": "code",
+          "round": 1,
+          "native_decode_ratio": 0.9946835443037975,
+          "native_decode_change_percent": -0.5316455696202538,
+          "whole_request_ratio": 0.9953420654263022,
+          "whole_request_change_percent": -0.4657934573697786
+        },
+        {
+          "style": "code",
+          "round": 2,
+          "native_decode_ratio": 0.9997433923530922,
+          "native_decode_change_percent": -0.02566076469078249,
+          "whole_request_ratio": 1.0001056208426002,
+          "whole_request_change_percent": 0.01056208426002403
+        },
+        {
+          "style": "prose",
+          "round": 1,
+          "native_decode_ratio": 0.9931777378815082,
+          "native_decode_change_percent": -0.6822262118491795,
+          "whole_request_ratio": 0.9948355983878364,
+          "whole_request_change_percent": -0.5164401612163583
+        },
+        {
+          "style": "prose",
+          "round": 2,
+          "native_decode_ratio": 0.9902737752161381,
+          "native_decode_change_percent": -0.972622478386187,
+          "whole_request_ratio": 0.9908401165322651,
+          "whole_request_change_percent": -0.9159883467734886
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Native predicted_per_second is the wrapper-reported native rate rounded to0.1token/s; ratios are recomputed from those retained rates, without implying additional measurement precision.",
+    "Whole-request rate uses final usage and measured wall time. Post-first SSE delivery rates are approximations and are not used for the primary comparisons.",
+    "Same synthetic prompt is warmed before comparisons; only7 prompt tokens are newly read each timed request. These are not cold-prefill measurements or representative60K-session timings.",
+    "Two repeats per floor/style provide a descriptive screen, not a statistical confidence interval or a general workload guarantee.",
+    "Matching output hashes establish matching observed long outputs for these two inputs, not correctness or general quality equivalence.",
+    "The arithmetic reference173 is independently correct. Shared model output177 remains a failure at0.3,0.5 and0.7; it is not repaired, waived or relabeled.",
+    "Default0.5 is descriptively faster on both style medians. The0.7 code whole-request repeat2 is marginally faster by about0.01percent, while all native paired repeats favor0.5. Such tiny differences do not justify tuning.",
+    "No production setting, engine, context, slot allocation or automatic policy is changed by this analysis."
+  ],
+  "configuration_credentials_process_identifiers_or_client_content_included": false
+}

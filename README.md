@@ -255,3 +255,14 @@ Published PDF SHA-256 digests are recorded in
 
 This is an independent technical report and is not an official publication of
 Alibaba Qwen, SGLang, NVIDIA, RadixArk, or FlashInfer.
+
+<!-- strata-session-speed:start -->
+## November 4 — per-session generation-speed screen
+
+The existing speculative-confidence setting was descriptively fastest in the
+matched solo screen. Neither alternative earned promotion; all settings shared
+one arithmetic failure. Production remains at eight 262K sessions with its
+approved settings. Concurrent-load measurements yielded to real production
+traffic and do not supply a new C2/C4/C8 throughput claim.
+[Method, code and complete results](research/strata-session-speed/RESULTS.md).
+<!-- strata-session-speed:end -->

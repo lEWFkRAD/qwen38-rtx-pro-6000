@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-04T09:19:53.842572+00:00",
+  "kind": "single synthetic pilot; not a repeated benchmark",
+  "status": "passed",
+  "configuration_unchanged": true,
+  "identity_preserved": true,
+  "context": 262144,
+  "slots": 8,
+  "usage": {
+    "prompt_tokens": 101,
+    "completion_tokens": 1024,
+    "total_tokens": 1125,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "finish_reason": "length",
+  "wall_ms": 4979.361996985972,
+  "whole_request_tokens_per_second": 205.64883626051517,
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 101,
+    "prompt_ms": 125.1,
+    "prompt_per_token_ms": 1.239,
+    "prompt_per_second": 807.4,
+    "predicted_n": 1024,
+    "predicted_ms": 4668.0,
+    "predicted_per_token_ms": 4.559,
+    "predicted_per_second": 219.4,
+    "draft_n": 1166,
+    "draft_n_accepted": 537
+  },
+  "initial_engine": {
+    "model": "qwen3.8-flash-next",
+    "max_context": 262144,
+    "images": true,
+    "version": "0.1.56",
+    "logit_bias": 1,
+    "context": 262144,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 24576,
+    "expert_cache_mib": 47962,
+    "expert_slots_primary": 24576,
+    "expert_cache_primary_mib": 47962,
+    "spec": 8,
+    "mtp_max": 6,
+    "lookup": 3,
+    "vram_free_mib": 3119,
+    "cvec": "project:4-44",
+    "arena_mib": 47962,
+    "pool_workers": 12,
+    "pcie_frac": "0.00",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 0,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 2560,
+    "conversation_cache_min_tokens": 0,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "prefill_cap": 8192,
+    "prefill_stages": 1,
+    "stream_all_min": 1024,
+    "prefill_pipe": 0,
+    "batch_slots": 8,
+    "slot_cache": 1,
+    "batch_groups": 1,
+    "engine": "0.1.56"
+  },
+  "final_live": {
+    "state": "idle",
+    "queued": 0,
+    "phase": null,
+    "prompt_tokens": null,
+    "prompt_read": null,
+    "prompt_total": null,
+    "generated": null,
+    "max_tokens": null,
+    "elapsed_s": null,
+    "tok_s": null,
+    "tok_s_mean": null,
+    "prefill_tok_s_mean": null,
+    "tok_s_window_s": null,
+    "parallel": 8,
+    "running": 0,
+    "slots": [
+      {
+        "slot": 0,
+        "state": "idle",
+        "held_tokens": 31051
+      },
+      {
+        "slot": 1,
+        "state": "idle",
+        "held_tokens": 64165
+      },
+      {
+        "slot": 2,
+        "state": "idle",
+        "held_tokens": 99254
+      },
+      {
+        "slot": 3,
+        "state": "idle",
+        "held_tokens": 49581
+      },
+      {
+        "slot": 4,
+        "state": "idle",
+        "held_tokens": 52895
+      },
+      {
+        "slot": 5,
+        "state": "idle",
+        "held_tokens": 48000
+      },
+      {
+        "slot": 6,
+        "state": "idle",
+        "held_tokens": 98256
+      },
+      {
+        "slot": 7,
+        "state": "idle",
+        "held_tokens": 31785
+      }
+    ],
+    "outside_slots": 0,
+    "waiting": 0,
+    "admitting": 0,
+    "admission_inflight": 0
+  },
+  "performance_eligible": true,
+  "sampling": "inherited production; reasoning none; unchanged control vector"
+}

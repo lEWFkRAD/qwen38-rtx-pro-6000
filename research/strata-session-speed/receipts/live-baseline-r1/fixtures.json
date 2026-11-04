@@ -1,0 +1,190 @@
+{
+  "seed": 20261104,
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "synthetic-speed-20261104-0",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-0.\nFictional parcel 00000: batch 776669; shelf 646; revision 214.\nFictional parcel 00001: batch 338659; shelf 379; revision 510.\nFictional parcel 00002: batch 620061; shelf 020; revision 233.\nFictional parcel 00003: batch 406150; shelf 006; revision 664.\nFictional parcel 00004: batch 903234; shelf 554; revision 600.\nFictional parcel 00005: batch 854859; shelf 960; revision 634.\nFictional parcel 00006: batch 726747; shelf 985; revision 075.\nFictional parcel 00007: batch 479627; shelf 384; revision 897.\nFictional parcel 00008: batch 029715; shelf 459; revision 890.\nFictional parcel 00009: batch 716362; shelf 164; revision 882.\nFictional parcel 00010: batch 573868; shelf 482; revision 722.\nFictional parcel 00011: batch 250943; shelf 855; revision 860.\nFictional parcel 00012: batch 852793; shelf 877; revision 118.\nFictional parcel 00013: batch 815627; shelf 292; revision 705.\nFictional parcel 00014: batch 305300; shelf 217; revision 113.\nFictional parcel 00015: batch 807433; shelf 698; revision 327.\nFictional parcel 00016: batch 577156; shelf 515; revision 509.\nFictional parcel 00017: batch 861438; shelf 538; revision 799.\nFictional parcel 00018: batch 517371; shelf 394; revision 544.\nFictional parcel 00019: batch 473827; shelf 320; revision 185.\nFictional parcel 00020: batch 775183; shelf 426; revision 765.\nFictional parcel 00021: batch 221317; shelf 157; revision 618.\nFictional parcel 00022: batch 231052; shelf 695; revision 037.\nFictional parcel 00023: batch 999249; shelf 919; revision 545.\nFictional parcel 00024: batch 330879; shelf 739; revision 504.\nFictional parcel 00025: batch 542427; shelf 012; revision 833.\nFictional parcel 00026: batch 536321; shelf 359; revision 505.\nFictional parcel 00027: batch 399456; shelf 447; revision 198.\nFictional parcel 00028: batch 259040; shelf 847; revision 675.\nFictional parcel 00029: batch 890000; shelf 826; revision 532.\nFictional parcel 00030: batch 827510; shelf 797; revision 012.\nFictional parcel 00031: batch 552596; shelf 766; revision 470.\nFictional parcel 00032: batch 559888; shelf 227; revision 564.\nFictional parcel 00033:\nWrite a detailed operations manual with at least60numbered sections, each with concrete procedures and examples, for this entirely fictional ledger. Cover validation, reconciliation, audit, retention, recovery, reporting, and testing. Start immediately and continue until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1213,
+      "token_sha256": "18f0fdb751e705873c40baecbefc068e073da356be14202dc77d82d690fd7bdb",
+      "style": "prose",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-1",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-1.\nFictional parcel 00000: batch 418205; shelf 940; revision 426.\nFictional parcel 00001: batch 375585; shelf 221; revision 259.\nFictional parcel 00002: batch 787089; shelf 205; revision 147.\nFictional parcel 00003: batch 897188; shelf 799; revision 713.\nFictional parcel 00004: batch 177032; shelf 175; revision 326.\nFictional parcel 00005: batch 938344; shelf 855; revision 131.\nFictional parcel 00006: batch 982883; shelf 868; revision 998.\nFictional parcel 00007: batch 466647; shelf 151; revision 476.\nFictional parcel 00008: batch 621905; shelf 728; revision 761.\nFictional parcel 00009: batch 593026; shelf 505; revision 284.\nFictional parcel 00010: batch 432535; shelf 398; revision 201.\nFictional parcel 00011: batch 900750; shelf 299; revision 706.\nFictional parcel 00012: batch 703137; shelf 771; revision 859.\nFictional parcel 00013: batch 061055; shelf 928; revision 621.\nFictional parcel 00014: batch 097872; shelf 076; revision 575.\nFictional parcel 00015: batch 692468; shelf 782; revision 974.\nFictional parcel 00016: batch 998119; shelf 546; revision 314.\nFictional parcel 00017: batch 646384; shelf 921; revision 964.\nFictional parcel 00018: batch 940211; shelf 116; revision 096.\nFictional parcel 00019: batch 589867; shelf 112; revision 412.\nFictional parcel 00020: batch 569268; shelf 604; revision 736.\nFictional parcel 00021: batch 525296; shelf 403; revision 330.\nFictional parcel 00022: batch 776818; shelf 144; revision 948.\nFictional parcel 00023: batch 686885; shelf 714; revision 071.\nFictional parcel 00024: batch 200496; shelf 209; revision 170.\nFictional parcel 00025: batch 748676; shelf 663; revision 477.\nFictional parcel 00026: batch 565650; shelf 150; revision 718.\nFictional parcel 00027: batch 292345; shelf 370; revision 792.\nFictional parcel 00028: batch 271722; shelf 295; revision 797.\nFictional parcel 00029: batch 466605; shelf 481; revision 698.\nFictional parcel 00030: batch 011733; shelf 506; revision 918.\nFictional parcel 00031: batch 616600; shelf 812; revision 829.\nFictional parcel 00032: batch 995787; shelf 436; revision 485.\nFictional parcel 00033: batch 167809; shelf 770; revision 314.\nFictional parcel 00034: batch 874193; shelf 966; revision 953.\nFictional parcel 00035: batch 822859; shelf 797; revision 524.\nFictional parcel 00036: batch 325811; shelf 678; revision 790.\nFictional parcel 00037: batch 303\nWrite a complete Python module and many detailed unit tests for this entirely fictional ledger: parsing, validation, filtering, grouping, statistics, JSON export, audit and recovery. Include docstrings and examples. Start immediately and keep implementing tests until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1348,
+      "token_sha256": "ba0d335264900e007fcf321e52efb5a3d420c845929e7de2d1f3977f27d0507f",
+      "style": "code",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-2",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-2.\nFictional parcel 00000: batch 971549; shelf 408; revision 435.\nFictional parcel 00001: batch 752117; shelf 762; revision 416.\nFictional parcel 00002: batch 220437; shelf 141; revision 359.\nFictional parcel 00003: batch 318222; shelf 694; revision 193.\nFictional parcel 00004: batch 422436; shelf 056; revision 870.\nFictional parcel 00005: batch 851952; shelf 173; revision 032.\nFictional parcel 00006: batch 476373; shelf 971; revision 693.\nFictional parcel 00007: batch 588414; shelf 873; revision 117.\nFictional parcel 00008: batch 344664; shelf 699; revision 205.\nFictional parcel 00009: batch 235197; shelf 311; revision 139.\nFictional parcel 00010: batch 869931; shelf 572; revision 742.\nFictional parcel 00011: batch 334012; shelf 094; revision 583.\nFictional parcel 00012: batch 190846; shelf 434; revision 942.\nFictional parcel 00013: batch 661951; shelf 996; revision 342.\nFictional parcel 00014: batch 109576; shelf 468; revision 302.\nFictional parcel 00015: batch 345071; shelf 169; revision 954.\nFictional parcel 00016: batch 189814; shelf 213; revision 629.\nFictional parcel 00017: batch 131214; shelf 429; revision 964.\nFictional parcel 00018: batch 556762; shelf 145; revision 086.\nFictional parcel 00019: batch 617172; shelf 527; revision 508.\nFictional parcel 00020: batch 036627; shelf 244; revision 399.\nFictional parcel 00021: batch 352936; shelf 039; revision 811.\nFictional parcel 00022: batch 431172; shelf 961; revision 604.\nFictional parcel 00023: batch 072978; shelf 932; revision 263.\nFictional parcel 00024: batch 367934; shelf 111; revision 590.\nFictional parcel 00025: batch 151080; shelf 971; revision 444.\nFictional parcel 00026: batch 020614; shelf 965; revision 631.\nFictional parcel 00027: batch 786023; shelf 158; revision 825.\nFictional parcel 00028: batch 669355; shelf 135; revision 423.\nFictional parcel 00029: batch 562241; shelf 992; revision 485.\nFictional parcel 00030: batch 600739; shelf 489; revision 904.\nFictional parcel 00031: batch 762706; shelf 120; revision 902.\nFictional parcel 00032: batch 158804; shelf 054; revision 360.\nFictional parcel 00033: batch 542706; shelf 941; revision 738.\nFictional parcel 00034: batch 689533; shelf 033; revision 274.\nFictional parcel 00035: batch 972819; shelf 611; revision 369.\nFictional parcel 00036: batch 394164; shelf 689; revision 542.\nFictional parcel 00037: batch 678184; shelf 690; revision 343.\nFictional parcel 00038: batch 956922; shelf 002; revision 213.\nFictional parcel 00039: batch 152647; shelf 622; revision 526.\nFictional parcel 00040: batch 630371; shelf 748; revision 335.\nFictional parcel 00041: batch 083612; shelf\nWrite a detailed operations manual with at least60numbered sections, each with concrete procedures and examples, for this entirely fictional ledger. Cover validation, reconciliation, audit, retention, recovery, reporting, and testing. Start immediately and continue until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1487,
+      "token_sha256": "e9caf75854c3a935d95a39fd1ad9d02ad5631c06221ad3262d1a2f2b7eb9051c",
+      "style": "prose",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-3",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-3.\nFictional parcel 00000: batch 191074; shelf 009; revision 373.\nFictional parcel 00001: batch 263975; shelf 008; revision 475.\nFictional parcel 00002: batch 544871; shelf 103; revision 011.\nFictional parcel 00003: batch 282597; shelf 165; revision 379.\nFictional parcel 00004: batch 416022; shelf 241; revision 192.\nFictional parcel 00005: batch 809054; shelf 125; revision 686.\nFictional parcel 00006: batch 028671; shelf 680; revision 863.\nFictional parcel 00007: batch 579611; shelf 767; revision 863.\nFictional parcel 00008: batch 411368; shelf 903; revision 437.\nFictional parcel 00009: batch 084082; shelf 094; revision 708.\nFictional parcel 00010: batch 874765; shelf 263; revision 605.\nFictional parcel 00011: batch 411318; shelf 046; revision 906.\nFictional parcel 00012: batch 824923; shelf 204; revision 726.\nFictional parcel 00013: batch 987168; shelf 229; revision 688.\nFictional parcel 00014: batch 890096; shelf 612; revision 907.\nFictional parcel 00015: batch 188303; shelf 522; revision 533.\nFictional parcel 00016: batch 679629; shelf 675; revision 786.\nFictional parcel 00017: batch 196650; shelf 468; revision 582.\nFictional parcel 00018: batch 442215; shelf 842; revision 696.\nFictional parcel 00019: batch 502540; shelf 842; revision 491.\nFictional parcel 00020: batch 815905; shelf 612; revision 793.\nFictional parcel 00021: batch 908783; shelf 898; revision 936.\nFictional parcel 00022: batch 705073; shelf 771; revision 511.\nFictional parcel 00023: batch 035539; shelf 649; revision 727.\nFictional parcel 00024: batch 186434; shelf 135; revision 877.\nFictional parcel 00025: batch 951065; shelf 714; revision 717.\nFictional parcel 00026: batch 069565; shelf 886; revision 148.\nFictional parcel 00027: batch 874669; shelf 312; revision 283.\nFictional parcel 00028: batch 261198; shelf 052; revision 446.\nFictional parcel 00029: batch 816588; shelf 103; revision 920.\nFictional parcel 00030: batch 411474; shelf 260; revision 756.\nFictional parcel 00031: batch 625294; shelf 048; revision 442.\nFictional parcel 00032: batch 084590; shelf 300; revision 116.\nFictional parcel 00033: batch 136267; shelf 200; revision 070.\nFictional parcel 00034: batch 812464; shelf 925; revision 190.\nFictional parcel 00035: batch 399388; shelf 853; revision 894.\nFictional parcel 00036: batch 651303; shelf 775; revision 916.\nFictional parcel 00037: batch 214322; shelf 608; revision 435.\nFictional parcel 00038: batch 519598; shelf 996; revision 742.\nFictional parcel 00039: batch 682459; shelf 829; revision 394.\nFictional parcel 00040: batch 498137; shelf 136; revision 596.\nFictional parcel 00041: batch 498200; shelf 263; revision 982.\nFictional parcel 00042: batch 143345; shelf 966; revision 909.\nFictional parcel 00043: batch 245698; shelf 874; revision 905.\nFictional parcel 00044: batch 860078; shelf 504; revision 523.\nFictional parcel 00045: batch 776412; shelf 709;\nWrite a complete Python module and many detailed unit tests for this entirely fictional ledger: parsing, validation, filtering, grouping, statistics, JSON export, audit and recovery. Include docstrings and examples. Start immediately and keep implementing tests until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1622,
+      "token_sha256": "fc1e69a3f8fb5ce537e53f72098096de850b78d0b9fc8bcc3044282b097ad983",
+      "style": "code",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-4",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-4.\nFictional parcel 00000: batch 874189; shelf 158; revision 197.\nFictional parcel 00001: batch 812816; shelf 804; revision 902.\nFictional parcel 00002: batch 425507; shelf 146; revision 733.\nFictional parcel 00003: batch 390021; shelf 940; revision 967.\nFictional parcel 00004: batch 092759; shelf 064; revision 655.\nFictional parcel 00005: batch 216324; shelf 223; revision 091.\nFictional parcel 00006: batch 374861; shelf 931; revision 233.\nFictional parcel 00007: batch 664072; shelf 476; revision 161.\nFictional parcel 00008: batch 612415; shelf 947; revision 870.\nFictional parcel 00009: batch 224825; shelf 646; revision 939.\nFictional parcel 00010: batch 840224; shelf 388; revision 883.\nFictional parcel 00011: batch 235844; shelf 463; revision 534.\nFictional parcel 00012: batch 523978; shelf 051; revision 234.\nFictional parcel 00013: batch 312346; shelf 524; revision 538.\nFictional parcel 00014: batch 480435; shelf 945; revision 957.\nFictional parcel 00015: batch 583318; shelf 543; revision 653.\nFictional parcel 00016: batch 791406; shelf 188; revision 541.\nFictional parcel 00017: batch 669201; shelf 674; revision 322.\nFictional parcel 00018: batch 926551; shelf 394; revision 568.\nFictional parcel 00019: batch 514789; shelf 680; revision 056.\nFictional parcel 00020: batch 269955; shelf 262; revision 113.\nFictional parcel 00021: batch 337364; shelf 726; revision 035.\nFictional parcel 00022: batch 529596; shelf 994; revision 614.\nFictional parcel 00023: batch 287840; shelf 624; revision 297.\nFictional parcel 00024: batch 901474; shelf 664; revision 209.\nFictional parcel 00025: batch 588725; shelf 299; revision 440.\nFictional parcel 00026: batch 756089; shelf 869; revision 588.\nFictional parcel 00027: batch 786610; shelf 183; revision 352.\nFictional parcel 00028: batch 328908; shelf 351; revision 720.\nFictional parcel 00029: batch 494034; shelf 395; revision 551.\nFictional parcel 00030: batch 154605; shelf 434; revision 059.\nFictional parcel 00031: batch 599770; shelf 775; revision 903.\nFictional parcel 00032: batch 034322; shelf 644; revision 611.\nFictional parcel 00033: batch 028215; shelf 338; revision 298.\nFictional parcel 00034: batch 298875; shelf 013; revision 600.\nFictional parcel 00035: batch 406932; shelf 656; revision 297.\nFictional parcel 00036: batch 664039; shelf 324; revision 822.\nFictional parcel 00037: batch 383614; shelf 010; revision 670.\nFictional parcel 00038: batch 863656; shelf 979; revision 357.\nFictional parcel 00039: batch 501873; shelf 276; revision 252.\nFictional parcel 00040: batch 094546; shelf 078; revision 000.\nFictional parcel 00041: batch 449216; shelf 304; revision 428.\nFictional parcel 00042: batch 263593; shelf 079; revision 683.\nFictional parcel 00043: batch 759424; shelf 539; revision 639.\nFictional parcel 00044: batch 292521; shelf 216; revision 924.\nFictional parcel 00045: batch 832734; shelf 520; revision 850.\nFictional parcel 00046: batch 666282; shelf 170; revision 288.\nFictional parcel 00047: batch 499812; shelf 212; revision 016.\nFictional parcel 00048: batch 812276; shelf 047; revision 231.\nFictional parcel 00049: batch 980458; shelf 383; revision 238\nWrite a detailed operations manual with at least60numbered sections, each with concrete procedures and examples, for this entirely fictional ledger. Cover validation, reconciliation, audit, retention, recovery, reporting, and testing. Start immediately and continue until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1761,
+      "token_sha256": "416e2ad9d8e0dd8529edbc8b323b7f2fe0b1b2dc5601a9f04d6904463681ccb8",
+      "style": "prose",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-5",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-5.\nFictional parcel 00000: batch 422657; shelf 825; revision 493.\nFictional parcel 00001: batch 227271; shelf 909; revision 600.\nFictional parcel 00002: batch 139914; shelf 632; revision 041.\nFictional parcel 00003: batch 372556; shelf 138; revision 313.\nFictional parcel 00004: batch 995894; shelf 215; revision 409.\nFictional parcel 00005: batch 352300; shelf 684; revision 911.\nFictional parcel 00006: batch 808637; shelf 262; revision 209.\nFictional parcel 00007: batch 148163; shelf 138; revision 911.\nFictional parcel 00008: batch 923131; shelf 921; revision 355.\nFictional parcel 00009: batch 896604; shelf 660; revision 697.\nFictional parcel 00010: batch 948689; shelf 332; revision 763.\nFictional parcel 00011: batch 009613; shelf 399; revision 661.\nFictional parcel 00012: batch 890620; shelf 076; revision 127.\nFictional parcel 00013: batch 604131; shelf 836; revision 103.\nFictional parcel 00014: batch 890180; shelf 194; revision 247.\nFictional parcel 00015: batch 549765; shelf 096; revision 276.\nFictional parcel 00016: batch 340219; shelf 651; revision 368.\nFictional parcel 00017: batch 214753; shelf 188; revision 146.\nFictional parcel 00018: batch 855365; shelf 716; revision 082.\nFictional parcel 00019: batch 060985; shelf 941; revision 034.\nFictional parcel 00020: batch 208113; shelf 976; revision 739.\nFictional parcel 00021: batch 000621; shelf 294; revision 900.\nFictional parcel 00022: batch 641990; shelf 125; revision 070.\nFictional parcel 00023: batch 306559; shelf 041; revision 578.\nFictional parcel 00024: batch 978580; shelf 756; revision 306.\nFictional parcel 00025: batch 303656; shelf 672; revision 797.\nFictional parcel 00026: batch 646133; shelf 217; revision 098.\nFictional parcel 00027: batch 476612; shelf 328; revision 714.\nFictional parcel 00028: batch 374469; shelf 733; revision 759.\nFictional parcel 00029: batch 643015; shelf 212; revision 077.\nFictional parcel 00030: batch 116286; shelf 608; revision 152.\nFictional parcel 00031: batch 447254; shelf 659; revision 354.\nFictional parcel 00032: batch 978755; shelf 747; revision 257.\nFictional parcel 00033: batch 576340; shelf 220; revision 223.\nFictional parcel 00034: batch 555635; shelf 558; revision 640.\nFictional parcel 00035: batch 571394; shelf 874; revision 060.\nFictional parcel 00036: batch 937637; shelf 306; revision 287.\nFictional parcel 00037: batch 934533; shelf 903; revision 188.\nFictional parcel 00038: batch 905750; shelf 662; revision 763.\nFictional parcel 00039: batch 584735; shelf 953; revision 939.\nFictional parcel 00040: batch 437101; shelf 579; revision 820.\nFictional parcel 00041: batch 995752; shelf 244; revision 247.\nFictional parcel 00042: batch 945753; shelf 854; revision 436.\nFictional parcel 00043: batch 484490; shelf 377; revision 992.\nFictional parcel 00044: batch 608706; shelf 116; revision 452.\nFictional parcel 00045: batch 613050; shelf 976; revision 814.\nFictional parcel 00046: batch 921018; shelf 727; revision 710.\nFictional parcel 00047: batch 815924; shelf 317; revision 592.\nFictional parcel 00048: batch 968686; shelf 027; revision 220.\nFictional parcel 00049: batch 470193; shelf 528; revision 253.\nFictional parcel 00050: batch 174513; shelf 408; revision 753.\nFictional parcel 00051: batch 644896; shelf 153; revision 727.\nFictional parcel 00052: batch 319011; shelf 422; revision 471.\nFictional parcel 00053: batch 278690; shelf 344; revision 346.\nFictional\nWrite a complete Python module and many detailed unit tests for this entirely fictional ledger: parsing, validation, filtering, grouping, statistics, JSON export, audit and recovery. Include docstrings and examples. Start immediately and keep implementing tests until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 1896,
+      "token_sha256": "b360c067d106c15c7a2771f762afaf43351b7b2fa04211b3329f22f36bd25ea6",
+      "style": "code",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-6",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-6.\nFictional parcel 00000: batch 961431; shelf 158; revision 733.\nFictional parcel 00001: batch 598839; shelf 342; revision 021.\nFictional parcel 00002: batch 696703; shelf 624; revision 776.\nFictional parcel 00003: batch 853244; shelf 796; revision 176.\nFictional parcel 00004: batch 525107; shelf 559; revision 561.\nFictional parcel 00005: batch 177390; shelf 448; revision 569.\nFictional parcel 00006: batch 410172; shelf 835; revision 881.\nFictional parcel 00007: batch 337482; shelf 460; revision 224.\nFictional parcel 00008: batch 463916; shelf 890; revision 466.\nFictional parcel 00009: batch 062803; shelf 525; revision 356.\nFictional parcel 00010: batch 514235; shelf 188; revision 407.\nFictional parcel 00011: batch 269495; shelf 047; revision 158.\nFictional parcel 00012: batch 028592; shelf 592; revision 618.\nFictional parcel 00013: batch 711853; shelf 576; revision 883.\nFictional parcel 00014: batch 734608; shelf 259; revision 654.\nFictional parcel 00015: batch 880197; shelf 864; revision 298.\nFictional parcel 00016: batch 525057; shelf 901; revision 208.\nFictional parcel 00017: batch 564948; shelf 722; revision 579.\nFictional parcel 00018: batch 822977; shelf 913; revision 224.\nFictional parcel 00019: batch 216120; shelf 641; revision 784.\nFictional parcel 00020: batch 011565; shelf 193; revision 726.\nFictional parcel 00021: batch 980373; shelf 489; revision 733.\nFictional parcel 00022: batch 106296; shelf 013; revision 028.\nFictional parcel 00023: batch 771100; shelf 995; revision 987.\nFictional parcel 00024: batch 387187; shelf 745; revision 711.\nFictional parcel 00025: batch 321466; shelf 489; revision 164.\nFictional parcel 00026: batch 599852; shelf 525; revision 998.\nFictional parcel 00027: batch 847589; shelf 770; revision 624.\nFictional parcel 00028: batch 703389; shelf 631; revision 059.\nFictional parcel 00029: batch 544111; shelf 360; revision 578.\nFictional parcel 00030: batch 506196; shelf 046; revision 934.\nFictional parcel 00031: batch 055453; shelf 343; revision 860.\nFictional parcel 00032: batch 167186; shelf 859; revision 994.\nFictional parcel 00033: batch 460192; shelf 168; revision 270.\nFictional parcel 00034: batch 684609; shelf 179; revision 973.\nFictional parcel 00035: batch 230990; shelf 069; revision 106.\nFictional parcel 00036: batch 124835; shelf 009; revision 150.\nFictional parcel 00037: batch 443203; shelf 795; revision 535.\nFictional parcel 00038: batch 114721; shelf 161; revision 334.\nFictional parcel 00039: batch 047901; shelf 598; revision 625.\nFictional parcel 00040: batch 932501; shelf 617; revision 770.\nFictional parcel 00041: batch 129057; shelf 470; revision 643.\nFictional parcel 00042: batch 546053; shelf 522; revision 503.\nFictional parcel 00043: batch 950425; shelf 070; revision 629.\nFictional parcel 00044: batch 109131; shelf 542; revision 813.\nFictional parcel 00045: batch 447399; shelf 055; revision 903.\nFictional parcel 00046: batch 034295; shelf 800; revision 024.\nFictional parcel 00047: batch 620549; shelf 736; revision 098.\nFictional parcel 00048: batch 587680; shelf 649; revision 685.\nFictional parcel 00049: batch 592658; shelf 427; revision 315.\nFictional parcel 00050: batch 425286; shelf 293; revision 993.\nFictional parcel 00051: batch 766413; shelf 534; revision 661.\nFictional parcel 00052: batch 069793; shelf 710; revision 995.\nFictional parcel 00053: batch 865908; shelf 831; revision 928.\nFictional parcel 00054: batch 604524; shelf 607; revision 144.\nFictional parcel 00055: batch 655722; shelf 031; revision 056.\nFictional parcel 00056: batch 655564; shelf 984; revision 864.\nFictional parcel 00057: batch 222929; shelf 488; revision 279.\nFictional parcel 000\nWrite a detailed operations manual with at least60numbered sections, each with concrete procedures and examples, for this entirely fictional ledger. Cover validation, reconciliation, audit, retention, recovery, reporting, and testing. Start immediately and continue until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 2035,
+      "token_sha256": "d39881d51d502a8ff8d25eb4b9b8698a27b1055d7aed2eeb52de05ae6388700e",
+      "style": "prose",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    },
+    {
+      "id": "synthetic-speed-20261104-7",
+      "messages": [
+        {
+          "role": "system",
+          "content": "This is a synthetic performance exercise with fictional data. Produce the requested long output. No tools are available."
+        },
+        {
+          "role": "user",
+          "content": "Independent task synthetic-speed-20261104-7.\nFictional parcel 00000: batch 911255; shelf 891; revision 842.\nFictional parcel 00001: batch 643009; shelf 028; revision 200.\nFictional parcel 00002: batch 464088; shelf 582; revision 451.\nFictional parcel 00003: batch 335759; shelf 903; revision 816.\nFictional parcel 00004: batch 911693; shelf 646; revision 956.\nFictional parcel 00005: batch 351397; shelf 835; revision 105.\nFictional parcel 00006: batch 196031; shelf 691; revision 143.\nFictional parcel 00007: batch 895220; shelf 020; revision 455.\nFictional parcel 00008: batch 461982; shelf 753; revision 201.\nFictional parcel 00009: batch 146222; shelf 505; revision 417.\nFictional parcel 00010: batch 076052; shelf 043; revision 464.\nFictional parcel 00011: batch 651443; shelf 567; revision 788.\nFictional parcel 00012: batch 655311; shelf 497; revision 045.\nFictional parcel 00013: batch 422750; shelf 736; revision 204.\nFictional parcel 00014: batch 332289; shelf 605; revision 926.\nFictional parcel 00015: batch 279121; shelf 743; revision 288.\nFictional parcel 00016: batch 748932; shelf 884; revision 294.\nFictional parcel 00017: batch 466431; shelf 116; revision 581.\nFictional parcel 00018: batch 266825; shelf 253; revision 775.\nFictional parcel 00019: batch 070438; shelf 399; revision 767.\nFictional parcel 00020: batch 376918; shelf 600; revision 626.\nFictional parcel 00021: batch 750131; shelf 035; revision 752.\nFictional parcel 00022: batch 004189; shelf 517; revision 489.\nFictional parcel 00023: batch 506455; shelf 580; revision 917.\nFictional parcel 00024: batch 350024; shelf 392; revision 169.\nFictional parcel 00025: batch 070149; shelf 309; revision 956.\nFictional parcel 00026: batch 275852; shelf 239; revision 736.\nFictional parcel 00027: batch 410200; shelf 411; revision 321.\nFictional parcel 00028: batch 591883; shelf 799; revision 596.\nFictional parcel 00029: batch 459630; shelf 696; revision 358.\nFictional parcel 00030: batch 559609; shelf 928; revision 788.\nFictional parcel 00031: batch 815786; shelf 110; revision 423.\nFictional parcel 00032: batch 307442; shelf 405; revision 648.\nFictional parcel 00033: batch 794740; shelf 456; revision 779.\nFictional parcel 00034: batch 674201; shelf 085; revision 384.\nFictional parcel 00035: batch 786346; shelf 580; revision 862.\nFictional parcel 00036: batch 158459; shelf 788; revision 577.\nFictional parcel 00037: batch 632684; shelf 822; revision 356.\nFictional parcel 00038: batch 569108; shelf 545; revision 316.\nFictional parcel 00039: batch 402126; shelf 640; revision 158.\nFictional parcel 00040: batch 487007; shelf 258; revision 613.\nFictional parcel 00041: batch 740885; shelf 679; revision 769.\nFictional parcel 00042: batch 486181; shelf 628; revision 159.\nFictional parcel 00043: batch 301903; shelf 617; revision 827.\nFictional parcel 00044: batch 549016; shelf 005; revision 778.\nFictional parcel 00045: batch 601894; shelf 955; revision 425.\nFictional parcel 00046: batch 772317; shelf 460; revision 181.\nFictional parcel 00047: batch 150668; shelf 652; revision 108.\nFictional parcel 00048: batch 437021; shelf 591; revision 199.\nFictional parcel 00049: batch 615288; shelf 306; revision 980.\nFictional parcel 00050: batch 352164; shelf 808; revision 778.\nFictional parcel 00051: batch 330466; shelf 258; revision 472.\nFictional parcel 00052: batch 294310; shelf 247; revision 390.\nFictional parcel 00053: batch 975365; shelf 228; revision 335.\nFictional parcel 00054: batch 124098; shelf 521; revision 940.\nFictional parcel 00055: batch 679045; shelf 988; revision 981.\nFictional parcel 00056: batch 933030; shelf 945; revision 010.\nFictional parcel 00057: batch 736004; shelf 103; revision 640.\nFictional parcel 00058: batch 379735; shelf 728; revision 674.\nFictional parcel 00059: batch 047964; shelf 157; revision 775.\nFictional parcel 00060: batch 071612; shelf 068; revision 216.\nFictional parcel 00061: batch 323587; shelf 595; revision 783.\nFictional parcel 00062: batch \nWrite a complete Python module and many detailed unit tests for this entirely fictional ledger: parsing, validation, filtering, grouping, statistics, JSON export, audit and recovery. Include docstrings and examples. Start immediately and keep implementing tests until the allowance ends; do not conclude early."
+        }
+      ],
+      "prompt_tokens": 2169,
+      "token_sha256": "0e661d9c70a2390a40392097214cb789e9d63c786af3dd469618eaafbf1a99bd",
+      "style": "code",
+      "tokenizer_hashes": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      }
+    }
+  ]
+}
