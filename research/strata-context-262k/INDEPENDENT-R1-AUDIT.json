@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "kind": "independent-completed-context-r1-outcome-audit",
+  "audited_at": "2026-11-04T01:02:30.313554+00:00",
+  "native_report_sha256": "c2772395243251422c684e844a8cf269ab5f6cfcc9dbffbf56a130783c8f83c4",
+  "API_rejection_report_sha256": "21140ef3f02e81d81b12420377f6fbb678e96f471c45b6c0a6c930176f5067f1",
+  "fixture_sha256": "dc9d825e5f517a47a17aba451857363f0ebcfe497edf243a957d58aa4b9a6806",
+  "native_finished_at": "2026-11-04T00:54:31.859395+00:00",
+  "native_r1_status": "passed",
+  "native_arms": [
+    {
+      "slots": 4,
+      "prefill": 32768,
+      "status": "passed",
+      "infrastructure_passed": true,
+      "full_expert_slots": 24576,
+      "kv_resident": 0,
+      "all_exact_quality_checks_passed": true,
+      "cold_prompt_tokens": 259999,
+      "cold_fresh_tokens": 259999,
+      "continuation_prompt_tokens": 260055,
+      "continuation_reused_tokens": 260026,
+      "deep_slots": [
+        {
+          "slot": 0,
+          "id": "deep_slot_0_multi_needle_252k",
+          "prompt_tokens": 251814,
+          "fresh_tokens_read": 251814,
+          "reused_tokens": 0,
+          "generated": 145,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 1,
+          "id": "deep_slot_1_multi_needle_252k",
+          "prompt_tokens": 251820,
+          "fresh_tokens_read": 251820,
+          "reused_tokens": 0,
+          "generated": 152,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 2,
+          "id": "deep_slot_2_multi_needle_252k",
+          "prompt_tokens": 251764,
+          "fresh_tokens_read": 251764,
+          "reused_tokens": 0,
+          "generated": 149,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 3,
+          "id": "deep_slot_3_multi_needle_252k",
+          "prompt_tokens": 251835,
+          "fresh_tokens_read": 251835,
+          "reused_tokens": 0,
+          "generated": 160,
+          "exact_JSON_passed": true
+        }
+      ],
+      "observed_peak_live_decodes": 1,
+      "minimum_GPU_free_MiB": 12746.0,
+      "minimum_host_available_KiB": 21458660,
+      "cleanup_passed": true
+    },
+    {
+      "slots": 8,
+      "prefill": 16384,
+      "status": "passed",
+      "infrastructure_passed": true,
+      "full_expert_slots": 24576,
+      "kv_resident": 0,
+      "all_exact_quality_checks_passed": true,
+      "cold_prompt_tokens": 259999,
+      "cold_fresh_tokens": 259999,
+      "continuation_prompt_tokens": 260055,
+      "continuation_reused_tokens": 259992,
+      "deep_slots": [
+        {
+          "slot": 0,
+          "id": "deep_slot_0_multi_needle_252k",
+          "prompt_tokens": 251814,
+          "fresh_tokens_read": 251814,
+          "reused_tokens": 0,
+          "generated": 145,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 1,
+          "id": "deep_slot_1_multi_needle_252k",
+          "prompt_tokens": 251820,
+          "fresh_tokens_read": 251820,
+          "reused_tokens": 0,
+          "generated": 152,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 2,
+          "id": "deep_slot_2_multi_needle_252k",
+          "prompt_tokens": 251764,
+          "fresh_tokens_read": 251764,
+          "reused_tokens": 0,
+          "generated": 149,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 3,
+          "id": "deep_slot_3_multi_needle_252k",
+          "prompt_tokens": 251835,
+          "fresh_tokens_read": 251835,
+          "reused_tokens": 0,
+          "generated": 160,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 4,
+          "id": "deep_slot_4_multi_needle_252k",
+          "prompt_tokens": 251809,
+          "fresh_tokens_read": 251809,
+          "reused_tokens": 0,
+          "generated": 143,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 5,
+          "id": "deep_slot_5_multi_needle_252k",
+          "prompt_tokens": 251816,
+          "fresh_tokens_read": 251816,
+          "reused_tokens": 0,
+          "generated": 145,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 6,
+          "id": "deep_slot_6_multi_needle_252k",
+          "prompt_tokens": 251802,
+          "fresh_tokens_read": 251802,
+          "reused_tokens": 0,
+          "generated": 155,
+          "exact_JSON_passed": true
+        },
+        {
+          "slot": 7,
+          "id": "deep_slot_7_multi_needle_252k",
+          "prompt_tokens": 251818,
+          "fresh_tokens_read": 251818,
+          "reused_tokens": 0,
+          "generated": 149,
+          "exact_JSON_passed": true
+        }
+      ],
+      "observed_peak_live_decodes": 1,
+      "minimum_GPU_free_MiB": 2333.0,
+      "minimum_host_available_KiB": 21207224,
+      "cleanup_passed": true
+    }
+  ],
+  "API8_prefill16384": {
+    "status": "rejected_before_features",
+    "expected_resident_experts": 24576,
+    "observed_resident_experts": 24007,
+    "missing_resident_experts": 569,
+    "error": "private engine capacity mismatch: expert_slots",
+    "feature_cases_executed": 0,
+    "finished_at": "2026-11-04T00:56:11.167808+00:00",
+    "owned_process_group_empty": true,
+    "private_credential_removed": true,
+    "telemetry_errors": [],
+    "evidence": "api8-r1/report.json and completed engine-and-vision.log"
+  },
+  "scope_limits": [
+    "Native startup/full-capacity metrics plus exact long retrieval and fresh deep writes passed for every assigned slot.",
+    "Observed peak live native decodes was1 in botharms; earlier JSON completions preceded later admissions. This is not evidence of4/8 simultaneously generating deep requests.",
+    "One near260K continuation reused its accepted prefix; cross-slot preservation/reuse after allfilled was not separately tested.",
+    "The eight-slot native16Kprefill result does not qualify the full wrapper/vision/API configuration; its full-residency gate correctly rejected24007 ratherthan24576 experts.",
+    "Later native/API refinements and production restoration remain pending this audit; they are not inferred fromr1."
+  ],
+  "no_GPU_API_service_or_production_probe_performed_by_reviewer": true,
+  "credentials_or_private_process_arrays_stored": false
+}

@@ -1,0 +1,21 @@
+{
+  "production_gate_unchanged": true,
+  "slots": 8,
+  "matching_native_report_sha256": "c2772395243251422c684e844a8cf269ab5f6cfcc9dbffbf56a130783c8f83c4",
+  "owned_process_group_empty": true,
+  "status": "failed",
+  "context": 262144,
+  "started_at": "2026-11-04T00:55:21.898500+00:00",
+  "finished_at": "2026-11-04T00:56:11.167808+00:00",
+  "prefill": 16384,
+  "gpu_work_started": true,
+  "private_credential_file_removed": true,
+  "cases": [],
+  "telemetry": {
+    "interval_seconds": 1,
+    "samples": 49,
+    "minimum_mem_available_kib": 24318036,
+    "errors": []
+  },
+  "error": "private engine capacity mismatch: expert_slots"
+}

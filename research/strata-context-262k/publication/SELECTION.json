@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "source": "test_context.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_context.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "build_long_fixtures.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "preflight_guard.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "preflight_guard-running-77b810ea.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "test_preflight_guard.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "GUARD-PROVENANCE-NOTE.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "preflight-guard-cpu.log",
+      "kind": "text"
+    },
+    {
+      "source": "long-context-deep8-fixtures.json",
+      "kind": "text",
+      "gzip": true,
+      "required": true
+    },
+    {
+      "source": "long-context-deep8-fixtures-oracle.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "long-context-fixtures.json",
+      "kind": "text",
+      "gzip": true
+    },
+    {
+      "source": "long-context-fixtures-oracle.json",
+      "kind": "text"
+    },
+    {
+      "source": "api-long-case.json",
+      "kind": "text",
+      "gzip": true
+    },
+    {
+      "source": "plan.json",
+      "kind": "plan"
+    },
+    {
+      "source": "native-r*/plan.json",
+      "kind": "plan"
+    },
+    {
+      "source": "native-r*/report.json",
+      "kind": "report"
+    },
+    {
+      "source": "native-r*/slots[48]-report.json",
+      "kind": "report"
+    },
+    {
+      "source": "native-r*/slots[48]/engine.stderr.log",
+      "kind": "text"
+    },
+    {
+      "source": "native-r*/slots[48]/engine.stdout.log",
+      "kind": "text"
+    },
+    {
+      "source": "native-r*/slots[48]-telemetry.jsonl",
+      "kind": "telemetry"
+    },
+    {
+      "source": "api*/report.json",
+      "kind": "report"
+    },
+    {
+      "source": "api*/telemetry.jsonl",
+      "kind": "telemetry"
+    },
+    {
+      "source": "api*/*.log",
+      "kind": "text"
+    },
+    {
+      "source": "api*/fresh-square.png",
+      "kind": "binary"
+    },
+    {
+      "source": "README.md",
+      "kind": "text"
+    },
+    {
+      "source": "RESULTS.md",
+      "kind": "text"
+    },
+    {
+      "source": "DEPENDENCIES.md",
+      "kind": "text"
+    },
+    {
+      "source": "CREDITS.md",
+      "kind": "text"
+    },
+    {
+      "source": "LICENSE.md",
+      "kind": "text"
+    },
+    {
+      "source": "LICENSES/*.txt",
+      "kind": "text"
+    },
+    {
+      "source": "publication/prepare_publication.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "publication/SELECTION.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "publication/PUBLIC-NOTE.txt",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "publication/USAGE.txt",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "test_context-r1.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_deep_concurrency.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "INDEPENDENT-R1-AUDIT.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "native-r2/slots8-prefill8192-report.json",
+      "kind": "report"
+    },
+    {
+      "source": "native-r2/slots8-prefill8192/engine.stderr.log",
+      "kind": "text"
+    },
+    {
+      "source": "native-r2/slots8-prefill8192/engine.stdout.log",
+      "kind": "text"
+    },
+    {
+      "source": "native-r2/slots8-prefill8192-telemetry.jsonl",
+      "kind": "telemetry"
+    },
+    {
+      "source": "api*/deep-concurrency-report.json",
+      "kind": "report"
+    },
+    {
+      "source": "api_context-r2.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_deep_concurrency-r2.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_deep_concurrency-r3.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "native-r2-plan.json",
+      "kind": "plan"
+    },
+    {
+      "source": "test-outcomes-public.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "INDEPENDENT-FINAL-AUDIT.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "memory-fit-profile.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_deep_concurrency-r4.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "api_context-r4.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "PROMOTION.md",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "deployment-summary-public.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "memory-fit-profile.pre-promotion.json",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/deploy262.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/production262_canary.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/audit_live262_readonly.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/test_context_contract.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/cpu-tests.log",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract-262k.patch",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract-context.patch",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract.py",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract.py.original",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract.py.before",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/strata-contract.py.draft",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "promotion262/CAPACITY-GUARD-AUDIT.json",
+      "kind": "review",
+      "required": true
+    },
+    {
+      "source": "promotion262/READINESS-REVIEW.json",
+      "kind": "review",
+      "required": true
+    },
+    {
+      "source": "promotion262/deployment-result.json",
+      "kind": "deployment",
+      "required": true
+    },
+    {
+      "source": "promotion262/independent-live-audit.json",
+      "kind": "live-audit",
+      "required": true
+    },
+    {
+      "source": "promotion262/production-canary-r1/report.json",
+      "kind": "report",
+      "required": true
+    },
+    {
+      "source": "promotion262/promotion-result.json",
+      "kind": "promotion",
+      "required": true
+    },
+    {
+      "source": "outage-20261104/INCIDENT.md",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "source": "outage-20261104/recovery-summary-public.json",
+      "kind": "text",
+      "required": true
+    }
+  ],
+  "omitted": [
+    "initial-state.json and all actual/private serving or candidate configurations",
+    "capture_initial_state.py, raw private snapshot/preflight plans and operational instructions",
+    "Honcho/wiki operations, unrelated fleet state, personal pins and process identity arrays",
+    "credentials, caches, bytecode, locks, prior vendor binaries/archives and model weights",
+    "publication staging trees and raw private restoration/authorization records"
+  ]
+}

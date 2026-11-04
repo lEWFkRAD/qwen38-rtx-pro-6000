@@ -1,0 +1,14 @@
+test_both_supported_integer_contexts_and_existing_stream_counts (__main__.ContextContract.test_both_supported_integer_contexts_and_existing_stream_counts) ... ok
+test_engine_context_cannot_silently_fall_back_in_either_direction (__main__.ContextContract.test_engine_context_cannot_silently_fall_back_in_either_direction) ... ok
+test_health_context_must_also_match (__main__.ContextContract.test_health_context_must_also_match) ... ok
+test_int8_and_all_gpu_experts_remain_required (__main__.ContextContract.test_int8_and_all_gpu_experts_remain_required) ... ok
+test_matching_health_for_both_contexts (__main__.ContextContract.test_matching_health_for_both_contexts) ... ok
+test_other_contexts_and_wrong_types_are_rejected (__main__.ContextContract.test_other_contexts_and_wrong_types_are_rejected) ... ok
+test_ready_receipt_still_binds_identity_and_contract_hash (__main__.ContextContract.test_ready_receipt_still_binds_identity_and_contract_hash) ... ok
+test_slots_and_advertised_serving_count_remain_strict (__main__.ContextContract.test_slots_and_advertised_serving_count_remain_strict) ... ok
+test_stream_policy_is_preserved (__main__.ContextContract.test_stream_policy_is_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.005s
+
+OK

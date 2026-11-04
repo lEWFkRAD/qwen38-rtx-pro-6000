@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "prepared_at": "2026-11-04T01:36:17.909306+00:00",
+  "source_summary_sha256": "43909512b64569974d475271691232dbe11a82c50af86d0ee9b6355144f2e559",
+  "configured_context": 262144,
+  "native_r1": "passed",
+  "native_r2": "passed",
+  "API_attempts": [
+    {
+      "name": "api8-r1",
+      "status": "failed",
+      "error": "private engine capacity mismatch: expert_slots",
+      "cases": [],
+      "deep_peak": null,
+      "deep_reason": null,
+      "priming": 0,
+      "min_gpu_free_mib": 3645.0,
+      "private_removed": true,
+      "group_empty": true
+    },
+    {
+      "name": "api8-r2",
+      "status": "failed",
+      "error": "deep API concurrency screen did not pass",
+      "cases": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        },
+        {
+          "id": "plain_exact_marker",
+          "status": "passed"
+        },
+        {
+          "id": "forced_tool_call",
+          "status": "passed"
+        },
+        {
+          "id": "high_reasoning_arithmetic",
+          "status": "passed"
+        },
+        {
+          "id": "fresh_image_color",
+          "status": "passed"
+        },
+        {
+          "id": "api_near_capacity_retrieval",
+          "status": "passed"
+        }
+      ],
+      "deep_peak": 0,
+      "deep_reason": "Refusal: one of our deep SSE clients failed",
+      "priming": 0,
+      "min_gpu_free_mib": 2876.0,
+      "private_removed": true,
+      "group_empty": true
+    },
+    {
+      "name": "api8-r3",
+      "status": "failed",
+      "error": "deep API concurrency screen did not pass",
+      "cases": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        }
+      ],
+      "deep_peak": 4,
+      "deep_reason": "Refusal: a load stream ended before all eight deep streams were observed",
+      "priming": 0,
+      "min_gpu_free_mib": 2953.0,
+      "private_removed": true,
+      "group_empty": true
+    },
+    {
+      "name": "api8-r4",
+      "status": "failed",
+      "error": "deep API concurrency screen did not pass",
+      "cases": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        }
+      ],
+      "deep_peak": 2,
+      "deep_reason": "Refusal: eight-deep concurrency was not observed before drain reserve",
+      "priming": 8,
+      "min_gpu_free_mib": 2956.0,
+      "private_removed": true,
+      "group_empty": true
+    }
+  ],
+  "qualification": {
+    "memory_fit_full_experts_plus_vision_at8_prefill 8192": "passed",
+    "finite_exact_native_and_single_long_API_retrieval": "passed",
+    "normal_six_API_checks_in_r2": "passed",
+    "full_eight_simultaneous_deep_decoding": "not_qualified",
+    "maximum_native_live_decodes_observed": 1,
+    "maximum_API_decoding_observed": 4,
+    "normal_deep_load_drain_recovery_gate": "not_reached",
+    "all_private_process_groups_and_keys_cleaned": true
+  },
+  "production_decision": {
+    "user_explicitly_authorized_promotion": true,
+    "profile": "memory-fit-profile.json",
+    "target_context": 262144,
+    "target_parallel": 8,
+    "target_prefill": 8192,
+    "environment": "unchanged promoted fused 0.1.56 settings",
+    "promotion_status": "deployed 262144x8/prefill 8192 via normal managed readiness; independent 19/19 and production 7/7 passed",
+    "deployment_summary": "deployment-summary-public.json"
+  },
+  "limits": [
+    "Failed/inconclusive trials remain failed and are not overridden by user authorization.",
+    "Individual deep fills/priming or active requests do not prove eight decoding slots.",
+    "No diagnosed memory failure in API8K attempts; bounded overlap failure is not proof of impossibility.",
+    "Model-derived responses retain applicable model/output terms."
+  ],
+  "credentials_configs_process_arrays_included": false
+}

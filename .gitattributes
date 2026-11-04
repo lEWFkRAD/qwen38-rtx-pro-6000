@@ -20,3 +20,8 @@ research/strata-lsa/preparation/flashnext-maps/gpu_map_smoke.py -whitespace
 research/strata-0156-tuning/provenance/** -text -whitespace
 research/strata-0156-tuning/receipts/** -whitespace
 research/strata-0156-tuning/benchmark_strata.py whitespace=-blank-at-eof
+
+# Preserve context-test archives and historical protocol evidence.
+research/strata-context-262k/**/*.json.gz -text
+research/strata-context-262k/**/*.log -whitespace
+research/strata-context-262k/**/*.patch -whitespace

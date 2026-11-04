@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "kind": "independent-completed-context-experiment-audit",
+  "audited_at": "2026-11-04T01:32:38.716189+00:00",
+  "configured_context": 262144,
+  "longest_cold_prompt_tested": 259999,
+  "longest_native_continuation_prompt_tested": 260055,
+  "native": [
+    {
+      "slots": 4,
+      "prefill": 32768,
+      "quality": "passed",
+      "infrastructure": "passed",
+      "observed_peak_live_decodes": 1,
+      "minimum_GPU_free_MiB": 12746.0,
+      "resident_experts": 24576,
+      "context": 262144,
+      "deep_filled_slot_count": 4
+    },
+    {
+      "slots": 8,
+      "prefill": 16384,
+      "quality": "passed",
+      "infrastructure": "passed",
+      "observed_peak_live_decodes": 1,
+      "minimum_GPU_free_MiB": 2333.0,
+      "resident_experts": 24576,
+      "context": 262144,
+      "deep_filled_slot_count": 8
+    },
+    {
+      "slots": 8,
+      "prefill": 8192,
+      "quality": "passed",
+      "infrastructure": "passed",
+      "observed_peak_live_decodes": 1,
+      "minimum_GPU_free_MiB": 4598.0,
+      "resident_experts": 24576,
+      "context": 262144,
+      "deep_filled_slot_count": 8
+    }
+  ],
+  "API_attempts": [
+    {
+      "attempt": "api8-r1",
+      "overall_status": "failed",
+      "report_sha256": "21140ef3f02e81d81b12420377f6fbb678e96f471c45b6c0a6c930176f5067f1",
+      "normal_checks": [],
+      "minimum_sampled_GPU_free_MiB": 3645.0,
+      "private_group_empty": true,
+      "private_credential_removed": true
+    },
+    {
+      "attempt": "api8-r2",
+      "overall_status": "failed",
+      "report_sha256": "8f25567899c5162d25168b28067ab328295da9f09e9b6955bc5b7ad172e904c5",
+      "normal_checks": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        },
+        {
+          "id": "plain_exact_marker",
+          "status": "passed"
+        },
+        {
+          "id": "forced_tool_call",
+          "status": "passed"
+        },
+        {
+          "id": "high_reasoning_arithmetic",
+          "status": "passed"
+        },
+        {
+          "id": "fresh_image_color",
+          "status": "passed"
+        },
+        {
+          "id": "api_near_capacity_retrieval",
+          "status": "passed"
+        }
+      ],
+      "minimum_sampled_GPU_free_MiB": 2876.0,
+      "private_group_empty": true,
+      "private_credential_removed": true,
+      "deep_report_sha256": "dc26287cc2b0d5b32aefb5b0876a1d0b44db76de87b0f7ef4626d3ae9b113f0b",
+      "peak_running": 0,
+      "peak_active": 0,
+      "peak_decoding": 0,
+      "eight_deep_observed": false,
+      "reason": "Refusal: one of our deep SSE clients failed",
+      "helper_source_sha256": null,
+      "priming_count": 0,
+      "normal_drain_recovery_gate_reached": false,
+      "EOS_suppression_used": true,
+      "long_API_usage": {
+        "prompt_tokens": 259999,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "attempt": "api8-r3",
+      "overall_status": "failed",
+      "report_sha256": "0ddab671c08730beb7ca561459bada5a3d68aa43316ea84497dbfe49cd891312",
+      "normal_checks": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        }
+      ],
+      "minimum_sampled_GPU_free_MiB": 2953.0,
+      "private_group_empty": true,
+      "private_credential_removed": true,
+      "deep_report_sha256": "d402c0c15002f3f1fa7ed7423329ceeb9fc2a5e96f432b8083ee5dfd41494777",
+      "peak_running": 8,
+      "peak_active": 8,
+      "peak_decoding": 4,
+      "eight_deep_observed": false,
+      "reason": "Refusal: a load stream ended before all eight deep streams were observed",
+      "helper_source_sha256": "dca42e9ad983f86beed8733e3a93e885fdc750354cc7b441e1dd3c240fa3466e",
+      "priming_count": 0,
+      "normal_drain_recovery_gate_reached": false,
+      "EOS_suppression_used": false
+    },
+    {
+      "attempt": "api8-r4",
+      "overall_status": "failed",
+      "report_sha256": "5644404606e4f2a2d17c8d25a777ca640b7c3abee11be4eda8559a4a98b9519d",
+      "normal_checks": [
+        {
+          "id": "unauthenticated_status_rejected",
+          "status": "passed"
+        }
+      ],
+      "minimum_sampled_GPU_free_MiB": 2956.0,
+      "private_group_empty": true,
+      "private_credential_removed": true,
+      "deep_report_sha256": "dd0a0695dfc222021019de3a5fe1e6fc72fb69595f0bee0d78a646f408bbed78",
+      "peak_running": 8,
+      "peak_active": 8,
+      "peak_decoding": 2,
+      "eight_deep_observed": false,
+      "reason": "Refusal: eight-deep concurrency was not observed before drain reserve",
+      "helper_source_sha256": "9bbe42c004988a3dd4105cfe5e177e7b117ea84029d96aebe89e0dcf1f77bca8",
+      "priming_count": 8,
+      "normal_drain_recovery_gate_reached": false,
+      "EOS_suppression_used": false,
+      "priming_full_prompt_tokens": [
+        251944,
+        251950,
+        251894,
+        251965,
+        251939,
+        251946,
+        251932,
+        251948
+      ],
+      "priming_is_not_proof_of_eight_retained_slot_histories": true
+    }
+  ],
+  "capacity_fit_and_finite_retrieval_features": "passed at8slots/prefill8192 with full24576experts and matchedvision; this does not qualify full8deepdecoding",
+  "eight_simultaneous_deep_decoding": "not_qualified",
+  "maximum_observed_API_decoding": 4,
+  "rejected_full_API_prefill16384_resident_experts": 24007,
+  "all_private_groups_and_credentials_cleaned": true,
+  "normal_deep_load_drain_and_recovery_success": "not_established by any attempt",
+  "context262K_promoted": false,
+  "production_restoration_scope": "Separate root-owned readiness receipt; not inferred from completed private experiments.",
+  "scope_limits": [
+    "Native peak1 only, despite all assigned deep buffers being individuallyfilled.",
+    "APIr2 bias was rejected before load inference; its sixnormal feature/retrieval checks stillpassed separately.",
+    "APIr3 used normalEOS and stopped early; APIr4 used one-token sequential priming and did not achieve8decoders within bounded reserve.",
+    "No memory failure was observed in the8Kprefill API attempts; failure to meet overlap criteria is not proof that eight-way deep concurrency is impossible.",
+    "Cancellation cleanup of clients/processes succeeded; the full normal load-drain-short-recovery qualification gate did not."
+  ],
+  "reviewer_GPU_API_service_or_production_probes": 0,
+  "credentials_private_configs_process_arrays_stored": false
+}

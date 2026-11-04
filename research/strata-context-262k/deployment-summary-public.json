@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "status": "deployed_and_verified",
+  "prepared_at": "2026-11-04T02:00:02.776021+00:00",
+  "user_explicitly_authorized_after_limits_disclosed": true,
+  "production": {
+    "engine": "official0.1.56",
+    "wrapper": "retained0.1.42",
+    "context": 262144,
+    "parallel": 8,
+    "prefill": 8192,
+    "kv": "int8",
+    "kv_resident": 0,
+    "resident_experts": 24576,
+    "vision": true,
+    "fused_environment": "unchanged",
+    "normal_managed_readiness": true,
+    "readiness_override_used": false
+  },
+  "approved_changes": [
+    "three serving arguments: max-context262144,kv-resident262144,prefill8192",
+    "strict readiness helper supports sealed131072 or262144 contracts with exact matching",
+    "sealed contract and dependent personal baseline pins updated atomically"
+  ],
+  "unchanged": [
+    "wrapper source",
+    "service unit",
+    "shared defaults",
+    "model and MTP assets",
+    "control vector",
+    "fused environment",
+    "recovery budget policy"
+  ],
+  "independent_audit": {
+    "status": "passed",
+    "checks_passed": 19,
+    "checks": {
+      "five_approved_hashes_match": true,
+      "strict_context_contract262144x8": true,
+      "actual_full_resident_int8_capacity": true,
+      "retained_native_mtp_control_vector": true,
+      "wrapper_source_unchanged": true,
+      "only_three_requested_argument_changes": true,
+      "model_profile_environment_unchanged": true,
+      "same_official_engine_vision_libraries": true,
+      "all_personal_baseline_pins_match": true,
+      "personal_primary_and_helper_pins_updated": true,
+      "personal_model_settings_unchanged": true,
+      "normal_gate_and_identity_bound_receipt": true,
+      "advertised_context_and_vision": true,
+      "old_attempts_retained_plus_one_legal_start": true,
+      "healthy_recovery_without_hold_or_capacity_latch": true,
+      "private_credentials_removed_gpu_only_managed": true,
+      "negative_eight_deep_qualification_preserved": true,
+      "no_lsa": true,
+      "sunshine_stays_off_enabled_unchanged": true
+    },
+    "completion_requests_sent": 0
+  },
+  "normal_production_canary": {
+    "status": "passed",
+    "finished_at": "2026-11-04T01:52:41.746650+00:00",
+    "normal_gate_preserved": true,
+    "identity_preserved": true,
+    "cases": [
+      {
+        "id": "unauthenticated_status_rejected",
+        "status": "passed",
+        "http_status": 401,
+        "usage": null
+      },
+      {
+        "id": "plain_exact_marker",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 24,
+          "completion_tokens": 10,
+          "total_tokens": 34,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      {
+        "id": "forced_tool_call",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 313,
+          "completion_tokens": 38,
+          "total_tokens": 351,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      {
+        "id": "high_reasoning_arithmetic",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 72,
+          "completion_tokens": 57,
+          "total_tokens": 129,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      {
+        "id": "fresh_image_color",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 608,
+          "completion_tokens": 2,
+          "total_tokens": 610,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      {
+        "id": "production_near_capacity_259999",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 259999,
+          "completion_tokens": 27,
+          "total_tokens": 260026,
+          "prompt_tokens_details": {
+            "cached_tokens": 245760
+          }
+        }
+      },
+      {
+        "id": "production_repeat_near_capacity",
+        "status": "passed",
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 259999,
+          "completion_tokens": 27,
+          "total_tokens": 260026,
+          "prompt_tokens_details": {
+            "cached_tokens": 259992
+          }
+        }
+      }
+    ],
+    "repeat_cached_tokens": 259992
+  },
+  "Sunshine": {
+    "active": false,
+    "enabled_state_unchanged": true
+  },
+  "active_Hermes_client_metadata": {
+    "context": 262144,
+    "previous_context": 131072,
+    "only_six_bytes_changed": true,
+    "ACL_preserved": true,
+    "restart_required": false,
+    "other_provider_defaults_unchanged": true
+  },
+  "eight_deep_simultaneous_generation_qualified": false,
+  "qualification_scope": "Measured memory fit, finite exact retrieval/reuse/features and normal managed production checks; failed eight-deep overlap tests remain failed.",
+  "readiness_helper_source_sha256": "bd6ea9561ab8d192daea7620f92f5172bf09953ed15de49816297a3a76ac84de",
+  "research_source": "test-outcomes-public.json",
+  "private_configuration_or_process_IDs_included": false
+}

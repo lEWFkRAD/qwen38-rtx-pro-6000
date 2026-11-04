@@ -13,6 +13,21 @@ Independent deployment reports, reproducibility artifacts, and benchmark
 receipts for running large Qwen3.8 models and related inference experiments on one
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
+
+<!-- strata-context-262k:start -->
+## November 3 — 262K production context
+
+The production default now configures eight 262,144-token sessions with resident
+INT8 KV, all 24,576 GPU experts, matched vision and 8,192-token prefill chunks.
+Seven normal production canaries passed, including a 259,999-token request and
+its repeated prefix. Full eight-way deep generation remains unqualified; the
+operator explicitly approved this default after those test limits were reported.
+[Results, deployment and full test data](research/strata-context-262k/RESULTS.md).
+A later credential update is approved and live; fresh recovery checks passed.
+[Recovery record](research/strata-context-262k/outage-20261104/INCIDENT.md).
+<!-- strata-context-262k:end -->
+
+
 ## November 3 — stock Strata 0.1.56 benchmark and tuning
 
 The [stock-engine benchmark package](research/strata-0156-tuning/) contains the

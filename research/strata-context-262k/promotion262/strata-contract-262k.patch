@@ -1,0 +1,20 @@
+--- a/usr/local/libexec/onyx-inference-recovery/strata-contract.py
++++ b/usr/local/libexec/onyx-inference-recovery/strata-contract.py
+@@ -41,7 +41,7 @@
+  if c.get("version")!=1 or any(k not in c for k in required):raise ContractViolation("unsupported or incomplete Strata contract")
+  if c["unit"]!="qwen38-flash-next-strata.service":raise ContractViolation("unexpected managed unit")
+  if c["base_url"]!="http://127.0.0.1:8002":raise ContractViolation("readiness must use local production endpoint")
+- if c["context_length"]!=131072 or c["max_streams"] not in (4,8):raise ContractViolation("unapproved context/concurrency")
++ if c["context_length"] not in (131072,262144) or c["max_streams"] not in (4,8):raise ContractViolation("unapproved context/concurrency")
+  if not isinstance(c["exec_start"],list) or len(c["exec_start"])<3 or not all(isinstance(v,str) and v for v in c["exec_start"]):raise ContractViolation("exec_start must contain exact executable and arguments")
+  if not isinstance(c["aliases"],list) or c["model"] not in c["aliases"] or len(set(c["aliases"]))!=len(c["aliases"]):raise ContractViolation("invalid aliases")
+  if not re.fullmatch(r"[0-9a-f]{40}",c["source_commit"]):raise ContractViolation("source_commit must be pinned")
+@@ -194,7 +194,7 @@
+  for key,value in {"status":"ok","service":"strata","loaded":True,"max_context":c["context_length"],"model":c["model"],"images":True,"api_key":True}.items():
+   if h.get(key)!=value:raise Unavailable("Health contract mismatch: "+key)
+  engine=metrics.get("engine",{})
+- for key,value in {"batch_slots":c["max_streams"],"context":131072,"kv":"int8","expert_slots":24576}.items():
++ for key,value in {"batch_slots":c["max_streams"],"context":c["context_length"],"kv":"int8","expert_slots":24576}.items():
+   actual=engine.get(key)
+   if actual!=value:
+    # Only complete, loaded-engine capacity telemetry is a terminal budget failure.

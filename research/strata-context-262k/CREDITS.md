@@ -1,0 +1,12 @@
+# Credits and contribution boundaries
+
+This is an independent downstream context-capacity experiment, not an upstream release or endorsement.
+
+- **Niko1221 and the Strata contributors** created [Strata](https://github.com/Niko1221/Strata), its engine, resident cache, batching/speculation, tokenizer/chat template, API wrapper and vision support. The measured official engine is 0.1.56, source `06698c674673008395ba6e971580538d6b1ea6e0`; the API wrapper remains the retained 0.1.42 deployment. Pure prompt helpers are unchanged upstream 0.1.50 code. Their [MIT notice](LICENSES/Strata-MIT.txt) remains applicable.
+- **The Qwen team**, **ISTA-DASLab**, **alesha-pro** and **huihui-ai** supplied the distinct base/MTP model, GSQ/RCO quantization, unchanged quantized-shard packaging and underlying checkpoint/control-vector contributions described in the [same-model dependency record](../strata-0156-tuning/DEPENDENCIES.md).
+- **The llama.cpp/ggml, NVIDIA CUDA/CCCL, Python, Jinja2, regex, Pillow and other dependency contributors** supplied the underlying runtime and preparation components. Their own notices and terms remain applicable; model weights and vendor bundles are external dependencies.
+- **The repository maintainer** supplied direction, hardware and publication. **Codex sessions and collaborating agents** wrote the bounded collectors, ownership guards, independently parsed fictional multi-needle fixtures, CPU checks, source-provenance records and evidence packaging, and performed the isolated measurements. These are work roles rather than additional human authors or ownership claims over upstream methods.
+
+The new contribution is measurement and validation of a specific configuration. This experiment trains no weights and uses no LSA maps or LSA inference. An earlier working-tree location supplied only pure upstream tokenizer/template helpers. Fictional ledgers and questions are original synthetic inputs; actual model answers retain applicable model/output terms, including wrong answers and incomplete attempts. No staff conversations or client documents were used.
+
+Retain the explicit failure and concurrency boundaries in the final results. A startup slot count, individually filled slot pools, a preloaded concurrency screen and a production deployment are different observations. License scope is in [LICENSE.md](LICENSE.md); exact dependencies and version roles are in [DEPENDENCIES.md](DEPENDENCIES.md).

@@ -1,0 +1,25 @@
+{
+  "changes": [
+    "context_length must be an integer equal to131072or262144",
+    "engine context telemetry must equal the configured context_length"
+  ],
+  "runtime_gate": {
+    "path": "/opt/onyx-strata-0142/runtime/serve/onyx_readiness.py",
+    "sha256": "bb0c48cd54bc8a6858b3e0358dc81fa23dcec04518734cebfc384f6c6558547c",
+    "changes_required": false,
+    "reason": "No hardcoded context size; qualification binds processidentity and the full contract SHA. Current readyreceipt and status paths are dynamic."
+  },
+  "status": "minimal_required_draft_only",
+  "unchanged": [
+    "max_streams existing4or8 allowlist",
+    "INT8 and24576expert requirements",
+    "process identity and hash-bound readiness receipt",
+    "HOLD/startup probe/auth behavior"
+  ],
+  "CPU_tests": {
+    "status": "passed",
+    "tests": 9,
+    "log": "cpu-tests.log",
+    "scope": "synthetic131072/262144 acceptance, wrong types/sizes, mismatchedengine/health/slots, INT8/full24576 requirement, receipt identity/config binding; zero HTTP/GPU/service calls"
+  }
+}

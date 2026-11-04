@@ -1,0 +1,337 @@
+#!/usr/bin/env python3
+"""Pinned Strata runtime contract and standalone systemd readiness gate."""
+import argparse,hashlib,json,math,os,re,secrets,shlex,stat,subprocess,sys,time,urllib.request
+from pathlib import Path
+DEFAULT_CONFIG=Path("/etc/onyx-inference/strata.json")
+COMPETING_UNIT="qwen38-flash-next-w4-sidecar.service"
+COUNTERS=("completed_requests","observed_output_tokens","prefill_ms","decode_ms","observed_prompt_tokens")
+FIELDS=("LoadState","ActiveState","SubState","MainPID","Result","UnitFileState","User","Group","ExecStart","ExecStartPost","InvocationID","Environment","DropInPaths","FragmentPath","Restart")
+RECOVERY_ROOT=Path("/var/lib/onyx-inference-recovery")
+GLM_ROOT=Path("/var/lib/glm53-canary")
+PROMOTION_GUARD=Path("/var/lib/qwen38-flash-next-w4-sidecar/mtp213-guard/armed.json")
+TRANSITION=Path("/run/qwen38-mode/transition")
+CAPACITY_EXIT=78
+HASH_CHUNK_SIZE=1024*1024
+_readiness_deadline=None
+class ContractViolation(RuntimeError):pass
+class Unavailable(RuntimeError):pass
+class CapacityMismatch(Unavailable):pass
+class MaintenanceActive(Unavailable):pass
+def bounded_timeout(timeout):
+ if _readiness_deadline is None:return timeout
+ remaining=_readiness_deadline-time.monotonic()
+ if remaining<=0:raise Unavailable("startup readiness deadline elapsed")
+ return min(timeout,remaining)
+def run(*args,timeout=20):
+ p=subprocess.run(args,capture_output=True,text=True,timeout=bounded_timeout(timeout))
+ if p.returncode:raise ContractViolation("command failed: "+args[0]+" rc="+str(p.returncode))
+ return p.stdout
+def sha256_file(path):
+ # Pinned CUDA libraries exceed the watchdog's entire memory limit. Stream
+ # every byte without changing digest semantics or weakening verification.
+ digest=hashlib.sha256()
+ with Path(path).open("rb") as stream:
+  for chunk in iter(lambda:stream.read(HASH_CHUNK_SIZE),b""):digest.update(chunk)
+ return digest.hexdigest()
+def load_config(path=DEFAULT_CONFIG):
+ path=Path(path);st=path.stat()
+ if st.st_uid!=0 or stat.S_IMODE(st.st_mode)&0o022:raise ContractViolation("contract must be root-owned and not group/world writable")
+ c=json.loads(path.read_text())
+ required=("unit","base_url","model","aliases","context_length","max_streams","user","group","exec_start","environment","source_commit","hashes","ready_path")
+ if c.get("version")!=1 or any(k not in c for k in required):raise ContractViolation("unsupported or incomplete Strata contract")
+ if c["unit"]!="qwen38-flash-next-strata.service":raise ContractViolation("unexpected managed unit")
+ if c["base_url"]!="http://127.0.0.1:8002":raise ContractViolation("readiness must use local production endpoint")
+ if type(c["context_length"]) is not int or c["context_length"] not in (131072,262144) or c["max_streams"] not in (4,8):raise ContractViolation("unapproved context/concurrency")
+ if not isinstance(c["exec_start"],list) or len(c["exec_start"])<3 or not all(isinstance(v,str) and v for v in c["exec_start"]):raise ContractViolation("exec_start must contain exact executable and arguments")
+ if not isinstance(c["aliases"],list) or c["model"] not in c["aliases"] or len(set(c["aliases"]))!=len(c["aliases"]):raise ContractViolation("invalid aliases")
+ if not re.fullmatch(r"[0-9a-f]{40}",c["source_commit"]):raise ContractViolation("source_commit must be pinned")
+ if not isinstance(c["environment"],dict) or not isinstance(c["hashes"],dict) or not c["hashes"]:raise ContractViolation("environment/hashes missing")
+ if "/etc/systemd/system/"+c["unit"] not in c["hashes"]:raise ContractViolation("permanent unit must be hash-pinned")
+ for name,digest in c["hashes"].items():
+  if not Path(name).is_absolute() or not re.fullmatch(r"[0-9a-f]{64}",digest):raise ContractViolation("invalid pinned file")
+ c=dict(c);c["_config_path"]=str(path);c["_config_sha256"]=sha256_file(path)
+ return c
+def systemd(unit):
+ raw=run("systemctl","show",unit,*["--property="+k for k in FIELDS])
+ return dict(line.split("=",1) for line in raw.splitlines() if "=" in line)
+def exec_argv(value):
+ match=re.search(r"(?:^|[;{]\s*)argv\[\]=(.*?)(?:\s*;\s*(?:ignore_errors|start_time|stop_time|pid|code)=)",value)
+ if not match:raise ContractViolation("cannot parse systemd ExecStart")
+ return shlex.split(match.group(1).strip())
+def verify_files(c):
+ for filename,digest in c["hashes"].items():
+  try:got=sha256_file(filename)
+  except OSError as e:raise ContractViolation("pinned file unavailable: "+filename) from e
+  if got!=digest:raise ContractViolation("approved runtime hash changed: "+filename)
+ for filename,expected in c.get("model_files",{}).items():
+  info=Path(filename).stat()
+  if info.st_size!=expected["size"]:raise ContractViolation("checkpoint size changed: "+filename)
+  if "mtime_ns" in expected and info.st_mtime_ns!=expected["mtime_ns"]:raise ContractViolation("checkpoint modification time changed: "+filename)
+def verify_unit(c,unit=None):
+ u=unit or systemd(c["unit"])
+ if u.get("LoadState")!="loaded":raise ContractViolation("permanent Strata unit not loaded")
+ if u.get("DropInPaths"):raise ContractViolation("unreviewed unit drop-in")
+ if u.get("FragmentPath")!="/etc/systemd/system/"+c["unit"]:raise ContractViolation("unexpected unit fragment")
+ if u.get("User")!=c["user"] or u.get("Group")!=c["group"]:raise ContractViolation("service account differs")
+ if exec_argv(u.get("ExecStart",""))!=c["exec_start"]:raise ContractViolation("systemd ExecStart differs")
+ env=dict(v.split("=",1) for v in shlex.split(u.get("Environment","")) if "=" in v)
+ if env!=c["environment"]:raise ContractViolation("systemd environment differs")
+ if u.get("Restart")!="no":raise ContractViolation("systemd restart policy must leave automatic recovery to the watchdog")
+ for other in (COMPETING_UNIT,"qwen38-flash-next-tensorfold.service"):
+  if systemd(other).get("ActiveState") not in ("inactive","failed"):raise ContractViolation("Competing service not inactive: "+other)
+ return u
+def verify_static(c):
+ verify_files(c);return verify_unit(c)
+def account(c):
+ import pwd,grp
+ return pwd.getpwnam(c["user"]).pw_uid,grp.getgrnam(c["group"]).gr_gid
+def marker_present(path):
+ # Unlike exists/lexists, permission and I/O errors must not mean "absent".
+ try:os.lstat(path);return True
+ except FileNotFoundError:return False
+def maintenance_reason():
+ for filename in ("active.json","finalizing.json"):
+  if marker_present(GLM_ROOT/filename):return "transaction","GLM transaction "+filename+" present"
+ if marker_present(PROMOTION_GUARD):return "transaction","legacy promotion guard armed; recovery ownership must be reconciled"
+ if marker_present(RECOVERY_ROOT/"HOLD"):return "operator_hold","operator HOLD present; remove explicitly to resume"
+ for unit in ("glm53-canary-run.service","glm53-maintenance-window.service"):
+  if run("systemctl","show",unit,"-p","ActiveState","--value").strip() in ("active","activating","deactivating"):return "transaction",unit+" in progress"
+ if marker_present(TRANSITION):
+  values=dict(line.split("=",1) for line in TRANSITION.read_text().splitlines() if "=" in line)
+  try:expires=int(values["expires_epoch"])
+  except (KeyError,ValueError) as e:raise ContractViolation("invalid mode transition marker; operator inspection required") from e
+  now=int(time.time())
+  if not now<=expires<=now+1800:raise ContractViolation("stale or unbounded mode transition marker; operator inspection required")
+  return "transition","bounded mode transition active until "+str(expires)
+ return None,None
+def require_no_maintenance():
+ _,reason=maintenance_reason()
+ if reason:raise MaintenanceActive(reason)
+def pre_start(c):
+ verify_static(c);require_no_maintenance()
+ path=Path(c["ready_path"]);uid,gid=account(c)
+ # systemd creates RuntimeDirectory for the service account before ExecStartPre.
+ # Never follow a replacement runtime-directory symlink or truncate a stale token.
+ fd=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+ temp=".startup-token-"+secrets.token_hex(16)
+ try:
+  info=os.fstat(fd)
+  if info.st_uid!=uid or info.st_gid!=gid or stat.S_IMODE(info.st_mode)&0o022:raise ContractViolation("unsafe startup runtime directory")
+  token_fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=fd)
+  try:
+   with os.fdopen(token_fd,"w") as stream:
+    if os.geteuid()==0:os.fchown(stream.fileno(),uid,gid)
+    token_info=os.fstat(stream.fileno())
+    if token_info.st_uid!=uid or token_info.st_gid!=gid:raise ContractViolation("startup token ownership differs from service account")
+    stream.write(secrets.token_hex(32)+"\n");stream.flush();os.fsync(stream.fileno())
+   os.replace(temp,"startup-token",src_dir_fd=fd,dst_dir_fd=fd)
+  finally:
+   try:os.unlink(temp,dir_fd=fd)
+   except FileNotFoundError:pass
+  try:os.unlink(path.name,dir_fd=fd)
+  except FileNotFoundError:pass
+  os.fsync(fd)
+ finally:os.close(fd)
+ # A maintenance operation can arrive while the token is being rotated.
+ require_no_maintenance()
+def readiness_token(c):
+ path=Path(c["ready_path"]).parent/"startup-token";uid,_=account(c)
+ fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+ with os.fdopen(fd,"r") as stream:
+  info=os.fstat(stream.fileno())
+  if not stat.S_ISREG(info.st_mode) or info.st_uid!=uid or stat.S_IMODE(info.st_mode)!=0o600:raise ContractViolation("unsafe startup readiness token")
+  token=stream.read(66).strip()
+ if not re.fullmatch(r"[0-9a-f]{64}",token):raise ContractViolation("invalid startup readiness token")
+ return token
+def _owned_pid(pid,c):
+ uid,gid=account(c);p=Path("/proc")/str(pid)
+ values=dict(line.split(":",1) for line in (p/"status").read_text().splitlines() if ":" in line)
+ if any(int(x)!=uid for x in values["Uid"].split()) or any(int(x)!=gid for x in values["Gid"].split()):raise ContractViolation("process account differs")
+ if not any(line.split(":",2)[-1].rstrip("/").endswith("/"+c["unit"]) for line in (p/"cgroup").read_text().splitlines()):raise ContractViolation("process outside managed cgroup")
+def verify_process(c,unit):
+ pid=int(unit.get("MainPID",0))
+ if pid<=0:raise Unavailable("managed unit has no MainPID")
+ p=Path("/proc")/str(pid)
+ try:
+  _owned_pid(pid,c)
+  argv=[os.fsdecode(v) for v in (p/"cmdline").read_bytes().split(b"\0") if v]
+  if argv!=c["exec_start"]:raise ContractViolation("MainPID command differs")
+  if (p/"exe").resolve()!=Path(c["exec_start"][0]).resolve():raise ContractViolation("MainPID executable differs")
+  env=dict(os.fsdecode(v).split("=",1) for v in (p/"environ").read_bytes().split(b"\0") if b"=" in v)
+  if any(env.get(k)!=str(v) for k,v in c["environment"].items()):raise ContractViolation("running process environment differs")
+  prefixes=("STRATA_","PYTORCH_","CUDA_","TORCH_","OMP_");critical={"PYTHONPATH","PYTHONHOME","LD_PRELOAD","LD_LIBRARY_PATH","MAX_JOBS"}
+  if any((k.startswith(prefixes) or k in critical) and k not in c["environment"] for k in env):raise ContractViolation("unapproved inference environment variable")
+  ticks=(p/"stat").read_text().rsplit(")",1)[1].split()[19];boot=Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+ except FileNotFoundError as e:raise Unavailable("managed process exited during inspection") from e
+ engine_pids=[]
+ cg=Path("/sys/fs/cgroup/system.slice")/c["unit"]/"cgroup.procs"
+ for child in cg.read_text().split():
+  q=Path("/proc")/child
+  try:
+   if (q/"exe").resolve()!=Path(c["engine_argv"][0]).resolve():continue
+   _owned_pid(int(child),c)
+   child_argv=[os.fsdecode(v) for v in (q/"cmdline").read_bytes().split(b"\0") if v]
+   if child_argv!=c["engine_argv"]:raise ContractViolation("Engine command differs")
+   engine_pids.append((int(child),(q/"stat").read_text().rsplit(")",1)[1].split()[19]))
+  except FileNotFoundError:continue
+ if len(engine_pids)!=1:raise Unavailable("Exactly one managed engine is required")
+ return {"pid":pid,"start_ticks":ticks,"boot_id":boot,"engine_pid":engine_pids[0][0],"engine_start_ticks":engine_pids[0][1]}
+def listener_pids(c):
+ text=run("ss","-H","-ltnp","sport = :8002")
+ if not text.strip():return []
+ pids=sorted({int(p) for p in re.findall(r"pid=(\d+)",text)})
+ if not pids:raise ContractViolation("listener ownership cannot be established")
+ for pid in pids:_owned_pid(pid,c)
+ return pids
+def request(c,path,payload=None,timeout=8,readiness_probe=False):
+ data=None if payload is None else json.dumps(payload).encode()
+ key=json.loads(Path(c["server_config"]).read_text())["api_key"]
+ headers={"Content-Type":"application/json","Authorization":"Bearer "+key}
+ if readiness_probe and c["environment"].get("ONYX_STRATA_READINESS_GATE")=="1":headers["X-Onyx-Readiness-Probe"]=readiness_token(c)
+ req=urllib.request.Request(c["base_url"]+path,data=data,headers=headers)
+ with urllib.request.urlopen(req,timeout=bounded_timeout(timeout)) as r:return json.load(r)
+def validate_health(c,h,metrics,status):
+ for key,value in {"status":"ok","service":"strata","loaded":True,"max_context":c["context_length"],"model":c["model"],"images":True,"api_key":True}.items():
+  if h.get(key)!=value:raise Unavailable("Health contract mismatch: "+key)
+ engine=metrics.get("engine",{})
+ for key,value in {"batch_slots":c["max_streams"],"context":c["context_length"],"kv":"int8","expert_slots":24576}.items():
+  actual=engine.get(key)
+  if actual!=value:
+   # Only complete, loaded-engine capacity telemetry is a terminal budget failure.
+   # Missing/malformed fields remain transient, with the bounded startup deadline.
+   if key=="expert_slots" and isinstance(actual,int) and not isinstance(actual,bool) and actual>0:
+    raise CapacityMismatch("Engine capacity mismatch: expert_slots="+str(actual)+" required="+str(value))
+   raise Unavailable("Engine capacity mismatch: "+key)
+ if status.get("concurrency",{}).get("serving")!=c["max_streams"]:raise Unavailable("Server serving count differs")
+ live=metrics["live"];totals=metrics["totals"]
+ admitted=live.get("admission_inflight",0)
+ if c["environment"].get("ONYX_STRATA_READINESS_GATE")=="1":
+  if "admission_inflight" not in live or not isinstance(admitted,int) or isinstance(admitted,bool) or admitted<0:raise Unavailable("Invalid or missing live field: admission_inflight")
+ for key in ("running","queued","waiting","state","slots"):
+  if key not in live:raise Unavailable("Missing live field: "+key)
+ for key in ("running","queued","waiting"):
+  value=live[key]
+  if not isinstance(value,int) or isinstance(value,bool) or value<0:raise Unavailable("Invalid live field: "+key)
+ slots=live["slots"];active=[x for x in slots if x.get("state")!="idle"]
+ generated=sum(x.get("generated") or 0 for x in active)
+ if not active and live.get("state")=="generating":generated=live.get("generated") or 0
+ decoding=sum(x.get("state")=="decoding" for x in slots)
+ if not active and live.get("state")=="generating":decoding=1
+ result={"ok":True,"backend":"strata","context_length":c["context_length"],"qualified":h.get("qualified") is True,
+  "requests_running":int(live.get("running") or 0)+int(live.get("queued") or 0),"admission_inflight":admitted,
+  "queue_requests":int(live.get("queued") or 0)+int(live.get("waiting") or 0),
+  "streams":{"max":c["max_streams"],"decoding":decoding,"prefilling":int(live.get("state")=="reading")},
+  "completed_requests":totals["requests"],"observed_output_tokens":totals["output_tokens"]+generated,
+  "prefill_ms":totals["prompt_ms"],"decode_ms":totals["decode_ms"],
+  "observed_prompt_tokens":totals["prompt_tokens"]+int(live.get("prompt_read") or 0)}
+ for key in ("requests_running","queue_requests",*COUNTERS):
+  value=result[key]
+  if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value) or value<0:raise Unavailable("Invalid counter: "+key)
+ return result
+def idle(h):return h["requests_running"]==0 and h["streams"]["decoding"]==0 and h["streams"]["prefilling"]==0 and h.get("admission_inflight",0)==0
+def validate_models(c,catalog):
+ ids=[entry.get("id") for entry in catalog.get("data",[])]
+ if len(ids)!=len(c["aliases"]) or set(ids)!=set(c["aliases"]):raise Unavailable("model catalog aliases differ")
+def verify_ready(c,identity):
+ try:ready=json.loads(Path(c["ready_path"]).read_text())
+ except (OSError,ValueError) as e:raise Unavailable("readiness receipt missing or unreadable") from e
+ if ready.get("version")!=1 or ready.get("identity")!=identity or ready.get("config_sha256")!=c["_config_sha256"] or ready.get("canary")!="SIDECAR_OK":raise Unavailable("readiness receipt does not match process/contract")
+ return ready
+def health_snapshot(c,allow_starting=False):
+ u=verify_unit(c);allowed=("active","activating") if allow_starting else ("active",)
+ if u["ActiveState"] not in allowed or not allow_starting and u.get("SubState")!="running":raise Unavailable("production service "+u["ActiveState"]+"/"+u.get("SubState","unknown"))
+ identity=verify_process(c,u)
+ if not listener_pids(c):raise Unavailable("managed service has no listener")
+ h=validate_health(c,request(c,"/health"),request(c,"/metrics"),request(c,"/v1/status"))
+ return {"unit":u,"identity":identity,"health":h}
+def probe(c,require_ready=True,allow_starting=False):
+ snapshot=health_snapshot(c,allow_starting=allow_starting);validate_models(c,request(c,"/v1/models"))
+ if require_ready and c["environment"].get("ONYX_STRATA_READINESS_GATE")=="1" and snapshot["health"].get("qualified") is not True:raise Unavailable("managed admission gate is unqualified (including engine/vision liveness)")
+ snapshot["ready"]=verify_ready(c,snapshot["identity"]) if require_ready else None
+ return snapshot
+def canary(c):
+ start=time.monotonic()
+ result=request(c,"/v1/chat/completions",{"model":c["model"],"messages":[{"role":"user","content":"Reply with exactly SIDECAR_OK"}],"temperature":0,"max_tokens":24,"stream":False,"reasoning_effort":"none","experimental_speed_projection":True,"chat_template_kwargs":{"enable_thinking":False}},timeout=45,readiness_probe=True)
+ choice=result["choices"][0];message=choice["message"]
+ if result.get("model")!=c["model"] or message.get("content")!="SIDECAR_OK" or message.get("tool_calls") or message.get("reasoning_content") or choice.get("finish_reason")!="stop":raise Unavailable("inference canary failed exact answer contract")
+ return round(time.monotonic()-start,3)
+def write_ready(c,snapshot,seconds):
+ value={"version":1,"identity":snapshot["identity"],"config_sha256":c["_config_sha256"],"source_commit":c["source_commit"],"model":c["model"],"aliases":c["aliases"],"context_length":c["context_length"],"max_streams":c["max_streams"],"canary":"SIDECAR_OK","canary_seconds":seconds,"verified_epoch":time.time()}
+ path=Path(c["ready_path"]);uid,gid=account(c)
+ # These hooks run root so protected maintenance markers remain inspectable.
+ # RuntimeDirectory itself and published files belong to the service, and no
+ # service-controlled path is followed or opened for truncation as root.
+ directory=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+ temp=".ready-"+secrets.token_hex(16)
+ try:
+  info=os.fstat(directory)
+  if info.st_uid!=uid or info.st_gid!=gid or stat.S_IMODE(info.st_mode)&0o022:raise ContractViolation("unsafe readiness runtime directory")
+  fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
+  try:
+   with os.fdopen(fd,"w") as stream:
+    if os.geteuid()==0:os.fchown(stream.fileno(),uid,gid)
+    receipt_info=os.fstat(stream.fileno())
+    if receipt_info.st_uid!=uid or receipt_info.st_gid!=gid:raise ContractViolation("readiness receipt ownership differs from service account")
+    json.dump(value,stream,sort_keys=True);stream.write("\n");stream.flush();os.fsync(stream.fileno())
+   os.replace(temp,path.name,src_dir_fd=directory,dst_dir_fd=directory)
+   os.fsync(directory)
+  finally:
+   try:os.unlink(temp,dir_fd=directory)
+   except FileNotFoundError:pass
+ finally:os.close(directory)
+ return value
+def remove_ready(c):
+ """Revoke this unit's admission receipt without following service-owned paths."""
+ path=Path(c["ready_path"]);uid,gid=account(c)
+ directory=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+ try:
+  info=os.fstat(directory)
+  if info.st_uid!=uid or info.st_gid!=gid or stat.S_IMODE(info.st_mode)&0o022:raise ContractViolation("unsafe readiness runtime directory")
+  try:os.unlink(path.name,dir_fd=directory)
+  except FileNotFoundError:pass
+  os.fsync(directory)
+ finally:os.close(directory)
+def wait_ready(c,timeout=540):
+ global _readiness_deadline
+ if not math.isfinite(timeout) or timeout<=0:raise ValueError("readiness timeout must be finite and positive")
+ verify_static(c);deadline=time.monotonic()+timeout;last="startup has not answered";previous=_readiness_deadline;_readiness_deadline=deadline
+ try:
+  while time.monotonic()<deadline:
+   try:
+    require_no_maintenance()
+    snap=probe(c,require_ready=False,allow_starting=True)
+    if not idle(snap["health"]):raise Unavailable("foreground requests still active during startup readiness")
+    seconds=canary(c);again=probe(c,require_ready=False,allow_starting=True)
+    if again["identity"]!=snap["identity"]:raise Unavailable("process changed during readiness")
+    require_no_maintenance()
+    try:
+     receipt=write_ready(c,again,seconds)
+     qualified=probe(c,require_ready=True,allow_starting=True)
+     if qualified["identity"]!=again["identity"]:raise Unavailable("process changed after readiness receipt publication")
+     require_no_maintenance()
+     return receipt
+    except BaseException:
+     # Publication can succeed before a later fsync/probe fails. Revoke first,
+     # including on interrupts, so no unverified receipt remains during retry.
+     remove_ready(c)
+     raise
+   except (ContractViolation,CapacityMismatch,MaintenanceActive,PermissionError):raise
+   except (OSError,ValueError,KeyError,Unavailable,subprocess.TimeoutExpired) as e:
+    last=type(e).__name__+": "+str(e);time.sleep(min(2,max(0,deadline-time.monotonic())))
+  raise Unavailable("Strata startup readiness timed out: "+last)
+ finally:_readiness_deadline=previous
+def main():
+ p=argparse.ArgumentParser();p.add_argument("--config",default=str(DEFAULT_CONFIG));g=p.add_mutually_exclusive_group(required=True)
+ g.add_argument("--check-ready",action="store_true");g.add_argument("--verify-files",action="store_true");g.add_argument("--pre-start",action="store_true");g.add_argument("--wait-ready",action="store_true");p.add_argument("--timeout",type=float,default=540)
+ args=p.parse_args();c=load_config(args.config)
+ if args.verify_files:verify_static(c);print("STRATA_CONTRACT_OK")
+ elif args.pre_start:pre_start(c);print("STRATA_PRE_START_OK")
+ elif args.check_ready:
+  verify_static(c);probe(c);print(c["model"],c["context_length"])
+ else:print(json.dumps(wait_ready(c,args.timeout),sort_keys=True))
+def cli():
+ try:main()
+ except CapacityMismatch as e:print("STRATA_CAPACITY_BLOCKED: "+str(e),file=sys.stderr);return CAPACITY_EXIT
+ return 0
+if __name__=="__main__":sys.exit(cli())
+

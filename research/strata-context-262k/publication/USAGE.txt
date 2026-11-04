@@ -1,0 +1,58 @@
+Preparation only: no receipt has been copied or staged yet.
+
+prepare_publication.py --plan lists only explicit SELECTION.json matches and
+does not read their contents. --self-test uses synthetic data and the driver's
+own source; it performs no GPU, API, service or repository action.
+
+After all experiment reports finish and the newly authorized production profile
+has completed normal readiness,
+the root may supply an attestation JSON with these fields:
+
+  publication_authorized: true
+  private_experiments_finished: true
+  production_final_ready: true
+  user_authorized_promotion: true
+  production_context: 262144
+  production_slots: 8
+  production_prefill: 8192
+  sunshine_inactive: true
+  private_configs_remaining: 0
+
+Then use --execute --root-authorized --attestation PATH. This is a root-owned
+completion check, not an additional request for user permission. The driver
+deliberately does not require an empty GPU: final production can be resident.
+No service, API or GPU query is performed by the publication driver.
+
+The output is a fresh local publication/.stages/<UTC>/research/strata-context-262k
+tree. It never writes the Git checkout, fetches, commits or pushes. The root must
+review the public tree, refresh/coordinate the current publication repository,
+and perform any later repository action separately.
+
+The 37 MB nine-case input is normalized and compressed as deterministic gzip
+(mtime0, empty stored filename). Manifest entries contain original raw source,
+published compressed and normalized uncompressed SHA256 values and sizes. The
+Python/zlib versions and gzip settings are recorded. The preliminary two-case
+artifact is labeled as superseded preparation; the measured nine-case fixture
+and independent oracle are the authoritative inputs.
+
+Reports retain explicit native/API result/count/quality/usage fields, source
+identities and allocation/pressure observations. Real process arrays, IDs and
+configuration/personal pin fields are projected out. Telemetry retains GPU model,
+driver, memory/power/clock/temperature/utilization and host available/swap values,
+but omits GPU UUID, compute-process lists and owned PIDs. Homes, private addresses,
+owners and literal credentials are sanitized through the prior stock package's
+normalizer plus context-specific replacements. The normalizer source hash is
+recorded. No exact private config or live initial-state snapshot is included.
+
+Guard source hashes are checked before execution: measured77b810ea... and
+final3011d627.... Both original identities are retained, while public code has
+role paths/owner/config fingerprints replaced. Their only differences are spaces
+in two memory-refusal messages; no threshold/control-flow claim is inferred from
+an identical AST (the string constants differ). GUARD-PROVENANCE-NOTE.json keeps
+the earlier source reconstruction timing and its evidence limitations.
+
+Before publishing, root should finalize PUBLIC-NOTE.txt and experiment results
+from finished receipts, explicitly reporting observed concurrency and the limits
+of individually deep-filled slot tests. Do not infer unobserved reuse/isolation,
+capacity fallback, deployment or quality success. Initial-state, capture helper,
+Honcho/wiki operations and private restoration/authorization records remain local.

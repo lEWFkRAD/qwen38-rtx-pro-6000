@@ -1,0 +1,24 @@
+{
+  "unchanged_consumers": {
+    "onyx_readiness.py": "No hardcoded context; raw-contract-SHA and live identity bound receipt. No edit required.",
+    "qwen38-modectl": "Delegates to strata-contract.py --check-ready; prints returned model/context. No edit required.",
+    "strata-controller.py": "Uses dynamic health context and shared contract helpers. No edit required.",
+    "strata-maintenance.py": "Uses shared contract helpers. No edit required.",
+    "onyx-personal/controller.py": "No primary context constant; guard_pins plus shared recovery/contract on worker/restore. No source edit required."
+  },
+  "approved_contexts": [
+    131072,
+    262144
+  ],
+  "status": "draft_only_not_installed",
+  "actual_engine_context_must_equal_sealed_contract": true,
+  "running_contract_still131072": true,
+  "fallback_or_minimum_capacity_match_added": false,
+  "draft_sha256": "4e1a34a4c43e40fd7f7b05c38198af7ecbbc3c796226d40aec5600116c4434cc",
+  "before_sha256": "4420f5dfd1fc1d039dacade988851a279cd7f00858e09ff2effdbdf0798ab540",
+  "changed_source_files": [
+    "/usr/local/libexec/onyx-inference-recovery/strata-contract.py"
+  ],
+  "protected_mutations_performed": false,
+  "changed_logic_lines": 2
+}

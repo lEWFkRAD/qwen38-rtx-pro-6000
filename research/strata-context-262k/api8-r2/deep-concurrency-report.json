@@ -1,0 +1,235 @@
+{
+  "requested_streams": 8,
+  "closed_our_SSE_handles": 0,
+  "quality_scope": "capacity/load/cancellation only; no retrieval-quality claim for modified prompts",
+  "minimum_output_scope": "matched-tokenizer re-encoding of actual visible text, never SSE chunk counts",
+  "system_instruction_replaced": true,
+  "usage_note": "Cancellation normally prevents final SSE usage; full prompt lengths were checked against live slot metadata. No SSE chunk/token equivalence is assumed.",
+  "status": "failed",
+  "fixture_sha256": "dc9d825e5f517a47a17aba451857363f0ebcfe497edf243a957d58aa4b9a6806",
+  "peak_live_running": 0,
+  "context": 262144,
+  "started_at": "2026-11-04T01:06:47.411033+00:00",
+  "finished_at": "2026-11-04T01:06:47.545711+00:00",
+  "tokenizer_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+    "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+    "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+  },
+  "long_prose_directive_appended": true,
+  "eight_concurrent_deep_streams_observed": false,
+  "requested_max_output_tokens_each": 8192,
+  "peak_decoding_slots": 0,
+  "configured_EOS_logit_bias": {
+    "248044": -100,
+    "248046": -100
+  },
+  "identity_preserved": true,
+  "peak_active_slots": 0,
+  "initial_capacity": {
+    "max_context": 262144,
+    "images": true,
+    "version": "0.1.56",
+    "logit_bias": 1,
+    "context": 262144,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 24576,
+    "expert_cache_mib": 47962,
+    "expert_slots_primary": 24576,
+    "expert_cache_primary_mib": 47962,
+    "spec": 8,
+    "mtp_max": 6,
+    "lookup": 3,
+    "vram_free_mib": 3092,
+    "cvec": "project:4-44",
+    "arena_mib": 47962,
+    "pool_workers": 12,
+    "pcie_frac": "0.00",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 0,
+    "prefill_cap": 8192,
+    "prefill_pipe": 0,
+    "batch_slots": 8,
+    "slot_cache": 1,
+    "batch_groups": 1,
+    "engine": "0.1.56"
+  },
+  "streams": [
+    {
+      "load_token_sha256": "882332fc08872b1dadc276fb6a5a16f0eca611ce3eca0869076767b7c546c8f1",
+      "headers_received": false,
+      "id": "deep_slot_0_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "e7e9e81cecb68cf80c213c2d5cb99dd962a2215b3207e1b7dd060c7d0d489084",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251909,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "dbde418e810b9d8fd3a56211e6682bdf2f166553edf297aed24eaa526f5efc16",
+      "headers_received": false,
+      "id": "deep_slot_1_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "2f1cd54f164b1efb2b80b51b847939e849fa6f342dc235e85b020e4177f48708",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251915,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "54f1edf7262a5d1829d5c06f4b9913a1586cce62de8c52b3bb7e26406ba86db3",
+      "headers_received": false,
+      "id": "deep_slot_2_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "14a9250f194b808f0d4f32f10fadb1d7bc54f5240b4ef75c6793716bbca31c8f",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251859,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "3b06411de12b88c97ed022003e4d7856a619dae2d2e48123b6c99951ad47187c",
+      "headers_received": false,
+      "id": "deep_slot_3_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "a508812afffdd52b9d8bead73abd18da9955ee81ee7536ba62460a9820b9f68e",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251930,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "ee3aaf38ccd7218367b6031111c3efbc35fa9badebd67266919183b97aeec63d",
+      "headers_received": false,
+      "id": "deep_slot_4_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "63529f80848b6055757fabe9ba26e7709d2e19332c5fa4d631c47f0136f6e366",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251904,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "bc9c0c73188cc20a9e8d95990d05b7358d39d27c25dd8b2482974078b8b38c3f",
+      "headers_received": false,
+      "id": "deep_slot_5_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "5892616fab4f17fa86ad58d384e2253426dc30b64f0c631b6f5cb31cf1532b37",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251911,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "4b3c91c03885d5f1a73b1c5c55b527c71c56280f097795105c0c92f3ea54191e",
+      "headers_received": false,
+      "id": "deep_slot_6_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "44b1354b7aba251fff65b69492397c68c1c99c9a3a2894a71850b310f0ad56b7",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251897,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    },
+    {
+      "load_token_sha256": "bbb11947a5f66a746360ea43711db1528fda53ca3c87fe15dc41843e8d1e3f27",
+      "headers_received": false,
+      "id": "deep_slot_7_multi_needle_252k",
+      "finished": true,
+      "source_token_sha256": "990924aba21bc5c78771e9097c077bcb1d471aa08e46936b8001432642b21077",
+      "content_prefix": "",
+      "finish_reason": null,
+      "prompt_tokens": 251913,
+      "usage": null,
+      "visible_retokenized_tokens": 0,
+      "content_truncated": false,
+      "error": "HTTPError"
+    }
+  ],
+  "samples": [
+    {
+      "elapsed_ms": 1826.027372997487,
+      "running": 0,
+      "active_slots": 0,
+      "decoding_slots": 0,
+      "visible_retokenized_tokens_each": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 1,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 2,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 3,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 4,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 5,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 6,
+          "state": "idle",
+          "held_tokens": 0
+        },
+        {
+          "slot": 7,
+          "state": "idle",
+          "held_tokens": 0
+        }
+      ]
+    }
+  ],
+  "error": "Refusal: one of our deep SSE clients failed"
+}

@@ -1,0 +1,73 @@
+{
+  "limits": "eight-slot arm follows four-slot infrastructure success; model-quality failures remain failures and do not erase the remaining observations",
+  "selected_profile_sha256": "ba71b5414df050787bab60aff7b0de0f2a4acf198e421d905a19d44b7915d761",
+  "fixture_sha256": "dc9d825e5f517a47a17aba451857363f0ebcfe497edf243a957d58aa4b9a6806",
+  "tokenizer_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+    "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+    "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+  },
+  "GPU_work_started": false,
+  "scope": "isolated native262144 qualification; same resident model,INT8,MTP,controlvector,fused profile; no production promotion",
+  "engine_sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+  "preflight_guard_sha256": "77b810ea2d830dfe7cb76871d24a824b0b13a78082eadbc68786b8d9a3e1863a",
+  "schedule": [
+    {
+      "slots": 4,
+      "prefill": 32768
+    },
+    {
+      "slots": 8,
+      "prefill": 16384
+    }
+  ],
+  "fixture_cases": [
+    {
+      "id": "cold_opaque_marker_260k",
+      "prompt_tokens": 259999,
+      "token_sha256": "5164b06d7bdef890f7d5d5ee86b8fb7369a0a4e55e9db52d4169ce27aabf931f"
+    },
+    {
+      "id": "deep_slot_0_multi_needle_252k",
+      "prompt_tokens": 251814,
+      "token_sha256": "e7e9e81cecb68cf80c213c2d5cb99dd962a2215b3207e1b7dd060c7d0d489084"
+    },
+    {
+      "id": "deep_slot_1_multi_needle_252k",
+      "prompt_tokens": 251820,
+      "token_sha256": "2f1cd54f164b1efb2b80b51b847939e849fa6f342dc235e85b020e4177f48708"
+    },
+    {
+      "id": "deep_slot_2_multi_needle_252k",
+      "prompt_tokens": 251764,
+      "token_sha256": "14a9250f194b808f0d4f32f10fadb1d7bc54f5240b4ef75c6793716bbca31c8f"
+    },
+    {
+      "id": "deep_slot_3_multi_needle_252k",
+      "prompt_tokens": 251835,
+      "token_sha256": "a508812afffdd52b9d8bead73abd18da9955ee81ee7536ba62460a9820b9f68e"
+    },
+    {
+      "id": "deep_slot_4_multi_needle_252k",
+      "prompt_tokens": 251809,
+      "token_sha256": "63529f80848b6055757fabe9ba26e7709d2e19332c5fa4d631c47f0136f6e366"
+    },
+    {
+      "id": "deep_slot_5_multi_needle_252k",
+      "prompt_tokens": 251816,
+      "token_sha256": "5892616fab4f17fa86ad58d384e2253426dc30b64f0c631b6f5cb31cf1532b37"
+    },
+    {
+      "id": "deep_slot_6_multi_needle_252k",
+      "prompt_tokens": 251802,
+      "token_sha256": "44b1354b7aba251fff65b69492397c68c1c99c9a3a2894a71850b310f0ad56b7"
+    },
+    {
+      "id": "deep_slot_7_multi_needle_252k",
+      "prompt_tokens": 251818,
+      "token_sha256": "990924aba21bc5c78771e9097c077bcb1d471aa08e46936b8001432642b21077"
+    }
+  ]
+}

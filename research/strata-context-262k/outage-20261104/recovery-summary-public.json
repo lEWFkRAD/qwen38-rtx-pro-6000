@@ -1,0 +1,75 @@
+{
+  "approved_change": "Add one compatibility credential while preserving primary and all existing credentials; reseal serving contract and dependent personal baseline pins.",
+  "authentication": {
+    "approved_credentials_checked": 3,
+    "credential_values_or_fingerprints_published": false,
+    "existing_access_and_new_credential_passed": true,
+    "invalid_credential_http_status": 401
+  },
+  "authorization": "<redacted-secret>",
+  "eight_deep_simultaneous_generation_qualified": false,
+  "historical_promotion_evidence_unchanged": {
+    "independent_audit_passed": 19,
+    "independent_audit_total": 19,
+    "production_canaries_passed": 7,
+    "production_canaries_total": 7
+  },
+  "incident": "A later credential-only serving-config edit caused a direct restart to fail its configuration integrity check.",
+  "independent_recovery_audit": {
+    "at": "2026-11-04T02:27:42.349494+00:00",
+    "checks": {
+      "actual_full_resident_int8_capacity": true,
+      "advertised_context_and_vision": true,
+      "all_attempts_preserved_plus_one_authorized_manual_start": true,
+      "all_personal_baseline_pins_match": true,
+      "five_approved_hashes_match": true,
+      "healthy_recovery_without_hold_or_capacity_latch": true,
+      "model_profile_environment_unchanged": true,
+      "negative_eight_deep_qualification_preserved": true,
+      "no_lsa": true,
+      "normal_gate_and_identity_bound_receipt": true,
+      "only_three_requested_argument_changes": true,
+      "personal_model_settings_unchanged": true,
+      "personal_primary_and_helper_pins_updated": true,
+      "private_credentials_removed_gpu_only_managed": true,
+      "retained_native_mtp_control_vector": true,
+      "same_official_engine_vision_libraries": true,
+      "strict_context_contract262144x8": true,
+      "sunshine_stays_off_enabled_unchanged": true,
+      "wrapper_source_unchanged": true
+    },
+    "passed": 19,
+    "total": 19
+  },
+  "private_operational_scripts_and_actual_configurations_excluded": true,
+  "production_default": {
+    "all_24576_experts_gpu_resident": true,
+    "context": 262144,
+    "engine": "0.1.56",
+    "kv": "int8",
+    "prefill": 8192,
+    "slots": 8,
+    "vision": true
+  },
+  "remote_client": {
+    "catalog_bytes_unchanged": true,
+    "checked_at": "2026-11-04T02:27:57.7167785Z",
+    "client_restart_performed": false,
+    "completion_tokens": 6,
+    "context": 262144,
+    "exact_synthetic_response": "ONYX_RECOVERY_OK",
+    "health_status_models_metrics_http_status": 200,
+    "slots": 8
+  },
+  "start": {
+    "all_prior_attempts_preserved": true,
+    "at": "2026-11-04T02:26:17.188249Z",
+    "healthy_at": "2026-11-04T02:27:10.620721+00:00",
+    "managed_readiness_and_exact_canary_passed": true,
+    "new_start_attempts": 1,
+    "normal_automatic_recovery_policy_changed": false,
+    "one_time_operator_start_exception": true
+  },
+  "status": "passed",
+  "sunshine": "stopped; enablement unchanged"
+}

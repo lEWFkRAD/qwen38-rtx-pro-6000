@@ -1,0 +1,19 @@
+test_existing_compute_before_start_always_refuses_even_if_ours (__main__.GuardTests.test_existing_compute_before_start_always_refuses_even_if_ours) ... ok
+test_foreign_gpu_session_or_executable_refuses (__main__.GuardTests.test_foreign_gpu_session_or_executable_refuses) ... ok
+test_gpu_without_explicit_private_binding_refuses (__main__.GuardTests.test_gpu_without_explicit_private_binding_refuses) ... ok
+test_listener_or_competitor_refuses (__main__.GuardTests.test_listener_or_competitor_refuses) ... ok
+test_low_host_or_gpu_memory_refuses (__main__.GuardTests.test_low_host_or_gpu_memory_refuses) ... ok
+test_owned_direct_session_gpu_passes (__main__.GuardTests.test_owned_direct_session_gpu_passes) ... ok
+test_paused_clean_baseline_passes_before_start (__main__.GuardTests.test_paused_clean_baseline_passes_before_start) ... ok
+test_production_must_be_inactive (__main__.GuardTests.test_production_must_be_inactive) ... ok
+test_recovery_history_or_capacity_latch_change_refuses (__main__.GuardTests.test_recovery_history_or_capacity_latch_change_refuses) ... ok
+test_reused_root_pid_refuses (__main__.GuardTests.test_reused_root_pid_refuses) ... ok
+test_shared_or_personal_hash_change_refuses (__main__.GuardTests.test_shared_or_personal_hash_change_refuses) ... ok
+test_sunshine_start_or_enablement_change_refuses (__main__.GuardTests.test_sunshine_start_or_enablement_change_refuses) ... ok
+test_user_unit_query_retains_show_subcommand (__main__.GuardTests.test_user_unit_query_retains_show_subcommand) ... ok
+test_wrong_hold_owner_refuses (__main__.GuardTests.test_wrong_hold_owner_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.004s
+
+OK

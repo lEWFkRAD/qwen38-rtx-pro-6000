@@ -1,0 +1,20 @@
+{
+  "existing_client_sessions_may_cache_old_context": true,
+  "context": 262144,
+  "at": "2026-11-04T02:01:13.626697+00:00",
+  "repeat_cached_tokens": 259992,
+  "prefill": 8192,
+  "near_capacity_prompt_tokens": 259999,
+  "normal_gate": "qualified",
+  "Sunshine": "inactive; existing enablement preserved",
+  "engine": "0.1.56",
+  "maximum_deep_decoders_observed_in_research": 4,
+  "independent_live_audit": "19/19 passed",
+  "normal_production_canaries": "7/7 passed",
+  "version": 1,
+  "client_onyx_flash_context": 262144,
+  "status": "promoted_live_operator_approved",
+  "eight_deep_simultaneous_generation_qualified": false,
+  "client_other_values_unchanged": true,
+  "slots": 8
+}

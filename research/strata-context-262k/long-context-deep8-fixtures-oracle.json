@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "fixture_sha256": "dc9d825e5f517a47a17aba451857363f0ebcfe497edf243a957d58aa4b9a6806",
+  "reference": "oracle_from_prompt parses literal records; target values are random and appear once.",
+  "cases": [
+    {
+      "id": "cold_opaque_marker_260k",
+      "prompt_tokens": 259999,
+      "max_new": 512,
+      "token_sha256": "5164b06d7bdef890f7d5d5ee86b8fb7369a0a4e55e9db52d4169ce27aabf931f",
+      "expected_json": {
+        "LLNWXADDUB6D7": "VAT7X5JBBORMQH23BRIUS"
+      },
+      "needles": [
+        {
+          "key": "LLNWXADDUB6D7",
+          "value": "VAT7X5JBBORMQH23BRIUS",
+          "target_fraction": 0.985,
+          "line_start_token": 256019,
+          "line_end_token": 256061,
+          "actual_fraction": 0.9846922488163417,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_0_multi_needle_252k",
+      "prompt_tokens": 251814,
+      "max_new": 512,
+      "token_sha256": "e7e9e81cecb68cf80c213c2d5cb99dd962a2215b3207e1b7dd060c7d0d489084",
+      "expected_json": {
+        "L2HZCT7NODJLK": "VR3MCP33AHPFM6K26OADY",
+        "LH5C62FE3MWOC": "VITUFTQNMUNDZLAGULXJD",
+        "LFCNBJJCWGPHL": "VGG2SEHXVPWWMDF3OMUFA",
+        "LXNSFGXMV6ZRQ": "V7EFMPMBFZDVUBKM5BWHS",
+        "L3GAQSUZNPLQ2": "VTJJ7TCBS3PKJ4CR4ATZ7"
+      },
+      "needles": [
+        {
+          "key": "LXNSFGXMV6ZRQ",
+          "value": "V7EFMPMBFZDVUBKM5BWHS",
+          "target_fraction": 0.035,
+          "line_start_token": 8894,
+          "line_end_token": 8934,
+          "actual_fraction": 0.03531972011087549,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LFCNBJJCWGPHL",
+          "value": "VGG2SEHXVPWWMDF3OMUFA",
+          "target_fraction": 0.245,
+          "line_start_token": 61763,
+          "line_end_token": 61803,
+          "actual_fraction": 0.24527230416100773,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L2HZCT7NODJLK",
+          "value": "VR3MCP33AHPFM6K26OADY",
+          "target_fraction": 0.535,
+          "line_start_token": 134669,
+          "line_end_token": 134713,
+          "actual_fraction": 0.5347955236801767,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L3GAQSUZNPLQ2",
+          "value": "VTJJ7TCBS3PKJ4CR4ATZ7",
+          "target_fraction": 0.765,
+          "line_start_token": 192541,
+          "line_end_token": 192583,
+          "actual_fraction": 0.7646159466908115,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LH5C62FE3MWOC",
+          "value": "VITUFTQNMUNDZLAGULXJD",
+          "target_fraction": 0.975,
+          "line_start_token": 245396,
+          "line_end_token": 245435,
+          "actual_fraction": 0.974512934149809,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_1_multi_needle_252k",
+      "prompt_tokens": 251820,
+      "max_new": 512,
+      "token_sha256": "2f1cd54f164b1efb2b80b51b847939e849fa6f342dc235e85b020e4177f48708",
+      "expected_json": {
+        "LJDGUOX4TSC6U": "VBNMRCBRCOLODX4CBS2R4",
+        "LQNDKD53NV6N3": "VGI5NCSWNN3XT54QCKUZE",
+        "LBWREMSUUUATV": "VQJ2KKSYUAHV4RDZULD7T",
+        "LGYDH2FNC2T7O": "VN2P6NSO7NX3W62O5MKJ2",
+        "LFLDPQKNSQKR5": "VAXNOQCAWGZSOBPSMQFYY"
+      },
+      "needles": [
+        {
+          "key": "LBWREMSUUUATV",
+          "value": "VQJ2KKSYUAHV4RDZULD7T",
+          "target_fraction": 0.035,
+          "line_start_token": 8905,
+          "line_end_token": 8946,
+          "actual_fraction": 0.035362560559129536,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LQNDKD53NV6N3",
+          "value": "VGI5NCSWNN3XT54QCKUZE",
+          "target_fraction": 0.245,
+          "line_start_token": 61750,
+          "line_end_token": 61794,
+          "actual_fraction": 0.24521483599396393,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LJDGUOX4TSC6U",
+          "value": "VBNMRCBRCOLODX4CBS2R4",
+          "target_fraction": 0.535,
+          "line_start_token": 134671,
+          "line_end_token": 134712,
+          "actual_fraction": 0.5347907235326821,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LFLDPQKNSQKR5",
+          "value": "VAXNOQCAWGZSOBPSMQFYY",
+          "target_fraction": 0.765,
+          "line_start_token": 192509,
+          "line_end_token": 192551,
+          "actual_fraction": 0.7644706536414899,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LGYDH2FNC2T7O",
+          "value": "VN2P6NSO7NX3W62O5MKJ2",
+          "target_fraction": 0.975,
+          "line_start_token": 245344,
+          "line_end_token": 245390,
+          "actual_fraction": 0.9742832181717099,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_2_multi_needle_252k",
+      "prompt_tokens": 251764,
+      "max_new": 512,
+      "token_sha256": "14a9250f194b808f0d4f32f10fadb1d7bc54f5240b4ef75c6793716bbca31c8f",
+      "expected_json": {
+        "LJQFBUHWRJ65T": "VGF4E43URCBVTR3WYEMYP",
+        "LR46NXHW3BY3N": "V5WKJYLZACFUR6NKN5KY3",
+        "LABZRQJFDLXPZ": "VAZBSDO6NQEXDB7UYC7DU",
+        "LSDIANKWSHKZJ": "VE4KG6HTVMKV3WHMYCGR3",
+        "LVJ4HSK2JGIAE": "VXRJXMXNWKE2LGCRUMXXV"
+      },
+      "needles": [
+        {
+          "key": "LVJ4HSK2JGIAE",
+          "value": "VXRJXMXNWKE2LGCRUMXXV",
+          "target_fraction": 0.035,
+          "line_start_token": 8925,
+          "line_end_token": 8967,
+          "actual_fraction": 0.03544986574728714,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LJQFBUHWRJ65T",
+          "value": "VGF4E43URCBVTR3WYEMYP",
+          "target_fraction": 0.245,
+          "line_start_token": 61750,
+          "line_end_token": 61795,
+          "actual_fraction": 0.24526937925994186,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LSDIANKWSHKZJ",
+          "value": "VE4KG6HTVMKV3WHMYCGR3",
+          "target_fraction": 0.535,
+          "line_start_token": 134687,
+          "line_end_token": 134726,
+          "actual_fraction": 0.5349732288969035,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LR46NXHW3BY3N",
+          "value": "V5WKJYLZACFUR6NKN5KY3",
+          "target_fraction": 0.765,
+          "line_start_token": 192510,
+          "line_end_token": 192553,
+          "actual_fraction": 0.7646446672280389,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LABZRQJFDLXPZ",
+          "value": "VAZBSDO6NQEXDB7UYC7DU",
+          "target_fraction": 0.975,
+          "line_start_token": 245348,
+          "line_end_token": 245388,
+          "actual_fraction": 0.9745158163994853,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_3_multi_needle_252k",
+      "prompt_tokens": 251835,
+      "max_new": 512,
+      "token_sha256": "a508812afffdd52b9d8bead73abd18da9955ee81ee7536ba62460a9820b9f68e",
+      "expected_json": {
+        "L6FLYSYHIHB4L": "VO4P6TYG2BQHFL3CZGHRP",
+        "LXCOTSV76SSIL": "VL5GPBTWWYXDEI4O247XW",
+        "LXJQROFG7PGDL": "VENOJS36B42ENN4X6EZK3",
+        "LS4VK7SXJ7LD7": "VX2VYK7C3RI5AJZCGD4S2",
+        "L65IHV3OABCCP": "V2F3C6EFVYEZW24GE4PF4"
+      },
+      "needles": [
+        {
+          "key": "LXCOTSV76SSIL",
+          "value": "VL5GPBTWWYXDEI4O247XW",
+          "target_fraction": 0.035,
+          "line_start_token": 8891,
+          "line_end_token": 8935,
+          "actual_fraction": 0.0353048623106399,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LS4VK7SXJ7LD7",
+          "value": "VX2VYK7C3RI5AJZCGD4S2",
+          "target_fraction": 0.245,
+          "line_start_token": 61740,
+          "line_end_token": 61786,
+          "actual_fraction": 0.2451605217702067,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LXJQROFG7PGDL",
+          "value": "VENOJS36B42ENN4X6EZK3",
+          "target_fraction": 0.535,
+          "line_start_token": 134692,
+          "line_end_token": 134734,
+          "actual_fraction": 0.5348422578275458,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L6FLYSYHIHB4L",
+          "value": "VO4P6TYG2BQHFL3CZGHRP",
+          "target_fraction": 0.765,
+          "line_start_token": 192534,
+          "line_end_token": 192579,
+          "actual_fraction": 0.7645243909702781,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L65IHV3OABCCP",
+          "value": "V2F3C6EFVYEZW24GE4PF4",
+          "target_fraction": 0.975,
+          "line_start_token": 245353,
+          "line_end_token": 245398,
+          "actual_fraction": 0.9742609248118808,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_4_multi_needle_252k",
+      "prompt_tokens": 251809,
+      "max_new": 512,
+      "token_sha256": "63529f80848b6055757fabe9ba26e7709d2e19332c5fa4d631c47f0136f6e366",
+      "expected_json": {
+        "LGBY7SYODN3TN": "VUGKVRFJU5WWECG7GC2KH",
+        "LRQH3N26PUI6B": "VGRKTAK5UGQEDZPFBXFZZ",
+        "LDQTDM6HUUMA7": "VRD2NMACEHJVEYDGMBCFI",
+        "LGWS6ODEGOII5": "VGOYBFOOBGQKGENHTECFC",
+        "LSJPJMYMYHI7U": "VEH24EJWAYH6NEA43VFVP"
+      },
+      "needles": [
+        {
+          "key": "LGBY7SYODN3TN",
+          "value": "VUGKVRFJU5WWECG7GC2KH",
+          "target_fraction": 0.035,
+          "line_start_token": 8909,
+          "line_end_token": 8950,
+          "actual_fraction": 0.03537999038954128,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LDQTDM6HUUMA7",
+          "value": "VRD2NMACEHJVEYDGMBCFI",
+          "target_fraction": 0.245,
+          "line_start_token": 61723,
+          "line_end_token": 61762,
+          "actual_fraction": 0.24511832380891865,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LRQH3N26PUI6B",
+          "value": "VGRKTAK5UGQEDZPFBXFZZ",
+          "target_fraction": 0.535,
+          "line_start_token": 134672,
+          "line_end_token": 134715,
+          "actual_fraction": 0.5348180565428559,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LGWS6ODEGOII5",
+          "value": "VGOYBFOOBGQKGENHTECFC",
+          "target_fraction": 0.765,
+          "line_start_token": 192550,
+          "line_end_token": 192591,
+          "actual_fraction": 0.7646668705248819,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LSJPJMYMYHI7U",
+          "value": "VEH24EJWAYH6NEA43VFVP",
+          "target_fraction": 0.975,
+          "line_start_token": 245371,
+          "line_end_token": 245414,
+          "actual_fraction": 0.9744330027917986,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_5_multi_needle_252k",
+      "prompt_tokens": 251816,
+      "max_new": 512,
+      "token_sha256": "5892616fab4f17fa86ad58d384e2253426dc30b64f0c631b6f5cb31cf1532b37",
+      "expected_json": {
+        "LZI65CSAWAVTM": "V7NVPF3VZZFWOO2TKENSC",
+        "LWWJS65XFMW2S": "VDCPXFUXKSQRN6CXFOKTI",
+        "LMZOLSCSSULKV": "VNTGW3I3MSQMR5ZZRPTRI",
+        "L4ZIP6CIGI7LN": "V6TYKKBCUSZFSQOUZJQVZ",
+        "LG63UUY6HBJXA": "VBDHX55PZZATHOHPDY3TS"
+      },
+      "needles": [
+        {
+          "key": "LG63UUY6HBJXA",
+          "value": "VBDHX55PZZATHOHPDY3TS",
+          "target_fraction": 0.035,
+          "line_start_token": 8900,
+          "line_end_token": 8941,
+          "actual_fraction": 0.03534326651205642,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LZI65CSAWAVTM",
+          "value": "V7NVPF3VZZFWOO2TKENSC",
+          "target_fraction": 0.245,
+          "line_start_token": 61743,
+          "line_end_token": 61784,
+          "actual_fraction": 0.2451909330622359,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L4ZIP6CIGI7LN",
+          "value": "V6TYKKBCUSZFSQOUZJQVZ",
+          "target_fraction": 0.535,
+          "line_start_token": 134683,
+          "line_end_token": 134727,
+          "actual_fraction": 0.5348468723194714,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LMZOLSCSSULKV",
+          "value": "VNTGW3I3MSQMR5ZZRPTRI",
+          "target_fraction": 0.765,
+          "line_start_token": 192562,
+          "line_end_token": 192601,
+          "actual_fraction": 0.7646932681005179,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LWWJS65XFMW2S",
+          "value": "VDCPXFUXKSQRN6CXFOKTI",
+          "target_fraction": 0.975,
+          "line_start_token": 245388,
+          "line_end_token": 245431,
+          "actual_fraction": 0.9744734250405057,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_6_multi_needle_252k",
+      "prompt_tokens": 251802,
+      "max_new": 512,
+      "token_sha256": "44b1354b7aba251fff65b69492397c68c1c99c9a3a2894a71850b310f0ad56b7",
+      "expected_json": {
+        "LOSY43M5JBID5": "V5KWCI7T2BRQI7ZGCOD4X",
+        "L633AHGLXSEYH": "VXCSCZ45ADVLSMURLC5FY",
+        "LQG6IVJ7MB37V": "VLF73OYSMVNGTI325AE7X",
+        "LQYINXYWABALJ": "VR47DNWBOGHRQFRGECZUK",
+        "L52BD5FJLV77Q": "VYJD66VLNSEJIYUX2SXVQ"
+      },
+      "needles": [
+        {
+          "key": "L633AHGLXSEYH",
+          "value": "VXCSCZ45ADVLSMURLC5FY",
+          "target_fraction": 0.035,
+          "line_start_token": 8929,
+          "line_end_token": 8972,
+          "actual_fraction": 0.035460401426517664,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LOSY43M5JBID5",
+          "value": "V5KWCI7T2BRQI7ZGCOD4X",
+          "target_fraction": 0.245,
+          "line_start_token": 61727,
+          "line_end_token": 61771,
+          "actual_fraction": 0.2451410235025933,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LQYINXYWABALJ",
+          "value": "VR47DNWBOGHRQFRGECZUK",
+          "target_fraction": 0.535,
+          "line_start_token": 134680,
+          "line_end_token": 134722,
+          "actual_fraction": 0.5348646952764474,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "L52BD5FJLV77Q",
+          "value": "VYJD66VLNSEJIYUX2SXVQ",
+          "target_fraction": 0.765,
+          "line_start_token": 192508,
+          "line_end_token": 192552,
+          "actual_fraction": 0.7645213302515469,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LQG6IVJ7MB37V",
+          "value": "VLF73OYSMVNGTI325AE7X",
+          "target_fraction": 0.975,
+          "line_start_token": 245335,
+          "line_end_token": 245380,
+          "actual_fraction": 0.9743171221833028,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    },
+    {
+      "id": "deep_slot_7_multi_needle_252k",
+      "prompt_tokens": 251818,
+      "max_new": 512,
+      "token_sha256": "990924aba21bc5c78771e9097c077bcb1d471aa08e46936b8001432642b21077",
+      "expected_json": {
+        "LGXC2SM6A23DB": "VKH6ARXMDZFZDG7HXPSUI",
+        "LBRJZIPVLAFP5": "V3N2OT6YDWOJLCM3YCLLE",
+        "LARYKACWQJNJR": "VYJOH3UADF3YDHCQMY7ZP",
+        "LLMJFEXV2MQQM": "VZ54UEIJ2ORA3PDX53DGB",
+        "LQFZPF7RYLSSS": "VF5YIBSFNF6SCCIOHZBI7"
+      },
+      "needles": [
+        {
+          "key": "LGXC2SM6A23DB",
+          "value": "VKH6ARXMDZFZDG7HXPSUI",
+          "target_fraction": 0.035,
+          "line_start_token": 8926,
+          "line_end_token": 8968,
+          "actual_fraction": 0.03544623497923103,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LLMJFEXV2MQQM",
+          "value": "VZ54UEIJ2ORA3PDX53DGB",
+          "target_fraction": 0.245,
+          "line_start_token": 61742,
+          "line_end_token": 61785,
+          "actual_fraction": 0.24518501457401776,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LARYKACWQJNJR",
+          "value": "VYJOH3UADF3YDHCQMY7ZP",
+          "target_fraction": 0.535,
+          "line_start_token": 134692,
+          "line_end_token": 134737,
+          "actual_fraction": 0.5348783645331152,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LBRJZIPVLAFP5",
+          "value": "V3N2OT6YDWOJLCM3YCLLE",
+          "target_fraction": 0.765,
+          "line_start_token": 192564,
+          "line_end_token": 192606,
+          "actual_fraction": 0.7646951369639978,
+          "value_occurrences_in_prompt": 1
+        },
+        {
+          "key": "LQFZPF7RYLSSS",
+          "value": "VF5YIBSFNF6SCCIOHZBI7",
+          "target_fraction": 0.975,
+          "line_start_token": 245391,
+          "line_end_token": 245432,
+          "actual_fraction": 0.9744775989007934,
+          "value_occurrences_in_prompt": 1
+        }
+      ]
+    }
+  ]
+}

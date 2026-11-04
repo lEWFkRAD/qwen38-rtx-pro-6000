@@ -1,0 +1,40 @@
+{
+  "status": "exact_earlier_source_recovered_by_sha256",
+  "recorded_earlier_sha256": "77b810ea2d830dfe7cb76871d24a824b0b13a78082eadbc68786b8d9a3e1863a",
+  "recovered_source": "preflight_guard-running-77b810ea.py",
+  "verified_recovered_sha256": "77b810ea2d830dfe7cb76871d24a824b0b13a78082eadbc68786b8d9a3e1863a",
+  "current_final_source": "preflight_guard.py",
+  "current_final_sha256": "3011d627633691e0567507d7fe497d929d30a6a0050eb6f4f391cecc9b85bf84",
+  "earlier_variant_flags": {
+    "earlier_user_unit_query": false,
+    "earlier_without_explicit_native_vision_hash_verification": false,
+    "earlier_compact_error_text": true
+  },
+  "evidence_scope": "Read-only local source reconstruction; neither source version executed, no GPU/API calls.",
+  "timing": {
+    "running_arm": "native-r1",
+    "recorded_start_utc": "2026-11-04T00:44Z (root-provided)",
+    "plan_recorded_guard_sha256": "77b810ea2d830dfe7cb76871d24a824b0b13a78082eadbc68786b8d9a3e1863a",
+    "final_helper_hash_announced_after_final_preflight_readiness": "3011d627633691e0567507d7fe497d929d30a6a0050eb6f4f391cecc9b85bf84",
+    "exact_intermediate_edit_wall_times_not_recorded": true
+  },
+  "deltas": [
+    {
+      "field": "memory refusal text",
+      "earlier": [
+        "below4GiB",
+        "less than80000MiB"
+      ],
+      "final": [
+        "below 4 GiB",
+        "less than 80000 MiB"
+      ],
+      "effect": "Text only; thresholds unchanged."
+    }
+  ],
+  "unchanged_files": [
+    "preflight_guard.py",
+    "native-r1/plan.json"
+  ],
+  "no_requalification_claim": "Recovered provenance explains the source identity; it does not rewrite or upgrade the running arm evidence."
+}

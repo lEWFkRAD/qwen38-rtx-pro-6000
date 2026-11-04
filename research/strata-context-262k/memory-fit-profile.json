@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "name": "context262k-eight-prefill 8192-memory-fit",
+  "engine_version": "0.1.56",
+  "engine_source_commit": "06698c674673008395ba6e971580538d6b1ea6e0",
+  "engine_sha256": "21cb8dd0c744c84176a019ef3cfebd27997968f211b197429df897cc6af92788",
+  "parallel": 8,
+  "arg_overrides": {
+    "--max-context": "262144",
+    "--kv-resident": "262144",
+    "--prefill": "8192"
+  },
+  "env": {},
+  "environment_policy": "No environment overrides; retain the already promoted fused_prefill environment and decode share 0.75 unchanged.",
+  "retained_policy": {
+    "API_wrapper": "retained 0.1.42",
+    "KV": "ordinary fully resident INT8",
+    "required_resident_experts": 24576,
+    "model_pack_tokenizer_MTP_projector_and_control_vector": "unchanged",
+    "control_vector": "scale 1.0; layers 4-44; project; per-layer",
+    "MTP": "spec 6; spec-min-p 0.5; prompt lookup unchanged",
+    "vision_and_CUDA_libraries": "same matched official 0.1.56 bundle",
+    "LSA": false,
+    "model_weight_training": false
+  },
+  "qualification": {
+    "scope": "limited measured memory-fit, native exact per-slot retrieval/reuse/recovery, API features and single 259999-token retrieval",
+    "native_eight_slots_prefill 8192": "passed all recorded infrastructure and exact quality checks; native peak live decodes 1",
+    "API_full_residency_and_matched_vision": "passed at 24576 resident experts",
+    "API_six_normal_feature_and_long_retrieval_checks": "passed in api8-r2",
+    "eight_simultaneous_deep_decoding": "not_qualified",
+    "maximum_API_decoders_observed": 4,
+    "failure_records": [
+      "api8-r1: prefill 16384 rejected 24007 vs 24576 experts before features",
+      "api8-r2: deep load rejected unsupported batch logit_bias before inference",
+      "api8-r3: peak 4 decoders; early natural EOS before eight-way overlap",
+      "api8-r4: eight one-token priming requests completed, peak 2 decoders; bounded reserve expired without eight-way observation"
+    ],
+    "claim_limit": "Memory fit and finite retrieval/features success do not establish general quality or full eight-deep concurrent generation."
+  },
+  "user_authorized_promotion": true,
+  "authorization_scope": "User explicitly requested this 262K configuration become production after the bounded test outcomes were reported.",
+  "production_promotion_status": "deployed; normal managed readiness, 19/19 independent audit checks and 7/7 production canaries passed; see deployment-summary-public.json",
+  "service_or_policy_mutations_by_profile_export": false,
+  "deployment_summary": "deployment-summary-public.json"
+}

@@ -1,0 +1,48 @@
+{
+  "service_or_configuration_actions_performed": 0,
+  "kind": "independent read-only live262 promotion audit",
+  "status": "passed",
+  "at": "2026-11-04T01:53:19.283494+00:00",
+  "checks": {
+    "five_approved_hashes_match": true,
+    "strict_context_contract262144x8": true,
+    "actual_full_resident_int8_capacity": true,
+    "retained_native_mtp_control_vector": true,
+    "wrapper_source_unchanged": true,
+    "only_three_requested_argument_changes": true,
+    "model_profile_environment_unchanged": true,
+    "same_official_engine_vision_libraries": true,
+    "all_personal_baseline_pins_match": true,
+    "personal_primary_and_helper_pins_updated": true,
+    "personal_model_settings_unchanged": true,
+    "normal_gate_and_identity_bound_receipt": true,
+    "advertised_context_and_vision": true,
+    "old_attempts_retained_plus_one_legal_start": true,
+    "healthy_recovery_without_hold_or_capacity_latch": true,
+    "private_credentials_removed_gpu_only_managed": true,
+    "negative_eight_deep_qualification_preserved": true,
+    "no_lsa": true,
+    "sunshine_stays_off_enabled_unchanged": true
+  },
+  "completion_requests_sent": 0,
+  "candidate_private_files_remaining": [],
+  "scope_limit": "Eight-deep sustained generation remains unqualified; operator promotion does not change that evidence.",
+  "capacity": {
+    "context": 262144,
+    "batch_slots": 8,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 24576,
+    "prefill_cap": 8192,
+    "engine": "0.1.56",
+    "spec": 8,
+    "mtp_max": 6,
+    "lookup": 3,
+    "cvec": "project:4-44"
+  },
+  "sunshine_user_unit": {
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "UnitFileState": "enabled"
+  }
+}

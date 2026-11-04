@@ -1,0 +1,112 @@
+262144-token context experiment — production promoted; test limits preserved
+
+This package records an isolated capacity/quality experiment with the already
+qualified official stock Strata 0.1.56 engine and retained 0.1.42 API wrapper.
+Research tests are complete; no weights were trained. After the limitations were
+reported, the user explicitly authorized the memory-fit 262K configuration for
+production. That separate root-owned promotion is complete with normal readiness, 19/19
+independent checks and 7/7 production canaries passed. Authorization/deployment
+does not relabel any failed test.
+
+The bounded native profiles are 4 slots/prefill 32768, 8 slots/prefill 16384 and
+8 slots/prefill 8192,
+all requesting 262144 context and resident INT8, all 24576 experts, the existing
+IQ3_S/control-vector/MTP assets and selected fused serving settings. Limits and
+failure observations must remain explicit. Startup allocation is distinct from
+long-prompt correctness, slot isolation and sustained concurrent decoding.
+
+Full frozen synthetic inputs are published as deterministic gzip JSON (mtime 0),
+with original/published/decompressed hashes. The first document is 259999 tokens
+with an opaque tail value at 256019. Eight other independent documents are about
+252K tokens with five unique requested seals each, including positions beyond the
+old 131072 boundary. Expected JSON is parsed independently from literal records.
+Values occur once in their own prompt and never in another slot's document.
+The preliminary two-case artifact is retained as a superseded preparation draft.
+
+Completed native-r1 4-slot/prefill 32768 outcome: PASSED infrastructure and every
+exact quality check. Completed native-r1 8-slot/prefill 16384 outcome: PASSED the
+same gates. Every assigned slot read a distinct ~252K document with no reused
+tokens and returned its exact five-value JSON. Each arm also passed a fresh
+259999-token tail retrieval, accepted-prefix continuation and short recovery.
+Observed peak live native decodes was 1 in BOTH arms, rather than 4/8 concurrent
+generations. Sampled minimum free GPU memory was 12746 MiB (4 slots) and 2333 MiB
+(8 slots/prefill 16384); host available memory remained above 20 GiB.
+
+Completed API8-r1/prefill 16384 outcome: REJECTED before feature cases. The full
+wrapper/vision configuration allocated 24007 resident experts versus the required
+24576. The strict gate caught that 569-expert shortfall; it is not relabeled as a
+full-residency pass or a model-quality failure. Zero feature cases ran, and owned
+process cleanup plus private credential removal passed. Native-only success does
+not qualify the full API configuration. Evidence: INDEPENDENT-R1-AUDIT.json and
+the preserved failed api8-r1 report/wrapper logs.
+
+Completed native-r2 8-slot/prefill 8192 outcome: PASSED every infrastructure and
+exact quality gate with all 24576 experts. The 259999-token cold request took
+36.442 seconds, the continuation reused 259992 tokens, and all eight distinct
+~252K five-fact documents passed. Sampled minimum free GPU memory was 4598 MiB;
+observed peak live native decodes remained 1. This refines the memory margin, not
+the scope of concurrency evidence.
+
+API8-r2 with the matched 8-slot/prefill 8192 profile passed all six normal checks,
+including the full 259999-token API prompt (27 completion tokens), image input
+and all 24576 resident experts. Its separate deep-load attempt failed before
+inference because the retained batching API rejected requested logit_bias with
+HTTP 400. That is a collector/request incompatibility, not a memory failure.
+Exact archived r2 sources and failed receipts are preserved.
+
+API8-r3 removed EOS bias and used normal EOS. It observed eight active full-prompt
+requests but only four decoding together. One stream ended normally before all
+eight were loaded, so eight-way overlap was inconclusive. Owned processes were
+cleaned up. The exact r3 helper and failed attempt remain preserved; this is not
+relabeled as an eight-decoder pass.
+
+Final API8-r4 completed eight sequential full-prompt requests with max_tokens=1,
+then attempted eight concurrent long streams with normal EOS and no suppression.
+The priming requests are not proof of eight retained/preloaded slot histories.
+Peak active/running was eight, but peak decoding was two. The bounded observation
+expired before its drain reserve; eight-deep overlap and its required leading-JSON,
+normal cancellation/drain/recovery gate were not qualified. Process-group cleanup
+and private credential removal passed. This is not a diagnosed memory failure.
+
+Overall: memory fit, finite native retrieval/reuse and normal API features passed
+at 8 slots/prefill 8192 with all 24576 experts and vision. Every overall API load
+attempt remains failed; full eight-deep decoding is NOT qualified. Maximum API
+decoding observed was four in r3. Minimum sampled free GPU memory in the 8K API
+attempts was 2876/2953/2956 MiB. No general quality, arbitrary concurrency or exact
+last-token-boundary claim follows from these observations.
+
+After testing, the prior 131072 production policy was successfully restored via
+normal managed readiness. The user then explicitly instructed promotion of the
+262144/8-slot/prefill 8192 memory-fit profile, retaining the fused environment.
+The concrete three-argument export is memory-fit-profile.json. Production is now 262144x8/prefill 8192 with normal readiness, 19/19 independent
+checks and 7/7 production canaries passed. Sunshine remains stopped/enabled.
+Active Hermes client context metadata also matches 262144; its six-byte update
+retained ACLs, changed no other defaults and required no restart. The earlier
+131K restoration was intermediate; deployment-summary-public.json records the
+final outcome. Full eight-deep decoding remains NOT qualified.
+
+Short JSON answers can finish before later large admissions. A report of every
+allocated slot being individually filled is not automatically evidence of all
+slots decoding simultaneously or every deep history being independently reusable.
+Use the observed peak/lifecycle and any actual reuse/isolation checks.
+
+The measured native plan identifies guard source 77b810ea2d830dfe7cb76871d24a824b0b13a78082eadbc68786b8d9a3e1863a.
+Its recovered exact source is retained alongside final 3011d627633691e0567507d7fe497d929d30a6a0050eb6f4f391cecc9b85bf84.
+Only two refusal-message spacing strings differ; thresholds and control flow are
+unchanged. Public copies have separate hashes after role-path/owner redaction.
+This does not rewrite the running evidence to claim a different source revision.
+
+The portable guard code requires the reader's own private baseline and ownership
+adapter. Actual configurations, credentials, private snapshots, live process IDs,
+personal recovery pins and unrelated operational history are intentionally absent.
+Dependencies/model terms and prior stock qualification are separate; no new
+blanket model/output license is granted by benchmark source publication.
+
+A later credential-only configuration edit caused a restart integrity failure,
+not a 262K memory failure. The user explicitly authorized approval of an additive
+compatibility credential and one manual start before the automatic window.
+Managed readiness and an exact canary passed on November 4 at 02:27:10.620721 UTC.
+A new 19/19 recovery audit, authentication checks and remote exact completion
+passed separately from the original promotion's historical 19/19 and 7/7 results.
+Automatic recovery policy and prior attempt history were unchanged; Sunshine
+remained stopped. See outage-20261104/INCIDENT.md and its safe recovery summary.

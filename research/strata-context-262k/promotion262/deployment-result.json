@@ -1,0 +1,14 @@
+{
+  "rollback_server_and_helper_saved": true,
+  "state_history_modified": false,
+  "version": 1,
+  "runtime_wrapper_changed": false,
+  "context": 262144,
+  "at": "2026-11-04T01:45:40.733000+00:00",
+  "status": "deployed_static_verified_owned_HOLD_retained",
+  "unit_changed": false,
+  "prefill": 8192,
+  "Sunshine_modified": false,
+  "eight_deep_simultaneous_generation_qualified": false,
+  "slots": 8
+}
