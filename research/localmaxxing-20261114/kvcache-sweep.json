@@ -1,0 +1,142 @@
+{
+  "createdAt": "2026-11-15T00:51:41Z",
+  "engineName": "strata",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "Qwen/Qwen3.8-Flash-Next",
+  "kind": "kvcache_context_sweep",
+  "levels": [
+    40000
+  ],
+  "mode": "remote",
+  "modelRevision": "main",
+  "points": [
+    {
+      "baseUrl": "http://127.0.0.1:8002",
+      "cacheReuse": {
+        "cachedTokens": 40041,
+        "promptTokens": 40060,
+        "source": "timed_request",
+        "status": "partial",
+        "timings": {
+          "cache_n": 40041,
+          "draft_n": 5,
+          "draft_n_accepted": 2,
+          "predicted_ms": 23.6,
+          "predicted_n": 4,
+          "predicted_per_second": 169.5,
+          "predicted_per_token_ms": 5.9,
+          "prompt_ms": 170.9,
+          "prompt_n": 19,
+          "prompt_per_second": 111.2,
+          "prompt_per_token_ms": 8.995
+        },
+        "uncachedTokens": 19,
+        "usage": {
+          "completion_tokens": 4,
+          "prompt_tokens": 40060,
+          "prompt_tokens_details": {
+            "cached_tokens": 40041
+          },
+          "total_tokens": 40064
+        }
+      },
+      "contextTokenSource": "python_transformers_exact_filler",
+      "contextTokens": 40000,
+      "methodology": "Two-step remote probe: pre-warm a prefix, then time a streaming request; timed-request counters verify reuse. cachedTokens and uncachedTokens describe the actual timed prompt, not nominal context coverage.",
+      "metricSource": "remote_endpoint",
+      "mode": "remote",
+      "modelResolution": {
+        "candidates": [
+          {
+            "benchmarkCount": 534,
+            "displayName": "Qwen3.8-Flash-Next",
+            "family": "Qwen",
+            "hfId": "Qwen/Qwen3.8-Flash-Next",
+            "params": 180
+          },
+          {
+            "benchmarkCount": 85,
+            "displayName": "Qwen3.8-Flash-Next-GGUF",
+            "family": "Qwen",
+            "hfId": "unsloth/Qwen3.8-Flash-Next-GGUF",
+            "params": 180
+          },
+          {
+            "benchmarkCount": 41,
+            "displayName": "Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+            "family": "Qwen",
+            "hfId": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+            "params": 180
+          },
+          {
+            "benchmarkCount": 28,
+            "displayName": "Qwen3.8-Flash-Next-W4A16",
+            "family": "Qwen",
+            "hfId": "devan-carlin/Qwen3.8-Flash-Next-W4A16",
+            "params": 180
+          },
+          {
+            "benchmarkCount": 27,
+            "displayName": "Qwen3.8-Flash-Next-NVFP4",
+            "family": "Qwen",
+            "hfId": "nvidia/Qwen3.8-Flash-Next-NVFP4",
+            "params": 180
+          }
+        ],
+        "declaredBaseModel": "Qwen/Qwen3.8-Flash-Next",
+        "hfId": "Qwen/Qwen3.8-Flash-Next",
+        "loadedFilename": "Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "searchCommand": "lmx model search qwen3.8-flash-next",
+        "searchQuery": "qwen3.8-flash-next",
+        "searchQuerySource": "served_model",
+        "servedModel": "qwen3.8-flash-next",
+        "servedModelSource": "explicit",
+        "sourceRepo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+        "sourceRepoMatch": "exact_filename",
+        "status": "source_repo_detected"
+      },
+      "outputText": "Benchmark complete.",
+      "outputTokens": 4,
+      "promptTokens": 40060,
+      "quantizationResolution": {
+        "cli": "IQ3_S",
+        "filename": "IQ3_S",
+        "modelPath": "/home/jeffrey-watts/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "status": "matched",
+        "trusted": "IQ3_S",
+        "trustedSource": "filename"
+      },
+      "servedModel": "qwen3.8-flash-next",
+      "servedModelSource": "explicit",
+      "timingSource": "client_observed_http",
+      "tokSOut": 173.6,
+      "tokSOutSource": "inter_token",
+      "tokSPrefill": 95.3,
+      "tokSPrefillSource": "estimated_from_ttft_uncached",
+      "tokSTotal": 184496.5,
+      "ttftMs": 199.44,
+      "usagePromptTokens": 40060
+    }
+  ],
+  "quantization": "IQ3_S",
+  "savedRuns": [
+    "runs/Qwen-Qwen3.8-Flash-Next/kvcache-40000-20261115T005141Z.json"
+  ]
+}

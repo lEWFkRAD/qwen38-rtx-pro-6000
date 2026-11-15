@@ -1,0 +1,239 @@
+{
+  "agentFeedback": {
+    "benchmarkStatus": "completed",
+    "canApiValidate": true,
+    "canSubmit": true,
+    "engine": "strata",
+    "message": "Speed-test payload is ready for API validation.",
+    "mode": "remote",
+    "nextCommand": "lmx speed-test dry-run runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/verified-reasoning-v1.json",
+    "outputPath": "runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/verified-reasoning-v1.json",
+    "outputPathAbsolute": "/home/jeffrey-watts/.hermes/cache/scratch/runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/verified-reasoning-v1.json",
+    "requiresMetrics": false,
+    "runPersisted": true,
+    "savedRunPath": "runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/20261115T003659Z.json",
+    "savedRunPathAbsolute": "/home/jeffrey-watts/.hermes/cache/scratch/runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/20261115T003659Z.json",
+    "savedRunPathRelative": "runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/20261115T003659Z.json",
+    "status": "ready_for_api_validation",
+    "submissionId": "cmwh3wrkd025kmi01y242olak",
+    "submissionStatus": "approved",
+    "submitCommand": "lmx speed-test submit runs/ISTA-DASLab-Qwen3.8-Flash-Next-GSQ-RCO-GGUF/verified-reasoning-v1.json"
+  },
+  "batchSize": 1,
+  "benchmarkMode": "remote",
+  "detectedEngines": [],
+  "engineFlags": {
+    "baseUrl": "http://127.0.0.1:8002",
+    "canonicalPromptId": "reasoning-v1",
+    "concurrency": 1,
+    "iterations": 3,
+    "maxTokens": 256,
+    "mode": "remote",
+    "prefixCacheBust": "leading_nonce_per_request",
+    "promptFile": "",
+    "promptSource": "canonical:reasoning-v1",
+    "servedModel": "qwen3.8-flash-next",
+    "servedModelSource": "explicit",
+    "specAcceptanceRate": 0.7106,
+    "specAcceptedTokens": 194,
+    "specDecoding": true,
+    "specDraftTokens": 273,
+    "stream": true,
+    "timeoutSeconds": 600,
+    "warmup": 1
+  },
+  "engineName": "strata",
+  "engineRepository": "https://github.com/Niko1221/Strata",
+  "engineTimingsRaw": {
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 275,
+      "draft_n_accepted": 195,
+      "predicted_ms": 622.6,
+      "predicted_n": 256,
+      "predicted_per_second": 411.2,
+      "predicted_per_token_ms": 2.432,
+      "prompt_ms": 188.7,
+      "prompt_n": 303,
+      "prompt_per_second": 1605.7,
+      "prompt_per_token_ms": 0.623
+    },
+    "usage": {
+      "completion_tokens": 256,
+      "prompt_tokens": 303,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 559
+    }
+  },
+  "engineVersion": "0.1.56",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+  "id": "cmwh3wrkd025kmi01y242olak",
+  "metricSource": "remote_endpoint",
+  "modelResolution": {
+    "candidates": [
+      {
+        "benchmarkCount": 534,
+        "displayName": "Qwen3.8-Flash-Next",
+        "family": "Qwen",
+        "hfId": "Qwen/Qwen3.8-Flash-Next",
+        "params": 180
+      },
+      {
+        "benchmarkCount": 85,
+        "displayName": "Qwen3.8-Flash-Next-GGUF",
+        "family": "Qwen",
+        "hfId": "unsloth/Qwen3.8-Flash-Next-GGUF",
+        "params": 180
+      },
+      {
+        "benchmarkCount": 38,
+        "displayName": "Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+        "family": "Qwen",
+        "hfId": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+        "params": 180
+      },
+      {
+        "benchmarkCount": 28,
+        "displayName": "Qwen3.8-Flash-Next-W4A16",
+        "family": "Qwen",
+        "hfId": "devan-carlin/Qwen3.8-Flash-Next-W4A16",
+        "params": 180
+      },
+      {
+        "benchmarkCount": 27,
+        "displayName": "Qwen3.8-Flash-Next-NVFP4",
+        "family": "Qwen",
+        "hfId": "nvidia/Qwen3.8-Flash-Next-NVFP4",
+        "params": 180
+      }
+    ],
+    "declaredBaseModel": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+    "hfId": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+    "loadedFilename": "Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "searchCommand": "lmx model search qwen3.8-flash-next",
+    "searchQuery": "qwen3.8-flash-next",
+    "searchQuerySource": "served_model",
+    "servedModel": "qwen3.8-flash-next",
+    "servedModelSource": "explicit",
+    "sourceRepo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+    "sourceRepoMatch": "exact_filename",
+    "status": "source_repo_detected"
+  },
+  "modelRevision": "main",
+  "outputSample": "### Part 1: Budget Calculation\n\nTo determine how many batteries the club can buy and the remaining funds, we must first calculate the total cost of the mandatory components and then determine how the remaining budget applies to the batteries.\n\n**Step 1: Calculate the cost of mandatory components.**\n*   **Motor Drivers:** 7 members × $18.50 = $129.50\n*   **Microcontrollers:** 7 members × $23.75 = $166.25\n*   **Shared 3D-printer spool:** $27.90\n\nTotal cost for mandatory items:\n$$129.50 + 166.25 + 27.90 = 323.65$$\n\n**Step 2: Calculate the remaining budget.**\n*   Total Budget: $412.00\n*   Cost of mandatory items: $323.65\n\nRemaining budget:\n$$412.00 - 323.65 = 88.35$$\n\n**Step 3: Determine the number of batteries and leftover money.**\n*   Battery price: $6",
+  "outputSha256": "d854bd8c223ddc5f9396c63e49fddda4b4fed4fb4fc1781a35c1c3da5a6a7f38",
+  "outputText": "### Part 1: Budget Calculation\n\nTo determine how many batteries the club can buy and the remaining funds, we must first calculate the total cost of the mandatory components and then determine how the remaining budget applies to the batteries.\n\n**Step 1: Calculate the cost of mandatory components.**\n*   **Motor Drivers:** 7 members × $18.50 = $129.50\n*   **Microcontrollers:** 7 members × $23.75 = $166.25\n*   **Shared 3D-printer spool:** $27.90\n\nTotal cost for mandatory items:\n$$129.50 + 166.25 + 27.90 = 323.65$$\n\n**Step 2: Calculate the remaining budget.**\n*   Total Budget: $412.00\n*   Cost of mandatory items: $323.65\n\nRemaining budget:\n$$412.00 - 323.65 = 88.35$$\n\n**Step 3: Determine the number of batteries and leftover money.**\n*   Battery price: $6",
+  "outputTokens": 256,
+  "prefillTokens": 0,
+  "prompt": "You are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+  "promptSample": "[LocalMaxxing cache-bust nonce: a8a3e547a2ae9b8dbabeee6ee1228d9b]\nYou are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+  "promptSha256": "9000edaadb16fc77ab78b39917245a03d4d7585c3ba770cb045a47a0e0683445",
+  "promptTokens": 304,
+  "provenance": {
+    "benchmarkMode": "remote",
+    "cli": "localmaxxing-go",
+    "createdAt": "2026-11-15T00:36:59Z",
+    "metricSource": "remote_endpoint",
+    "timingSource": "client_observed_http",
+    "ttftSource": "stream_first_token"
+  },
+  "quantization": "IQ3_S",
+  "quantizationResolution": {
+    "cli": "IQ3_S",
+    "filename": "IQ3_S",
+    "modelPath": "/home/jeffrey-watts/model-tests/strata-20261005/model/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "status": "matched",
+    "trusted": "IQ3_S",
+    "trustedSource": "filename"
+  },
+  "sampleStats": {
+    "tokSOut": {
+      "count": 3,
+      "max": 415.8,
+      "mean": 411.63,
+      "min": 405.7,
+      "p50": 413.4,
+      "stddev": 5.28
+    },
+    "tokSTotal": {
+      "count": 3,
+      "max": 701.4,
+      "mean": 689.4,
+      "min": 681.8,
+      "p50": 685,
+      "stddev": 10.51
+    },
+    "ttftMs": {
+      "count": 3,
+      "max": 199.02,
+      "mean": 193.98,
+      "min": 190.38,
+      "p50": 192.54,
+      "stddev": 4.49
+    }
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "outputTokens": 256,
+      "promptTokens": 308,
+      "request": 1,
+      "tokSOut": 415.8,
+      "tokSPrefill": 1617.8,
+      "ttftMs": 190.38
+    },
+    {
+      "iteration": 2,
+      "outputTokens": 256,
+      "promptTokens": 304,
+      "request": 1,
+      "tokSOut": 405.7,
+      "tokSPrefill": 1578.9,
+      "ttftMs": 192.54
+    },
+    {
+      "iteration": 3,
+      "outputTokens": 256,
+      "promptTokens": 303,
+      "request": 1,
+      "tokSOut": 413.4,
+      "tokSPrefill": 1522.5,
+      "ttftMs": 199.02
+    }
+  ],
+  "submissionId": "cmwh3wrkd025kmi01y242olak",
+  "submissionStatus": "approved",
+  "submittedAt": "2026-11-15T00:38:57.421Z",
+  "timingSource": "client_observed_http",
+  "tokSOut": 413.4,
+  "tokSOutSource": "inter_token",
+  "tokSPrefill": 1578.9,
+  "tokSPrefillSource": "estimated_from_ttft",
+  "tokSTotal": 685,
+  "tokenSources": {
+    "output": "endpoint_usage",
+    "prompt": "endpoint_usage"
+  },
+  "ttftMs": 192.54,
+  "ttftSource": "stream_first_token"
+}

@@ -14,6 +14,21 @@ receipts for running large Qwen3.8 models and related inference experiments on o
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
 
+<!-- localmaxxing-leaderboard:start -->
+## November 14 — localmaxxing.com leaderboard, rank 1 and 2 of 806
+
+Two Verified speed-test submissions hold the top two published runs for
+Qwen3.8-Flash-Next: 414.6 tokens/s with the DFlash2 drafter and 413.4 tokens/s
+plain, canonical prompt, measured against the live production endpoint with no
+restart. A KV-cache sweep shows 99.95% prompt-token reuse at every context
+length from 10K to 80K, with TTFT under 474 ms at 80K. The next published
+Strata IQ3_S entry is 161.1 tokens/s on a multi-GPU rig.
+[Results, receipts and the published report](research/localmaxxing-20261114/RESULTS.md).
+The same evidence is upstream as discovery evidence in
+[Turbofit PR #83](https://github.com/SouthpawIN/turbofit/pull/83).
+<!-- localmaxxing-leaderboard:end -->
+
+
 <!-- strata-context-262k:start -->
 ## November 3 — 262K production context
 
