@@ -31,6 +31,12 @@ Each trial fired N identical 256-token completions simultaneously and awaited al
 
 The trials above ran directly against the production endpoint with engine-reported `usage` counters. Script and captured responses: see `batch-concurrency-20261115.json` alongside this file.
 
+## On the leaderboard (2026-11-15)
+
+The c12 measurement is now a public run: [cmwhar7th026cmi01gv4pf586](https://www.localmaxxing.com/en/speed-tests/cmwhar7th026cmi01gv4pf586), recorded with batchSize 12 / concurrency 12 in its engine flags, tokSOut 367.7. It is unverified by design: the site's Verified badge requires batch=1, concurrency=1, and a canonical prompt, so no concurrency run can ever be Verified. It is the only entry on this model's board carrying concurrency metadata.
+
+The full sustained-decode matrix (1/4/8/12 at 0 and 16K context, plus 8K-128K prefill scouts) was also measured with lmx's llm-decode-bench v0.7.7; the site's matrix leaderboard accepts only vLLM and SGLang engines, so that grid lives here as `matrix-20261115T034051Z.bench.json` instead. Sustained aggregate decode rose from 378.6 tok/s at concurrency 1 to 524.0 at concurrency 8 (497.8 at 16K context); the concurrency-12 cells were skipped by the bench (engine admitted 0 of 12 during its warmup window). Cold prefill measured 7,221 to 8,233 tok/s from 8K to 128K context.
+
 ## Limits
 
 - Two trials per level, no interleaved prefill load. The 4-stream dip to 285-327 tok/s is within run-to-run variance for this engine and should not be read as a scheduling cliff.
