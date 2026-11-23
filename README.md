@@ -14,6 +14,20 @@ receipts for running large Qwen3.8 models and related inference experiments on o
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
 
+<!-- inkling2-mini-vllm:start -->
+## November 21 — Inkling 2 Mini on one RTX PRO 6000 (vLLM)
+
+Inkling 2 Mini (NVFP4 + DSpark, 262K max context) via vLLM, reproduced on
+the single-96GB Blackwell. C1 mean 246.0 tok/s (code 372.4 / agent 230.6 /
+list 224.7 / prose 156.5), C4 aggregate 274.5 tok/s, C8 aggregate ~429 tok/s,
+cold prefill ~21.8K tok/s at 22K prompt, tool calls 5/5. FP8 KV is required
+for 262K on one 96 GB card. Sweep: S7-prob-CG128 winner (accept 3.14),
+S7-prob recommended default (accept 2.76); spec 0 baseline is 167.7 tok/s C1.
+The same evidence is upstream as a profile in
+[Turbofit PR #118](https://github.com/SouthpawIN/turbofit/pull/118).
+[Results, receipt and copyable profile](research/inkling2-mini-vllm/RESULTS.md).
+<!-- inkling2-mini-vllm:end -->
+
 <!-- localmaxxing-leaderboard:start -->
 ## November 14 — localmaxxing.com leaderboard, rank 1 and 2 of 806
 
