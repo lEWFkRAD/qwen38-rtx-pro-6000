@@ -14,6 +14,23 @@ receipts for running large Qwen3.8 models and related inference experiments on o
 NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
 
 
+<!-- inkling2-mini-basalt-20261127:start -->
+## November 27 — Inkling 2 Mini on one RTX PRO 6000 (Basalt 12×262K, bit-exact turbo)
+
+Promoted a bit-exact optimized Basalt build (`pinned-20261127-turbo`) serving
+Inkling 2 Mini (`NVFP4` + `Q8_0` + `DSpark` spec 8) with 12 resident
+262,144-token FP8-KV slots on one 96 GB Blackwell. Isolated `fixed_cn.py` A/B
+against `pinned-20261127-graphfix`: **394.9 tok/s** C1 (`+1.2%`), **481.7 tok/s**
+C4 (`+6.1%`), **674.0 tok/s** C8 greedy (`+2.9%`), **671.3 tok/s** C8 at `T=0.6`
+with thinking enabled (`+6.2%`), and **736.4 tok/s** C12 (`+4.5%`), while
+cutting multi-slot worst-case TTFT by **25–29%** (eliminated 23–33 ms/slot
+`SuffixDrafter` reallocation + `ConvCheckpoint` copy stalls on `BGEN` admission)
+and lifting 12-slot `batch_identity.py` to **1,049.5 tok/s** (`+7.9%`, 100%
+cross-build bit-exact, 0 kernel/DSpark parity failures).
+[Results, source patch and raw receipts](research/inkling2-mini-basalt-20261127/RESULTS.md).
+<!-- inkling2-mini-basalt-20261127:end -->
+
+
 <!-- localmaxxing-leaderboard:start -->
 ## November 14 — localmaxxing.com leaderboard, rank 1 and 2 of 806
 

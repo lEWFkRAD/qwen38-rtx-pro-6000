@@ -1,0 +1,1998 @@
+diff --git a/include/basalt/kernels/native_mmvq.hpp b/include/basalt/kernels/native_mmvq.hpp
+index e1a2d4a7a..d922b3c15 100644
+--- a/include/basalt/kernels/native_mmvq.hpp
++++ b/include/basalt/kernels/native_mmvq.hpp
+@@ -13,8 +13,8 @@ namespace basalt::kernels {
+ // The translation unit must use --use_fast_math, as the pinned CUDA oracle does.
+ //
+ // Shapes use GGUF order: n_in is the contiguous reduction dimension, n_out is
+-// the weight row count, and ncols is the activation column/token count, 1..8
+-//. Columns are contiguous: activation column j is x + j * n_in
++// the weight row count, and ncols is the activation column/token count, normally 1..8
++// (the Q8-plane calls below take 1..16). Columns are contiguous: activation column j is x + j * n_in
+ // (its Q8_1 blocks at j * n_in / 32) and output column j is y + j * n_out. See
+ // native_mmvq_set_multi_exact for how ncols > 1 relates to ncols == 1.
+ // n_in must be a positive multiple of 32 for quantization/Q4_0/Q5_0/Q8_0/IQ4_NL,
+@@ -65,8 +65,9 @@ struct Q80Segments {
+ };
+ void native_q8_0_mmvq_segments(const void* weights, const Q80Segments& seg, int n_in, int ncols, void* stream);
+ 
+-// Bitwise-identical Q8_0 MMVQ over plane-separated weights (wgemm::q8_planes: int8 codes [total_rows][n_in], then
+-// fp16 scales [total_rows][n_in / 32]). Aligned code loads; shares the code plane zero-copy with prefill::q8.
++// Bitwise-identical Q8_0 MMVQ for 1..16 columns over plane-separated weights (wgemm::q8_planes: int8 codes
++// [total_rows][n_in], then fp16 scales [total_rows][n_in / 32]). Aligned code loads; shares the code plane zero-copy
++// with prefill::q8.
+ void native_q8_planes_mmvq(const void* planes, const void* x_q8_1, float* y, int n_in, int n_out, int ncols,
+                            void* stream);
+ void native_q8_planes_mmvq_segments(const void* planes, int total_rows, const Q80Segments& seg, int n_in, int ncols,
+@@ -114,6 +115,11 @@ void native_q5_0_mmvq(const void* weights, const void* x_q8_1, float* y,
+ void native_q8_0_mmvq(const void* weights, const void* x_q8_1, float* y,
+                        int n_in, int n_out, int ncols, void* stream);
+ 
++// Raw Q8_0 vocabulary-head path for 9..16 columns.  It is bitwise the existing 8 + remainder composition; the
++// separate entry point intentionally leaves every <= 8 raw-Q8_0 launch unchanged.
++void native_q8_0_mmvq_wide(const void* weights, const void* x_q8_1, float* y,
++                            int n_in, int n_out, int ncols, void* stream);
++
+ void native_iq4_nl_mmvq(const void* weights, const void* x_q8_1, float* y,
+                        int n_in, int n_out, int ncols, void* stream);
+ 
+diff --git a/include/basalt/model/batch_driver.hpp b/include/basalt/model/batch_driver.hpp
+index 944907040..802db4c19 100644
+--- a/include/basalt/model/batch_driver.hpp
++++ b/include/basalt/model/batch_driver.hpp
+@@ -37,8 +37,12 @@ struct BatchView {
+ /// What every session of one model shares for its batch windows: the graphs by composition. A model keeps one beside its
+ /// shared forward scratch; sessions that return the same one batch together.
+ struct BatchShared {
+-    static constexpr size_t kGraphs = 64;
++    static constexpr size_t kGraphs = 256;
+     GraphLru<core::CapturedGraph> graphs{kGraphs};
++    cudaEvent_t post_fwd = nullptr;
++    ~BatchShared() {
++        if (post_fwd) cudaEventDestroy(post_fwd);
++    }
+ };
+ 
+ class BatchSession : public ModelSession {
+@@ -77,8 +81,12 @@ public:
+         const BatchView v{w, ss.data(), reqs, head.data(), n, st};
+         GraphLru<core::CapturedGraph>::Key key;
+         if (!batch_stage(v, key, err)) return {Status::Error, who + ": " + err};
+-        for (int i = 0; i < n; ++i)
+-            key.insert(key.end(), {(uint64_t) (uintptr_t) ss[(size_t) i], (uint64_t) w.segs[(size_t) i].rows, (uint64_t) head[(size_t) i]});
++        if (batch_key_per_segment()) {
++            for (int i = 0; i < n; ++i)
++                key.insert(key.end(), {(uint64_t) (uintptr_t) ss[(size_t) i], (uint64_t) w.segs[(size_t) i].rows, (uint64_t) head[(size_t) i]});
++        } else {
++            key.insert(key.end(), {(uint64_t) (uintptr_t) ss[0], (uint64_t) w.rows});
++        }
+         BatchShared& sh = batch_shared();
+         if (!batch_captured()) {
+             if (!batch_forward(v, err)) {
+@@ -104,14 +112,39 @@ public:
+             sh.graphs.insert(std::move(key), std::move(fresh));
+         }
+         if (const cudaError_t e = cudaGetLastError(); e != cudaSuccess) return {Status::Error, who + ": CUDA: " + cudaGetErrorString(e)};
+-        // each session its rows back, then its draws, all queued; one sync, then the picks
++        // each session its rows back, then its draws; fork across per-session streams when non-greedy sampling
++        // (e.g. wide CUB radix sorts) is active so heavy draws run concurrently without adding multi-sync overhead
++        // to fast greedy steps.
+         std::vector<const int32_t*> picks((size_t) n, nullptr);
++        bool any_non_greedy = false;
++        for (int i = 0; i < n; ++i)
++            if (head[(size_t) i] > 0 && reqs[i].sampling && !reqs[i].sampling->greedy) {
++                any_non_greedy = true;
++                break;
++            }
++        const bool par_post = batch_parallel_post() && n > 1 && any_non_greedy;
++        if (par_post) {
++            if (!sh.post_fwd && cudaEventCreateWithFlags(&sh.post_fwd, cudaEventDisableTiming) != cudaSuccess)
++                return {Status::Error, who + ": cannot create post-forward event"};
++            if (cudaEventRecord(sh.post_fwd, st) != cudaSuccess)
++                return {Status::Error, who + ": cannot record post-forward event"};
++        }
+         for (int i = 0; i < n; ++i) {
+-            ss[(size_t) i]->batch_take(v, i);
+-            if (head[(size_t) i] > 0 && (picks[(size_t) i] = ss[(size_t) i]->batch_draw(v, i, err)) == nullptr)
++            cudaStream_t sst = par_post ? ss[(size_t) i]->batch_stream() : st;
++            if (par_post && i > 0 && cudaStreamWaitEvent(sst, sh.post_fwd, 0) != cudaSuccess)
++                return {Status::Error, who + ": cannot fork post-forward stream"};
++            const BatchView vi{w, ss.data(), reqs, head.data(), n, sst};
++            ss[(size_t) i]->batch_take(vi, i);
++            if (head[(size_t) i] > 0 && (picks[(size_t) i] = ss[(size_t) i]->batch_draw(vi, i, err)) == nullptr)
+                 return {Status::Error, who + ": " + err};
+         }
+-        if (cudaStreamSynchronize(st) != cudaSuccess) return {Status::Error, who + ": the batch window failed"};
++        if (par_post) {
++            for (int i = 0; i < n; ++i)
++                if (cudaStreamSynchronize(ss[(size_t) i]->batch_stream()) != cudaSuccess)
++                    return {Status::Error, who + ": the batch window failed"};
++        } else {
++            if (cudaStreamSynchronize(st) != cudaSuccess) return {Status::Error, who + ": the batch window failed"};
++        }
+         for (int i = 0; i < n; ++i) {
+             const DecodeRequest& r = reqs[i];
+             const int h = head[(size_t) i];
+@@ -150,6 +183,11 @@ protected:
+     /// forward (it reads results between launches), so the driver runs it directly every window and the model keeps its
+     /// own graphs of the stretches between.
+     virtual bool batch_captured() const { return true; }
++    /// True (default): graph key includes every segment's session pointer, row count and head count.
++    /// False: batch_forward uses device-indirect per-segment state, so graph key depends only on leader + total rows + batch_stage keys.
++    virtual bool batch_key_per_segment() const { return true; }
++    /// True: fork post-forward batch_take + batch_draw across each session's own stream in parallel.
++    virtual bool batch_parallel_post() const { return false; }
+     /// False while this session holds state its batch path does not cover: the batch's windows run in turn.
+     virtual bool batch_ready() const { return true; }
+     /// On session i, queued on v.stream: segment i's head rows into its own logits (what row_logprobs, copy_logits and
+diff --git a/include/basalt/models/inkling2/kernels.hpp b/include/basalt/models/inkling2/kernels.hpp
+index 879af2b4b..7aba1d98f 100644
+--- a/include/basalt/models/inkling2/kernels.hpp
++++ b/include/basalt/models/inkling2/kernels.hpp
+@@ -21,9 +21,10 @@ constexpr int kHeadDim = 128;
+ constexpr int kRel = 16;            ///< relative state per head
+ constexpr int kExtent = 1024;       ///< distances the relative bias covers (also the window)
+ constexpr int kConv = 4;            ///< short convolution taps
+-constexpr int kConvRing = 16;       ///< positions a convolution ring keeps: a window of up to 8 rows and the 3 before it
++constexpr int kConvRing = 32;       ///< positions a convolution ring keeps: a window of up to kDecodeRows rows and the 3 before it
+ constexpr int kMaxMix = 6;          ///< states one mix reads: the finished blocks and the partial
+-constexpr int kDecodeRows = 8;      ///< rows of a decode window's fused kernels (the products take 8 columns at most)
++constexpr int kDecodeRows = 16;     ///< rows of a decode window's fused kernels and Q8-plane products
++constexpr int kProductCols = 8;     ///< the raw Q8_0 head's column limit (MAX_NCOLS); wider windows split
+ constexpr int kMaxStreams = 4;      ///< loop controllers one call runs side by side
+ 
+ /// A layer's fused projection rows, in this order: q, r, gate, sink (read from the query input), k and the key
+@@ -71,8 +72,15 @@ struct SegCaches {
+ struct Segments {
+     basalt::kernels::WindowSegs at;
+     SegCaches c[kDecodeRows];
++    const Segments* dev = nullptr;   ///< optional device pointer: when non-null, kernels read *dev (graph-invariant batching)
+ };
+ 
++#if defined(__CUDACC__)
++__device__ __forceinline__ const Segments& seg_ref(const Segments& s) {
++    return s.dev ? *s.dev : s;
++}
++#endif
++
+ // ---- attention ---------------------------------------------------------------------------------------------------------
+ 
+ /// What a visit's attention preparation reads and writes.
+diff --git a/src/kernels/cuda/iq_kernels.cu b/src/kernels/cuda/iq_kernels.cu
+index 2bf733b40..7ce8a7355 100644
+--- a/src/kernels/cuda/iq_kernels.cu
++++ b/src/kernels/cuda/iq_kernels.cu
+@@ -1707,6 +1707,18 @@ __global__ void __launch_bounds__(256) native_gu_multi_kernel(const unsigned lon
+                 row_dot_multi<TG, 2, true, STAGE_GRID, KC>(wr, xq, off2, 2, nb, lane, s2, s_grid);
+                 tail_scale<TG>(s2, sc);
+                 if (lane < 2) dst[(size_t) (e + lane) * L.n_ff + r] = s2[lane];
++            } else if (n == 3) {
++                const int off3[3] = { ent_tok[e] * xb, ent_tok[e + 1] * xb, ent_tok[e + 2] * xb };
++                float s3[3];
++                row_dot_multi<TG, 3, true, STAGE_GRID, KC>(wr, xq, off3, 3, nb, lane, s3, s_grid);
++                tail_scale<TG>(s3, sc);
++                if (lane < 3) dst[(size_t) (e + lane) * L.n_ff + r] = s3[lane];
++            } else if (n == 4) {
++                const int off4[4] = { ent_tok[e] * xb, ent_tok[e + 1] * xb, ent_tok[e + 2] * xb, ent_tok[e + 3] * xb };
++                float s4[4];
++                row_dot_multi<TG, 4, true, STAGE_GRID, KC>(wr, xq, off4, 4, nb, lane, s4, s_grid);
++                tail_scale<TG>(s4, sc);
++                if (lane < 4) dst[(size_t) (e + lane) * L.n_ff + r] = s4[lane];
+             } else {
+                 int off[GRP_NC];
+ #pragma unroll
+@@ -2516,6 +2528,18 @@ __global__ void __launch_bounds__(256) native_down_sub8_kernel(const unsigned lo
+                 row_dot_sub8<TD, 2, true, kSub8Kc>(wr, hq, off2, 2, K, t, s2);
+                 tail_scale<TD>(s2, sc);
+                 if (t < 2) out[(size_t) ent_dst[e + t] * L.n_embd + r] = t == 0 ? s2[0] : s2[1];
++            } else if (n == 3) {
++                const int off3[3] = { e * hb, (e + 1) * hb, (e + 2) * hb };
++                float s3[3];
++                row_dot_sub8<TD, 3, true, kSub8Kc>(wr, hq, off3, 3, K, t, s3);
++                tail_scale<TD>(s3, sc);
++                if (t < 3) out[(size_t) ent_dst[e + t] * L.n_embd + r] = s3[t];
++            } else if (n == 4) {
++                const int off4[4] = { e * hb, (e + 1) * hb, (e + 2) * hb, (e + 3) * hb };
++                float s4[4];
++                row_dot_sub8<TD, 4, true, kSub8Kc>(wr, hq, off4, 4, K, t, s4);
++                tail_scale<TD>(s4, sc);
++                if (t < 4) out[(size_t) ent_dst[e + t] * L.n_embd + r] = s4[t];
+             } else {
+                 int off[GRP_NC];
+ #pragma unroll
+diff --git a/src/kernels/cuda/native_mmvq.cu b/src/kernels/cuda/native_mmvq.cu
+index 61cba184b..3520f1cf9 100644
+--- a/src/kernels/cuda/native_mmvq.cu
++++ b/src/kernels/cuda/native_mmvq.cu
+@@ -1848,6 +1848,130 @@ __global__ void __launch_bounds__(256) native_q80_mma_kernel(const Q80Block* __r
+     q80_mma_body(w, x, y, n_in, n_out, ncols, int(blockIdx.x));
+ }
+ 
++// The vocabulary head is the sole raw-Q8_0 product wider than eight columns.  This separate body keeps the <= 8
++// kernel above unchanged, while reusing each 16-row weight tile for two independent groups of eight activation
++// columns.  Within either group it deliberately repeats q80_mma_body's chain, fold and butterfly order exactly.
++__device__ __forceinline__ void q80_mma_wide_body(const Q80Block* __restrict__ w,
++                                                  const Q81Block* __restrict__ x, float* __restrict__ y, int n_in,
++                                                  int n_out, int ncols, int bx) {
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 800
++    __shared__ float s_part[16 * 16 * 33];
++    const int wp = threadIdx.x >> 5, lane = threadIdx.x & 31, g = lane >> 2, t = lane & 3;
++    const int row0 = bx * 16, nb = n_in / 32;
++    const Q80Block* wa = w + (size_t) min(row0 + g, n_out - 1) * nb;
++    const Q80Block* wb = w + (size_t) min(row0 + g + 8, n_out - 1) * nb;
++    auto load_a = [&](int kbx) {
++        QmA r;
++        r.a0 = load_int_b2(wa[kbx].qs, t);
++        r.a2 = load_int_b2(wa[kbx].qs, 4 + t);
++        r.a1 = load_int_b2(wb[kbx].qs, t);
++        r.a3 = load_int_b2(wb[kbx].qs, 4 + t);
++        r.da = wa[kbx].d;
++        r.db = wb[kbx].d;
++        return r;
++    };
++    QmA pre[3];
++#pragma unroll
++    for (int j = 0; j < 3; ++j)
++        if (wp + 32 * j < nb) pre[j] = load_a(wp + 32 * j);
++    pdl_launch_dependents();
++    pdl_wait();
++    const Q81Block* xg[2];
++    const Q81Block* xc0[2];
++    const Q81Block* xc1[2];
++#pragma unroll
++    for (int z = 0; z < 2; ++z) {
++        const int base = 8 * z;
++        xg[z] = x + (size_t) min(base + g, ncols - 1) * nb;
++        xc0[z] = x + (size_t) min(base + 2 * t, ncols - 1) * nb;
++        xc1[z] = x + (size_t) min(base + 2 * t + 1, ncols - 1) * nb;
++    }
++    float v[2][4][4];
++    const bool lo = t < 2;
++    auto block = [&](const QmA& A, int kbx, float (&acc)[2][4][4]) {
++#pragma unroll
++        for (int z = 0; z < 2; ++z) {
++            const int base = 8 * z;
++            const uint32_t b0 = base + g < ncols ? (uint32_t) reinterpret_cast<const int*>(xg[z][kbx].qs)[t] : 0u;
++            const uint32_t b1 =
++                base + g < ncols ? (uint32_t) reinterpret_cast<const int*>(xg[z][kbx].qs)[4 + t] : 0u;
++            const float dx0 = __low2float(xc0[z][kbx].ds), dx1 = __low2float(xc1[z][kbx].ds);
++#pragma unroll
++            for (int grp = 0; grp < 4; ++grp) {
++                const bool mine = (grp & 1) ? !lo : lo, hi = grp >= 2;
++                const uint32_t m0 = mine && !hi ? (uint32_t) A.a0 : 0u;
++                const uint32_t m1 = mine && !hi ? (uint32_t) A.a1 : 0u;
++                const uint32_t m2 = mine && hi ? (uint32_t) A.a2 : 0u;
++                const uint32_t m3 = mine && hi ? (uint32_t) A.a3 : 0u;
++                int si[4];
++                qm_mma(si, m0, m1, m2, m3, b0, b1);
++                acc[z][grp][0] += A.da * dx0 * float(si[0]);
++                acc[z][grp][1] += A.da * dx1 * float(si[1]);
++                acc[z][grp][2] += A.db * dx0 * float(si[2]);
++                acc[z][grp][3] += A.db * dx1 * float(si[3]);
++            }
++        }
++    };
++#pragma unroll
++    for (int yy = 0; yy < 4; ++yy) {
++        float acc[2][4][4];
++#pragma unroll
++        for (int z = 0; z < 2; ++z)
++#pragma unroll
++            for (int a = 0; a < 4; ++a)
++#pragma unroll
++                for (int q = 0; q < 4; ++q) acc[z][a][q] = 0.0f;
++        const int c = 8 * yy + wp;
++        if (yy == 0) {
++#pragma unroll
++            for (int j = 0; j < 3; ++j)
++                if (c + 32 * j < nb) block(pre[j], c + 32 * j, acc);
++            for (int kbx = c + 96; kbx < nb; kbx += 32) block(load_a(kbx), kbx, acc);
++        } else {
++            for (int kbx = c; kbx < nb; kbx += 32) block(load_a(kbx), kbx, acc);
++        }
++#pragma unroll
++        for (int z = 0; z < 2; ++z)
++#pragma unroll
++            for (int a = 0; a < 4; ++a)
++#pragma unroll
++                for (int q = 0; q < 4; ++q) v[z][a][q] = yy == 0 ? acc[z][a][q] : v[z][a][q] + acc[z][a][q];
++    }
++#pragma unroll
++    for (int z = 0; z < 2; ++z)
++#pragma unroll
++        for (int grp = 0; grp < 4; ++grp)
++#pragma unroll
++            for (int q = 0; q < 4; ++q) {
++                const int row = g + 8 * (q >> 1), col = 8 * z + 2 * t + (q & 1);
++                if (col < ncols) s_part[(col * 16 + row) * 33 + 4 * wp + grp] = v[z][grp][q];
++            }
++    __syncthreads();
++    if ((int) threadIdx.x < 16 * ncols) {
++        const int row = threadIdx.x % 16, col = threadIdx.x / 16;
++        const float* p = s_part + (col * 16 + row) * 33;
++        float r16[16], r8[8], r4[4];
++#pragma unroll
++        for (int L = 0; L < 16; ++L) r16[L] = p[L] + p[L + 16];
++#pragma unroll
++        for (int L = 0; L < 8; ++L) r8[L] = r16[L] + r16[L + 8];
++#pragma unroll
++        for (int L = 0; L < 4; ++L) r4[L] = r8[L] + r8[L + 4];
++        const float r2a = r4[0] + r4[2], r2b = r4[1] + r4[3];
++        if (row0 + row < n_out) y[(size_t) col * n_out + row0 + row] = r2a + r2b;
++    }
++#elif defined(__CUDA_ARCH__)
++    __trap();
++#endif
++}
++
++__global__ void __launch_bounds__(256) native_q80_mma_wide_kernel(const Q80Block* __restrict__ w,
++                                                                  const Q81Block* __restrict__ x,
++                                                                  float* __restrict__ y, int n_in, int n_out,
++                                                                  int ncols) {
++    q80_mma_wide_body(w, x, y, n_in, n_out, ncols, int(blockIdx.x));
++}
++
+ __global__ void __launch_bounds__(256) native_q80_mma_seg_kernel(const Q80Block* __restrict__ w, SegArgs a, int n_in,
+                                                                  int ncols) {
+     const SegPick p = seg_pick(a);
+@@ -1863,12 +1987,38 @@ bool launch_q80_mma(const void* weights, const void* x_q8_1, float* y, int n_in,
+     return true;
+ }
+ 
++bool launch_q80_mma_wide(const void* weights, const void* x_q8_1, float* y, int n_in, int n_out, int ncols,
++                          cudaStream_t s) {
++    if (!g_multi_exact || mmvq_mma_sms() == 0 || n_in / 32 < 32) return false;
++    launch_pdl(native_q80_mma_wide_kernel, dim3(unsigned((n_out + 15) / 16)), dim3(256), 0, s,
++               static_cast<const Q80Block*>(weights), static_cast<const Q81Block*>(x_q8_1), y, n_in, n_out, ncols);
++    return true;
++}
++
+ void validate_shape(int n_in, int ncols, int block_elems = Q8K) {
+     if (n_in <= 0 || n_in % block_elems != 0) {
+         throw std::invalid_argument("native MMVQ requires n_in > 0 and divisible by its block element count");
+     }
+     if (ncols < 1 || ncols > MAX_NCOLS) throw std::invalid_argument("native MMVQ requires 1 <= ncols <= 8 (ncols " + std::to_string(ncols) + ", n_in " + std::to_string(n_in) + ")");
+ }
++void validate_q8p_shape(int n_in, int ncols) {
++    if (n_in <= 0 || n_in % 32 != 0) {
++        throw std::invalid_argument("native Q8-plane MMVQ requires n_in > 0 and divisible by 32");
++    }
++    if (ncols < 1 || ncols > 16) {
++        throw std::invalid_argument("native Q8-plane MMVQ requires 1 <= ncols <= 16 (ncols " +
++                                    std::to_string(ncols) + ", n_in " + std::to_string(n_in) + ")");
++    }
++}
++void validate_q80_wide_shape(int n_in, int ncols) {
++    if (n_in <= 0 || n_in % 32 != 0) {
++        throw std::invalid_argument("native wide Q8_0 MMVQ requires n_in > 0 and divisible by 32");
++    }
++    if (ncols < 9 || ncols > 16) {
++        throw std::invalid_argument("native wide Q8_0 MMVQ requires 9 <= ncols <= 16 (ncols " +
++                                    std::to_string(ncols) + ", n_in " + std::to_string(n_in) + ")");
++    }
++}
+ void validate_pointer(const void* p) {
+     if (!p || reinterpret_cast<std::uintptr_t>(p) % 4 != 0) {
+         throw std::invalid_argument("native MMVQ requires non-null 4-byte aligned device pointers");
+@@ -2202,6 +2352,25 @@ void native_q8_0_mmvq(const void* weights, const void* x_q8_1, float* y,
+     small_mmvq<Q80Block, 8>(weights, x_q8_1, y, n_in, n_out, ncols, stream);
+ }
+ 
++void native_q8_0_mmvq_wide(const void* weights, const void* x_q8_1, float* y,
++                            int n_in, int n_out, int ncols, void* stream) {
++    validate_q80_wide_shape(n_in, ncols);
++    if (n_out <= 0) throw std::invalid_argument("native wide Q8_0 MMVQ requires n_out > 0");
++    validate_pointer(weights);
++    validate_pointer(x_q8_1);
++    validate_pointer(y);
++    validate_stream(stream);
++    const auto s = static_cast<cudaStream_t>(stream);
++    if (launch_q80_mma_wide(weights, x_q8_1, y, n_in, n_out, ncols, s)) {
++        launch_check();
++        return;
++    }
++    const std::size_t qcol = std::size_t(n_in / 32) * sizeof(Q81Block);
++    native_q8_0_mmvq(weights, x_q8_1, y, n_in, n_out, 8, stream);
++    native_q8_0_mmvq(weights, static_cast<const uint8_t*>(x_q8_1) + 8 * qcol,
++                     y + std::size_t(8) * n_out, n_in, n_out, ncols - 8, stream);
++}
++
+ void native_q8_0_mmvq_segments(const void* weights, const Q80Segments& seg, int n_in, int ncols, void* stream) {
+     if (seg.n < 1 || seg.n > 3) throw std::invalid_argument("native_q8_0_mmvq_segments takes 1 to 3 segments");
+     validate_shape(n_in, ncols, 32);
+@@ -2480,6 +2649,129 @@ __device__ __forceinline__ void q8p_mma_body(Q8Planes w, const Q81Block* __restr
+ #endif
+ }
+ 
++// Two independent 8-column MMA groups.  The QmA for a weight block is loaded once and applied to both groups before the
++// next block: each group's kbx chains, four-warp fold and final butterfly are otherwise exactly q8p_mma_body's.  Keeping
++// this separate leaves the 1..8 kernel's code and resources untouched.
++__device__ __forceinline__ void q8p_mma16_body(Q8Planes w, const Q81Block* __restrict__ x, float* __restrict__ y,
++                                               int n_in, int n_out, int ncols, int bx) {
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 800
++    __shared__ float s_part[16 * 16 * 33];
++    const int wp = threadIdx.x >> 5, lane = threadIdx.x & 31, g = lane >> 2, t = lane & 3;
++    const int row0 = bx * 16, nb = n_in / 32;
++    const int ra = min(row0 + g, n_out - 1), rb = min(row0 + g + 8, n_out - 1);
++    const int8_t* ca = w.codes + (size_t) ra * n_in;
++    const int8_t* cb = w.codes + (size_t) rb * n_in;
++    const half* sa = w.scales + (size_t) ra * nb;
++    const half* sb = w.scales + (size_t) rb * nb;
++    auto load_a = [&](int kbx) {
++        QmA r;
++        const int* qa = reinterpret_cast<const int*>(ca + (size_t) kbx * 32);
++        const int* qb = reinterpret_cast<const int*>(cb + (size_t) kbx * 32);
++        r.a0 = __ldg(qa + t);
++        r.a2 = __ldg(qa + 4 + t);
++        r.a1 = __ldg(qb + t);
++        r.a3 = __ldg(qb + 4 + t);
++        r.da = __half2float(__ldg(sa + kbx));
++        r.db = __half2float(__ldg(sb + kbx));
++        return r;
++    };
++    QmA pre[3];
++#pragma unroll
++    for (int j = 0; j < 3; ++j)
++        if (wp + 32 * j < nb) pre[j] = load_a(wp + 32 * j);
++    pdl_launch_dependents();
++    pdl_wait();
++    const Q81Block* xg0 = x + (size_t) min(g, ncols - 1) * nb;
++    const Q81Block* xc00 = x + (size_t) min(2 * t, ncols - 1) * nb;
++    const Q81Block* xc01 = x + (size_t) min(2 * t + 1, ncols - 1) * nb;
++    const Q81Block* xg1 = x + (size_t) min(8 + g, ncols - 1) * nb;
++    const Q81Block* xc10 = x + (size_t) min(8 + 2 * t, ncols - 1) * nb;
++    const Q81Block* xc11 = x + (size_t) min(8 + 2 * t + 1, ncols - 1) * nb;
++    float v[2][4][4];
++    const bool lo = t < 2;
++    auto block = [&](const QmA& A, int kbx, const Q81Block* xg, const Q81Block* xc0, const Q81Block* xc1,
++                     bool valid, float (&acc)[4][4]) {
++        const uint32_t b0 = valid ? (uint32_t) reinterpret_cast<const int*>(xg[kbx].qs)[t] : 0u;
++        const uint32_t b1 = valid ? (uint32_t) reinterpret_cast<const int*>(xg[kbx].qs)[4 + t] : 0u;
++        const float dx0 = __low2float(xc0[kbx].ds), dx1 = __low2float(xc1[kbx].ds);
++#pragma unroll
++        for (int grp = 0; grp < 4; ++grp) {
++            const bool mine = (grp & 1) ? !lo : lo, hi = grp >= 2;
++            const uint32_t m0 = mine && !hi ? (uint32_t) A.a0 : 0u, m1 = mine && !hi ? (uint32_t) A.a1 : 0u;
++            const uint32_t m2 = mine && hi ? (uint32_t) A.a2 : 0u, m3 = mine && hi ? (uint32_t) A.a3 : 0u;
++            int si[4];
++            qm_mma(si, m0, m1, m2, m3, b0, b1);
++            acc[grp][0] += A.da * dx0 * float(si[0]);
++            acc[grp][1] += A.da * dx1 * float(si[1]);
++            acc[grp][2] += A.db * dx0 * float(si[2]);
++            acc[grp][3] += A.db * dx1 * float(si[3]);
++        }
++    };
++    auto blocks = [&](const QmA& A, int kbx, float (&acc)[2][4][4]) {
++        block(A, kbx, xg0, xc00, xc01, g < ncols, acc[0]);
++        block(A, kbx, xg1, xc10, xc11, 8 + g < ncols, acc[1]);
++    };
++#pragma unroll
++    for (int yy = 0; yy < 4; ++yy) {
++        float acc[2][4][4];
++#pragma unroll
++        for (int cg = 0; cg < 2; ++cg)
++#pragma unroll
++            for (int a = 0; a < 4; ++a)
++#pragma unroll
++                for (int q = 0; q < 4; ++q) acc[cg][a][q] = 0.0f;
++        const int c = 8 * yy + wp;
++        if (yy == 0) {
++#pragma unroll
++            for (int j = 0; j < 3; ++j)
++                if (c + 32 * j < nb) blocks(pre[j], c + 32 * j, acc);
++            for (int kbx = c + 96; kbx < nb; kbx += 32) {
++                const QmA A = load_a(kbx);
++                blocks(A, kbx, acc);
++            }
++        } else {
++            for (int kbx = c; kbx < nb; kbx += 32) {
++                const QmA A = load_a(kbx);
++                blocks(A, kbx, acc);
++            }
++        }
++#pragma unroll
++        for (int cg = 0; cg < 2; ++cg)
++#pragma unroll
++            for (int a = 0; a < 4; ++a)
++#pragma unroll
++                for (int q = 0; q < 4; ++q) v[cg][a][q] = yy == 0 ? acc[cg][a][q] : v[cg][a][q] + acc[cg][a][q];
++    }
++#pragma unroll
++    for (int cg = 0; cg < 2; ++cg)
++#pragma unroll
++        for (int q = 0; q < 4; ++q) {
++            const int row = 8 * (q >> 1) + g, col = 8 * cg + 2 * t + (q & 1);
++#pragma unroll
++            for (int a = 0; a < 4; ++a) s_part[(col * 16 + row) * 33 + 4 * wp + a] = v[cg][a][q];
++        }
++    __syncthreads();
++    const int tid = wp * 32 + lane;
++    if (tid < ncols * 16) {
++        const int row = tid & 15, col = tid >> 4;
++        const float* p = s_part + (col * 16 + row) * 33;
++        float r16[16];
++#pragma unroll
++        for (int L = 0; L < 16; ++L) r16[L] = p[L] + p[L + 16];
++        float r8[8];
++#pragma unroll
++        for (int L = 0; L < 8; ++L) r8[L] = r16[L] + r16[L + 8];
++        float r4[4];
++#pragma unroll
++        for (int L = 0; L < 4; ++L) r4[L] = r8[L] + r8[L + 4];
++        const float r2a = r4[0] + r4[2], r2b = r4[1] + r4[3];
++        if (row0 + row < n_out) y[(size_t) col * n_out + row0 + row] = r2a + r2b;
++    }
++#elif defined(__CUDA_ARCH__)
++    __trap();
++#endif
++}
++
+ __global__ void __launch_bounds__(256) native_q8p_mma_kernel(Q8Planes w, const Q81Block* __restrict__ x,
+                                                              float* __restrict__ y, int n_in, int n_out, int ncols) {
+     q8p_mma_body(w, x, y, n_in, n_out, ncols, int(blockIdx.x));
+@@ -2490,6 +2782,16 @@ __global__ void __launch_bounds__(256) native_q8p_mma_seg_kernel(Q8Planes w, Seg
+     q8p_mma_body(q8p_offset(w, p.row0, n_in), p.x, p.y, n_in, p.n_out, ncols, p.bx);
+ }
+ 
++__global__ void __launch_bounds__(256) native_q8p_mma16_kernel(Q8Planes w, const Q81Block* __restrict__ x,
++                                                               float* __restrict__ y, int n_in, int n_out, int ncols) {
++    q8p_mma16_body(w, x, y, n_in, n_out, ncols, int(blockIdx.x));
++}
++
++__global__ void __launch_bounds__(256) native_q8p_mma16_seg_kernel(Q8Planes w, SegArgs a, int n_in, int ncols) {
++    const SegPick p = seg_pick(a);
++    q8p_mma16_body(q8p_offset(w, p.row0, n_in), p.x, p.y, n_in, p.n_out, ncols, p.bx);
++}
++
+ void launch_q8p(Q8Planes w, const Q81Block* x, float* y, int n_in, int n_out, int ncols, cudaStream_t s) {
+     const dim3 threads(WARP, WARPS);
+     constexpr int BPI = 2 * WARPS * WARP / 8;
+@@ -2500,7 +2802,10 @@ void launch_q8p(Q8Planes w, const Q81Block* x, float* y, int n_in, int n_out, in
+         return;
+     }
+     if (!small_k && mmvq_mma_sms() != 0 && ((n_out >= 65536 && ncols >= 4) || (n_out >= 4096 && ncols >= 7))) {
+-        launch_pdl(native_q8p_mma_kernel, dim3(unsigned((n_out + 15) / 16)), dim3(256), 0, s, w, x, y, n_in, n_out, ncols);
++        if (ncols <= 8)
++            launch_pdl(native_q8p_mma_kernel, dim3(unsigned((n_out + 15) / 16)), dim3(256), 0, s, w, x, y, n_in, n_out, ncols);
++        else
++            launch_pdl(native_q8p_mma16_kernel, dim3(unsigned((n_out + 15) / 16)), dim3(256), 0, s, w, x, y, n_in, n_out, ncols);
+         return;
+     }
+     const dim3 grid{unsigned(n_out)};
+@@ -2511,7 +2816,15 @@ void launch_q8p(Q8Planes w, const Q81Block* x, float* y, int n_in, int n_out, in
+     case 5: launch_pdl(native_q8p_kernel<false, 5, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
+     case 6: launch_pdl(native_q8p_kernel<false, 6, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
+     case 7: launch_pdl(native_q8p_kernel<false, 7, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
+-    default: launch_pdl(native_q8p_kernel<false, 8, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 8: launch_pdl(native_q8p_kernel<false, 8, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 9: launch_pdl(native_q8p_kernel<false, 9, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 10: launch_pdl(native_q8p_kernel<false, 10, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 11: launch_pdl(native_q8p_kernel<false, 11, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 12: launch_pdl(native_q8p_kernel<false, 12, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 13: launch_pdl(native_q8p_kernel<false, 13, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 14: launch_pdl(native_q8p_kernel<false, 14, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    case 15: launch_pdl(native_q8p_kernel<false, 15, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
++    default: launch_pdl(native_q8p_kernel<false, 16, 0>, grid, threads, 0, s, w, x, y, n_in, n_out); break;
+     }
+ }
+ 
+@@ -2519,7 +2832,7 @@ void launch_q8p(Q8Planes w, const Q81Block* x, float* y, int n_in, int n_out, in
+ 
+ void native_q8_planes_mmvq(const void* planes, const void* x_q8_1, float* y, int n_in, int n_out, int ncols,
+                            void* stream) {
+-    validate_shape(n_in, ncols, 32);
++    validate_q8p_shape(n_in, ncols);
+     if (n_out <= 0) throw std::invalid_argument("native MMVQ requires n_out > 0");
+     validate_pointer(planes);
+     validate_pointer(x_q8_1);
+@@ -2535,7 +2848,7 @@ void native_q8_planes_mmvq(const void* planes, const void* x_q8_1, float* y, int
+ void native_q8_planes_mmvq_segments(const void* planes, int total_rows, const Q80Segments& seg, int n_in, int ncols,
+                                     void* stream) {
+     if (seg.n < 1 || seg.n > 3) throw std::invalid_argument("native_q8_planes_mmvq_segments takes 1 to 3 segments");
+-    validate_shape(n_in, ncols, 32);
++    validate_q8p_shape(n_in, ncols);
+     validate_pointer(planes);
+     validate_stream(stream);
+     const auto* codes = static_cast<const int8_t*>(planes);
+@@ -2572,7 +2885,10 @@ void native_q8_planes_mmvq_segments(const void* planes, int total_rows, const Q8
+     }
+     const dim3 grid{unsigned(end)}, threads(WARP, WARPS);
+     if (mma) {
+-        launch_pdl(native_q8p_mma_seg_kernel, grid, dim3(256), 0, s, w, a, n_in, ncols);
++        if (ncols <= 8)
++            launch_pdl(native_q8p_mma_seg_kernel, grid, dim3(256), 0, s, w, a, n_in, ncols);
++        else
++            launch_pdl(native_q8p_mma16_seg_kernel, grid, dim3(256), 0, s, w, a, n_in, ncols);
+         launch_check();
+         return;
+     }
+@@ -2584,7 +2900,15 @@ void native_q8_planes_mmvq_segments(const void* planes, int total_rows, const Q8
+     case 5: launch_pdl(native_q8p_seg_kernel<5, 0>, grid, threads, 0, s, w, a, n_in); break;
+     case 6: launch_pdl(native_q8p_seg_kernel<6, 0>, grid, threads, 0, s, w, a, n_in); break;
+     case 7: launch_pdl(native_q8p_seg_kernel<7, 0>, grid, threads, 0, s, w, a, n_in); break;
+-    default: launch_pdl(native_q8p_seg_kernel<8, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 8: launch_pdl(native_q8p_seg_kernel<8, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 9: launch_pdl(native_q8p_seg_kernel<9, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 10: launch_pdl(native_q8p_seg_kernel<10, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 11: launch_pdl(native_q8p_seg_kernel<11, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 12: launch_pdl(native_q8p_seg_kernel<12, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 13: launch_pdl(native_q8p_seg_kernel<13, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 14: launch_pdl(native_q8p_seg_kernel<14, 0>, grid, threads, 0, s, w, a, n_in); break;
++    case 15: launch_pdl(native_q8p_seg_kernel<15, 0>, grid, threads, 0, s, w, a, n_in); break;
++    default: launch_pdl(native_q8p_seg_kernel<16, 0>, grid, threads, 0, s, w, a, n_in); break;
+     }
+     launch_check();
+ }
+diff --git a/src/models/inkling2/cpu_experts.cpp b/src/models/inkling2/cpu_experts.cpp
+index 4a702a6db..769c039fe 100644
+--- a/src/models/inkling2/cpu_experts.cpp
++++ b/src/models/inkling2/cpu_experts.cpp
+@@ -15,7 +15,7 @@
+ namespace basalt::models::inkling2 {
+ namespace cpu = kernels::cpu;
+ 
+-static_assert(kDecodeRows <= cpu::MAXT, "a RAM expert takes every row of a window in one job");
++// a RAM expert takes up to cpu::MAXT rows a job; a wider window's expert continues in a second job (each row's product is its own)
+ 
+ struct CpuExperts::Impl {
+     const InklingModel* model = nullptr;
+@@ -57,6 +57,7 @@ struct CpuExperts::Impl {
+             const uint8_t* blob = e >= 0 && e < n_expert ? model->ram_blob(layer, e) : nullptr;
+             if (!blob) continue;   // on the card
+             int& j = job_of[(size_t) e];
++            if (j >= 0 && jobs[(size_t) j].nt == cpu::MAXT) j = -1;   // this expert's job is full: continue in a new one
+             if (j < 0) {
+                 j = n++;
+                 jobs[(size_t) j] = cpu::ExpertJobMulti{};
+diff --git a/src/models/inkling2/dspark.cpp b/src/models/inkling2/dspark.cpp
+index 6cc63d8d7..d0a7d8c79 100644
+--- a/src/models/inkling2/dspark.cpp
++++ b/src/models/inkling2/dspark.cpp
+@@ -29,6 +29,7 @@
+ #include <cmath>
+ #include <cstdlib>
+ #include <cstring>
++#include <mutex>
+ #include <stdexcept>
+ 
+ namespace basalt::models::inkling2 {
+@@ -625,6 +626,7 @@ bool DsparkHook::stage_graph(int k, int n, void* stream) {
+ model::Result DsparkHook::draft_begin(int32_t anchor, int64_t pos, int n, void* stream) {
+     if (!w_) return {model::Status::NotImplemented, "inkling2: the pack has no drafter"};
+     pending_ = 0;
++    batch_stream_ = nullptr;
+     n = std::min(n, kDsDrafts);
+     // the Markov head's context is the row before the anchor's: kept for the last kFrRing positions run
+     if (n < 1 || pos < 1 || pos - 1 >= hi_ || pos - 1 < std::max(lo_, hi_ - kFrRing) || pos + kDsBlock > full_cells(context_))
+@@ -662,12 +664,349 @@ model::Result DsparkHook::draft_begin(int32_t anchor, int64_t pos, int n, void*
+     return {};
+ }
+ 
++model::Result DsparkHook::draft_batch(DsparkHook* const* hooks, const int32_t* anchors, const int64_t* pos,
++                                      const int* n, int count, void* stream, void* const* peer_streams) {
++    if (count <= 0) return {};
++    if (!hooks[0] || !hooks[0]->w_) return {model::Status::NotImplemented, "inkling2: the pack has no drafter"};
++    for (int i = 0; i < count; ++i) {
++        if (!hooks[i] || hooks[i]->w_ != hooks[0]->w_ || hooks[i]->dump_ || !stream) {
++            for (int j = 0; j < count; ++j)
++                if (model::Result r = hooks[j]->draft_begin(anchors[j], pos[j], n[j], peer_streams ? peer_streams[j] : stream); !r.ok()) return r;
++            return {};
++        }
++        hooks[i]->pending_ = 0;
++        hooks[i]->batch_stream_ = nullptr;
++    }
++    const DsparkWeights& w = *hooks[0]->w_;
++    const DsparkGeometry& d = w.geo;
++    struct Job {
++        DsparkHook* h;
++        int32_t anchor;
++        int64_t pos;
++        int n;
++        void* st;
++    };
++    std::vector<Job> jobs;
++    jobs.reserve((size_t) count);
++    for (int i = 0; i < count; ++i) {
++        DsparkHook* h = hooks[i];
++        const int ni = std::min(n[i], kDsDrafts);
++        if (ni < 1 || pos[i] < 1 || pos[i] - 1 >= h->hi_ || pos[i] - 1 < std::max(h->lo_, h->hi_ - kFrRing) ||
++            pos[i] + kDsBlock > full_cells(h->context_))
++            continue;
++        jobs.push_back({h, anchors[i], pos[i], ni, peer_streams ? peer_streams[i] : nullptr});
++    }
++    if (jobs.empty()) return {};
++    if (jobs.size() == 1) return jobs[0].h->draft_begin(jobs[0].anchor, jobs[0].pos, jobs[0].n, jobs[0].st ? jobs[0].st : stream);
++
++    // Lazily allocate per-device batch scratch shared across chunks, plus captured graphs for the static wgemm layer
++    // stages (eliminating host launch gaps across B in {2,3,4}). Always pack up to max_blocks (4) sessions into one
++    // wgemm(32) pass, slicing dspark_head_base in chunks of kBatchHeadMax (8) when sum_n > 8, and double-buffering
++    // hq/approx across 2 chunk slots so per-session Markov/head-pick steps run concurrently on each session's stream.
++    constexpr int kBatchHeadMax = 8;
++    constexpr int kBatchSlots = 2;
++    constexpr int kMaxB = bk::wgemm::kRows / kDsBlock;                 // 4
++    constexpr int kBatchTotalDraftsMax = kMaxB * kDsDrafts;            // 4 * 7 = 28
++    struct BatchBuf {
++        int dev = -1;
++        const DsparkWeights* w = nullptr;
++        int64_t n_vocab = 0;
++        float *x = nullptr, *h = nullptr, *q = nullptr, *kb = nullptr, *vb = nullptr, *attn = nullptr;
++        float* approx[kBatchSlots] = {};
++        void* hq[kBatchSlots] = {};
++        void *act_a = nullptr, *act_h = nullptr;
++        bk::wgemm::Workspace ws{};
++        cudaEvent_t attn_in[kDsMaxLayers] = {};
++        cudaEvent_t attn_out[kDsMaxLayers][kMaxB] = {};
++        cudaEvent_t base_ev[kBatchSlots] = {};
++        cudaEvent_t done_ev[kBatchSlots][kMaxB] = {};
++        // Captured graphs for static wgemm stages, keyed by [B - 2][stage], stage 0 = layer 0 pre-attn,
++        // stage 1..n_layers-1 = post-attn(l-1) + pre-attn(l), stage n_layers = post-attn(last) + final rms_norm.
++        cudaGraphExec_t g_layer[3][kDsMaxLayers + 1] = {};
++    };
++    static std::mutex mu;
++    static std::vector<BatchBuf> bufs;
++    int cur_dev = 0;
++    cudaGetDevice(&cur_dev);
++    const int64_t screen_rows = dspark_screen_rows(w.n_vocab);
++    BatchBuf* bb = nullptr;
++    {
++        std::lock_guard<std::mutex> lk(mu);
++        for (BatchBuf& b : bufs)
++            if (b.dev == cur_dev && b.w == &w && b.n_vocab == w.n_vocab) {
++                bb = &b;
++                break;
++            }
++        if (!bb) {
++            BatchBuf nb;
++            nb.dev = cur_dev;
++            nb.w = &w;
++            nb.n_vocab = w.n_vocab;
++            constexpr size_t kR = bk::wgemm::kRows;
++            size_t pf = 0, tk = 0;
++            ws_need(d, pf, tk);
++            bool ok = cudaMalloc(&nb.x, kR * kE * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.h, kR * kE * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.q, kR * kQ * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.kb, kR * kKV * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.vb, kR * kKV * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.attn, kR * kQ * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.act_a, bk::wgemm::act_bytes(kQ)) == cudaSuccess &&
++                      cudaMalloc(&nb.act_h, bk::wgemm::act_bytes((int64_t) d.n_ff)) == cudaSuccess &&
++                      cudaMalloc(&nb.ws.partial, std::max<size_t>(pf, 1) * 4) == cudaSuccess &&
++                      cudaMalloc(&nb.ws.tickets, std::max<size_t>(tk, 1) * 4) == cudaSuccess;
++            for (int si = 0; si < kBatchSlots && ok; ++si) {
++                ok = cudaMalloc(&nb.approx[si], (size_t) kBatchTotalDraftsMax * (size_t) screen_rows * 4) == cudaSuccess &&
++                     cudaMalloc(&nb.hq[si], (size_t) kBatchTotalDraftsMax * bk::native_q8_1_bytes(kE, 1)) == cudaSuccess &&
++                     cudaEventCreateWithFlags(&nb.base_ev[si], cudaEventDisableTiming) == cudaSuccess;
++                for (int b = 0; b < kMaxB && ok; ++b)
++                    ok = cudaEventCreateWithFlags(&nb.done_ev[si][b], cudaEventDisableTiming) == cudaSuccess;
++            }
++            for (int l = 0; l < kDsMaxLayers && ok; ++l) {
++                ok = cudaEventCreateWithFlags(&nb.attn_in[l], cudaEventDisableTiming) == cudaSuccess;
++                for (int b = 0; b < kMaxB && ok; ++b)
++                    ok = cudaEventCreateWithFlags(&nb.attn_out[l][b], cudaEventDisableTiming) == cudaSuccess;
++            }
++            if (ok) {
++                cudaMemset(nb.ws.tickets, 0, std::max<size_t>(tk, 1) * 4);
++                nb.ws.partial_floats = pf;
++                nb.ws.tickets_n = tk;
++                bufs.push_back(nb);
++                bb = &bufs.back();
++            } else {
++                cudaGetLastError();
++                for (void* p : {(void*) nb.x, (void*) nb.h, (void*) nb.q, (void*) nb.kb, (void*) nb.vb, (void*) nb.attn,
++                                nb.act_a, nb.act_h, (void*) nb.ws.partial, (void*) nb.ws.tickets})
++                    if (p) cudaFree(p);
++                for (int si = 0; si < kBatchSlots; ++si) {
++                    if (nb.approx[si]) cudaFree(nb.approx[si]);
++                    if (nb.hq[si]) cudaFree(nb.hq[si]);
++                    if (nb.base_ev[si]) cudaEventDestroy(nb.base_ev[si]);
++                    for (int b = 0; b < kMaxB; ++b)
++                        if (nb.done_ev[si][b]) cudaEventDestroy(nb.done_ev[si][b]);
++                }
++                for (int l = 0; l < kDsMaxLayers; ++l) {
++                    if (nb.attn_in[l]) cudaEventDestroy(nb.attn_in[l]);
++                    for (int b = 0; b < kMaxB; ++b)
++                        if (nb.attn_out[l][b]) cudaEventDestroy(nb.attn_out[l][b]);
++                }
++                for (const Job& j : jobs)
++                    if (model::Result r = j.h->draft_begin(j.anchor, j.pos, j.n, j.st ? j.st : stream); !r.ok()) return r;
++                return {};
++            }
++        }
++    }
++
++    namespace wg = bk::wgemm;
++    const auto mat = [](const void* p, int64_t rows, const float* scale, float* y, int64_t ld_y) {
++        return wg::Matrix{(const uint8_t*) p, rows, scale, y, ld_y};
++    };
++    const bk::RopeSpec rope = rope_of(d);
++    const DsHead head = w.head_args();
++    const size_t q8_row_bytes = bk::native_q8_1_bytes(kE, 1);
++    const cudaStream_t cs = (cudaStream_t) stream;
++    const int max_blocks = bk::wgemm::kRows / kDsBlock;   // 4
++
++    auto run_static_stage = [&](int B, int k) {
++        bk::PdlScope pdl(true);
++        const int T = B * kDsBlock;
++        if (k > 0) {
++            const DsparkLayer& L = w.layer[(size_t) k - 1];
++            const float* sc = L.fp4_scale;
++            wg::pack(bb->attn, kQ, kQ, T, bb->act_a, stream);
++            wg::Call o;
++            o.fmt = wg::Format::Nvfp4;
++            o.K = kQ;
++            o.epi = wg::Epilogue::Add;
++            o.m[0] = mat(L.wo, kE, sc + 3, bb->x, kE);
++            wg::gemm(o, bb->act_a, T, bb->ws, stream);
++            wg::norm_pack(bb->x, L.post_norm, d.rms_eps, kE, T, bb->act_a, nullptr, stream);
++            wg::Call gu;
++            gu.fmt = wg::Format::Nvfp4;
++            gu.K = kE;
++            gu.n = 2;
++            gu.epi = wg::Epilogue::SwiGLU;
++            gu.m[0] = mat(L.gate, d.n_ff, sc + 4, nullptr, d.n_ff);
++            gu.m[1] = mat(L.up, d.n_ff, sc + 5, nullptr, d.n_ff);
++            gu.act_out = bb->act_h;
++            wg::gemm(gu, bb->act_a, T, bb->ws, stream);
++            wg::Call dn;
++            dn.fmt = wg::Format::Nvfp4;
++            dn.K = d.n_ff;
++            dn.epi = wg::Epilogue::Add;
++            dn.m[0] = mat(L.down, kE, sc + 6, bb->x, kE);
++            wg::gemm(dn, bb->act_h, T, bb->ws, stream);
++        }
++        if (k < d.n_layers) {
++            const DsparkLayer& L = w.layer[(size_t) k];
++            const float* sc = L.fp4_scale;
++            wg::norm_pack(bb->x, L.attn_norm, d.rms_eps, kE, T, bb->act_a, nullptr, stream);
++            wg::Call qkv;
++            qkv.fmt = wg::Format::Nvfp4;
++            qkv.K = kE;
++            qkv.n = 3;
++            qkv.m[0] = mat(L.wq, kQ, sc + 0, bb->q, kQ);
++            qkv.m[1] = mat(L.wk, kKV, sc + 1, bb->kb, kKV);
++            qkv.m[2] = mat(L.wv, kKV, sc + 2, bb->vb, kKV);
++            wg::gemm(qkv, bb->act_a, T, bb->ws, stream);
++        } else {
++            bk::rms_norm_rows(bb->x, w.norm, T, kE, d.rms_eps, bb->h, stream);
++        }
++    };
++    auto launch_static_stage = [&](int B, int k) {
++        cudaGraphExec_t& g = bb->g_layer[B - 2][k];
++        if (!g) {
++            cudaGraph_t graph = nullptr;
++            if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeRelaxed) == cudaSuccess) {
++                run_static_stage(B, k);
++                const cudaError_t ce = cudaStreamEndCapture(cs, &graph);
++                const cudaError_t ci = ce == cudaSuccess ? cudaGraphInstantiateWithFlags(&g, graph, 0) : ce;
++                if (graph) cudaGraphDestroy(graph);
++                if (ci != cudaSuccess) {
++                    (void) cudaGetLastError();
++                    g = nullptr;
++                }
++            } else {
++                (void) cudaGetLastError();
++            }
++        }
++        if (g && cudaGraphLaunch(g, cs) == cudaSuccess) return;
++        run_static_stage(B, k);
++    };
++
++    try {
++        bk::PdlScope pdl(true);
++        const bool multi_slot_wrap = jobs.size() > (size_t) (kMaxB * kBatchSlots);
++        int chunk_idx = 0;
++        for (size_t j0 = 0; j0 < jobs.size(); ++chunk_idx) {
++            int B = 0, sum_n = 0;
++            while (j0 + (size_t) B < jobs.size() && B < max_blocks) {
++                sum_n += jobs[j0 + (size_t) B].n;
++                ++B;
++            }
++            if (B == 1) {
++                const Job& jb = jobs[j0];
++                void* sst = jb.st ? jb.st : stream;
++                if (model::Result r = jb.h->draft_begin(jb.anchor, jb.pos, jb.n, sst); !r.ok()) return r;
++                jb.h->batch_stream_ = jb.st ? nullptr : stream;
++                j0 += 1;
++                continue;
++            }
++            const int si = chunk_idx % kBatchSlots;
++            if (chunk_idx >= kBatchSlots) {
++                for (int b = 0; b < kMaxB; ++b)
++                    cudaStreamWaitEvent(cs, bb->done_ev[si][b], 0);
++            }
++            void* const hq_buf = bb->hq[si];
++            float* const approx_buf = bb->approx[si];
++            // 1. Block inputs for all B sessions into contiguous bb->x[0..B*8)
++            for (int b = 0; b < B; ++b) {
++                const Job& jb = jobs[j0 + (size_t) b];
++                jb.h->meta_h_[0] = jb.anchor;
++                jb.h->meta_h_[1] = (int32_t) jb.pos;
++                cudaMemcpyAsync(jb.h->meta_d_, jb.h->meta_h_, 2 * sizeof(int32_t), cudaMemcpyHostToDevice, cs);
++                dspark_block_inputs(w.embedding, jb.h->meta_d_, w.embed_norm, d.rms_eps, w.mask, kDsBlock,
++                                    bb->x + (size_t) b * kDsBlock * kE, jb.h->pos3b_, jb.h->prev_, jb.h->state_, jb.h->fr_,
++                                    kFrRing, jb.h->frc_, w.w1, jb.h->w1_row_, stream);
++            }
++            // 2. All 3 DSpark layers: captured batched wgemm stages + parallel per-session KV cache & attention
++            for (int l = 0; l < d.n_layers; ++l) {
++                launch_static_stage(B, l);
++                const DsparkLayer& L = w.layer[(size_t) l];
++                bool forked_attn = false;
++                for (int b = 0; b < B; ++b) {
++                    const Job& jb = jobs[j0 + (size_t) b];
++                    cudaStream_t sst = jb.st ? (cudaStream_t) jb.st : cs;
++                    if (sst != cs) {
++                        if (!forked_attn) {
++                            cudaEventRecord(bb->attn_in[l], cs);
++                            forked_attn = true;
++                        }
++                        cudaStreamWaitEvent(sst, bb->attn_in[l], 0);
++                    }
++                    const Cache& c = jb.h->cache_[(size_t) l];
++                    bk::attn_qk_prepare(bb->q + (size_t) b * kDsBlock * kQ, bb->kb + (size_t) b * kDsBlock * kKV,
++                                        bb->vb + (size_t) b * kDsBlock * kKV, L.q_norm, L.k_norm, d.rms_eps, rope,
++                                        jb.h->pos3b_, kDsBlock, kHeads, kKvHeads, jb.h->qr_, c.k, c.v, 0, sst, kHeadDim,
++                                        false, c.cap, jb.h->meta_d_ + 1);
++                    const int64_t window = c.ring ? (int64_t) d.window + 1 : jb.pos + kDsBlock;
++                    const int64_t cells = jb.pos + kDsBlock - std::max<int64_t>(0, jb.pos - window + 1) + 64;
++                    bk::gqa_window_attn(jb.h->qr_, c.k, c.v, kHeads, kKvHeads, kHeadDim, jb.pos, kDsBlock, jb.pos + kDsBlock,
++                                        window, c.cap, jb.h->att_scr_, std::min(jb.h->att_cells_, cells),
++                                        bb->attn + (size_t) b * kDsBlock * kQ, sst, true);
++                    if (sst != cs) {
++                        cudaEventRecord(bb->attn_out[l][b], sst);
++                        cudaStreamWaitEvent(cs, bb->attn_out[l][b], 0);
++                    }
++                }
++            }
++            // 3. Final post-attn + final norm (captured) + batched dspark_head_base in slices of up to 8 draft rows
++            //    + RNN context projections (reading bb->h before the next chunk can overwrite it).
++            launch_static_stage(B, d.n_layers);
++            int off = 0;
++            for (int b = 0; b < B; ++b) {
++                const Job& jb = jobs[j0 + (size_t) b];
++                const float* hd = bb->h + (size_t) (b * kDsBlock + 1) * kE;
++                bk::native_quantize_q8_1(hd, static_cast<char*>(hq_buf) + (size_t) off * q8_row_bytes, kE, jb.n, stream);
++                bk::bf16_gemv_fp32_mmvf_multi(hd, kE, w.w_h, jb.h->ctx_h_, kDsRnn, kE, kDsRnn, jb.n, stream);
++                bk::bf16_gemv_fp32_mmvf_multi(jb.h->frc_, kE, w.w_f, jb.h->ctx_f_, kDsRnn, kE, kDsRnn, 1, stream);
++                off += jb.n;
++            }
++            for (int h0 = 0; h0 < sum_n; h0 += kBatchHeadMax) {
++                const int hn = std::min(kBatchHeadMax, sum_n - h0);
++                dspark_head_base(head, static_cast<const char*>(hq_buf) + (size_t) h0 * q8_row_bytes, hn,
++                                 approx_buf + (size_t) h0 * screen_rows, stream);
++            }
++            // 4. Per-session Markov steps + head pick + async D2H, forked onto each session's own stream so the
++            //    serial per-draft recurrences & 1-CTA final picks run concurrently across all B sessions.
++            bool forked_head = false;
++            off = 0;
++            for (int b = 0; b < B; ++b) {
++                const Job& jb = jobs[j0 + (size_t) b];
++                cudaStream_t sst = jb.st ? (cudaStream_t) jb.st : cs;
++                if (sst != cs) {
++                    if (!forked_head) {
++                        cudaEventRecord(bb->base_ev[si], cs);
++                        forked_head = true;
++                    }
++                    cudaStreamWaitEvent(sst, bb->base_ev[si], 0);
++                }
++                const void* hq_sub = static_cast<const char*>(hq_buf) + (size_t) off * q8_row_bytes;
++                const float* ap_sub = approx_buf + (size_t) off * screen_rows;
++                for (int i = 0; i < jb.n; ++i) {
++                    dspark_markov_step(jb.h->ctx_h_ + (size_t) i * kDsRnn, jb.h->ctx_f_, w.rnn_b, w.w_sp, jb.h->w1_row_,
++                                       jb.h->state_ + (i & 1) * kDsRank, jb.h->state_ + ((i + 1) & 1) * kDsRank, jb.h->latent_,
++                                       sst);
++                    void* lq = static_cast<char*>(jb.h->lat_q_) + (size_t) i * bk::native_q8_1_bytes(kDsRank, 1);
++                    bk::native_quantize_q8_1(jb.h->latent_, lq, kDsRank, 1, sst);
++                    dspark_head_pick(head, hq_sub, lq, ap_sub, i, jb.h->head_scr_, jb.h->prev_, jb.h->ids_d_, jb.h->conf_d_,
++                                     w.w1, jb.h->w1_row_, sst);
++                }
++                cudaMemcpyAsync(jb.h->ids_h_, jb.h->ids_d_, (size_t) jb.n * 4, cudaMemcpyDeviceToHost, sst);
++                cudaMemcpyAsync(jb.h->conf_h_, jb.h->conf_d_, (size_t) jb.n * 4, cudaMemcpyDeviceToHost, sst);
++                if (multi_slot_wrap) cudaEventRecord(bb->done_ev[si][b], sst);
++                jb.h->pending_ = jb.n;
++                jb.h->batch_stream_ = jb.st ? nullptr : stream;
++                jb.h->block_pos_ = jb.pos;
++                jb.h->block_anchor_ = jb.anchor;
++                off += jb.n;
++            }
++            j0 += (size_t) B;
++        }
++    } catch (const std::exception& e) {
++        return {model::Status::Error, std::string("inkling2: the drafter batch: ") + e.what()};
++    }
++    return {};
++}
++
+ model::Result DsparkHook::draft_end(int32_t* ids, float* conf, int max_n, int& n, const model::ModelSession::DraftNeed&,
+                                     void* stream) {
+     n = 0;
+     if (!w_) return {model::Status::NotImplemented, "inkling2: the pack has no drafter"};
+     if (pending_ == 0) return {};
+-    if (cudaStreamSynchronize((cudaStream_t) stream) != cudaSuccess)
++    void* sync_st = batch_stream_ ? batch_stream_ : stream;
++    batch_stream_ = nullptr;
++    if (cudaStreamSynchronize((cudaStream_t) sync_st) != cudaSuccess)
+         return {model::Status::Error, std::string("inkling2: the drafter: ") + cudaGetErrorString(cudaGetLastError())};
+     n = std::min(pending_, max_n);
+     for (int i = 0; i < n; ++i) {
+diff --git a/src/models/inkling2/dspark.hpp b/src/models/inkling2/dspark.hpp
+index f5e07f494..1cd45ae8e 100644
+--- a/src/models/inkling2/dspark.hpp
++++ b/src/models/inkling2/dspark.hpp
+@@ -148,6 +148,10 @@ public:
+     /// The host's record of the same rows (outside a captured forward).
+     void note(int64_t pos0, int rows);
+     model::Result draft_begin(int32_t anchor, int64_t pos, int n, void* stream);
++    /// Batched draft_begin for several sessions sharing one DsparkWeights: packs up to 4 blocks (32 rows) through
++    /// wgemm on `stream` and forks per-session attention & Markov/head-pick steps across `peer_streams` in parallel.
++    static model::Result draft_batch(DsparkHook* const* hooks, const int32_t* anchors, const int64_t* pos,
++                                     const int* n, int count, void* stream, void* const* peer_streams = nullptr);
+     model::Result draft_end(int32_t* ids, float* conf, int max_n, int& n, const model::ModelSession::DraftNeed& need, void* stream);
+     /// Conversations: the sliding-window layers' rings are running state, the full layers' cells go with the target's.
+     size_t running_bytes() const;
+@@ -203,6 +207,7 @@ private:
+     // the host's record: positions [lo_, hi_) have their context in the caches; a block is in flight
+     int64_t lo_ = 0, hi_ = 0;
+     int pending_ = 0;
++    void* batch_stream_ = nullptr;          ///< non-null when draft_batch ran this hook's draft on a shared stream
+     // --diag-dump
+     std::FILE* dump_ = nullptr;
+     int dumped_ = 0;
+diff --git a/src/models/inkling2/kernels/attn.cu b/src/models/inkling2/kernels/attn.cu
+index 3ac383791..7b461076b 100644
+--- a/src/models/inkling2/kernels/attn.cu
++++ b/src/models/inkling2/kernels/attn.cu
+@@ -116,9 +116,10 @@ __global__ void __launch_bounds__(kWarps * 32) attn_split_kernel(AttnArgs a, int
+     const int s_lo = lo + s * span, s_hi = min(p + 1, s_lo + span);
+     constexpr int kRowBytes = FP8 ? kHeadDim : kHeadDim * 2;
+     constexpr int kLoads = kRowBytes / 16;
+-    const SegCaches& sc = a.seg.c[bk::seg_of(a.seg.at, r)];   // a batch window's row: its conversation's caches
+-    const uint8_t* kbase = static_cast<const uint8_t*>(a.seg.at.n > 0 ? sc.k : a.k_cache) + (size_t) g * kRowBytes;
+-    const uint8_t* vbase = static_cast<const uint8_t*>(a.seg.at.n > 0 ? sc.v : a.v_cache) + (size_t) g * kRowBytes;
++    const Segments& sg = seg_ref(a.seg);
++    const SegCaches& sc = sg.c[bk::seg_of(sg.at, r)];   // a batch window's row: its conversation's caches
++    const uint8_t* kbase = static_cast<const uint8_t*>(sg.at.n > 0 ? sc.k : a.k_cache) + (size_t) g * kRowBytes;
++    const uint8_t* vbase = static_cast<const uint8_t*>(sg.at.n > 0 ? sc.v : a.v_cache) + (size_t) g * kRowBytes;
+     // a tile's key and value rows, the lane's key's (zero past the slice); the warp's first tile is loaded with the queries
+     const auto load_tile = [&](int t0, uint4 (&kr)[kLoads], uint4 (&vr)[kLoads]) {
+         const int key = t0 + lane;
+@@ -606,7 +607,7 @@ void attention_decode(const AttnArgs& a, int rows, int64_t max_keys, void* scrat
+ 
+ void attention_window(const AttnPrep& pa, const AttnArgs& a, int rows, int64_t max_keys, void* scratch, void* stream) {
+     if (rows <= 0) return;
+-    if (rows > kFusedRows || launch_splits(max_keys) > kClusterSplits || a.q8 == nullptr || a.seg.at.n > 0) {
++    if (rows > kFusedRows || launch_splits(max_keys) > kClusterSplits || a.q8 == nullptr || a.seg.at.n > 0 || a.seg.dev != nullptr) {
+         decode_prepare(pa, rows, stream);
+         attention_decode(a, rows, max_keys, scratch, nullptr, stream);
+         return;
+diff --git a/src/models/inkling2/kernels/dspark.cu b/src/models/inkling2/kernels/dspark.cu
+index 4e988bcee..d6d8f0fc3 100644
+--- a/src/models/inkling2/kernels/dspark.cu
++++ b/src/models/inkling2/kernels/dspark.cu
+@@ -317,14 +317,15 @@ __device__ __forceinline__ void screen_x(const Q81* __restrict__ x, int nb, int*
+ }
+ 
+ // Tile `tile`: approx[r][row] = the head copy's score of q8_1 row r (r < rows) for its 32 copy rows. Four warps split the row
+-// length, lane = row; the copy is read once for all the rows.
++// length, lane = row; the copy is read once for all the rows (up to kHeadBaseMax = 8 so 4 batched slots x 2 drafts fit in one pass).
++constexpr int kHeadBaseMax = 8;
+ __global__ void __launch_bounds__(128) head_base_kernel(const uint4* __restrict__ wq, const uint32_t* __restrict__ sc,
+                                                         const Q81* __restrict__ x, int rows, int64_t n_pad,
+                                                         float* __restrict__ approx) {
+     constexpr int kNw4 = kWidth / 64, NW = kNw4 / 4;
+-    __shared__ __align__(16) int xi[kDsDrafts][kWidth / 4];
+-    __shared__ float xs[kDsDrafts][kHeadNb], xdd[kDsDrafts][kHeadNb];
+-    __shared__ float red[kDsDrafts][4][32];
++    __shared__ __align__(16) int xi[kHeadBaseMax][kWidth / 4];
++    __shared__ float xs[kHeadBaseMax][kHeadNb], xdd[kHeadBaseMax][kHeadNb];
++    __shared__ float red[kHeadBaseMax][4][32];
+     const int tid = threadIdx.x, warp = tid >> 5, lane = tid & 31;
+     const int64_t tile = blockIdx.x;
+     const size_t base = ((size_t) tile * kNw4 + warp * NW) * 32 + lane;
+@@ -339,7 +340,7 @@ __global__ void __launch_bounds__(128) head_base_kernel(const uint4* __restrict_
+     for (int r = 0; r < rows; ++r) screen_x(x + (size_t) r * kHeadNb, kHeadNb, xi[r], xs[r], xdd[r], tid, 128);
+     __syncthreads();
+ #pragma unroll
+-    for (int r = 0; r < kDsDrafts; ++r)
++    for (int r = 0; r < kHeadBaseMax; ++r)
+         if (r < rows) red[r][warp][lane] = screen_acc<NW>(w, s, warp * NW, xi[r], xs[r], xdd[r]);
+     __syncthreads();
+     const int64_t row = tile * 32 + lane;
+@@ -677,7 +678,7 @@ void dspark_screen_order(const float* by_token, int64_t n_vocab, float* by_row,
+ size_t dspark_head_scratch_bytes(int64_t n_vocab) { return px::scratch_bytes(n_vocab); }
+ 
+ void dspark_head_base(const DsHead& h, const void* hq, int rows, float* approx, void* stream) {
+-    if (rows < 1 || rows > kDsDrafts) throw std::runtime_error("inkling2 dspark head: 1 to 7 rows");
++    if (rows < 1 || rows > kHeadBaseMax) throw std::runtime_error("inkling2 dspark head: 1 to 8 rows");
+     launch_pdl(head_base_kernel, dim3((unsigned) px::tiles(h.n_vocab)), dim3(128), 0, (cudaStream_t) stream, (const uint4*) h.head_sc,
+                (const uint32_t*) px::scales(const_cast<void*>(h.head_sc), h.n_vocab, kWidth), (const Q81*) hq, rows,
+                dspark_screen_rows(h.n_vocab), approx);
+diff --git a/src/models/inkling2/kernels/glue.cu b/src/models/inkling2/kernels/glue.cu
+index 5e35a98ca..cc7f512c8 100644
+--- a/src/models/inkling2/kernels/glue.cu
++++ b/src/models/inkling2/kernels/glue.cu
+@@ -478,13 +478,14 @@ __global__ void __launch_bounds__(128) prepare_kernel(AttnPrep a) {
+     const int p = a.pos[r];
+     if (w < 2) {
+         // a batch window's row: its conversation's caches, and its rows of the window from its segment's first
+-        const int k = bk::seg_of(a.seg.at, r);
+-        const bool b = a.seg.at.n > 0;
+-        const SegCaches& sc = a.seg.c[k];
++        const Segments& sg = seg_ref(a.seg);
++        const int k = bk::seg_of(sg.at, r);
++        const bool b = sg.at.n > 0;
++        const SegCaches& sc = sg.c[k];
+         float* ring = w ? (b ? sc.v_ring : a.v_ring) : (b ? sc.k_ring : a.k_ring);
+         void* cache = w ? (b ? sc.v : a.v_cache) : (b ? sc.k : a.k_cache);
+         float val[4], raw[4], f;
+-        prep::kv_row(a, r, p, g, w, lane, wt, val, raw, f, ring, b ? a.seg.at.row0[k] : 0);
++        prep::kv_row(a, r, p, g, w, lane, wt, val, raw, f, ring, b ? sg.at.row0[k] : 0);
+         const size_t cell = ((size_t) (p % a.cap) * kKvHeads + g) * kHeadDim + lane * 4;
+ #pragma unroll
+         for (int u = 0; u < 4; ++u) prep::store_kv(cache, a.fp8, cell + u, val[u] * f);
+@@ -511,8 +512,9 @@ __global__ void __launch_bounds__(kThreads) post_attn_kernel(PostAttn a) {
+     // the window; every input is read before the first store (the ring is one of them)
+     const int r = blockIdx.x, pr = a.pos[r];
+     // a batch window's row: its conversation's ring, and its rows of the window from its segment's first
+-    const int sk = bk::seg_of(a.seg.at, r), first = a.seg.at.n > 0 ? a.seg.at.row0[sk] : 0;
+-    float* const ring = a.seg.at.n > 0 ? a.seg.c[sk].a_ring : a.ring;
++    const Segments& sg = seg_ref(a.seg);
++    const int sk = bk::seg_of(sg.at, r), first = sg.at.n > 0 ? sg.at.row0[sk] : 0;
++    float* const ring = sg.at.n > 0 ? sg.c[sk].a_ring : a.ring;
+     float v[kMaxMix][kPer];
+     const int nb = a.n_blocks + (a.boundary ? 1 : 0), n = nb + 1;
+ #pragma unroll
+@@ -577,8 +579,9 @@ __global__ void __launch_bounds__(256) moe_finish_kernel(MoeFinish a) {
+     const int r = blockIdx.x;
+     const int c = blockIdx.y * 256 + threadIdx.x;
+     // a batch window's row: its conversation's ring, and its rows of the window from its segment's first
+-    const int sk = bk::seg_of(a.seg.at, r), first = a.seg.at.n > 0 ? a.seg.at.row0[sk] : 0;
+-    float* const ring = a.seg.at.n > 0 ? a.seg.c[sk].m_ring : a.ring;
++    const Segments& sg = seg_ref(a.seg);
++    const int sk = bk::seg_of(sg.at, r), first = sg.at.n > 0 ? sg.at.row0[sk] : 0;
++    float* const ring = sg.at.n > 0 ? sg.c[sk].m_ring : a.ring;
+     float taps[kConv];   // read while the kernel before finishes
+ #pragma unroll
+     for (int j = 0; j < kConv; ++j) taps[j] = a.taps[c * kConv + (kConv - 1 - j)];
+diff --git a/src/models/inkling2/kernels/kernels_parity.cpp b/src/models/inkling2/kernels/kernels_parity.cpp
+index 6381dad02..466a92824 100644
+--- a/src/models/inkling2/kernels/kernels_parity.cpp
++++ b/src/models/inkling2/kernels/kernels_parity.cpp
+@@ -22,6 +22,7 @@
+ #include <cstring>
+ #include <functional>
+ #include <random>
++#include <string>
+ #include <vector>
+ 
+ using namespace basalt::models::inkling2;
+@@ -684,7 +685,7 @@ void test_mix_norm() {
+ }
+ 
+ void test_controllers() {
+-    const int R = 8, S = 3, rank = 64;
++    const int R = kDecodeRows, S = 3, rank = 64;
+     std::vector<std::vector<float>> dest(S), msg(S), nw(S);
+     std::vector<std::vector<uint16_t>> down(S), up(S);
+     CtrlArgs a;
+@@ -762,7 +763,15 @@ void test_controllers() {
+         }
+         report("  stream 2 through q8_1", deq, r2, 1.5e-2);
+     }
+-    CtrlArgs one = a;   // row 1 alone
++    CtrlArgs part = a;   // every shorter launch gives its rows the same bits as the widest launch
++    for (int s = 0; s < S; ++s) part.q8[s] = zeros<uint8_t>((size_t) R * E / 32 * 36);
++    part.norm_out = zeros<float>((size_t) R * E);
++    for (int rows = 1; rows < R; ++rows) {
++        controllers(part, S, rows, nullptr);
++        const std::vector<float> h = host(part.norm_out, (size_t) rows * E);
++        same_bits(("  " + std::to_string(rows) + " rows alone").c_str(), h.data(), got.data(), h.size() * 4);
++    }
++    CtrlArgs one = a;   // row 1 by itself, not only shorter prefixes
+     for (int s = 0; s < S; ++s) {
+         one.dest[s] = a.dest[s] + E;
+         one.msg[s] = a.msg[s] + E;
+@@ -770,13 +779,8 @@ void test_controllers() {
+     }
+     one.norm_out = zeros<float>(E);
+     controllers(one, S, 1, nullptr);
+-    same_bits("  a row alone", host(one.norm_out, E).data(), &got[E], (size_t) E * 4);
+-    CtrlArgs three = a;   // the first three rows (the 3-4-row launch) against the 8-row one
+-    for (int s = 0; s < S; ++s) three.q8[s] = zeros<uint8_t>((size_t) 3 * E / 32 * 36);
+-    three.norm_out = zeros<float>((size_t) 3 * E);
+-    controllers(three, S, 3, nullptr);
+-    same_bits("  three rows", host(three.norm_out, (size_t) 3 * E).data(), got.data(), (size_t) 3 * E * 4);
+-    std::printf("  %.1f us a call (1 row, 3 streams)\n", time_us([&] { controllers(one, S, 1, nullptr); }));
++    same_bits("  row 1 alone", host(one.norm_out, E).data(), &got[E], (size_t) E * 4);
++    std::printf("  %.1f us a call (1 row, 3 streams)\n", time_us([&] { controllers(part, S, 1, nullptr); }));
+     std::printf("  %.1f us a call (%d rows, 3 streams)\n", time_us([&] { controllers(a, S, R, nullptr); }), R);
+ }
+ 
+diff --git a/src/models/inkling2/session.cpp b/src/models/inkling2/session.cpp
+index b65b92080..1364b5655 100644
+--- a/src/models/inkling2/session.cpp
++++ b/src/models/inkling2/session.cpp
+@@ -54,6 +54,36 @@ namespace {
+ namespace bk = basalt::kernels;
+ 
+ constexpr int kMaxRows = kDecodeRows;    // rows of one forward call (a decode window, a step of a prompt)
++
++// The projection plane products take a whole window.  The 2304-row output product keeps its measured-faster split for
++// 12..16 rows.  The raw Q8_0 vocabulary head uses its separate measured-faster 9..16-column kernel; <= 8 stays on the
++// original call.  Every column's sums are its own whatever the call's width, so the splits preserve the bits.
++constexpr size_t kQ81Block = 36;   // bytes of a q8_1 block (32 values)
++size_t q8_1_bytes_rows(int n_in, int rows) { return (size_t) rows * (size_t) (n_in / 32) * kQ81Block; }
++void planes_mmvq_rows(const void* w, const void* x, float* y, int n_in, int n_out, int rows, void* st) {
++    if (n_out >= 4096 || rows <= 11) {
++        bk::native_q8_planes_mmvq(w, x, y, n_in, n_out, rows, st);
++        return;
++    }
++    for (int c0 = 0; c0 < rows; c0 += kProductCols) {
++        const int n = std::min(kProductCols, rows - c0);
++        bk::native_q8_planes_mmvq(w, (const uint8_t*) x + q8_1_bytes_rows(n_in, c0),
++                                  y + (size_t) c0 * n_out, n_in, n_out, n, st);
++    }
++}
++void planes_mmvq_segments_rows(const void* w, int total, const bk::Q80Segments& sg, int n_in, int rows, void* st) {
++    bk::native_q8_planes_mmvq_segments(w, total, sg, n_in, rows, st);
++}
++void q8_0_mmvq_rows(const void* w, const void* x, float* y, int n_in, int n_out, int rows, void* st) {
++    if (rows > kProductCols) {
++        bk::native_q8_0_mmvq_wide(w, x, y, n_in, n_out, rows, st);
++        return;
++    }
++    for (int c0 = 0; c0 < rows; c0 += kProductCols) {
++        const int n = std::min(kProductCols, rows - c0);
++        bk::native_q8_0_mmvq(w, (const uint8_t*) x + q8_1_bytes_rows(n_in, c0), y + (size_t) c0 * n_out, n_in, n_out, n, st);
++    }
++}
+ constexpr int kTypeBF16 = 30;
+ constexpr int kOutRows = 3072;           // the attention output's width (heads x head width)
+ constexpr int kStage = 64;               // windows whose tokens and positions are in flight from the pinned ring at once
+@@ -82,6 +112,7 @@ struct Scratch {
+     float* lp_ = nullptr;                       // the log probabilities' scratch
+     float* blog_ = nullptr;                     // a batch window's logits, every row, before each session takes its own
+     int32_t *io_d_ = nullptr, *tok_d_ = nullptr, *pos_d_ = nullptr;   // a call's tokens, then its positions
++    Segments* batch_segs_d_ = nullptr;          // [visit cache slot] device-indirect batch segment tables (graph-invariant)
+     static constexpr int kGuessExperts = 8;     // the experts a window's guess requests a visit (rows x kGuessExperts / rows)
+     static constexpr int kGuessRows = 2;        // the widest window guessed (wider ones keep the read-ahead)
+ };
+@@ -96,6 +127,8 @@ struct Shared {
+     std::unique_ptr<PromptRunner> prompt;   // PROMPT HOOK
+     std::unique_ptr<CpuExperts> cpu;        // with a spill: the RAM experts' rows
+     float* tap = nullptr;                   // DSPARK HOOK: the drafter's features of a call's rows (dspark_tap_bytes)
++    Segments* batch_segs_h = nullptr;       // page-locked host staging for device-indirect batch Segments
++    int batch_seg_slots = 0;
+     model::BatchShared batch;
+     std::vector<std::pair<int, void*>> bufs;   // (device, allocation)
+     ~Shared() {
+@@ -109,8 +142,17 @@ struct Shared {
+         }
+         cudaSetDevice(dev);
+         if (hand) cudaFreeHost(hand);
++        if (batch_segs_h) cudaFreeHost(batch_segs_h);
+     }
+     bool init(InklingModel& m, cudaStream_t stream, int max_pulls, std::string& err) {
++        int max_slot = 0;
++        for (const Visit& v : m.geo().visits) max_slot = std::max(max_slot, v.slot);
++        batch_seg_slots = max_slot + 1;
++        if (cudaHostAlloc((void**) &batch_segs_h, (size_t) batch_seg_slots * sizeof(Segments), cudaHostAllocPortable) != cudaSuccess) {
++            cudaGetLastError();
++            err = "cannot pin the batch segment staging table";
++            return false;
++        }
+         if (!alloc_scratch(m, x, m.device(), true, err)) return false;
+         if (m.cards() > 1) {
+             cudaSetDevice(m.card_device(1));
+@@ -156,8 +198,8 @@ struct Shared {
+         x.q_ = f(R * kHeads * kHeadDim); x.r_ = f(R * kHeads * kRel); x.sink_ = f(R * kHeads);
+         x.o_ = f(R * E); x.resid_ = f(R * E); x.fin_ = f(R * E);
+         x.att_scr_ = alloc(attention_decode_scratch(kMaxRows, std::max<int64_t>(ctx, g.window)));
+-        for (void*& q : x.xq_) q = alloc(bk::native_q8_1_bytes((int) E, kMaxRows));
+-        x.xo_ = alloc(bk::native_q8_1_bytes(kOutRows, kMaxRows));
++        for (void*& q : x.xq_) q = alloc(q8_1_bytes_rows((int) E, kMaxRows));
++        x.xo_ = alloc(q8_1_bytes_rows(kOutRows, kMaxRows));
+         x.rlog_ = f(R * g.n_expert); x.rw_ = f(R * g.n_used); x.ids_ = (int32_t*) alloc((size_t) R * g.n_used * 4);
+         const int64_t pairs = R * g.n_used;
+         x.ex_ptr_ = (unsigned long long*) alloc((size_t) pairs * 8);
+@@ -177,6 +219,7 @@ struct Shared {
+         x.io_d_ = (int32_t*) alloc((size_t) 2 * R * 4);
+         x.tok_d_ = x.io_d_;
+         x.pos_d_ = x.io_d_ + R;
++        x.batch_segs_d_ = (Segments*) alloc((size_t) batch_seg_slots * sizeof(Segments));
+         if (first && m.dspark()) tap = (float*) alloc(dspark_tap_bytes(std::max(kMaxRows, kPromptChunk)));   // DSPARK HOOK
+         if (!ok) {
+             cudaGetLastError();
+@@ -405,9 +448,32 @@ protected:
+     model::BatchShared& batch_shared() override { return sh_->batch; }
+     cudaStream_t batch_stream() const override { return stream_; }
+     bool batch_reserve(const model::DecodeRequest& r, std::string& err) override { return ensure_positions(r.pos + r.n_tokens, err); }
++    bool batch_key_per_segment() const override { return false; }
++    bool batch_parallel_post() const override { return true; }
+     bool batch_stage(const model::BatchView& v, model::GraphLru<core::CapturedGraph>::Key& key, std::string& err) override {
+         key.push_back((uint64_t) stage(v.w.tokens.data(), nullptr, v.w.rows, 0, v.w.positions.data()));
+         key.push_back(cpu_ = cpu_layers());
++        const bk::WindowSegs ws = v.w.device_segs();
++        for (int slot = 0; slot < sh_->batch_seg_slots; ++slot) {
++            Segments& dst = sh_->batch_segs_h[slot];
++            dst = Segments{};
++            dst.at = ws;
++            for (int i = 0; i < v.n; ++i) {
++                const VisitCache& vc = static_cast<const Session*>(v.ss[i])->vc_[(size_t) slot];
++                dst.c[i] = {vc.k, vc.v, vc.k_ring, vc.v_ring, vc.a_ring, vc.m_ring};
++            }
++        }
++        const size_t seg_bytes = (size_t) sh_->batch_seg_slots * sizeof(Segments);
++        cudaMemcpyAsync(sh_->x.batch_segs_d_, sh_->batch_segs_h, seg_bytes, cudaMemcpyHostToDevice, stream_);
++        if (Lane& k = lane_[1]; k.stream) {
++            cudaEventRecord(io_ev0_, stream_);
++            cudaSetDevice(k.device);
++            cudaStreamWaitEvent(k.stream, io_ev0_, 0);
++            cudaMemcpyAsync(k.x->batch_segs_d_, sh_->batch_segs_h, seg_bytes, cudaMemcpyHostToDevice, k.stream);
++            cudaEventRecord(io_ev1_, k.stream);
++            cudaSetDevice(m_.device());
++            cudaStreamWaitEvent(stream_, io_ev1_, 0);
++        }
+         return check(err);
+     }
+     bool batch_forward(const model::BatchView& v, std::string&) override {
+@@ -423,6 +489,7 @@ protected:
+         const int64_t V = g_.n_vocab;
+         hist_.resize((size_t) r.pos);
+         hist_.insert(hist_.end(), r.tokens, r.tokens + r.n_tokens);
++        if (dspark_.on()) dspark_.commit(pos_d_ + sg.row0, sg.rows, v.stream, sg.row0);   // DSPARK HOOK
+         dspark_.note(r.pos, r.n_tokens);   // DSPARK HOOK
+         lookups_ += (int64_t) r.n_tokens * g_.n_used * (int64_t) g_.visits.size();
+         head_rows_ = h;
+@@ -559,6 +626,22 @@ public:
+     int max_window() const override { return dspark_.on() ? std::clamp(m_.flags().spec, 1, kMaxRows) : 1; }
+     bool copy_drafts() const override { return max_window() > 1; }   // prompt lookup: any window's rows verify alike
+     model::Result draft_begin(int32_t anchor, int64_t pos, int n) override { return dspark_.draft_begin(anchor, pos, n, stream_); }
++    model::Result draft_batch(model::ModelSession* const* peers, const int32_t* anchors, const int64_t* pos,
++                              const int* n, int count) override {
++        if (!dspark_.on()) return {model::Status::NotImplemented, "inkling2: the pack has no drafter"};
++        if (count <= 1) return count == 1 ? peers[0]->draft_begin(anchors[0], pos[0], n[0]) : model::Result{};
++        std::vector<DsparkHook*> hooks;
++        std::vector<void*> streams;
++        hooks.reserve((size_t) count);
++        streams.reserve((size_t) count);
++        for (int i = 0; i < count; ++i) {
++            auto* s = dynamic_cast<Session*>(peers[i]);
++            if (!s || !s->dspark_.on()) return model::ModelSession::draft_batch(peers, anchors, pos, n, count);
++            hooks.push_back(&s->dspark_);
++            streams.push_back(s->stream_);
++        }
++        return DsparkHook::draft_batch(hooks.data(), anchors, pos, n, count, stream_, streams.data());
++    }
+     model::Result draft_end(int32_t* ids, float* conf, int max_n, int& n, const DraftNeed& need) override {
+         return dspark_.draft_end(ids, conf, max_n, n, need, stream_);
+     }
+@@ -840,7 +923,7 @@ private:
+         // the projections: one product over every row of the fused matrix when the three inputs are one
+         AttnPrep ap;
+         if (!full && !msgs) {
+-            bk::native_q8_planes_mmvq(w.proj, x.xq_[0], x.y_, E, kProj, rows, k.stream);
++            planes_mmvq_rows(w.proj, x.xq_[0], x.y_, E, kProj, rows, k.stream);
+             ap.yq = x.y_;
+             ap.yk = x.y_ + kProjQ;
+             ap.yv = x.y_ + kProjQ + kProjKV;
+@@ -855,7 +938,7 @@ private:
+             sg.n_out[0] = kProjQ, sg.n_out[1] = sg.n_out[2] = kProjKV;
+             sg.x[0] = x.xq_[0], sg.x[1] = x.xq_[1], sg.x[2] = x.xq_[2];
+             sg.y[0] = x.y_, sg.y[1] = yk, sg.y[2] = yv;
+-            bk::native_q8_planes_mmvq_segments(w.proj, kProj, sg, E, rows, k.stream);
++            planes_mmvq_segments_rows(w.proj, kProj, sg, E, rows, k.stream);
+             ap.yq = x.y_;
+             ap.yk = yk;
+             ap.yv = yv;
+@@ -913,13 +996,14 @@ private:
+         aa.gate = ap.yq + kOffGate;
+         aa.gate_ld = ap.ldq;
+         aa.q8 = x.xo_;
+-        const Segments seg = segments(v.slot);   // a batch window's: each conversation's caches of this visit
++        const Segments seg = segments(v.slot, card);   // a batch window's: device-indirect per-conversation caches
+         ap.seg = aa.seg = seg;
+         attention_window(ap, aa, rows, c.ring ? (int64_t) g_.window : full_keys, x.att_scr_, k.stream);
+-        bk::native_q8_planes_mmvq(w.out, x.xo_, x.o_, kOutRows, E, rows, k.stream);
+-        // a wider window: the experts this visit took in the window before into L2 on the side stream, while the glue
+-        // before the experts runs (it starts once the output projection is done)
+-        if (!guess) {
++        planes_mmvq_rows(w.out, x.xo_, x.o_, kOutRows, E, rows, k.stream);
++        // a wider solo window: the experts this visit took in the window before into L2 on the side stream, while the glue
++        // before the experts runs (it starts once the output projection is done). Skip in batch mode where 50-70 experts
++        // are active and prefetching 8 stale ones wastes GDDR7 bandwidth.
++        if (!guess && !view_) {
+             const bk::NativeExpertLayout Lx = bk::native_expert_layout(w.gu_type, w.d_type, E, g_.n_ff_exp);
+             cudaEventRecord(k.ra_ev, k.stream);
+             cudaStreamWaitEvent(k.ra_st, k.ra_ev, 0);
+@@ -1006,14 +1090,11 @@ private:
+     float* buf(Buf b) const { return role_[(int) b]; }
+ 
+     // The kernels' segment table of visit cache `slot` in the batch window in flight (none outside one).
+-    Segments segments(int slot) const {
++    // Uses the device-indirect pointer staged in batch_stage() so CUDA graph arguments stay invariant across compositions.
++    Segments segments(int slot, int card) const {
+         Segments s;
+         if (!view_) return s;
+-        s.at = view_->w.device_segs();
+-        for (int i = 0; i < view_->n; ++i) {
+-            const VisitCache& c = static_cast<const Session*>(view_->ss[i])->vc_[(size_t) slot];
+-            s.c[i] = {c.k, c.v, c.k_ring, c.v_ring, c.a_ring, c.m_ring};
+-        }
++        s.dev = lane_[card].x->batch_segs_d_ + slot;
+         return s;
+     }
+ 
+@@ -1200,16 +1281,11 @@ private:
+         hn.norm_out = tapped ? dspark_.tap(kDsTargets - 1) : fin_;
+         hn.eps = g_.rms_eps;
+         mix_norm(hn, 1, n_fin, stream_);
+-        if (tapped && !view_) dspark_.commit(pos_d_, rows, stream_);   // DSPARK HOOK: the rows' context for the drafter
+-        if (tapped && view_)   // a batch window's: each conversation's rows of the shared tap into its own drafter's context
+-            for (int i = 0; i < view_->n; ++i) {
+-                const model::BatchWindow::Seg& sg = view_->w.segs[(size_t) i];
+-                static_cast<Session*>(view_->ss[i])->dspark_.commit(pos_d_ + sg.row0, sg.rows, stream_, sg.row0);
+-            }
++        if (tapped && !view_) dspark_.commit(pos_d_, rows, stream_);   // DSPARK HOOK: batch path commits in batch_take()
+         if (head <= 0) return;
+         const size_t q8_row = (size_t) E / 32 * 36;   // the head's rows' q8_1 blocks follow the rows before them
+         float* lg = view_ ? blog_ : logits_;          // a batch window's rows go to each session in batch_take
+-        bk::native_q8_0_mmvq(m_.head(), (const uint8_t*) xq_[0] + (size_t) (rows - head - first) * q8_row, lg, E, g_.n_vocab, head,
++        q8_0_mmvq_rows(m_.head(), (const uint8_t*) xq_[0] + (size_t) (rows - head - first) * q8_row, lg, E, g_.n_vocab, head,
+                              stream_);
+         softcap(lg, head, g_.n_vocab, g_.n_vocab, g_.logit_softcap, stream_);
+     }
+diff --git a/src/program/serve/batch_round.cpp b/src/program/serve/batch_round.cpp
+index 0247c6bc8..1d956dcbb 100644
+--- a/src/program/serve/batch_round.cpp
++++ b/src/program/serve/batch_round.cpp
+@@ -290,6 +290,47 @@ bool Runtime::batch_round() {
+             kept.push_back(wins[i].kept);
+             // a full batch gives each slot one row next round: drafts could not be verified, so do not draft them
+             if (n_act >= cap) wins[i].want = 0;
++        }
++        // Budget drafts across the active batch so we never waste drafter passes on tokens that cannot fit in `cap`.
++        if (n_act > 1 && n_act < cap) {
++            const int spare = cap - n_act;
++            if (spare < n_act) {
++                // Fewer spare draft rows than active slots (e.g. c=12, cap=16 -> 4 spare rows): pick `spare` slots
++                // (prioritizing highest historical acceptance rate, plus 1 round-robin probe slot for fairness) to
++                // draft 1 token each, fitting all selected slots in a single batched drafter pass.
++                static size_t rr = 0;
++                std::vector<size_t> want_idx;
++                for (const size_t i : group)
++                    if (wins[i].want > 0) want_idx.push_back(i);
++                const size_t m = want_idx.size();
++                if ((int) m > spare) {
++                    const size_t probe = want_idx[rr++ % m];
++                    std::vector<size_t> scored;
++                    scored.reserve(m);
++                    for (const size_t idx : want_idx)
++                        if (idx != probe) scored.push_back(idx);
++                    auto score = [&](size_t idx) -> double {
++                        const BSlot& sl = bs[(size_t) act[idx]];
++                        if (sl.drafts_offered < 2) return 0.75;   // unmeasured slots get optimistic initial priority
++                        return (double) sl.drafts_accepted / (double) sl.drafts_offered;
++                    };
++                    std::stable_sort(scored.begin(), scored.end(),
++                                     [&](size_t a, size_t b) { return score(a) > score(b); });
++                    for (const size_t idx : want_idx) wins[idx].want = 0;
++                    wins[probe].want = 1;
++                    for (int k = 0; k < spare - 1 && k < (int) scored.size(); ++k) wins[scored[(size_t) k]].want = 1;
++                } else {
++                    for (const size_t idx : want_idx) wins[idx].want = 1;
++                }
++            } else if (spare <= n_act + 2) {
++                // Tight spare budget (e.g. c=7..8, cap=16): cap drafts per slot to average share + 1 (at least 2)
++                // so batch_shares can still shift extra drafts to high-confidence slots without wasting head steps.
++                const int per = std::min(7, std::max(2, (spare + n_act - 1) / n_act + 1));
++                for (const size_t i : group)
++                    if (wins[i].want > per) wins[i].want = per;
++            }
++        }
++        for (const size_t i : group) {
+             if (wins[i].want > 0) {
+                 const BSlot& sl = bs[(size_t) act[i]];
+                 ds.push_back(&slot_session(act[i]));
+diff --git a/src/program/serve/request_finish.cpp b/src/program/serve/request_finish.cpp
+index 949656656..abfad505f 100644
+--- a/src/program/serve/request_finish.cpp
++++ b/src/program/serve/request_finish.cpp
+@@ -97,7 +97,9 @@ Flow Request::complete() {
+             if (runtime_.slot0_solo() && runtime_.admit_slot == 0) runtime_.live_ok = false;   // the batch windows move the state on
+             slot_set_sampling(runtime_.admit_slot);   // the request's own sampling, row by row
+             BSlot& sl = runtime_.bs[(size_t) runtime_.admit_slot];
++            auto saved_sfx = std::move(sl.sfx);   // reuse the slot's suffix tables (reset in slot_init) instead of reallocating 64 MiB per request
+             sl = BSlot{};
++            sl.sfx = std::move(saved_sfx);
+             sl.active = true;
+             sl.pen_n = req_sp.penalty_last_n;
+             slot_init(sl);
+@@ -110,18 +112,29 @@ Flow Request::complete() {
+             sl.cvec = runtime_.cvec_cached;
+             sl.imgs = runtime_.live_imgs;
+             sl.lp_top = req_logprobs;
+-                            sl.guard = std::move(gguard);   // the request's grammar, already past the tokens the request decoded here
++            sl.guard = std::move(gguard);   // the request's grammar, already past the tokens the request decoded here
+             // the slot keeps its conversation's longest checkpoint (its next turn) and its shortest (the
+-            // system prompt, which other requests may share)
+-            const ConvCheckpoint *best = nullptr, *root = nullptr;
+-            for (const ConvCheckpoint& c : runtime_.checks)
++            // system prompt, which other requests may share). Move instead of copying the ~100 MiB running-state
++            // buffers when runtime_.checks is being discarded right after admission.
++            const size_t n_ck = runtime_.checks.size();
++            size_t best_i = n_ck, root_i = n_ck;
++            for (size_t i = 0; i < n_ck; ++i) {
++                const ConvCheckpoint& c = runtime_.checks[i];
+                 if (c.ids.size() < runtime_.live.size() &&
+                     basalt::core::conversation_ids_equal(c.ids.data(), c.ids.size(), runtime_.live.data())) {
+-                    if (best == nullptr || c.ids.size() > best->ids.size()) best = &c;
+-                    if (root == nullptr || c.ids.size() < root->ids.size()) root = &c;
++                    if (best_i == n_ck || c.ids.size() > runtime_.checks[best_i].ids.size()) best_i = i;
++                    if (root_i == n_ck || c.ids.size() < runtime_.checks[root_i].ids.size()) root_i = i;
+                 }
+-            if (root != nullptr && root != best) sl.checks.push_back(*root);
+-            if (best != nullptr) sl.checks.push_back(*best);
++            }
++            const bool move_checks = in_slot || (!runtime_.slots_share_cells() && runtime_.slot0_solo() && runtime_.admit_slot == 0);
++            if (move_checks) {
++                if (root_i < n_ck && root_i != best_i) sl.checks.push_back(std::move(runtime_.checks[root_i]));
++                if (best_i < n_ck) sl.checks.push_back(std::move(runtime_.checks[best_i]));
++                if (!in_slot) runtime_.checks.clear();
++            } else {
++                if (root_i < n_ck && root_i != best_i) sl.checks.push_back(runtime_.checks[root_i]);
++                if (best_i < n_ck) sl.checks.push_back(runtime_.checks[best_i]);
++            }
+             basalt::log::info("basalt batch", "slot %d takes %lld tokens (copied in %.1f ms)", runtime_.admit_slot,
+                          (long long) runtime_.live.size(), std::chrono::duration<double, std::milli>(Clock::now() - tc0).count());
+         }
+@@ -134,7 +147,9 @@ Flow Request::complete() {
+         slot_state_back(slot_b);
+         if (yielded_at < 0) {   // (a read that gave way was parked in the slot already)
+             BSlot& sb = runtime_.bs[(size_t) slot_b];
++            auto saved_sfx = std::move(sb.sfx);
+             sb = BSlot{};
++            sb.sfx = std::move(saved_sfx);
+             sb.ids = runtime_.live;
+             sb.cvec = runtime_.cvec_cached;
+             sb.imgs = runtime_.live_imgs;
+diff --git a/src/program/serve/session_engine.cpp b/src/program/serve/session_engine.cpp
+index 84fd00e3d..3ba525bc6 100644
+--- a/src/program/serve/session_engine.cpp
++++ b/src/program/serve/session_engine.cpp
+@@ -582,8 +582,11 @@ private:
+     // a slot's prompt lookup history: the conversation, then the token its first window feeds
+     void slot_init(BSlot& sl) override {
+         if (!rt_.lookup_on()) return;
+-        sl.sfx = std::make_unique<basalt::spec::SuffixDrafter>(std::max(1, runtime_.o.suffix_draft), 64,
+-                                                               (size_t) runtime_.o.max_context + 4096);
++        if (!sl.sfx)
++            sl.sfx = std::make_unique<basalt::spec::SuffixDrafter>(std::max(1, runtime_.o.suffix_draft), 64,
++                                                                   (size_t) runtime_.o.max_context + 4096);
++        else
++            sl.sfx->reset();
+         for (int32_t t : runtime_.live) sl.sfx->append(t);
+         sl.sfx->append(x);
+     }
+diff --git a/tests/kernels/mmvq_multi_parity.cpp b/tests/kernels/mmvq_multi_parity.cpp
+index d26ff3ed6..a57279792 100644
+--- a/tests/kernels/mmvq_multi_parity.cpp
++++ b/tests/kernels/mmvq_multi_parity.cpp
+@@ -38,8 +38,12 @@
+ // MMVQ_MMA=1 in the environment the sweeps above take it for their IQ4_XS case as well.
+ //
+ //     build/mmvq_multi_parity [--bench]      --bench: the dp4a and tensor-core kernels timed at the model's shapes
++//     build/mmvq_multi_parity --q80-wide-parity
++//     build/mmvq_multi_parity --q80-wide-bench   # parity plus cold-weight timings at Inkling's vocabulary head
++//     build/mmvq_multi_parity --q80-wide-race    # same column/tail guards on two tiles, for racecheck
+ #include "basalt/kernels/iq_kernels.hpp"
+ #include "basalt/kernels/native_mmvq.hpp"
++#include "basalt/kernels/pdl.hpp"
+ 
+ #include <cuda_runtime.h>
+ 
+@@ -587,13 +591,171 @@ void bench_q80(cudaStream_t s) {
+     cudaEventDestroy(e1);
+ }
+ 
++// The real Inkling vocabulary head is 2304 -> 200058 (ten live rows in its last 16-row tile).  Compare all outputs
++// of the separate 9..16-column kernel with the production 8 + remainder composition, then optionally time isolated
++// cold-weight sequences.  Each of the two benchmark copies is 467 MiB, already several times larger than L2.
++int q80_wide_section(cudaStream_t s, bool do_bench, bool small_race = false) {
++    namespace k = basalt::kernels;
++    constexpr int N_IN = 2304, MAX_T = 16;
++    const int N_OUT = small_race ? 26 : 200058;   // both leave ten live rows in the final 16-row tile
++    const std::size_t wbytes = k::native_mmvq_weight_bytes(8, N_IN, N_OUT);
++    const std::size_t row_bytes = wbytes / N_OUT;
++    const std::size_t stride = (wbytes + 255) / 256 * 256;
++    const std::size_t qcol = k::native_q8_1_bytes(N_IN, 1);
++    const std::size_t ycount = (std::size_t) MAX_T * N_OUT;
++    const int copies = do_bench ? 2 : 1;
++    uint8_t *dw = nullptr, *dq = nullptr;
++    float *dx = nullptr, *ya = nullptr, *yb = nullptr;
++    auto release = [&] { cudaFree(dw); cudaFree(dq); cudaFree(dx); cudaFree(ya); cudaFree(yb); };
++    if (!k::native_mmvq_mma_available()) {
++        std::printf("Q8_0 wide: int8 MMA unavailable; focused experiment did not run\n");
++        return 1;
++    }
++    if (!ck(cudaMalloc(&dw, stride * copies), "malloc wide weights") ||
++        !ck(cudaMalloc(&dq, qcol * MAX_T), "malloc wide q8_1") ||
++        !ck(cudaMalloc(&dx, (std::size_t) MAX_T * N_IN * 4), "malloc wide input") ||
++        !ck(cudaMalloc(&ya, ycount * 4), "malloc wide output") ||
++        !ck(cudaMalloc(&yb, ycount * 4), "malloc split output")) {
++        release();
++        return 1;
++    }
++    constexpr unsigned char pattern[8] = {0x11, 0x21, 0x31, 0x41, 0x91, 0xa1, 0xb1, 0xc1};
++    for (int cp = 0; cp < copies; ++cp)
++        for (int band = 0; band < 8; ++band) {
++            const std::size_t r0 = (std::size_t) N_OUT * band / 8;
++            const std::size_t r1 = (std::size_t) N_OUT * (band + 1) / 8;
++            if (!ck(cudaMemsetAsync(dw + (std::size_t) cp * stride + r0 * row_bytes, pattern[band],
++                                    (r1 - r0) * row_bytes, s), "fill wide weights")) {
++                release();
++                return 1;
++            }
++        }
++    std::mt19937 rng(0x80a016u);
++    std::normal_distribution<float> nd(0.f, 1.f);
++    std::vector<float> x((std::size_t) MAX_T * N_IN);
++    for (auto& v : x) v = nd(rng);
++    if (!ck(cudaMemcpyAsync(dx, x.data(), x.size() * 4, cudaMemcpyHostToDevice, s), "copy wide input")) {
++        release();
++        return 1;
++    }
++    k::quantize_q8_1_rows(dx, MAX_T, N_IN, dq, s);
++    if (!ck(cudaStreamSynchronize(s), "prepare wide head")) {
++        release();
++        return 1;
++    }
++    auto split = [&](const uint8_t* w, float* y, int T) {
++        k::native_q8_0_mmvq(w, dq, y, N_IN, N_OUT, 8, s);
++        k::native_q8_0_mmvq(w, dq + 8 * qcol, y + (std::size_t) 8 * N_OUT, N_IN, N_OUT, T - 8, s);
++    };
++
++    std::printf("\n=== Q8_0 wide head parity: %d -> %d (tail %d, %.1f MiB weights) ===\n", N_IN, N_OUT,
++                N_OUT % 16, wbytes / 1048576.0);
++    int bad = 0;
++    std::vector<uint32_t> a(ycount), b(ycount);
++    for (int T = 9; T <= MAX_T; ++T) {
++        const std::size_t n = (std::size_t) T * N_OUT;
++        cudaMemsetAsync(ya, 0xff, n * 4, s);
++        cudaMemsetAsync(yb, 0xfe, n * 4, s);
++        k::native_q8_0_mmvq_wide(dw, dq, ya, N_IN, N_OUT, T, s);
++        split(dw, yb, T);
++        if (!ck(cudaStreamSynchronize(s), "wide parity") ||
++            !ck(cudaMemcpy(a.data(), ya, n * 4, cudaMemcpyDeviceToHost), "read wide") ||
++            !ck(cudaMemcpy(b.data(), yb, n * 4, cudaMemcpyDeviceToHost), "read split")) {
++            release();
++            return bad + 1;
++        }
++        long long diff = 0, nonfinite = 0;
++        for (std::size_t i = 0; i < n; ++i) {
++            diff += a[i] != b[i];
++            float f;
++            std::memcpy(&f, &a[i], 4);
++            nonfinite += !std::isfinite(f);
++        }
++        const bool ok = diff == 0 && nonfinite == 0;
++        bad += !ok;
++        std::printf("Q8_0 wide T=%2d: %lld of %zu differ bitwise, %lld non-finite  %s\n", T, diff, n,
++                    nonfinite, ok ? "ok" : "FAIL");
++    }
++
++    if (do_bench && bad == 0) {
++        cudaEvent_t e0 = nullptr, e1 = nullptr;
++        ck(cudaEventCreate(&e0), "event create");
++        ck(cudaEventCreate(&e1), "event create");
++        auto enqueue = [&](bool wide, const uint8_t* w, float* y, int T) {
++            if (wide) k::native_q8_0_mmvq_wide(w, dq, y, N_IN, N_OUT, T, s);
++            else split(w, y, T);
++        };
++        auto timed = [&](bool wide, const uint8_t* w, float* y, int T, bool pdl) {
++            cudaEventRecord(e0, s);
++            if (pdl) {
++                k::PdlScope ps(true, true);  // split's second launch may stage weights while its first finishes
++                enqueue(wide, w, y, T);
++            } else {
++                enqueue(wide, w, y, T);
++            }
++            cudaEventRecord(e1, s);
++            cudaEventSynchronize(e1);
++            float ms = 0;
++            cudaEventElapsedTime(&ms, e0, e1);
++            return 1000.0f * ms;
++        };
++        auto median = [](std::vector<float> v) {
++            std::sort(v.begin(), v.end());
++            return v[v.size() / 2];
++        };
++        bool consistent = true;
++        std::printf("\n=== Q8_0 cold head: fused/split us (split/fused), 9 samples ===\n");
++        for (int pdl = 0; pdl < 2; ++pdl) {
++            std::printf("%s:\n", pdl ? "PDL second split launch" : "plain launches");
++            for (int T = 9; T <= MAX_T; ++T) {
++                std::vector<float> fused, old;
++                int seq = 0;
++                for (int r = 0; r < 9; ++r) {
++                    if ((r & 1) == 0) {
++                        fused.push_back(timed(true, dw + (std::size_t) (seq++ & 1) * stride, ya, T, pdl));
++                        old.push_back(timed(false, dw + (std::size_t) (seq++ & 1) * stride, yb, T, pdl));
++                    } else {
++                        old.push_back(timed(false, dw + (std::size_t) (seq++ & 1) * stride, yb, T, pdl));
++                        fused.push_back(timed(true, dw + (std::size_t) (seq++ & 1) * stride, ya, T, pdl));
++                    }
++                }
++                const float fw = median(fused), sp = median(old);
++                int wins = 0;
++                for (std::size_t i = 0; i < fused.size(); ++i) wins += fused[i] < old[i];
++                const bool win = fw < sp && wins >= 7;
++                consistent &= win;
++                std::printf("  T=%2d: %8.2f / %8.2f  %5.3fx  wins %d/9  %s\n", T, fw, sp, sp / fw, wins,
++                            win ? "win" : "NOT CONSISTENT");
++            }
++        }
++        std::printf("Q8_0 wide benchmark verdict: %s\n", consistent ? "consistent win" : "keep split dispatch");
++        cudaEventDestroy(e0);
++        cudaEventDestroy(e1);
++    }
++    release();
++    return bad;
++}
++
+ }  // namespace
+ 
+ int main(int argc, char** argv) {
+-    bool do_bench = false;
+-    for (int i = 1; i < argc; ++i) do_bench |= std::string(argv[i]) == "--bench";
++    bool do_bench = false, q80_wide = false, q80_wide_bench = false, q80_wide_race = false;
++    for (int i = 1; i < argc; ++i) {
++        const std::string a = argv[i];
++        do_bench |= a == "--bench";
++        q80_wide |= a == "--q80-wide-parity" || a == "--q80-wide-bench" || a == "--q80-wide-race";
++        q80_wide_bench |= a == "--q80-wide-bench";
++        q80_wide_race |= a == "--q80-wide-race";
++    }
+     cudaStream_t s;
+     if (!ck(cudaStreamCreate(&s), "stream create")) return 1;
++    if (q80_wide) {
++        basalt::kernels::native_mmvq_set_multi_exact(true);
++        const int bad = q80_wide_section(s, q80_wide_bench, q80_wide_race);
++        cudaStreamDestroy(s);
++        std::printf("\nmmvq_multi_parity Q8_0 wide: %s\n", bad == 0 ? "ok" : "FAILED");
++        return bad == 0 ? 0 : 1;
++    }
+ 
+     Totals on, off;
+     const int bad = sweep(true, s, on);
+diff --git a/tests/kernels/q8_gemm_test.cpp b/tests/kernels/q8_gemm_test.cpp
+index aa393444b..43cdceadb 100644
+--- a/tests/kernels/q8_gemm_test.cpp
++++ b/tests/kernels/q8_gemm_test.cpp
+@@ -15,6 +15,7 @@
+ 
+ #include "basalt/prefill/moe_mmq.hpp"
+ #include "basalt/kernels/native_mmvq.hpp"
++#include "basalt/kernels/pdl.hpp"
+ #include "basalt/kernels/window_gemm.hpp"
+ 
+ namespace {
+@@ -280,6 +281,7 @@ void test_invariance_and_segmented(std::mt19937& rng) {
+ 
+ void test_q8_planes_mmvq_parity(std::mt19937& rng) {
+     namespace bk = basalt::kernels;
++    constexpr int MAX_T = 16;
+     cudaStream_t st = nullptr;
+     ck(cudaStreamCreate(&st), "stream");
+     std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+@@ -291,7 +293,7 @@ void test_q8_planes_mmvq_parity(std::mt19937& rng) {
+         std::vector<block_q8_0> wb;
+         make_q8_0(wf, s.M, s.K, wb);
+         const size_t bytes = wb.size() * sizeof(block_q8_0);
+-        std::vector<float> hx((size_t) 8 * s.K);
++        std::vector<float> hx((size_t) MAX_T * s.K);
+         for (float& v : hx) v = dist(rng);
+         void *draw = nullptr, *dpl = nullptr, *dxq = nullptr;
+         float *dx = nullptr, *y0 = nullptr, *y1 = nullptr;
+@@ -301,10 +303,12 @@ void test_q8_planes_mmvq_parity(std::mt19937& rng) {
+         bk::wgemm::q8_planes(draw, s.M, s.K, dpl, st);
+         ck(cudaMalloc(&dx, hx.size() * sizeof(float)), "dx");
+         ck(cudaMemcpy(dx, hx.data(), hx.size() * sizeof(float), cudaMemcpyHostToDevice), "cpy dx");
+-        ck(cudaMalloc(&dxq, bk::native_q8_1_bytes(s.K, 8)), "dxq");
++        const size_t q8 = bk::native_q8_1_bytes(s.K, 8);
++        ck(cudaMalloc(&dxq, 2 * q8), "dxq");
+         bk::native_quantize_q8_1(dx, dxq, s.K, 8, st);
+-        ck(cudaMalloc(&y0, (size_t) 8 * s.M * sizeof(float)), "y0");
+-        ck(cudaMalloc(&y1, (size_t) 8 * s.M * sizeof(float)), "y1");
++        bk::native_quantize_q8_1(dx + (size_t) 8 * s.K, static_cast<uint8_t*>(dxq) + q8, s.K, 8, st);
++        ck(cudaMalloc(&y0, (size_t) MAX_T * s.M * sizeof(float)), "y0");
++        ck(cudaMalloc(&y1, (size_t) MAX_T * s.M * sizeof(float)), "y1");
+         for (int T = 1; T <= 8; ++T) {
+             bk::native_q8_0_mmvq(draw, dxq, y0, s.K, s.M, T, st);
+             bk::native_q8_planes_mmvq(dpl, dxq, y1, s.K, s.M, T, st);
+@@ -320,6 +324,28 @@ void test_q8_planes_mmvq_parity(std::mt19937& rng) {
+             }
+         }
+         std::printf("PASS native_q8_planes_mmvq %s T=1..8: bitwise equal to native_q8_0_mmvq\n", s.name);
++
++        // The wide call must be exactly the two old calls, not merely close: this checks every tail width and exercises
++        // the MMA path for w.proj and the generic DP4A path for w.out.
++        for (int T = 9; T <= MAX_T; ++T) {
++            bk::native_q8_planes_mmvq(dpl, dxq, y1, s.K, s.M, T, st);
++            bk::native_q8_planes_mmvq(dpl, dxq, y0, s.K, s.M, 8, st);
++            bk::native_q8_planes_mmvq(dpl, static_cast<uint8_t*>(dxq) + q8, y0 + (size_t) 8 * s.M,
++                                      s.K, s.M, T - 8, st);
++            ck(cudaStreamSynchronize(st), "sync wide mmvq");
++            std::vector<uint32_t> a((size_t) T * s.M), b((size_t) T * s.M);
++            ck(cudaMemcpy(a.data(), y0, a.size() * 4, cudaMemcpyDeviceToHost), "d2h split");
++            ck(cudaMemcpy(b.data(), y1, b.size() * 4, cudaMemcpyDeviceToHost), "d2h fused");
++            for (size_t i = 0; i < a.size(); ++i) {
++                if (a[i] != b[i]) {
++                    std::printf("FAIL native_q8_planes_mmvq fused %s T=%d at %zu: %08x != %08x\n",
++                                s.name, T, i, a[i], b[i]);
++                    std::exit(1);
++                }
++            }
++        }
++        std::printf("PASS native_q8_planes_mmvq %s T=9..16: bitwise equal to 8+remainder\n", s.name);
++
+         if (s.M == 8664) {
+             bk::Q80Segments sg0, sg1;
+             sg0.n = sg1.n = 3;
+@@ -327,30 +353,133 @@ void test_q8_planes_mmvq_parity(std::mt19937& rng) {
+             sg0.row0[1] = sg1.row0[1] = 6552; sg0.n_out[1] = sg1.n_out[1] = 1056;
+             sg0.row0[2] = sg1.row0[2] = 7608; sg0.n_out[2] = sg1.n_out[2] = 1056;
+             for (int k = 0; k < 3; ++k) sg0.x[k] = sg1.x[k] = dxq;
+-            sg0.y[0] = y0; sg0.y[1] = y0 + 8 * 6552; sg0.y[2] = y0 + 8 * 7608;
+-            sg1.y[0] = y1; sg1.y[1] = y1 + 8 * 6552; sg1.y[2] = y1 + 8 * 7608;
++            sg0.y[0] = y0; sg0.y[1] = y0 + MAX_T * 6552; sg0.y[2] = y0 + MAX_T * 7608;
++            sg1.y[0] = y1; sg1.y[1] = y1 + MAX_T * 6552; sg1.y[2] = y1 + MAX_T * 7608;
+             for (int T = 1; T <= 8; ++T) {
+                 bk::native_q8_0_mmvq_segments(draw, sg0, s.K, T, st);
+                 bk::native_q8_planes_mmvq_segments(dpl, s.M, sg1, s.K, T, st);
+                 ck(cudaStreamSynchronize(st), "sync seg");
+-                std::vector<uint32_t> a((size_t) 8 * s.M), b((size_t) 8 * s.M);
++                std::vector<uint32_t> a((size_t) MAX_T * s.M), b((size_t) MAX_T * s.M);
+                 ck(cudaMemcpy(a.data(), y0, a.size() * 4, cudaMemcpyDeviceToHost), "d2h sa");
+                 ck(cudaMemcpy(b.data(), y1, b.size() * 4, cudaMemcpyDeviceToHost), "d2h sb");
+                 for (int i = 0; i < T * 6552; ++i)
+                     if (a[i] != b[i]) { std::printf("FAIL seg Q T=%d\n", T); std::exit(1); }
+                 for (int i = 0; i < T * 1056; ++i)
+-                    if (a[8 * 6552 + i] != b[8 * 6552 + i] || a[8 * 7608 + i] != b[8 * 7608 + i]) {
++                    if (a[MAX_T * 6552 + i] != b[MAX_T * 6552 + i] ||
++                        a[MAX_T * 7608 + i] != b[MAX_T * 7608 + i]) {
+                         std::printf("FAIL seg KV T=%d\n", T);
+                         std::exit(1);
+                     }
+             }
+             std::printf("PASS native_q8_planes_mmvq_segments [6552,1056,1056]x2304 T=1..8: bitwise equal\n");
++
++            for (int T = 9; T <= MAX_T; ++T) {
++                bk::native_q8_planes_mmvq_segments(dpl, s.M, sg1, s.K, T, st);
++                bk::native_q8_planes_mmvq_segments(dpl, s.M, sg0, s.K, 8, st);
++                bk::Q80Segments tail = sg0;
++                for (int k = 0; k < tail.n; ++k) {
++                    tail.x[k] = static_cast<const uint8_t*>(tail.x[k]) + q8;
++                    tail.y[k] += (size_t) 8 * tail.n_out[k];
++                }
++                bk::native_q8_planes_mmvq_segments(dpl, s.M, tail, s.K, T - 8, st);
++                ck(cudaStreamSynchronize(st), "sync wide seg");
++                std::vector<uint32_t> a((size_t) MAX_T * s.M), b((size_t) MAX_T * s.M);
++                ck(cudaMemcpy(a.data(), y0, a.size() * 4, cudaMemcpyDeviceToHost), "d2h split seg");
++                ck(cudaMemcpy(b.data(), y1, b.size() * 4, cudaMemcpyDeviceToHost), "d2h fused seg");
++                const int off[3] = {0, MAX_T * 6552, MAX_T * 7608};
++                const int nr[3] = {6552, 1056, 1056};
++                for (int k = 0; k < 3; ++k)
++                    for (int i = 0; i < T * nr[k]; ++i)
++                        if (a[(size_t) off[k] + i] != b[(size_t) off[k] + i]) {
++                            std::printf("FAIL native_q8_planes_mmvq_segments fused T=%d segment=%d at %d: %08x != %08x\n",
++                                        T, k, i, a[(size_t) off[k] + i], b[(size_t) off[k] + i]);
++                            std::exit(1);
++                        }
++            }
++            std::printf("PASS native_q8_planes_mmvq_segments [6552,1056,1056]x2304 T=9..16: "
++                        "bitwise equal to 8+remainder\n");
+         }
+         cudaFree(draw); cudaFree(dpl); cudaFree(dx); cudaFree(dxq); cudaFree(y0); cudaFree(y1);
+     }
+     cudaStreamDestroy(st);
+ }
+ 
++void bench_q8_planes_mmvq(const char* name, int M, int K, bool segmented) {
++    namespace bk = basalt::kernels;
++    const size_t plane_bytes = (size_t) M * K + (size_t) M * (K / 32) * 2;
++    const int copies = (int) std::max<size_t>(2, (512u << 20) / plane_bytes + 1);
++    std::vector<void*> planes((size_t) copies);
++    for (void*& p : planes) {
++        ck(cudaMalloc(&p, plane_bytes), "bench planes");
++        ck(cudaMemset(p, 0, plane_bytes), "bench planes zero");
++    }
++    const size_t q8 = (size_t) 8 * (K / 32) * 36;
++    const size_t q16 = 2 * q8;
++    void* x = nullptr;
++    float* y = nullptr;
++    ck(cudaMalloc(&x, (segmented ? 3 : 1) * q16), "bench x");
++    ck(cudaMemset(x, 1, (segmented ? 3 : 1) * q16), "bench x fill");
++    ck(cudaMalloc(&y, (size_t) 16 * M * sizeof(float)), "bench y");
++    cudaStream_t st = nullptr;
++    ck(cudaStreamCreate(&st), "bench stream");
++    cudaEvent_t e0 = nullptr, e1 = nullptr;
++    ck(cudaEventCreate(&e0), "bench event 0");
++    ck(cudaEventCreate(&e1), "bench event 1");
++    bk::PdlScope pdl(true);
++
++    auto call = [&](int wi, int T, bool split) {
++        if (!segmented) {
++            bk::native_q8_planes_mmvq(planes[(size_t) wi], x, y, K, M, split ? 8 : T, st);
++            if (split)
++                bk::native_q8_planes_mmvq(planes[(size_t) wi], static_cast<uint8_t*>(x) + q8,
++                                          y + (size_t) 8 * M, K, M, T - 8, st);
++            return;
++        }
++        bk::Q80Segments sg;
++        sg.n = 3;
++        sg.row0[0] = 0;    sg.n_out[0] = 6552;
++        sg.row0[1] = 6552; sg.n_out[1] = 1056;
++        sg.row0[2] = 7608; sg.n_out[2] = 1056;
++        for (int k = 0; k < 3; ++k) sg.x[k] = static_cast<uint8_t*>(x) + (size_t) k * q16;
++        sg.y[0] = y; sg.y[1] = y + 16 * 6552; sg.y[2] = y + 16 * 7608;
++        bk::native_q8_planes_mmvq_segments(planes[(size_t) wi], M, sg, K, split ? 8 : T, st);
++        if (split) {
++            for (int k = 0; k < 3; ++k) {
++                sg.x[k] = static_cast<const uint8_t*>(sg.x[k]) + q8;
++                sg.y[k] += (size_t) 8 * sg.n_out[k];
++            }
++            bk::native_q8_planes_mmvq_segments(planes[(size_t) wi], M, sg, K, T - 8, st);
++        }
++    };
++    auto time = [&](int T, bool split) {
++        int wi = 0;
++        for (int i = 0; i < copies; ++i) call(wi++ % copies, T, split);
++        const int n = 6 * copies;
++        ck(cudaEventRecord(e0, st), "bench record 0");
++        for (int i = 0; i < n; ++i) call(wi++ % copies, T, split);
++        ck(cudaEventRecord(e1, st), "bench record 1");
++        ck(cudaEventSynchronize(e1), "bench sync");
++        float ms = 0.0f;
++        ck(cudaEventElapsedTime(&ms, e0, e1), "bench elapsed");
++        return 1000.0 * (double) ms / n;
++    };
++    for (int T = 9; T <= 16; ++T) {
++        const double split_us = time(T, true);
++        const double fused_us = time(T, false);
++        std::printf("Q8-plane %-23s T=%2d  split=%7.1f us  fused=%7.1f us  speedup=%5.3fx  fused=%5.0f GB/s\n",
++                    name, T, split_us, fused_us, split_us / fused_us, plane_bytes / fused_us / 1e3);
++    }
++    cudaEventDestroy(e0); cudaEventDestroy(e1); cudaStreamDestroy(st);
++    cudaFree(x); cudaFree(y);
++    for (void* p : planes) cudaFree(p);
++}
++
++void run_mmvq_bench() {
++    bench_q8_planes_mmvq("w.proj [8664x2304]", 8664, 2304, false);
++    bench_q8_planes_mmvq("segments [6552,1056,1056]", 8664, 2304, true);
++    bench_q8_planes_mmvq("w.out [2304x3072]", 2304, 3072, false);
++}
++
+ void run_bench(std::mt19937& rng) {
+     struct Shape {
+         const char* name;
+@@ -475,7 +604,17 @@ int main(int argc, char** argv) {
+         return 77;
+     }
+     std::printf("GPU: %s (sm_%d%d, %d SMs)\n", prop.name, prop.major, prop.minor, prop.multiProcessorCount);
++    for (int i = 1; i < argc; ++i)
++        if (std::strcmp(argv[i], "--bench-mmvq") == 0) {
++            run_mmvq_bench();
++            return 0;
++        }
+     std::mt19937 rng(42);
++    for (int i = 1; i < argc; ++i)
++        if (std::strcmp(argv[i], "--planes-only") == 0) {
++            test_q8_planes_mmvq_parity(rng);
++            return 0;
++        }
+     test_case(rng, 1, 18, 64, false);
+     test_case(rng, 7, 66, 192, false);
+     test_case(rng, 63, 64, 128, true, 4);

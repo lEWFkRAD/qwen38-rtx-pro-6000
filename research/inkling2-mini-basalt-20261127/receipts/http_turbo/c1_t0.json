@@ -1,0 +1,96 @@
+{
+  "port": 18011,
+  "concurrency": 1,
+  "reps": 4,
+  "max_tokens": 400,
+  "temperature": 0.0,
+  "base_seed": 3401,
+  "disable_thinking": true,
+  "warmup_rep_excluded": true,
+  "median_aggregate_tok_s": 394.88538720656993,
+  "min_aggregate_tok_s": 388.456196701593,
+  "max_aggregate_tok_s": 395.9673485447794,
+  "stdev_aggregate_tok_s": 3.3153269136285406,
+  "median_per_stream_tok_s": 399.78423715290813,
+  "stable_outputs_across_measured_reps": true,
+  "measured_tokens": [
+    400
+  ],
+  "measured_output_sha256": [
+    "7900a9608ce1b498877a54577b2827b63f977845439c29929416f7a4a1ce5af8"
+  ],
+  "runs": [
+    {
+      "rep": 0,
+      "aggregate_tok_s": 359.38616612645734,
+      "tokens": [
+        400
+      ],
+      "total_tokens": 400,
+      "wall_s": 1.11300889600534,
+      "decode_tok_s": [
+        376.42411573197836
+      ],
+      "ttft_s": [
+        0.05303429999912623
+      ],
+      "output_sha256": [
+        "7900a9608ce1b498877a54577b2827b63f977845439c29929416f7a4a1ce5af8"
+      ]
+    },
+    {
+      "rep": 1,
+      "aggregate_tok_s": 394.88538720656993,
+      "tokens": [
+        400
+      ],
+      "total_tokens": 400,
+      "wall_s": 1.012952144999872,
+      "decode_tok_s": [
+        399.78423715290813
+      ],
+      "ttft_s": [
+        0.014913796010660008
+      ],
+      "output_sha256": [
+        "7900a9608ce1b498877a54577b2827b63f977845439c29929416f7a4a1ce5af8"
+      ]
+    },
+    {
+      "rep": 2,
+      "aggregate_tok_s": 388.456196701593,
+      "tokens": [
+        400
+      ],
+      "total_tokens": 400,
+      "wall_s": 1.0297171300044283,
+      "decode_tok_s": [
+        393.41203291978496
+      ],
+      "ttft_s": [
+        0.015513275997363962
+      ],
+      "output_sha256": [
+        "7900a9608ce1b498877a54577b2827b63f977845439c29929416f7a4a1ce5af8"
+      ]
+    },
+    {
+      "rep": 3,
+      "aggregate_tok_s": 395.9673485447794,
+      "tokens": [
+        400
+      ],
+      "total_tokens": 400,
+      "wall_s": 1.0101843029988231,
+      "decode_tok_s": [
+        400.9854401127735
+      ],
+      "ttft_s": [
+        0.015135705005377531
+      ],
+      "output_sha256": [
+        "7900a9608ce1b498877a54577b2827b63f977845439c29929416f7a4a1ce5af8"
+      ]
+    }
+  ]
+}
