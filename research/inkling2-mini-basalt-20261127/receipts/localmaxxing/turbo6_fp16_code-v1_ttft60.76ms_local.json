@@ -1,0 +1,200 @@
+{
+  "agentFeedback": {
+    "authCommand": "lmx auth --key bhk_...",
+    "authRequired": true,
+    "benchmarkStatus": "completed",
+    "blockedByAuth": true,
+    "canApiValidate": false,
+    "canSubmit": false,
+    "engine": "strata",
+    "message": "Speed-test payload is ready for API validation. API validation and submission require an API key.",
+    "mode": "remote",
+    "nextCommand": "lmx auth --key bhk_...",
+    "outputPath": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/turbo6_prof/lmx_t6_solo_code-v1_r7.json",
+    "outputPathAbsolute": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/turbo6_prof/lmx_t6_solo_code-v1_r7.json",
+    "requiresMetrics": false,
+    "runPersisted": true,
+    "savedRunPath": "runs/thinkingmachines-Inkling-2-Mini/20261128T182344Z.json",
+    "savedRunPathAbsolute": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-0.5.6-16slot/runs/thinkingmachines-Inkling-2-Mini/20261128T182344Z.json",
+    "savedRunPathRelative": "runs/thinkingmachines-Inkling-2-Mini/20261128T182344Z.json",
+    "status": "ready_for_api_validation",
+    "submissionStatus": "needs_auth",
+    "validationCommand": "lmx speed-test validate-local /home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/turbo6_prof/lmx_t6_solo_code-v1_r7.json"
+  },
+  "batchSize": 1,
+  "benchmarkMode": "remote",
+  "detectedEngines": [],
+  "engineBuild": "sm120 cuda13.0 turbo6 +fp4-3s-auto +router-3s-k32 +postconv-64x8 +ringkv +embd-vram +ecc-off",
+  "engineFlags": {
+    "baseUrl": "http://127.0.0.1:8019",
+    "canonicalPromptId": "code-v1",
+    "concurrency": 1,
+    "iterations": 3,
+    "maxTokens": 256,
+    "mode": "remote",
+    "prefixCacheBust": "leading_nonce_per_request",
+    "promptFile": "",
+    "promptSource": "canonical:code-v1",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "specAcceptanceRate": 0.817,
+    "specAcceptedTokens": 192,
+    "specDecoding": true,
+    "specDraftTokens": 235,
+    "stream": true,
+    "timeoutSeconds": 600,
+    "warmup": 1
+  },
+  "engineName": "strata",
+  "engineRepository": "https://github.com/lEWFkRAD/rtx-pro-6000-inference-lab",
+  "engineTimingsRaw": {
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 242,
+      "draft_n_accepted": 184,
+      "predicted_ms": 516.4,
+      "predicted_n": 256,
+      "predicted_per_second": 495.7,
+      "predicted_per_token_ms": 2.017,
+      "prompt_ms": 42.9,
+      "prompt_n": 246,
+      "prompt_per_second": 5734.3,
+      "prompt_per_token_ms": 0.174
+    },
+    "usage": {
+      "completion_tokens": 256,
+      "prompt_tokens": 246,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 502
+    }
+  },
+  "engineVersion": "0.5.6",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "thinkingmachines/Inkling-2-Mini",
+  "metricSource": "remote_endpoint",
+  "modelResolution": {
+    "declaredBaseModel": "thinkingmachines/Inkling-2-Mini",
+    "hfId": "thinkingmachines/Inkling-2-Mini",
+    "loadedFilename": "Inkling-2-Mini-NVFP4-q8.basalt",
+    "searchCommand": "lmx model search thinkingmachines/Inkling-2-Mini",
+    "searchError": "Could not reach https://www.localmaxxing.com/api/models/search?q=thinkingmachines%2FInkling-2-Mini\u0026limit=5: Get \"https://www.localmaxxing.com/api/models/search?q=thinkingmachines%2FInkling-2-Mini\u0026limit=5\": dial tcp: lookup www.localmaxxing.com on 127.0.0.53:53: read udp 127.0.0.1:34916-\u003e127.0.0.53:53: read: connection refused",
+    "searchQuery": "thinkingmachines/Inkling-2-Mini",
+    "searchQuerySource": "served_model",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "status": "matched"
+  },
+  "modelRevision": "main",
+  "outputSample": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nAfter code, explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\n\"\"\"logtally - summarize newline-delimited JSON logs from stdin.\"\"\"\n\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\nfrom statistics import quantiles  # maybe not; implement manually\n```\n\nPercentile computation: common approach —",
+  "outputSha256": "bae9f9921aae1c2a4cab2323437214f93559c5a32fb400f1e48d0565e650fa89",
+  "outputText": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nAfter code, explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\n\"\"\"logtally - summarize newline-delimited JSON logs from stdin.\"\"\"\n\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\nfrom statistics import quantiles  # maybe not; implement manually\n```\n\nPercentile computation: common approach —",
+  "outputTokens": 256,
+  "prefillTokens": 0,
+  "prompt": "Implement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSample": "[LocalMaxxing cache-bust nonce: cc5932dc7d489e4e4c4f8e9a526f3d14]\nImplement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSha256": "a737db738bd4e37881d1737f8dc51cae0295eff9ece6551d39826ce8ed43a690",
+  "promptTokens": 245,
+  "provenance": {
+    "benchmarkMode": "remote",
+    "cli": "localmaxxing-go",
+    "createdAt": "2026-11-28T18:23:44Z",
+    "metricSource": "remote_endpoint",
+    "timingSource": "client_observed_http",
+    "ttftSource": "stream_first_token"
+  },
+  "quantization": "NVFP4",
+  "quantizationResolution": {
+    "cli": "NVFP4",
+    "filename": "NVFP4",
+    "modelPath": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-NVFP4-q8.basalt",
+    "status": "matched",
+    "trusted": "NVFP4",
+    "trustedSource": "filename"
+  },
+  "sampleStats": {
+    "tokSOut": {
+      "count": 3,
+      "max": 578.9,
+      "mean": 555,
+      "min": 508.7,
+      "p50": 577.4,
+      "stddev": 40.1
+    },
+    "tokSTotal": {
+      "count": 3,
+      "max": 997.9,
+      "mean": 961.9,
+      "min": 894.9,
+      "p50": 992.9,
+      "stddev": 58.08
+    },
+    "ttftMs": {
+      "count": 3,
+      "max": 61.26,
+      "mean": 60.54,
+      "min": 59.6,
+      "p50": 60.76,
+      "stddev": 0.85
+    }
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "outputTokens": 256,
+      "promptTokens": 245,
+      "request": 1,
+      "tokSOut": 578.9,
+      "tokSPrefill": 3999.1,
+      "ttftMs": 61.26
+    },
+    {
+      "iteration": 2,
+      "outputTokens": 256,
+      "promptTokens": 243,
+      "request": 1,
+      "tokSOut": 577.4,
+      "tokSPrefill": 3999.6,
+      "ttftMs": 60.76
+    },
+    {
+      "iteration": 3,
+      "outputTokens": 256,
+      "promptTokens": 246,
+      "request": 1,
+      "tokSOut": 508.7,
+      "tokSPrefill": 4127.6,
+      "ttftMs": 59.6
+    }
+  ],
+  "timingSource": "client_observed_http",
+  "tokSOut": 577.4,
+  "tokSOutSource": "inter_token",
+  "tokSPrefill": 3999.6,
+  "tokSPrefillSource": "estimated_from_ttft",
+  "tokSTotal": 992.9,
+  "tokenSources": {
+    "output": "endpoint_usage",
+    "prompt": "endpoint_usage"
+  },
+  "ttftMs": 60.76,
+  "ttftSource": "stream_first_token"
+}

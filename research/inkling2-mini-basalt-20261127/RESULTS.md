@@ -203,8 +203,42 @@ Both `turbo5` runs cleared server-side canonical verification and are **LIVE #1 
 | **`reasoning-v1`** | `turbo4` (ECC OFF, prior #1) | 528.2 (532.8) | 3,778.2 | 4,933.3 | 78.34 ms | 60.0 ms | 190/259 | [cmx0gxgwt00hznp012nbiul6l](https://www.localmaxxing.com/en/speed-tests/cmx0gxgwt00hznp012nbiul6l) |
 | **`reasoning-v1`** | **`turbo5`** (`r3`, **#1 Reasoning Live**) | **565.9 (580.5)** | **4,435.6 (+17.4%)** | **5,935.6 (+20.3%)** | **66.22 ms (-12.12)** | **49.7 ms (-10.3)** | 190/249 | [cmx0nzhf300dcmz01unqsgufm](https://www.localmaxxing.com/en/speed-tests/cmx0nzhf300dcmz01unqsgufm) |
 
+## Update — November 28: `pinned-20261128-turbo6` (Bit-Exact SM120 Prefill/TTFT Pass #2 — Sub-61 ms TTFT, Live in 12×262K Production)
+
+Profiling `turbo5` prefill (`BASALT_PREFILL_PROFILE=1`) isolated the remaining short-prompt overhead inside three specific SM120 kernels (`f32_rows_dot_small_kernel` stalling on 144 unpipelined `K=16` iterations, 2-stage `moe_fp4::gemm_kernel_128_smallM` `M_PASS=64` underutilizing `M <= 448` expert buckets, and `post_conv_kernel` launching only 27 CTAs on 188 SMs across 96 calls).
+
+**`pinned-20261128-turbo6`** (`basalt-engine` `sha256: 05a91b4564f8b5460031be5fa8a78e0d828a5aa793b070c46b8f01e2c7081305`, delta over `turbo5` in `turbo6_delta_from_turbo5.patch` `sha256: 64537aab97271b97b9578d76150c2c2a7bb1a0d05f312e25b9e93e8d2afb4ad5`, cumulative over `turbo4` in `turbo6_delta_from_turbo4.patch` `sha256: fc0223f7ff8783969a833519147ec70b28cc077bbe6ce16933107e535a6965c1`, **NOW LIVE** on `inkling-basalt-pinned.service`) adds three **100% bit-exact** zero-spill SM120 kernels (`cuobjdump --dump-resource-usage`: `STACK: 0, LOCAL: 0`, `0 failures` across `inkling2_prompt_parity` and `inkling2_kernels_parity`):
+
+1. **3-Stage `cp.async.ca` Router GEMM (`dense_ops.cu`, `f32_rows_dot_fast_kernel`):** `90` regs, 0 spills, `14,848 B` smem, row-major `K=32` pipeline (`T <= 2048`) with 4× fewer barriers and identical sequential `fmaf` order. Unit `512×128×2304`: **`42.7 → 21.8 us`** (`13.9 TFLOP/s`, `0/512` mismatches); full-model `router`: **`3.61 → 1.06 ms` (3.4× faster)**.
+2. **3-Stage Single-Barrier Small-M NVFP4 MoE (`moe_fp4.cu`, `moe_fp4.hpp`, `prompt.cpp`, `gemm_kernel_128_smallM_3s`):** `91–100` regs, 0 spills, `44,544 B` smem (2 CTAs/SM), `M_PASS=32` with L1-cached `cp.async.ca` activation gathers, bitwise identical to `gemm_kernel_256`. Auto-dispatched for `pairs <= 28*n` (`M <= ~448`), keeping 2-stage `M_PASS=64` for `28*n < pairs <= 48*n` (`M = 449..768`) and `gemm_kernel_256` above `768`.
+3. **High-Occupancy `post_conv` + Fused `ring_store_kv` (`ops.cu`, `prompt.cpp`):** `post_conv_kernel<64, 8>` (`54` regs, 0 spills) lifts launch grid **`27 → 315 CTAs`** for `rows > 16`; fused `ring_store_kv_kernel` (`22` regs, 0 spills) removes 48 kernel launches per prompt.
+
+### Uncontended `turbo5` → `turbo6` Prefill A/B (100% Bit-Exact `b105c2ea0b1c` Across All 4 Lengths)
+
+| Prompt Length (`n` tok) | `turbo5` Engine PP | `turbo6` Engine PP | Speedup | `turbo5` Client TTFT | `turbo6` Client TTFT | TTFT Delta |
+|---|---:|---:|---:|---:|---:|---:|
+| **`M~245`** (`n=285`) | 47.8 ms (`5,900` t/s) | **40.9 ms (`6,968` t/s)** | **+18.1%** | 66.98 ms | **58.34 ms** | **-8.64 ms** |
+| **`M~295`** (`n=349`) | 48.1 ms (`7,256` t/s) | **43.4 ms (`8,042` t/s)** | **+10.8%** | 65.88 ms | **60.49 ms** | **-5.39 ms** |
+| **`M~512`** (`n=605`) | 57.3 ms (`10,506` t/s) | **49.8 ms (`12,149` t/s)** | **+15.6%** | 75.52 ms | **67.95 ms** | **-7.57 ms** |
+| **`M~1024`** (`n=1181`) | 77.8 ms (`15,141` t/s) | **71.2 ms (`16,587` t/s)** | **+9.6%** | 98.32 ms | **87.89 ms** | **-10.43 ms** |
+
+### `turbo6` Local Solo-Mode `lmx` Sweeps (FP16 KV, ECC OFF, Stock 500 W — Unsubmitted Local Receipts)
+
+Decode kernels are unchanged from `turbo5`, so our verified `#1` LocalMaxxing decode crowns (`turbo5`: `599.6` / `565.9`) remain untouched on the leaderboard while `turbo6` beats the 575 W RTX 5090 (`63.5 / 65.7 ms` TTFT, `3,824.3 / 4,464.4` client pp) on **both suites' TTFT and prefill at stock 500 W**:
+
+| Suite (`256` tok) | Local Run | Decode p50 (max) | Client PP | Engine PP | Client TTFT | Engine PP ms | DSpark Accept | Local Receipt |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| **`code-v1`** | `turbo6` `r7` (best pp/TTFT) | 577.4 (578.9) | **3,999.6** | **5,734.3** | **60.76 ms** | **42.9 ms** | 184/242 | `turbo6_fp16_code-v1_ttft60.76ms_local.json` |
+| **`code-v1`** | `turbo6` `r9` (best decode) | **582.9 (600.9)** | 3,724.2 | 5,073.7 | 64.44 ms | 47.5 ms | 196/240 | `turbo6_fp16_code-v1_582.9_local.json` |
+| **`reasoning-v1`** | `turbo6` `r8` (best pp/TTFT) | 546.3 (583.2) | **4,809.9** | **6,555.6** | **61.33 ms** | **45.0 ms** | 177/270 | `turbo6_fp16_reasoning-v1_ttft61.33ms_local.json` |
+| **`reasoning-v1`** | `turbo6` `r9` (best decode) | **551.2 (553.7)** | 4,720.6 | 6,417.6 | 62.63 ms | 45.5 ms | 190/248 | `turbo6_fp16_reasoning-v1_551.2_local.json` |
+
+- **Live 12×262K Production Cutover (`inkling-basalt-pinned.service`):** Promoted **`pinned-20261128-turbo6` + `Inkling-2-Mini-Uncensored-Onyx-RSI-v3-DSparkDistill-NVFP4-q8coda.basalt`** (`90,684 / 97,887 MiB` VRAM used, `~7.0 GiB` free, `147.3 ms` exact `'OK'` canary, live 21.8K-token uncached prefill at **`17,447 tok/s`** in `1.2 s` and `492.9–556.6 tok/s` live decode at `82–87%` DSpark, `pcie=0.0%`).
+
 ## Files
 
+- `turbo6_delta_from_turbo5.patch`, `turbo6_delta_from_turbo4.patch` — bit-exact `pinned-20261128-turbo6` prefill/TTFT source deltas (`sha256: 64537aab...` over `turbo5`; `fc0223f7...` cumulative over `turbo4`)
+- `receipts/localmaxxing/turbo6_fp16_{code-v1_ttft60.76ms,code-v1_582.9,reasoning-v1_ttft61.33ms,reasoning-v1_551.2}_local.json` — unsubmitted solo-mode `lmx` `turbo6` prefill/TTFT & decode receipts
 - `Inkling-2-Mini-RTX-PRO-6000-Hillclimb-Report-2026-11-28.pdf` — 8-page publication monograph covering the entire hillclimb (`Stock Basalt 0.5.6 → turbo5`), SM120 resource audits, ECC study, rejected ledger, RSI, and SHA-256 registry
 - `turbo5_delta_from_turbo4.patch` — bit-exact `pinned-20261128-turbo5` source delta over `turbo4` (`sha256: 2da1389dfc1a34291d81bf630cd24aaedcb61e8144664d43dd1e4b14796b5a33`)
 - `chart6_full_hillclimb_leaderboard.png`, `chart7_turbo5_prefill_ttft.png`, `chart8_turbo5_sm120_resources.png` — 300-DPI `turbo5` hillclimb, prefill/TTFT CTA saturation, and SM120 register/occupancy charts

@@ -1,0 +1,477 @@
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' a/include/basalt/prefill/moe_fp4.hpp b/include/basalt/prefill/moe_fp4.hpp
+--- a/include/basalt/prefill/moe_fp4.hpp	2026-11-28 14:06:30.113483919 -0500
++++ b/include/basalt/prefill/moe_fp4.hpp	2026-11-28 13:00:39.333197075 -0500
+@@ -86,7 +86,8 @@
+     const int32_t* dst_ids = nullptr;
+     float gate_softcap = 0.0f, up_softcap = 0.0f;
+     bool two = false;   ///< the activations as two FP4 terms (quantize's `two`: planes of 2 * w_cols values a row)
+-    bool small_m = false;   ///< use 1-tile (<=64 tok) x 128-row 2-CTA/SM small-M kernel indexed by tile_off
++    bool small_m = false;      ///< use 1-tile (<=64 tok) x 128-row 2-CTA/SM small-M kernel indexed by tile_off
++    bool small_m_3s = false;   ///< use 3-stage single-barrier M_PASS=32 small-M kernel (optimal when pairs <= 28*n)
+ };
+ void run(const Product& p, void* stream);
+ /// The 16-byte scale tail at `tail_off` of each of p's n blobs to dst[4 j .. 4 j + 3] (the tail swiglu reads).
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' a/src/kernels/cuda/dense_ops.cu b/src/kernels/cuda/dense_ops.cu
+--- a/src/kernels/cuda/dense_ops.cu	2026-11-28 14:06:30.113834186 -0500
++++ b/src/kernels/cuda/dense_ops.cu	2026-11-28 12:41:19.800415373 -0500
+@@ -310,6 +310,71 @@
+         }
+ }
+ 
++// 3-stage cp.async.ca row-major K=32 router dot kernel (T <= 2048, K % 32 == 0):
++// 4x fewer barriers (1 __syncthreads() per 32 K vs 2 per 16 K), 0 bank conflicts, 2 stages in flight,
++// and exact sequential k = 0..K-1 fmaf order (bitwise identical to f32_rows_dot_kernel).
++constexpr int FDF_K = 32, FDF_ST = 3, FDF_LD = 36;
++__device__ __forceinline__ void fdf_cp16(void* dst, const void* src) {
++    asm volatile("cp.async.ca.shared.global [%0], [%1], 16;\n" ::"r"((unsigned) __cvta_generic_to_shared(dst)), "l"(src));
++}
++__global__ void __launch_bounds__(64, 4) f32_rows_dot_fast_kernel(const float* __restrict__ x, const float* __restrict__ w,
++                                                                  float* __restrict__ y, int64_t T, int64_t N, int64_t K) {
++    __shared__ __align__(16) float xs[FDF_ST][FDS_T][FDF_LD];
++    __shared__ __align__(16) float ws[FDF_ST][FDS_N][FDF_LD];
++    const int tid = (int) threadIdx.x, tr = tid >> 3, tc = tid & 7;
++    const int64_t t0 = (int64_t) blockIdx.x * FDS_T, n0 = (int64_t) blockIdx.y * FDS_N;
++    const int r0 = tid >> 3, r1 = r0 + 8, k4 = (tid & 7) << 2;
++    const float* x0 = x + min(t0 + r0, T - 1) * K + k4;
++    const float* x1 = x + min(t0 + r1, T - 1) * K + k4;
++    const float* w0 = w + min(n0 + r0, N - 1) * K + k4;
++    const float* w1 = w + min(n0 + r1, N - 1) * K + k4;
++    const int nk = (int) (K / FDF_K);
++
++    auto load = [&](int st, int ks) {
++        const int64_t off = (int64_t) ks * FDF_K;
++        fdf_cp16(&xs[st][r0][k4], x0 + off);
++        fdf_cp16(&xs[st][r1][k4], x1 + off);
++        fdf_cp16(&ws[st][r0][k4], w0 + off);
++        fdf_cp16(&ws[st][r1][k4], w1 + off);
++        asm volatile("cp.async.commit_group;\n" ::);
++    };
++
++    float acc00 = 0.f, acc01 = 0.f, acc10 = 0.f, acc11 = 0.f;
++    load(0, 0);
++    if (nk > 1) load(1, 1);
++    for (int ks = 0; ks < nk; ++ks) {
++        if (ks + 1 < nk) asm volatile("cp.async.wait_group 1;\n" ::);
++        else asm volatile("cp.async.wait_group 0;\n" ::);
++        __syncthreads();
++        if (ks + 2 < nk) load((ks + 2) % FDF_ST, ks + 2);
++        const int st = ks % FDF_ST;
++        const float* pa0 = &xs[st][tr * 2][0];
++        const float* pa1 = &xs[st][tr * 2 + 1][0];
++        const float* pb0 = &ws[st][tc * 2][0];
++        const float* pb1 = &ws[st][tc * 2 + 1][0];
++#pragma unroll
++        for (int k = 0; k < FDF_K; k += 4) {
++            const float4 a0 = *reinterpret_cast<const float4*>(pa0 + k);
++            const float4 a1 = *reinterpret_cast<const float4*>(pa1 + k);
++            const float4 b0 = *reinterpret_cast<const float4*>(pb0 + k);
++            const float4 b1 = *reinterpret_cast<const float4*>(pb1 + k);
++            acc00 = fmaf(a0.x, b0.x, acc00); acc00 = fmaf(a0.y, b0.y, acc00);
++            acc00 = fmaf(a0.z, b0.z, acc00); acc00 = fmaf(a0.w, b0.w, acc00);
++            acc01 = fmaf(a0.x, b1.x, acc01); acc01 = fmaf(a0.y, b1.y, acc01);
++            acc01 = fmaf(a0.z, b1.z, acc01); acc01 = fmaf(a0.w, b1.w, acc01);
++            acc10 = fmaf(a1.x, b0.x, acc10); acc10 = fmaf(a1.y, b0.y, acc10);
++            acc10 = fmaf(a1.z, b0.z, acc10); acc10 = fmaf(a1.w, b0.w, acc10);
++            acc11 = fmaf(a1.x, b1.x, acc11); acc11 = fmaf(a1.y, b1.y, acc11);
++            acc11 = fmaf(a1.z, b1.z, acc11); acc11 = fmaf(a1.w, b1.w, acc11);
++        }
++    }
++    const int64_t ta = t0 + tr * 2, tb = ta + 1, na = n0 + tc * 2, nb = na + 1;
++    if (ta < T && na < N) y[ta * N + na] = acc00;
++    if (ta < T && nb < N) y[ta * N + nb] = acc01;
++    if (tb < T && na < N) y[tb * N + na] = acc10;
++    if (tb < T && nb < N) y[tb * N + nb] = acc11;
++}
++
+ // The GDN a/b projections of a prompt chunk with the gates fused: a and b are the first and last HV (= 48) rows of w
+ // [2 HV][K] (BF16), gate[t][h] = softplus(a + dt[h]) * ssm_a[h], beta[t][h] = sigmoid(b) - the expressions of gdn_gates.
+ // The product runs on BF16 tensor cores (m16n8k16): x is split into two BF16 terms (hi + lo, about 17 bits of x; the BF16
+@@ -742,6 +807,12 @@
+     if (T <= 0) return;
+     if (K % FD_K != 0) { basalt::log::error("basalt", "f32_rows_dot: K %lld", (long long) K); std::exit(1); }
+     static const bool opt = [] { const char* e = std::getenv("BASALT_ROUTER_PREFILL_OPT"); return !e || e[0] != '0'; }();
++    if (opt && T <= 2048 && N >= 64 && (K % FDF_K == 0)) {
++        f32_rows_dot_fast_kernel<<<dim3((unsigned) ((T + FDS_T - 1) / FDS_T), (unsigned) ((N + FDS_N - 1) / FDS_N)), 64, 0,
++                                   (cudaStream_t) stream>>>(x, w, y, T, N, K);
++        check("f32_rows_dot_fast");
++        return;
++    }
+     if (opt && T <= 512 && N >= 64) {
+         f32_rows_dot_small_kernel<<<dim3((unsigned) ((T + FDS_T - 1) / FDS_T), (unsigned) ((N + FDS_N - 1) / FDS_N)), 64, 0,
+                                     (cudaStream_t) stream>>>(x, w, y, T, N, K);
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' a/src/models/inkling2/kernels/ops.cu b/src/models/inkling2/kernels/ops.cu
+--- a/src/models/inkling2/kernels/ops.cu	2026-11-27 21:55:26.000000000 -0500
++++ b/src/models/inkling2/kernels/ops.cu	2026-11-28 12:41:17.778445425 -0500
+@@ -314,6 +314,20 @@
+     ring_store_kernel<<<dim3((unsigned) ((width + 255) / 256), (unsigned) n), 256, 0, s>>>(x, ld, off, width, pos, rows, ring);
+ }
+ 
++// Combined K+V ring store for attn_prepare: halves ring_store launches (48 fewer launches per prompt).
++__global__ void ring_store_kv_kernel(const float* __restrict__ yk, int ldk, const float* __restrict__ yv, int ldv,
++                                     int width, const int32_t* __restrict__ pos, int rows,
++                                     float* __restrict__ k_ring, float* __restrict__ v_ring) {
++    const int first = rows > kConvRing ? rows - kConvRing : 0;
++    const int n = rows - first;
++    const int which = blockIdx.y >= n ? 1 : 0;
++    const int r = first + (which ? blockIdx.y - n : blockIdx.y);
++    if (r >= rows) return;
++    const float* src = (which ? yv : yk) + (size_t) r * (which ? ldv : ldk);
++    float* dst = (which ? v_ring : k_ring) + (size_t) (pos[r] % kConvRing) * width;
++    for (int c = blockIdx.x * blockDim.x + threadIdx.x; c < width; c += gridDim.x * blockDim.x) dst[c] = src[c];
++}
++
+ __global__ void attn_gate_kernel(const float* __restrict__ attn, const float* __restrict__ yq, int64_t yq_ld, int n4,
+                                  float* __restrict__ out) {
+     const int i = blockIdx.x * blockDim.x + threadIdx.x;
+@@ -328,14 +342,18 @@
+ 
+ constexpr int kPostConvThreads = 192;
+ constexpr int kPostConvTile = 32;
++constexpr int kPostConvPromptThreads = 64;
++constexpr int kPostConvPromptTile = 8;
+ static_assert(kWidth % (4 * kPostConvThreads) == 0, "kWidth splits into float4 blocks for post_conv");
++static_assert(kWidth % (4 * kPostConvPromptThreads) == 0, "kWidth splits into float4 blocks for post_conv prompt");
+ 
+-__global__ void __launch_bounds__(kPostConvThreads)
++template <int kThr, int kTile>
++__global__ void __launch_bounds__(kThr)
+     post_conv_kernel(const float* __restrict__ x, const int32_t* __restrict__ pos, const float* __restrict__ taps,
+                      const float* __restrict__ ring, const float* __restrict__ add, int rows, float* __restrict__ out) {
+-    const int c = (blockIdx.x * kPostConvThreads + threadIdx.x) * 4;
+-    const int r0 = blockIdx.y * kPostConvTile;
+-    const int r1 = min(r0 + kPostConvTile, rows);
++    const int c = (blockIdx.x * kThr + threadIdx.x) * 4;
++    const int r0 = blockIdx.y * kTile;
++    const int r1 = min(r0 + kTile, rows);
+     const float inv = rsqrtf((float) kConv + 1.f);
+     const float4 tp0 = *reinterpret_cast<const float4*>(taps + (c + 0) * kConv);
+     const float4 tp1 = *reinterpret_cast<const float4*>(taps + (c + 1) * kConv);
+@@ -622,8 +640,10 @@
+     cudaStream_t s = (cudaStream_t) stream;
+     attn_prepare_kernel<<<rows, kThreads, 0, s>>>(a);
+     check("attn_prepare");
+-    ring_store(a.yk, (int) a.ldk, 0, kKvHeads * kHeadDim, a.pos, rows, a.k_ring, s);
+-    ring_store(a.yv, (int) a.ldv, 0, kKvHeads * kHeadDim, a.pos, rows, a.v_ring, s);
++    const int n = rows < kConvRing ? rows : kConvRing;
++    const int width = kKvHeads * kHeadDim;
++    ring_store_kv_kernel<<<dim3((unsigned) ((width + 255) / 256), (unsigned) (2 * n)), 256, 0, s>>>(
++        a.yk, (int) a.ldk, a.yv, (int) a.ldv, width, a.pos, rows, a.k_ring, a.v_ring);
+     check("attn_prepare/rings");
+ }
+ 
+@@ -638,8 +658,15 @@
+                void* stream) {
+     if (rows <= 0) return;
+     cudaStream_t s = (cudaStream_t) stream;
+-    post_conv_kernel<<<dim3(kWidth / (4 * kPostConvThreads), (unsigned) ((rows + kPostConvTile - 1) / kPostConvTile)),
+-                       kPostConvThreads, 0, s>>>(x, pos, taps, ring, add, rows, out);
++    if (rows > 16) {
++        post_conv_kernel<kPostConvPromptThreads, kPostConvPromptTile>
++            <<<dim3(kWidth / (4 * kPostConvPromptThreads), (unsigned) ((rows + kPostConvPromptTile - 1) / kPostConvPromptTile)),
++               kPostConvPromptThreads, 0, s>>>(x, pos, taps, ring, add, rows, out);
++    } else {
++        post_conv_kernel<kPostConvThreads, kPostConvTile>
++            <<<dim3(kWidth / (4 * kPostConvThreads), (unsigned) ((rows + kPostConvTile - 1) / kPostConvTile)),
++               kPostConvThreads, 0, s>>>(x, pos, taps, ring, add, rows, out);
++    }
+     check("post_conv");
+     ring_store(x, kWidth, 0, kWidth, pos, rows, ring, s);
+     check("post_conv/ring");
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' a/src/models/inkling2/prompt.cpp b/src/models/inkling2/prompt.cpp
+--- a/src/models/inkling2/prompt.cpp	2026-11-28 14:06:30.114904475 -0500
++++ b/src/models/inkling2/prompt.cpp	2026-11-28 13:00:41.729204368 -0500
+@@ -724,6 +724,7 @@
+         static const bool fp4_smallm = [] { const char* e = std::getenv("BASALT_FP4_SMALLM"); return !e || e[0] != '0'; }();
+         const int E = g_.n_embd, F = g_.n_ff_exp, n = g_.n_expert, pairs = rows * g_.n_used;
+         const bool small_m = fp4_smallm && (pairs <= n * 48);
++        const bool small_m_3s = small_m && (pairs <= n * 28);
+         const bk::NativeExpertLayout L = bk::native_expert_layout(w.gu_type, w.d_type, E, F);
+         fp4::plan_blocks(b().bounds, n, b().tile_off, b().blk_off, strm());
+         fp4::quantize_tokens(b().nrm, rows, E, E, b().a4x, b().gsx, strm(), true);
+@@ -750,6 +751,7 @@
+         gu.ld_dst = F;
+         gu.two = true;
+         gu.small_m = small_m;
++        gu.small_m_3s = small_m_3s;
+         fp4::run(gu, strm());
+         prof_tick(11);
+         fp4::quantize_f16(h16, b().bounds, b().tile_off, n, b().a4h, b().gsh, F, F, pairs, strm());
+@@ -768,6 +770,7 @@
+         d.dst_ids = b().dst;
+         d.two = true;
+         d.small_m = small_m;
++        d.small_m_3s = small_m_3s;
+         d.ld_dst = E;
+         fp4::run(d, strm());
+         moe_combine_f16(gu16, b().rw, rows, g_.n_used, b().moe, strm());
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' a/src/prefill/moe_fp4.cu b/src/prefill/moe_fp4.cu
+--- a/src/prefill/moe_fp4.cu	2026-11-28 14:06:30.115210749 -0500
++++ b/src/prefill/moe_fp4.cu	2026-11-28 13:00:44.158211784 -0500
+@@ -64,6 +64,9 @@
+ __device__ __forceinline__ void cp_async16(void* dst, const void* src) {
+     asm volatile("cp.async.cg.shared.global [%0], [%1], 16;\n" ::"r"(smem_addr(dst)), "l"(src));
+ }
++__device__ __forceinline__ void cp_async16_ca(void* dst, const void* src) {
++    asm volatile("cp.async.ca.shared.global [%0], [%1], 16;\n" ::"r"(smem_addr(dst)), "l"(src));
++}
+ __device__ __forceinline__ void cp_commit() { asm volatile("cp.async.commit_group;\n" ::); }
+ template <int N> __device__ __forceinline__ void cp_wait() { asm volatile("cp.async.wait_group %0;\n" ::"n"(N)); }
+ 
+@@ -1027,6 +1030,218 @@
+     }
+ }
+ 
++// 3-stage single-barrier small-M kernel (M_PASS = 32, 43.5 KiB smem -> 2 CTAs/SM on sm_120):
++// 2 full weight tiles in flight at all times, 1 __syncthreads() per kt (halves barriers), L1-cached cp.async.ca on
++// activation gathers, and 2x smaller accumulator file (acc[2][2][4]). Handles cnt_blk <= 32 in one pass (99%+ of
++// experts at M <= 384) and loops a second m0 = 32 pass only for rare hot experts with 33..64 rows. Bitwise identical.
++constexpr int kTile32 = 32;
++constexpr int kACode32 = kTile32 * kKTile / 2;     // 2048
++constexpr int kAScale32 = kTile32 * kKTile / 16;   // 256
++constexpr int kAStage32 = kACode32 + kAScale32;    // 2304
++constexpr int kStages3 = 3;
++constexpr int kSmem128_3s = kStages3 * (2 * kAStage32 + kBStage);   // 44544 bytes
++
++template <bool GATHER, bool SWIGLU>
++__device__ __forceinline__ void load_stage128_3s(int stage, int kt, int nmt_p, int m0, uint8_t* smem, const uint8_t* a_src,
++                                                 const uint8_t* a_code, int a_dst, bool a_load, const uint8_t* a_scale,
++                                                 int s_dst, const uint8_t* w_src, size_t row_bytes, int rb, int half) {
++    uint8_t* as0 = smem + stage * 2 * kAStage32;
++    uint8_t* bs = smem + kStages3 * 2 * kAStage32 + stage * kBStage;
++    const int tid = (int) threadIdx.x;
++    const int rows_ceil = nmt_p << 4;
++#pragma unroll
++    for (int u = 0; u < 2; ++u) {
++        uint8_t* as = as0 + u * kAStage32;
++        const int ka = 2 * kt + u;
++        if (GATHER) {
++            if (a_load) cp_async16_ca(as + a_dst, a_code + (size_t) ka * 64);
++            if (tid < rows_ceil) cp_async8(as + s_dst, a_scale + (size_t) ka * 8);
++        } else {
++            if (tid < (nmt_p << 6)) cp_async16_ca(as + 16 * tid, a_src + (size_t) ka * kAStage + (size_t) m0 * 64 + 16 * tid);
++            if (tid < (nmt_p << 3))
++                cp_async16_ca(as + kACode32 + 16 * tid, a_src + (size_t) ka * kAStage + kACodeBytes + (size_t) m0 * 8 + 16 * tid);
++        }
++    }
++    const int row = tid >> 1, part = tid & 1;
++    const uint8_t* src = w_src + (size_t) b_row<SWIGLU>(rb, row, half) * row_bytes + (size_t) kt * kBRowBytes;
++    const int odd = (int) (((uintptr_t) src >> 3) & 1u);
++    uint8_t* dst = bs + row * kBRowStride;
++    if (!odd) {
++        if (part == 0) {
++            cp_async16(dst + 0, src + 0);
++            cp_async16(dst + 16, src + 16);
++            cp_async16(dst + 32, src + 32);
++        } else {
++            cp_async16(dst + 48, src + 48);
++            cp_async8(dst + 64, src + 64);
++        }
++    } else {
++        if (part == 0) {
++            cp_async8(dst + 8, src + 0);
++            cp_async16(dst + 16, src + 8);
++            cp_async16(dst + 32, src + 24);
++        } else {
++            cp_async16(dst + 48, src + 40);
++            cp_async16(dst + 64, src + 56);
++        }
++    }
++}
++
++template <bool GATHER, bool SWIGLU>
++__global__ __launch_bounds__(kThreads, 2) void gemm_kernel_128_smallM_3s(const GemmArgs a) {
++    extern __shared__ __align__(1024) uint8_t smem[];
++    __shared__ int32_t tok_s[kTileTokens];
++    const int rb = blockIdx.x, y = blockIdx.y;
++    if (y >= a.tile_off[a.n]) return;
++    int lo = 0, hi = a.n;
++    while (hi - lo > 1) {
++        const int mid = (lo + hi) >> 1;
++        if (a.tile_off[mid] <= y) lo = mid; else hi = mid;
++    }
++    const int j = lo, tp = y - a.tile_off[lo];
++    const int cnt = a.bounds[j + 1] - a.bounds[j];
++    const int first = tp * kTileTokens;
++    if (first >= cnt) return;
++    const int cnt_blk = min(kTileTokens, cnt - first);
++    const int nkt = a.w_cols / kKTile;
++    const size_t row_bytes = (size_t) (a.w_cols / 64) * 36;
++    const size_t tile_stride = (size_t) 2 * nkt * kAStage;
++    const uint8_t* blob = a.base + (size_t) j * a.stride;
++    const uint8_t* w_src = blob + a.w_off;
++    const int64_t tile0 = (int64_t) y;
++    const uint8_t* a_src = GATHER ? nullptr : a.a4 + tile0 * (int64_t) tile_stride;
++    const int64_t brow0 = a.bounds[j] + first;
++    const int tid = (int) threadIdx.x;
++    if (GATHER) {
++        if (tid < kTileTokens) tok_s[tid] = a.ids[brow0 + (tid < cnt_blk ? tid : 0)];
++        __syncthreads();
++    }
++
++    const int lane = tid & 31, warp = tid >> 5;
++    const int group = lane >> 2, tig = lane & 3;
++    const int a_row = (lane & 7) + (((lane >> 3) & 1) << 3);
++    const int a_col = (lane >> 4) * 16;
++    const int sfa_row = ((lane & 1) << 3) | (lane >> 2);
++    const int rb_odd = (int) ((row_bytes >> 3) & 1u);
++    const int64_t row0 = a.bounds[j] + (int64_t) tp * kTileTokens;
++    float4 tail = make_float4(0.0f, 0.0f, 0.0f, 0.0f);
++    if (SWIGLU) tail = *(const float4*) (blob + a.tail_off);
++
++    for (int m0 = 0; m0 < cnt_blk; m0 += kTile32) {
++        if (m0 > 0) __syncthreads();
++        const int cnt_p = min(kTile32, cnt_blk - m0);
++        const int nmt_p = (cnt_p + 15) >> 4;
++        const int rows_ceil = nmt_p << 4;
++        const uint8_t* a_code = nullptr;
++        int a_dst = 0;
++        bool a_load = false;
++        const uint8_t* a_scale = nullptr;
++        int s_dst = 0;
++        if (GATHER) {
++            const int r = tid >> 2, q = tid & 3;
++            a_load = r < rows_ceil;
++            if (a_load) {
++                a_code = a.a4 + (size_t) tok_s[m0 + r] * (size_t) (2 * a.w_cols / 2) + 16 * q;
++                a_dst = r * 64 + ((q ^ ((r >> 1) & 3)) << 4);
++            }
++            if (tid < rows_ceil) {
++                a_scale = a.a4s + (size_t) tok_s[m0 + tid] * (size_t) (2 * a.w_cols / 16);
++                s_dst = kACode32 + tid * 8;
++            }
++        }
++
++        float acc[2][2][4] = {};
++        load_stage128_3s<GATHER, SWIGLU>(0, 0, nmt_p, m0, smem, a_src, a_code, a_dst, a_load, a_scale, s_dst, w_src,
++                                         row_bytes, rb, a.half);
++        cp_commit();
++        if (nkt > 1) {
++            load_stage128_3s<GATHER, SWIGLU>(1, 1, nmt_p, m0, smem, a_src, a_code, a_dst, a_load, a_scale, s_dst, w_src,
++                                             row_bytes, rb, a.half);
++            cp_commit();
++        }
++        for (int kt = 0; kt < nkt; ++kt) {
++            if (kt + 1 < nkt) cp_wait<1>();
++            else cp_wait<0>();
++            __syncthreads();
++            if (kt + 2 < nkt) {
++                load_stage128_3s<GATHER, SWIGLU>((kt + 2) % kStages3, kt + 2, nmt_p, m0, smem, a_src, a_code, a_dst, a_load,
++                                                 a_scale, s_dst, w_src, row_bytes, rb, a.half);
++                cp_commit();
++            }
++            const int stage = kt % kStages3;
++            const uint8_t* as0 = smem + stage * 2 * kAStage32;
++            const uint8_t* bs = smem + kStages3 * 2 * kAStage32 + stage * kBStage;
++            const int w_odd = (int) ((((uintptr_t) w_src >> 3) ^ (uintptr_t) kt) & 1u);
++#pragma unroll
++            for (int s = 0; s < 2; ++s) {
++                unsigned b0[2], b1[2], sb[2];
++#pragma unroll
++                for (int r = 0; r < 2; ++r) {
++                    const int sr = b_tile_row128<SWIGLU>(warp, r) + group;
++                    const int odd = w_odd ^ (rb_odd & (int) b_row<SWIGLU>(rb, sr, a.half));
++                    const uint8_t* p = bs + sr * kBRowStride + (odd << 3) + s * 36;
++                    b0[r] = *(const uint32_t*) (p + 4 + 4 * tig);
++                    b1[r] = *(const uint32_t*) (p + 20 + 4 * tig);
++                    unsigned v = *(const uint32_t*) p & 0x7f7f7f7fu;
++                    sb[r] = v & ~__vcmpeq4(v, 0x7f7f7f7fu);
++                }
++#pragma unroll
++                for (int u = 0; u < 2; ++u) {
++                    const uint8_t* as = as0 + u * kAStage32;
++#pragma unroll
++                    for (int mt = 0; mt < 2; ++mt) {
++                        if (mt >= nmt_p) break;
++                        unsigned af[4];
++                        const int row = mt * 16 + a_row;
++                        ldmatrix_x4(af[0], af[1], af[2], af[3], smem_addr(as + row * 64 + swz(row, s * 32 + a_col)));
++                        const unsigned asc = *(const uint32_t*) (as + kACode32 + (mt * 16 + sfa_row) * 8 + 4 * s);
++                        mma_fp4(acc[mt][0], af, b0[0], b1[0], asc, sb[0]);
++                        mma_fp4(acc[mt][1], af, b0[1], b1[1], asc, sb[1]);
++                    }
++                }
++            }
++        }
++
++#pragma unroll
++        for (int mt = 0; mt < 2; ++mt) {
++            if (mt >= nmt_p) break;
++#pragma unroll
++            for (int h = 0; h < 2; ++h) {
++                const int tp_r = mt * 16 + group + 8 * h;
++                if (tp_r >= cnt_p) continue;
++                const int t = m0 + tp_r;
++                const float g = GATHER ? a.gs[tok_s[t]] : a.gs[tile0 * kTileTokens + t];
++                if (SWIGLU && a.dst_f16) {
++                    uint16_t* out = a.dst_f16 + (row0 + t) * a.ld_dst + rb * 64 + warp * 8 + 2 * tig;
++                    const __half2 h2 = __floats2half2_rn(
++                        swiglu_cap(acc[mt][0][2 * h] * g, acc[mt][1][2 * h] * g, tail, a.cg, a.cu),
++                        swiglu_cap(acc[mt][0][2 * h + 1] * g, acc[mt][1][2 * h + 1] * g, tail, a.cg, a.cu));
++                    *reinterpret_cast<uint32_t*>(out) = *reinterpret_cast<const uint32_t*>(&h2);
++                } else if (SWIGLU) {
++                    float* out = a.dst + (row0 + t) * a.ld_dst + rb * 64 + warp * 8 + 2 * tig;
++                    *(float2*) out = make_float2(
++                        swiglu_cap(acc[mt][0][2 * h] * g, acc[mt][1][2 * h] * g, tail, a.cg, a.cu),
++                        swiglu_cap(acc[mt][0][2 * h + 1] * g, acc[mt][1][2 * h + 1] * g, tail, a.cg, a.cu));
++                } else if (a.dst_f16) {
++                    const int64_t orow = a.dst_ids ? a.dst_ids[row0 + t] : row0 + t;
++                    uint16_t* out = a.dst_f16 + orow * a.ld_dst + rb * kRowsPerBlock + warp * 16 + 2 * tig;
++#pragma unroll
++                    for (int r = 0; r < 2; ++r) {
++                        const __half2 h2 = __floats2half2_rn(acc[mt][r][2 * h] * g, acc[mt][r][2 * h + 1] * g);
++                        *reinterpret_cast<uint32_t*>(out + 8 * r) = *reinterpret_cast<const uint32_t*>(&h2);
++                    }
++                } else {
++                    const int64_t orow = a.dst_ids ? a.dst_ids[row0 + t] : row0 + t;
++                    float* out = a.dst + orow * a.ld_dst + rb * kRowsPerBlock + warp * 16 + 2 * tig;
++#pragma unroll
++                    for (int r = 0; r < 2; ++r)
++                        *(float2*) (out + 8 * r) = make_float2(acc[mt][r][2 * h] * g, acc[mt][r][2 * h + 1] * g);
++                }
++            }
++        }
++    }
++}
++
+ __global__ void tails_kernel(GemmArgs a, size_t off, int n, float* dst) {
+     const int j = threadIdx.x;
+     if (j < n) ((float4*) dst)[j] = *(const float4*) (a.blob[j] + off);
+@@ -1133,7 +1348,26 @@
+     ck(cudaGetLastError(), "gemm256");
+ }
+ 
+-template <bool GATHER, bool SWIGLU> void launch128_smallM(const GemmArgs& a, dim3 grid, cudaStream_t s) {
++template <bool GATHER, bool SWIGLU> void launch128_smallM(const GemmArgs& a, dim3 grid, cudaStream_t s, bool allow_3s) {
++    static const int env_3s = [] {
++        const char* e = std::getenv("BASALT_FP4_3STAGE");
++        if (!e) return -1;
++        return e[0] == '0' ? 0 : 1;
++    }();
++    const bool use_3s = env_3s >= 0 ? (env_3s != 0) : allow_3s;
++    if (use_3s) {
++        static std::atomic<bool> configured3[64];
++        int dev = 0;
++        ck(cudaGetDevice(&dev), "device");
++        if (dev < 0 || dev >= 64) ck(cudaErrorInvalidDevice, "device range");
++        if (!configured3[dev].load(std::memory_order_acquire)) {
++            ck(cudaFuncSetAttribute(gemm_kernel_128_smallM_3s<GATHER, SWIGLU>, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmem128_3s), "smem");
++            configured3[dev].store(true, std::memory_order_release);
++        }
++        gemm_kernel_128_smallM_3s<GATHER, SWIGLU><<<grid, kThreads, kSmem128_3s, s>>>(a);
++        ck(cudaGetLastError(), "gemm128_smallM_3s");
++        return;
++    }
+     static std::atomic<bool> configured[64];
+     int dev = 0;
+     ck(cudaGetDevice(&dev), "device");
+@@ -1163,8 +1397,8 @@
+         const dim3 grid((unsigned) (p.w_rows / kRowsPerBlock), (unsigned) p.blocks, 1);
+         if (p.two) {
+             if (p.small_m && p.tile_off && (p.w_rows % kRowsPerBlock == 0)) {
+-                if (p.swiglu) launch128_smallM<true, true>(a, grid, (cudaStream_t) stream);
+-                else launch128_smallM<false, false>(a, grid, (cudaStream_t) stream);
++                if (p.swiglu) launch128_smallM<true, true>(a, grid, (cudaStream_t) stream, p.small_m_3s);
++                else launch128_smallM<false, false>(a, grid, (cudaStream_t) stream, p.small_m_3s);
+             } else if (p.w_rows % kRows256 == 0) {
+                 const dim3 grid256((unsigned) (p.w_rows / kRows256), (unsigned) p.blocks, 1);
+                 if (p.swiglu) launch256<true, true>(a, grid256, (cudaStream_t) stream);
