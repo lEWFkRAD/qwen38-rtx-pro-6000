@@ -1,0 +1,646 @@
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/iq_kernels.cu /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/iq_kernels.cu
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/iq_kernels.cu	2026-11-27 19:58:33.601965053 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/iq_kernels.cu	2026-11-28 01:55:24.839186943 -0500
+@@ -3407,6 +3407,106 @@
+     }
+ }
+ 
++// Extract s[lane] using compile-time constant indices so s[] stays strictly in registers (0 local-memory stack).
++template<int NC>
++__device__ __forceinline__ float pick_lane(const float (&s)[NC], int lane) {
++    float v = s[0];
++#pragma unroll
++    for (int c = 1; c < NC; ++c)
++        if (lane == c) v = s[c];
++    return v;
++}
++
++// 4 consecutive rows per warp (32 rows per 256-thread block = 1 q8_1 block of hq): NVFP4 gate + up (KC = 144,
++// n_embd = 2304) followed by bit-exact softcapped SwiGLU into hsh[entry][row_in_32].
++template<int NC, bool EXACT_N>
++__device__ __forceinline__ void gu_softcap_4rows_nvfp4(const uint8_t* __restrict__ blob, size_t up_off, size_t gu_row,
++                                                       int r0, int warp, int lane, const block_q8_1* __restrict__ xq,
++                                                       const int (&off)[NC], int n, float sc_g, float sc_u, float cg,
++                                                       float cu, float (&hsh)[8][33]) {
++    constexpr int kNb = 2304 / Fmt<40>::qk;   // 36
++    constexpr int kKc = 144;
++#pragma unroll 1
++    for (int p = 0; p < 4; ++p) {
++        float gv = 0.0f, uv = 0.0f;
++#pragma unroll 1
++        for (int side = 0; side < 2; ++side) {
++            // Stop LICM from hoisting xq + off[c] addresses/loads across the (p, side) loops into ~80+ live regs.
++            const block_q8_1* xq_cur = xq;
++            asm("" : "+l"(xq_cur));
++            const uint8_t* w = blob + (side == 0 ? (size_t) 0 : up_off) + (size_t) (r0 + p * 8 + warp) * gu_row;
++            float s[NC];
++            row_dot_multi<40, NC, EXACT_N, false, kKc>(w, xq_cur, off, n, kNb, lane, s, nullptr);
++            tail_scale<40>(s, side == 0 ? sc_g : sc_u);
++            const float v = pick_lane(s, lane);
++            if (side == 0) gv = v;
++            else uv = v;
++        }
++        if (EXACT_N ? (lane < NC) : (lane < n)) {
++            const float h = __fmul_rn(__fmul_rn(cg * tanhf(gv / cg), 1.0f / (1.0f + expf(-gv))), cu * tanhf(uv / cu));
++            hsh[lane][p * 8 + warp] = h;
++        }
++    }
++}
++
++// Bit-exact fused NVFP4 gate/up (n_embd = 2304, KC = 144) + softcapped SwiGLU + q8_1 quantization: replaces both
++// native_gu_multi_kernel<40, false, 144> and swiglu_softcap_q8_1_entries_kernel in a single launch.
++// Grid: (n_ff / 32, gy), Block: 256 (8 warps). Each block owns 32 consecutive n_ff rows = 1 exact q8_1 block of hq.
++__global__ void __launch_bounds__(256) native_gu_swiglu_q8_1_kernel(const unsigned long long* __restrict__ grp_ptr,
++                                                                    const int32_t* __restrict__ grp_start,
++                                                                    const int32_t* __restrict__ n_groups,
++                                                                    const int32_t* __restrict__ ent_tok,
++                                                                    const block_q8_1* __restrict__ xq,
++                                                                    NativeExpertLayout L,
++                                                                    block_q8_1* __restrict__ hq) {
++    const int ng = *n_groups;
++    if (ng <= (int) gridDim.y) pdl_launch_dependents();   // one pass of groups: down starts prefetching immediately
++    if (blockIdx.y >= ng) return;
++    __shared__ float hsh[8][33];   // +1 stride eliminates 8-way write bank conflict and 0 read conflicts
++    const int warp = threadIdx.x >> 5, lane = threadIdx.x & 31;
++    const int r0 = (int) blockIdx.x * 32;
++    constexpr int kXb = 2304 / 32;   // 72
++    constexpr int kGuNc = 8;
++    const float cg = L.gate_softcap, cu = L.up_softcap;
++    for (int g = blockIdx.y; g < ng; g += gridDim.y) {
++        const unsigned long long blob_addr = grp_ptr[g];
++        const uint8_t* blob = (const uint8_t*) blob_addr;
++        const int e0 = grp_start[g], e1 = grp_start[g + 1];
++        const float sc_g = expert_out_scale<40>(blob_addr, L, 0);
++        const float sc_u = expert_out_scale<40>(blob_addr, L, 1);
++        for (int e = e0; e < e1; e += kGuNc) {
++            const int n = min(kGuNc, e1 - e);
++            if (n == 1) {
++                const int off1[1] = { ent_tok[e] * kXb };
++                gu_softcap_4rows_nvfp4<1, true>(blob, L.up_off, L.gu_row, r0, warp, lane, xq, off1, 1, sc_g, sc_u, cg,
++                                                cu, hsh);
++            } else if (n == 2) {
++                const int off2[2] = { ent_tok[e] * kXb, ent_tok[e + 1] * kXb };
++                gu_softcap_4rows_nvfp4<2, true>(blob, L.up_off, L.gu_row, r0, warp, lane, xq, off2, 2, sc_g, sc_u, cg,
++                                                cu, hsh);
++            } else if (n == 3) {
++                const int off3[3] = { ent_tok[e] * kXb, ent_tok[e + 1] * kXb, ent_tok[e + 2] * kXb };
++                gu_softcap_4rows_nvfp4<3, true>(blob, L.up_off, L.gu_row, r0, warp, lane, xq, off3, 3, sc_g, sc_u, cg,
++                                                cu, hsh);
++            } else if (n == 4) {
++                const int off4[4] = { ent_tok[e] * kXb, ent_tok[e + 1] * kXb, ent_tok[e + 2] * kXb,
++                                      ent_tok[e + 3] * kXb };
++                gu_softcap_4rows_nvfp4<4, true>(blob, L.up_off, L.gu_row, r0, warp, lane, xq, off4, 4, sc_g, sc_u, cg,
++                                                cu, hsh);
++            } else {
++                int off[kGuNc];
++#pragma unroll
++                for (int c = 0; c < kGuNc; ++c) off[c] = ent_tok[e + min(c, n - 1)] * kXb;
++                gu_softcap_4rows_nvfp4<kGuNc, false>(blob, L.up_off, L.gu_row, r0, warp, lane, xq, off, n, sc_g, sc_u,
++                                                     cg, cu, hsh);
++            }
++            __syncthreads();
++            if (warp < n) q8_1_store(hsh[warp][lane], hq, (long long) (e + warp) * L.n_ff + r0 + lane);
++            if (e + kGuNc < e1 || g + (int) gridDim.y < ng) __syncthreads();
++        }
++    }
++}
++
+ enum class Act { Plain, Clamp, Softcap };
+ 
+ // native_expert_grouped's body; ACT selects the activation at compile time, so the plain instantiation is the original
+@@ -3432,6 +3532,22 @@
+     if (chain && grid_groups <= 0 && g_dec_gy > 0 && gy > g_dec_gy) gy = g_dec_gy;
+     const dim3 ggu((unsigned) ((2 * L.n_ff + GU_ROWS - 1) / GU_ROWS), (unsigned) gy);
+     if (g_exp_phase != 2) {
++    // Fused NVFP4 gate/up+SwiGLU+q8_1 is opt-in (BASALT_GU_SWIGLU_FUSE=1): measured SM120 A/B showed the separate
++    // 288-CTA native_gu_multi_kernel + PDL swiglu_softcap_q8_1_entries_kernel beats the 36-CTA 128-reg fused kernel
++    // by ~0.34 ms/window due to higher occupancy and wave-tail efficiency.
++    static const bool use_gu_swiglu_fuse =
++        std::getenv("BASALT_GU_SWIGLU_FUSE") != nullptr && std::getenv("BASALT_GU_SWIGLU_FUSE")[0] == '1';
++    bool fused_gu_swiglu = false;
++    if constexpr (ACT == Act::Softcap) {
++        if (use_gu_swiglu_fuse && L.gu_type == 40 && L.up_type == 40 && L.n_embd == 2304 && (L.n_ff % 32 == 0) &&
++            !v1 && !g_old_kernels) {
++            const dim3 gf((unsigned) (L.n_ff / 32), (unsigned) gy);
++            native_gu_swiglu_q8_1_kernel<<<gf, 256, 0, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, hq);
++            check("native_expert_grouped/gu_swiglu");
++            fused_gu_swiglu = true;
++        }
++    }
++    if (!fused_gu_swiglu) {
+     if (L.up_type != L.gu_type) {   // a mixed layer: the gu2 rows only
+         if (v1 || !g_gu2 || g_old_kernels || !gu2_usable(L)) {
+             basalt::log::error("basalt", "native_expert_grouped: gate %d / up %d rows need the default kernels",
+@@ -3483,6 +3599,7 @@
+     }
+     check("native_expert_grouped/swiglu");
+     }
++    }
+     if (g_exp_phase == 1) return;
+     const int d_rows = (!g_old_kernels && L.n_ff == 640) ? (kDown40Type(L.d_type) ? 32 : (L.d_type == 42 ? 16 : 8)) : 8;
+     const dim3 gd((unsigned) ((L.n_embd + d_rows - 1) / d_rows), (unsigned) gy);
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/router.cu /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/router.cu
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/router.cu	2026-11-27 19:09:54.438653710 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/router.cu	2026-11-28 01:06:28.352567030 -0500
+@@ -347,7 +347,10 @@
+             continue;
+         }
+         if (opt3_g2) {
+-            if (nt >= 3 && nt <= 32) {
++            if (nt <= 2) {
++                launch_pdl(router_logits_opt_kernel<3, 1, 2>, dim3(a.n_expert, 1), dim3(kLogitThreads), 0, st,
++                           x + (size_t) t0 * a.n_embd, gate, a.n_embd, a.n_expert, nt, logits + (size_t) t0 * a.n_expert);
++            } else if (nt <= 32) {
+                 launch_pdl(router_logits_opt_kernel<3, 2, 2>, dim3(a.n_expert / 2, (nt + 1) / 2), dim3(kLogitThreads), 0, st,
+                            x + (size_t) t0 * a.n_embd, gate, a.n_embd, a.n_expert, nt, logits + (size_t) t0 * a.n_expert);
+             } else {
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/sampler.cu /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/sampler.cu
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/kernels/cuda/sampler.cu	2026-11-23 21:39:12.014588768 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/kernels/cuda/sampler.cu	2026-11-28 01:55:54.531496809 -0500
+@@ -25,6 +25,7 @@
+ // the same arithmetic over the sorted list.
+ #include "basalt/kernels/sampler.hpp"
+ #include "basalt/core/diag.hpp"
++#include "basalt/kernels/pdl.hpp"
+ #include "philox.cuh"
+ 
+ #include <cub/device/device_radix_sort.cuh>
+@@ -1622,7 +1623,7 @@
+     int dev = 0;
+     if (cudaGetDevice(&dev) != cudaSuccess || dev < 0 || dev >= 64) { cudaGetLastError(); return false; }
+     cudaLaunchConfig_t cfg{};
+-    cudaLaunchAttribute at[1];
++    cudaLaunchAttribute at[2];
+     at[0].id = cudaLaunchAttributeClusterDimension;
+     at[0].val.clusterDim.x = kAmCtas;
+     at[0].val.clusterDim.y = 1;
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/dspark.cpp /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/dspark.cpp
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/dspark.cpp	2026-11-27 21:56:59.464417533 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/dspark.cpp	2026-11-28 01:55:28.303223111 -0500
+@@ -205,9 +205,13 @@
+     w->mask = f32("dspark.mask_embed", kE);
+     w->norm = f32("dspark.norm.weight", kE);
+     w->markov_norm = f32("dspark.markov.dflare_norm.weight", kE);
+-    {   // the Markov head's token rows in mapped host memory: a step reads the previous draft's row
++    bool w1_in_host = false;
++    {   // the Markov head's token rows (~103 MB): place in VRAM when >= 1 GiB is free to avoid 8 serialized PCIe
++        // round-trips per draft block; fall back to mapped host memory on tight-VRAM cards.
+         const uint64_t n = (uint64_t) g.n_vocab * kDsRank;
+-        w->w1 = (uint16_t*) load("dspark.markov.w1.weight", kTypeBF16, n, core::Conv::Copy, n * 2, true);
++        size_t free_b = 0, total_b = 0;
++        w1_in_host = (cudaMemGetInfo(&free_b, &total_b) != cudaSuccess) || (free_b < (1024ull << 20));
++        w->w1 = (uint16_t*) load("dspark.markov.w1.weight", kTypeBF16, n, core::Conv::Copy, n * 2, w1_in_host);
+     }
+     w->rnn_w = bf16("dspark.markov.rnn.weight", (uint64_t) kDsRnn * (2 * kDsRank + 2 * kE));
+     w->rnn_b = f32("dspark.markov.rnn.bias", kDsRnn);
+@@ -224,9 +228,9 @@
+     w->fold_sc = w->dev(dspark_screen_bytes(kDsRank, g.n_vocab), ok);
+     if (!ok) return fail("out of device memory");
+     basalt::log::info("basalt inkling2", "drafter: DSpark, %d layers reading target visits %d, %d, %d, %.2f GiB on the GPU (NVFP4 block products, Q8_0 context projections, the screen's copies), "
+-                      "%.0f MB of token rows in host memory",
++                      "%.0f MB of token rows %s",
+                       d.n_layers, d.targets[0], d.targets[1], d.targets[2], (double) w->bytes() / (double) (1ull << 30),
+-                      (double) g.n_vocab * kDsRank * 2 / 1e6);
++                      (double) g.n_vocab * kDsRank * 2 / 1e6, w1_in_host ? "in host memory" : "on the GPU");
+     out = std::move(w);
+     return {};
+ }
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/attn.cu /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/attn.cu
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/attn.cu	2026-11-27 21:56:04.018503453 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/attn.cu	2026-11-28 01:08:52.091528344 -0500
+@@ -338,17 +338,22 @@
+     constexpr int kRowBytes = FP8 ? kHeadDim : kHeadDim * 2;
+     constexpr int kLoads = kRowBytes / 16;
+     // before the wait: the positions (staged before the window), the slice, the warp's tile and what of it is older than
+-    // the window, and the weights
++    // the window, and the weights. In batch mode each row belongs to one segment/conversation via seg_ref(a.seg).
++    const Segments& sg = seg_ref(a.seg);
++    const bool batched = sg.at.n > 0;
++    const int sk = batched ? bk::seg_of(sg.at, r) : 0;
++    const int first = batched ? sg.at.row0[sk] : 0;
++    const SegCaches& sc = sg.c[sk];
+     int p, lo, n;
+     row_keys(a, r, p, lo, n);
+     const int span = span_of(n), splits = (n + span - 1) / span;
+     const bool active = s < splits;
+     const int s_lo = lo + s * span, s_hi = min(p + 1, s_lo + span);
+-    const int p0 = a.pos[0];   // the window's first position: keys from it on are the window's rows (consecutive positions)
++    const int p0 = a.pos[first];   // the conversation's first position in this window (consecutive from first..r)
+     const int key = s_lo + w * kTile + lane;
+     const bool valid = active && key < s_hi;
+-    const uint8_t* kbase = static_cast<const uint8_t*>(a.k_cache) + (size_t) g * kRowBytes;
+-    const uint8_t* vbase = static_cast<const uint8_t*>(a.v_cache) + (size_t) g * kRowBytes;
++    const uint8_t* kbase = static_cast<const uint8_t*>(batched ? sc.k : a.k_cache) + (size_t) g * kRowBytes;
++    const uint8_t* vbase = static_cast<const uint8_t*>(batched ? sc.v : a.v_cache) + (size_t) g * kRowBytes;
+     uint4 kr[kLoads], vr[kLoads];
+     if (valid && key < p0) {
+         const size_t cell = (size_t) (key % a.cap) * kKvHeads * kRowBytes;
+@@ -379,13 +384,16 @@
+             float s3[kGroup];
+             prep::q_heads(pa, r, p, g, w, lane, wt, &sm.q[0][0], &sm.rs[0][0], s3);
+         } else {
+-            // the window's rows of this slice up to the block's own: prepared in passes of up to 4 rows to cap register pressure
+-            const int rr0 = max(0, s_lo - p0), nr = min(r, s_hi - 1 - p0) - rr0 + 1;
++            // the conversation's window rows of this slice up to the block's own: prepared in passes to cap register pressure
++            const int r_rel = r - first;
++            const int rr0 = max(0, s_lo - p0), nr = min(r_rel, s_hi - 1 - p0) - rr0 + 1;
+             if (nr > 0) {
++                float* const ring = batched ? (w ? sc.v_ring : sc.k_ring) : (w ? pa.v_ring : pa.k_ring);
++                void* const cache = batched ? (w ? sc.v : sc.k) : (w ? pa.v_cache : pa.k_cache);
+                 constexpr int kKvPass = ROWS <= 4 ? ROWS : (FP8 ? 4 : 2);
+                 const auto prep_pass = [&](int off, int take) {
+                     float val[kKvPass][4], raw[kKvPass][4], f[kKvPass];
+-                    prep::kv_rows<kKvPass>(pa, rr0 + off, take, p0 + rr0 + off, g, w, lane, wt, val, raw, f);
++                    prep::kv_rows<kKvPass>(pa, first + rr0 + off, take, p0 + rr0 + off, g, w, lane, wt, val, raw, f, ring, first);
+ #pragma unroll
+                     for (int k = 0; k < kKvPass; ++k) {
+                         if (k >= take) break;
+@@ -393,12 +401,10 @@
+                         uint8_t* row = w ? fs.vw[rr] : fs.kw[rr];
+ #pragma unroll
+                         for (int u = 0; u < 4; ++u) prep::store_kv(row, FP8, (size_t) lane * 4 + u, val[k][u] * f[k]);
+-                        if (rr == r) {   // the block's own row: into the cache and the ring
+-                            void* cache = w ? pa.v_cache : pa.k_cache;
++                        if (rr == r_rel) {   // the block's own row: into the cache and the ring
+                             const size_t cell = ((size_t) (p % pa.cap) * kKvHeads + g) * kHeadDim + lane * 4;
+ #pragma unroll
+                             for (int u = 0; u < 4; ++u) prep::store_kv(cache, FP8, cell + u, val[k][u] * f[k]);
+-                            float* ring = w ? pa.v_ring : pa.k_ring;
+                             *reinterpret_cast<float4*>(ring + (size_t) (p % kConvRing) * (kKvHeads * kHeadDim) + g * kHeadDim + lane * 4) =
+                                 make_float4(raw[k][0], raw[k][1], raw[k][2], raw[k][3]);
+                         }
+@@ -651,7 +657,7 @@
+ void attention_window(const AttnPrep& pa, const AttnArgs& a, int rows, int64_t max_keys, void* scratch, void* stream) {
+     if (rows <= 0) return;
+     const int z = launch_splits(max_keys);
+-    if (rows > kFusedRows || z > kClusterSplits || a.q8 == nullptr || a.seg.at.n > 0 || a.seg.dev != nullptr) {
++    if (rows > kFusedRows || z > kClusterSplits || a.q8 == nullptr) {
+         decode_prepare(pa, rows, stream);
+         attention_decode(a, rows, max_keys, scratch, nullptr, stream);
+         return;
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/glue.cu /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/glue.cu
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/glue.cu	2026-11-27 21:44:58.947620273 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/glue.cu	2026-11-28 01:55:25.900198022 -0500
+@@ -17,6 +17,7 @@
+ #include <cuda_runtime.h>
+ 
+ #include <cmath>
++#include <cstdlib>
+ #include <stdexcept>
+ #include <string>
+ 
+@@ -490,6 +491,50 @@
+     }
+ }
+ 
++// Rank-64 fast path for ctrl_up_kernel: single 128-bit uint4 weight load + static shared memory sized to RMAX.
++// Identical fmaf and shuffle reduction order as ctrl_up_kernel.
++template <int RMAX>
++__global__ void __launch_bounds__(256) ctrl_up_opt_rank64_kernel(CtrlArgs a, int rows) {
++    __shared__ float hs[RMAX * 64];
++    const int s = blockIdx.y;
++    const int row = blockIdx.x * 32 + (threadIdx.x >> 3), part = threadIdx.x & 7;
++    const uint4 v0 = row < 2 * kWidth
++        ? __ldg(reinterpret_cast<const uint4*>(a.up[s] + (size_t) row * 64 + part * 8))
++        : make_uint4(0u, 0u, 0u, 0u);
++    bk::pdl_wait();
++    bk::pdl_launch_dependents();
++    const float* hid = a.scratch + (size_t) s * kDecodeRows * 64;
++    for (int i = threadIdx.x; i < rows * 64; i += blockDim.x) hs[i] = hid[i];
++    __syncthreads();
++    float acc[RMAX];
++#pragma unroll
++    for (int t = 0; t < RMAX; ++t) acc[t] = 0.f;
++    if (row < 2 * kWidth) {
++        const uint32_t w[4] = {v0.x, v0.y, v0.z, v0.w};
++#pragma unroll
++        for (int k = 0; k < 4; ++k) {
++            const uint32_t u = w[k];
++            const float u0 = __uint_as_float(u << 16), u1 = __uint_as_float(u & 0xffff0000u);
++            const int kk = part * 8 + 2 * k;
++#pragma unroll
++            for (int t = 0; t < RMAX; ++t) {
++                if (t >= rows) break;
++                acc[t] = fmaf(u1, hs[t * 64 + kk + 1], fmaf(u0, hs[t * 64 + kk], acc[t]));
++            }
++        }
++    }
++    float* gf = a.scratch + (size_t) kMaxStreams * kDecodeRows * 64;
++#pragma unroll
++    for (int t = 0; t < RMAX; ++t) {
++        if (t >= rows) break;
++        float v = acc[t];
++        v += __shfl_xor_sync(0xffffffffu, v, 1);
++        v += __shfl_xor_sync(0xffffffffu, v, 2);
++        v += __shfl_xor_sync(0xffffffffu, v, 4);
++        if (part == 0 && row < 2 * kWidth) gf[((size_t) s * kDecodeRows + t) * 2 * kWidth + row] = v;
++    }
++}
++
+ // The blend of stream s and row r, then its norm into q8_1.
+ __global__ void __launch_bounds__(kThreads) ctrl_blend_kernel(CtrlArgs a) {
+     const int r = blockIdx.x, s = blockIdx.y;
+@@ -691,9 +736,16 @@
+     check_rows(rows, "controllers");
+     if (streams < 1 || streams > kMaxStreams || a.rank <= 0 || a.rank % 16) throw std::runtime_error("inkling2 controllers: streams or rank");
+     cudaStream_t s = (cudaStream_t) stream;
+-    // Single-stream (MLP) controllers always favor O=2 across rows 1..16 (halves activation reads without starving SMs);
+-    // multi-stream (attention) keeps O=4 at 3..4 rows and uses O=2 with tight RMAX elsewhere.
+-    if (streams == 1) {
++    // Measured SM120 A/B showed O=2 beats O=1 by ~0.29 ms/window at gate_rank=64 because O=2 halves activation reads
++    // across rows 1..16; keep O=1 opt-in via BASALT_CTRL_DOWN_O1=1.
++    static const bool force_o1 = std::getenv("BASALT_CTRL_DOWN_O1") != nullptr && std::getenv("BASALT_CTRL_DOWN_O1")[0] == '1';
++    if (a.rank <= 64 && force_o1) {
++        const dim3 grid((unsigned) a.rank, (unsigned) streams);
++        if (rows <= 2) bk::launch_pdl(ctrl_down_kernel<1, 2>, grid, dim3(kDownWarps * 32), 0, s, a, rows);
++        else if (rows <= 4) bk::launch_pdl(ctrl_down_kernel<1, 4>, grid, dim3(kDownWarps * 32), 0, s, a, rows);
++        else if (rows <= 8) bk::launch_pdl(ctrl_down_kernel<1, 8>, grid, dim3(kDownWarps * 32), 0, s, a, rows);
++        else bk::launch_pdl(ctrl_down_kernel<1, kDecodeRows>, grid, dim3(kDownWarps * 32), 0, s, a, rows);
++    } else if (streams == 1) {
+         if (rows <= 2) bk::launch_pdl(ctrl_down_kernel<2, 2>, dim3((unsigned) a.rank / 2, 1), dim3(kDownWarps * 32), 0, s, a, rows);
+         else if (rows <= 4) bk::launch_pdl(ctrl_down_kernel<2, 4>, dim3((unsigned) a.rank / 2, 1), dim3(kDownWarps * 32), 0, s, a, rows);
+         else if (rows <= 8) bk::launch_pdl(ctrl_down_kernel<2, 8>, dim3((unsigned) a.rank / 2, 1), dim3(kDownWarps * 32), 0, s, a, rows);
+@@ -705,9 +757,15 @@
+         else bk::launch_pdl(ctrl_down_kernel<2, kDecodeRows>, dim3((unsigned) a.rank / 2, (unsigned) streams), dim3(kDownWarps * 32), 0, s, a, rows);
+     }
+     check("controllers/down");
+-    bool up_aligned = (a.rank == 128);
++    bool up_aligned = (a.rank == 64 || a.rank == 128);
+     for (int st = 0; up_aligned && st < streams; ++st) up_aligned = (((size_t) a.up[st] & 15u) == 0);
+-    if (up_aligned) {
++    if (up_aligned && a.rank == 64) {
++        const dim3 grid((unsigned) (2 * kWidth / 32), (unsigned) streams);
++        if (rows <= 2) bk::launch_pdl(ctrl_up_opt_rank64_kernel<2>, grid, dim3(256), 0, s, a, rows);
++        else if (rows <= 4) bk::launch_pdl(ctrl_up_opt_rank64_kernel<4>, grid, dim3(256), 0, s, a, rows);
++        else if (rows <= 8) bk::launch_pdl(ctrl_up_opt_rank64_kernel<8>, grid, dim3(256), 0, s, a, rows);
++        else bk::launch_pdl(ctrl_up_opt_rank64_kernel<kDecodeRows>, grid, dim3(256), 0, s, a, rows);
++    } else if (up_aligned && a.rank == 128) {
+         const dim3 grid((unsigned) (2 * kWidth / 32), (unsigned) streams);
+         if (rows <= 2) bk::launch_pdl(ctrl_up_opt_kernel<2>, grid, dim3(256), 0, s, a, rows);
+         else if (rows <= 4) bk::launch_pdl(ctrl_up_opt_kernel<4>, grid, dim3(256), 0, s, a, rows);
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/prep.cuh /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/prep.cuh
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/kernels/prep.cuh	2026-11-23 21:39:12.023655718 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/kernels/prep.cuh	2026-11-28 01:08:48.889315374 -0500
+@@ -96,10 +96,11 @@
+ // inputs are the rows' before it): each row's val, raw and f are kv_row's bits.
+ template <int N>
+ __device__ __forceinline__ void kv_rows(const AttnPrep& a, int r0, int n, int pr0, int g, int w, int lane,
+-                                        const float (&wt)[4][kConv], float (&val)[N][4], float (&raw)[N][4], float (&f)[N]) {
++                                        const float (&wt)[4][kConv], float (&val)[N][4], float (&raw)[N][4], float (&f)[N],
++                                        const float* ring_override = nullptr, int first = 0) {
+     const float* yall = w ? a.yv : a.yk;
+     const int64_t ld = w ? a.ldv : a.ldk;
+-    const float* ring = w ? a.v_ring : a.k_ring;
++    const float* ring = ring_override ? ring_override : (w ? a.v_ring : a.k_ring);
+     const float inv_k = a.full ? (1.f / 3.f) : rsqrtf((float) kConv + 1.f);
+     // x[i]: the convolution input at position pr0 + N - 1 - i (row r0 + N - 1 - i of the window, else the ring), zero for
+     // the rows past n. Row r0 + k takes x[N - 1 - k + j] as kv_row's tap j.
+@@ -110,7 +111,7 @@
+ #pragma unroll
+         for (int u = 0; u < 4; ++u) {
+             const int c = g * kHeadDim + lane * 4 + u;
+-            x[i][u] = N - 1 - i >= n ? 0.f : rq >= 0 ? yall[(size_t) rq * ld + c] : conv_ring(ring, kKvHeads * kHeadDim, pr0 + N - 1 - i, c);
++            x[i][u] = N - 1 - i >= n ? 0.f : rq >= first ? yall[(size_t) rq * ld + c] : conv_ring(ring, kKvHeads * kHeadDim, pr0 + N - 1 - i, c);
+         }
+     }
+ #pragma unroll
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/session.cpp /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/session.cpp
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/models/inkling2/session.cpp	2026-11-27 23:15:37.928433242 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/models/inkling2/session.cpp	2026-11-28 01:55:29.553236160 -0500
+@@ -421,26 +421,34 @@
+         hist_.resize((size_t) r.pos);
+         // Screened 2-bit greedy LM head is opt-in (BASALT_HEAD_SCREEN=1) so default decode stays 100% mathematically
+         // bit-exact across every vocabulary row on every prompt.
++        // ExactGreedy (default for greedy T=0 without penalties/bias/raw logits) runs the exact full Q8_0 LM head +
++        // greedy argmax + D2H pick copy inside the captured CUDA graph, skipping monotonic softcap (applied lazily on
++        // demand by ensure_logits() if logprobs/resample_row/copy_logits is ever called).
+         static const bool use_head_screen = std::getenv("BASALT_HEAD_SCREEN") != nullptr && std::getenv("BASALT_HEAD_SCREEN")[0] == '1';
++        static const bool no_exact_greedy = std::getenv("BASALT_NO_EXACT_GREEDY_GRAPH") != nullptr && std::getenv("BASALT_NO_EXACT_GREEDY_GRAPH")[0] == '1';
+         const bool is_greedy = !r.sampling || r.sampling->greedy || r.sampling->temperature <= 0.f;
+         const bool has_penalty = r.sampling && r.history && r.history_len > 0 && r.sampling->penalty_last_n > 0 &&
+                                  (r.sampling->penalty_repeat != 1.f || r.sampling->penalty_freq != 0.f || r.sampling->penalty_present != 0.f);
+         const bool has_bias = bias_on_ || (r.sampling && r.sampling->logit_bias != nullptr);
++        bool synced_tail = false;
+         for (int t0 = 0; t0 < r.n_tokens; t0 += kMaxRows) {
+             const int n = std::min(kMaxRows, r.n_tokens - t0);
+             const bool last = t0 + n == r.n_tokens;
+             const bool want = r.row_tokens || (last && (r.next_token || r.logits));
+             const int head = !want ? 0 : r.row_tokens ? n : 1;
+-            const bool screened = use_head_screen && head > 0 && !r.logits && is_greedy && !has_penalty && !has_bias &&
+-                                  dspark_.head_screen() != nullptr && bk::q80_screen_supported(g_.n_embd);
+-            if (!forward(r.tokens + t0, nullptr, n, r.pos + t0, head, err, screened)) return {model::Status::Error, "inkling2: " + err};
++            const bool plain_greedy = head > 0 && !r.logits && is_greedy && !has_penalty && !has_bias;
++            const int head_mode = !plain_greedy ? 0
++                                : (use_head_screen && dspark_.head_screen() != nullptr && bk::q80_screen_supported(g_.n_embd)) ? 2
++                                : (!no_exact_greedy ? 1 : 0);
++            if (!forward(r.tokens + t0, nullptr, n, r.pos + t0, head, err, head_mode)) return {model::Status::Error, "inkling2: " + err};
+             lookups_ += (int64_t) n * g_.n_used * (int64_t) g_.visits.size();
+             for (int i = 0; i < n; ++i) hist_.push_back(r.tokens[t0 + i]);
+             head_rows_ = head;
+-            logits_valid_ = !screened;
+-            if (!want) continue;
+-            if (screened) {
+-                if (cudaStreamSynchronize(stream_) != cudaSuccess) return {model::Status::Error, "inkling2: the screened pick failed"};
++            logits_valid_ = (head_mode != 2);
++            logits_softcapped_ = (head_mode == 0);
++            if (!want) { synced_tail = false; continue; }
++            if (head_mode != 0) {
++                if (cudaStreamSynchronize(stream_) != cudaSuccess) return {model::Status::Error, "inkling2: the greedy pick failed"};
+                 picks_.assign(pick_h_, pick_h_ + head);
+                 sampling_ = r.sampling ? *r.sampling : bk::SamplerParams{};
+                 if (!r.sampling) { sampling_.greedy = true; sampling_.temperature = 0.f; }
+@@ -452,10 +460,14 @@
+             if (r.row_tokens)
+                 for (int i = 0; i < n; ++i) r.row_tokens[t0 + i] = picks_[(size_t) i];
+             if (last && r.next_token) *r.next_token = picks_[(size_t) head - 1];
+-            if (last && r.logits)
++            if (last && r.logits) {
+                 cudaMemcpyAsync(r.logits, logits_ + (size_t) (head - 1) * g_.n_vocab, (size_t) g_.n_vocab * 4, cudaMemcpyDeviceToHost, stream_);
++                synced_tail = false;
++            } else {
++                synced_tail = true;
++            }
+         }
+-        if (cudaStreamSynchronize(stream_) != cudaSuccess) return {model::Status::Error, "inkling2: the window failed"};
++        if (!synced_tail && cudaStreamSynchronize(stream_) != cudaSuccess) return {model::Status::Error, "inkling2: the window failed"};
+         return {};
+     }
+ 
+@@ -517,6 +529,7 @@
+         lookups_ += (int64_t) r.n_tokens * g_.n_used * (int64_t) g_.visits.size();
+         head_rows_ = h;
+         logits_valid_ = true;
++        logits_softcapped_ = true;
+         if (h == 0) return;
+         cudaMemcpyAsync(logits_, blog_ + (size_t) (sg.row0 + sg.rows - h) * V, (size_t) h * V * 4, cudaMemcpyDeviceToDevice, v.stream);
+         if (r.logits) cudaMemcpyAsync(r.logits, logits_ + (size_t) (h - 1) * V, (size_t) V * 4, cudaMemcpyDeviceToHost, v.stream);
+@@ -582,12 +595,18 @@
+         return {};
+     }
+ 
+-    // Materializes full logits_ lazily if the last window used the screened greedy LM head.
++    // Materializes full softcapped logits_ lazily if the last window used a fast greedy head path.
+     void ensure_logits() {
+-        if (logits_valid_ || head_rows_ <= 0) return;
+-        q8_0_mmvq_rows(m_.head(), head_q8_, logits_, g_.n_embd, g_.n_vocab, head_rows_, stream_);
+-        softcap(logits_, head_rows_, g_.n_vocab, g_.n_vocab, g_.logit_softcap, stream_);
+-        logits_valid_ = true;
++        if (head_rows_ <= 0) return;
++        if (!logits_valid_) {
++            q8_0_mmvq_rows(m_.head(), head_q8_, logits_, g_.n_embd, g_.n_vocab, head_rows_, stream_);
++            softcap(logits_, head_rows_, g_.n_vocab, g_.n_vocab, g_.logit_softcap, stream_);
++            logits_valid_ = true;
++            logits_softcapped_ = true;
++        } else if (!logits_softcapped_) {
++            softcap(logits_, head_rows_, g_.n_vocab, g_.n_vocab, g_.logit_softcap, stream_);
++            logits_softcapped_ = true;
++        }
+     }
+ 
+     // a draw of one row again, with the tokens the mask bans
+@@ -1034,7 +1053,10 @@
+         aa.q8 = x.xo_;
+         const Segments seg = segments(v.slot, card);   // a batch window's: device-indirect per-conversation caches
+         ap.seg = aa.seg = seg;
+-        attention_window(ap, aa, rows, c.ring ? (int64_t) g_.window : full_keys, x.att_scr_, k.stream);
++        // Sliding-window visits never have more than min(window, full_keys) valid keys in cache; capping by full_keys
++        // lets all 40 SWA visits use the 4-block DSMEM cluster (SPLITS=4) whenever pos < 512 instead of 8-block clusters.
++        const int64_t attn_keys = c.ring ? std::min<int64_t>((int64_t) g_.window, full_keys) : full_keys;
++        attention_window(ap, aa, rows, attn_keys, x.att_scr_, k.stream);
+         planes_mmvq_rows(w.out, x.xo_, x.o_, kOutRows, E, rows, k.stream);
+         // Solo wide-window expert_read_ahead prefetches stale previous-window experts and was measured to regress solo
+         // decode by ~3% on Inkling-2-Mini (128 experts, top-8). Disabled by default; opt in via BASALT_READAHEAD=1.
+@@ -1136,9 +1158,10 @@
+ 
+     // The forward of `rows` rows at positions pos0.. (tokens, or host embedding rows when `emb` is set, which must stay
+     // as they are until the window's sync); then the head over the last `head` rows (0: none).
+-    bool forward(const int32_t* tokens, const float* emb, int rows, int64_t pos0, int head, std::string& err, bool screened = false) {
++    // head_mode: 0 = full softcapped logits, 1 = exact full Q8_0 + in-graph greedy argmax (skip softcap), 2 = screened greedy.
++    bool forward(const int32_t* tokens, const float* emb, int rows, int64_t pos0, int head, std::string& err, int head_mode = 0) {
+         cpu_ = cpu_layers();
+-        if (!layers(rows, head, stage(tokens, emb, rows, pos0, nullptr), err, screened) || !check(err)) return false;
++        if (!layers(rows, head, stage(tokens, emb, rows, pos0, nullptr), err, head_mode) || !check(err)) return false;
+         dspark_.note(pos0, rows);   // DSPARK HOOK: the host's record of the rows the drafter took
+         return true;
+     }
+@@ -1192,26 +1215,26 @@
+ 
+     // The layers and the head of a window of `rows` rows: replayed from its shape's graph, captured on the shape's second
+     // window (its first runs direct, outside a capture).
+-    bool layers(int rows, int head, int64_t full_keys, std::string& err, bool screened = false) {
+-        const Shape key{cpu_, ((uint64_t) full_keys << 17) | ((uint64_t) (screened ? 1 : 0) << 16) | ((uint64_t) head << 8) | (uint64_t) rows};
++    bool layers(int rows, int head, int64_t full_keys, std::string& err, int head_mode = 0) {
++        const Shape key{cpu_, ((uint64_t) full_keys << 18) | ((uint64_t) (head_mode & 3) << 16) | ((uint64_t) head << 8) | (uint64_t) rows};
+         auto it = graphs_.find(key);
+         if (it != graphs_.end()) return it->second.launch(stream_, err);
+         if (direct_.insert(key).second) {
+-            body(rows, head, full_keys, screened);
++            body(rows, head, full_keys, head_mode);
+             return true;
+         }
+         core::CapturedGraph g;
+         if (!g.begin(stream_, err)) return false;
+-        body(rows, head, full_keys, screened);
++        body(rows, head, full_keys, head_mode);
+         if (!g.end(stream_, err)) return false;
+         return graphs_.emplace(key, std::move(g)).first->second.launch(stream_, err);
+     }
+ 
+     // Launches only: the visits, then the head. Each kernel may start while the one before it finishes (it waits for it
+     // before reading what it wrote), so a product streams its first weights during the glue before it.
+-    void body(int rows, int head, int64_t full_keys, bool screened = false) {
++    void body(int rows, int head, int64_t full_keys, int head_mode = 0) {
+         for (Lane& k : lane_) k.ra_on = k.pf_on = false;
+-        visits_and_head(rows, head, full_keys, screened);
++        visits_and_head(rows, head, full_keys, head_mode);
+         join_sides(lane_[0]);
+     }
+ 
+@@ -1260,7 +1283,7 @@
+         cudaSetDevice(a.device);
+     }
+ 
+-    void visits_and_head(int rows, int head, int64_t full_keys, bool screened = false) {
++    void visits_and_head(int rows, int head, int64_t full_keys, int head_mode = 0) {
+         bk::PdlScope pdl(true);
+         const int E = g_.n_embd;
+         const size_t RE = (size_t) rows * E;
+@@ -1328,7 +1351,7 @@
+         if (head <= 0) return;
+         const size_t q8_row = (size_t) E / 32 * 36;   // the head's rows' q8_1 blocks follow the rows before them
+         const void* head_x = (const uint8_t*) xq_[0] + (size_t) (rows - head - first) * q8_row;
+-        if (screened) {
++        if (head_mode == 2) {
+             cudaMemcpyAsync(head_q8_, head_x, (size_t) head * q8_row, cudaMemcpyDeviceToDevice, stream_);
+             bk::q80_screen_top1_rows(dspark_.head_screen(), m_.head(), head_x, E, g_.n_vocab, head, head_scr_, pick_, stream_, true);
+             cudaMemcpyAsync(pick_h_, pick_, (size_t) head * 4, cudaMemcpyDeviceToHost, stream_);
+@@ -1336,6 +1359,14 @@
+         }
+         float* lg = view_ ? blog_ : logits_;          // a batch window's rows go to each session in batch_take
+         q8_0_mmvq_rows(m_.head(), head_x, lg, E, g_.n_vocab, head, stream_);
++        if (head_mode == 1) {
++            bk::SamplerParams gsp;
++            gsp.greedy = true;
++            gsp.temperature = 0.f;
++            bk::sample_tokens(lg, head, g_.n_vocab, nullptr, 0, gsp, pick_, stream_);
++            cudaMemcpyAsync(pick_h_, pick_, (size_t) head * 4, cudaMemcpyDeviceToHost, stream_);
++            return;
++        }
+         softcap(lg, head, g_.n_vocab, g_.n_vocab, g_.logit_softcap, stream_);
+     }
+ 
+@@ -1432,6 +1463,7 @@
+     float* logits_ = nullptr;                // the last window's head rows (row_logprobs, copy_logits, resample_row)
+     void* head_q8_ = nullptr;                // saved head q8_1 inputs for lazy logits_ materialization when screened
+     bool logits_valid_ = true;
++    bool logits_softcapped_ = true;
+     uint32_t* ex_tally_ = nullptr;           // [layer][expert] the card's running count of each expert's lookups
+     unsigned long long* rec_blobs_ = nullptr;   // [visit][kAheadExperts] the experts each visit took in the last window
+     int32_t* rec_n_ = nullptr;                  // [visit] how many
+diff -ruN '--exclude=build' '--exclude=bin' '--exclude=.git' /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/spec/draft_policy.cpp /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/spec/draft_policy.cpp
+--- /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo3/src/spec/draft_policy.cpp	2026-11-27 19:32:46.923822869 -0500
++++ /home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-turbo4/src/spec/draft_policy.cpp	2026-11-28 01:03:07.390011892 -0500
+@@ -9,8 +9,9 @@
+ // The shape of a round's cost by window size, relative to one token, used only below the smallest measured size or
+ // while a single size is measured (two measured sizes give the cost of a row; measured round times replace both). It
+ // sits between the measured curves: steeper with every missed expert on the CPU, flatter with the default CPU/DMA split.
+-constexpr double kShape[DraftPolicy::kMaxT + 1] = {0.0, 1.0, 1.18, 1.36, 1.56, 1.72, 1.86, 2.02, 2.15,
+-                                                    2.30, 2.45, 2.60, 2.75, 2.90, 3.05, 3.20, 3.35};
++// Measured SM120 Blackwell verify+draft cost shape relative to T=1 (still overridden by live EMA once warm).
++constexpr double kShape[DraftPolicy::kMaxT + 1] = {0.0, 1.0, 1.21, 1.44, 1.60, 1.80, 2.02, 2.16, 2.39,
++                                                    2.54, 2.69, 2.84, 2.99, 3.14, 3.29, 3.44, 3.59};
+ // A round's cost is scale x base(size): the scale follows every round fast (the context grows, the tiers move, a
+ // request's first windows run cold), each size's base follows its own rounds slowly, so the costs of sizes not taken
+ // lately move with the ones taken
+@@ -230,16 +231,22 @@
+     ++round_;
+     if (!timed_) round_ms = kShape[t];
+     if (round_ms > 0) {
+-        if (scale_ <= 0) scale_ = round_ms / kShape[t];          // the first round sets the scale
+-        if (!recent(t)) {                                        // new, or measured too long ago: start over from
+-            base_[t] = base(t);                                  // what the other sizes imply
+-            base_n_[t] = kBasePrior;
++        // Guard against cold first-window / CUDA graph capture spikes poisoning scale_ and base_[t]
++        // (acceptance counts below still update normally).
++        const bool cold_spike = (scale_ <= 0 && round_ <= 2 && round_ms > 50.0);
++        const bool capture_spike = (scale_ > 0 && round_ > 2 && round_ms > 2.5 * scale_ * base(t));
++        if (!cold_spike && !capture_spike) {
++            if (scale_ <= 0) scale_ = round_ms / kShape[t];          // the first warm round sets the scale
++            if (!recent(t)) {                                        // new, or measured too long ago: start over from
++                base_[t] = base(t);                                  // what the other sizes imply
++                base_n_[t] = kBasePrior;
++            }
++            scale_ += kScaleAlpha * (round_ms / base_[t] - scale_);
++            const double w = std::max(kCostAlpha, 1.0 / (base_n_[t] + 1.0));
++            base_[t] = (1.0 - w) * base_[t] + w * round_ms / scale_;
++            base_n_[t] += 1.0;
++            seen_[t] = round_;
+         }
+-        scale_ += kScaleAlpha * (round_ms / base_[t] - scale_);
+-        const double w = std::max(kCostAlpha, 1.0 / (base_n_[t] + 1.0));
+-        base_[t] = (1.0 - w) * base_[t] + w * round_ms / scale_;
+-        base_n_[t] += 1.0;
+-        seen_[t] = round_;
+     }
+     if (lookup) {
+         const int b = bucket(match);

@@ -100,9 +100,48 @@ Alongside the kernel work, we ran our zero-backprop closed-form **Staged `FP-Sol
 | **4-Pass Tool Calling** | 0/4 (0.0%, 25.0% loops) | **4/4 (100%, 0.0% loops)** | **+100% tool accuracy** |
 | **DSpark Visit Cosine Sim** | 1.0000 | **Visit 5: 1.0000 · Visit 23: 0.9963 · Visit 41: 0.9957** | Drafter-compatible |
 
+## Update — November 28: `pinned-20261127-turbo3` & `pinned-20261128-turbo4` (100% Bit-Exact)
+
+Two further **100% mathematically bit-exact** SM120 optimization passes were built, verified across all 6 GPU parity suites (`0 failures`), and promoted to 12×262K production (`pinned-20261128-turbo4`, `sha256: c6be496515c20fc0be35ec8c7194ebfbd948a33db7ebd4d215ccfdaaab81dceb`):
+
+### `pinned-20261127-turbo3` (`turbo3.patch`)
+1. **DSMEM Cluster Attention (`attn.cu`, `session.cpp`):** Extended `attn_fused_kernel` from `kFusedRows = 3 → 8` (`ROWS ∈ {2,3,4,8}`, `SPLITS ∈ {4,8}`, multi-pass `kKvPass`, 0 spills, `<= 249` regs/thread) and lowered `full_keys_of` floor `1024 → 512`.
+2. **Whole-Draft DSpark CUDA Graph & Parallel Commit (`dspark.cpp`, `kernels/dspark.cu`, `gqa_attn.cu`, `session.cpp`):** Added `pdl_launch_dependents()` across all DSpark kernels, fused `markov_step_kernel` + bit-exact `q8_1_store_fm`, device-indirect `pos_dev` in `gqa_window_attn` collapsing `DsparkHook::draft_begin` into 1 single whole-draft CUDA graph (`g_whole_`), and parallel `dspark_.commit()` on side stream `ra_st` overlapped with the LM head.
+3. **MoE Plan & Read-Ahead (`ops.cu`, `glue.cu`, `session.cpp`):** O(1) bitmask `moe_plan_kernel` (`n <= 64`), 128-thread `moe_finish_kernel` with pre-`pdl_wait()` `resid` preload, `kPrefetchBlocks = 188`, and disabled solo `expert_read_ahead` by default (`BASALT_READAHEAD=1` opt-in; re-enabling regressed `reasoning-v1` by `-33 tok/s`).
+4. **Opt-in 2-Bit Screened Target Head (`q80_screen.cu`, `EXPERIMENTAL_HEAD_SCREEN.md`):** Zero-VRAM transposed batched `q80_screen_top1_rows` (`2047/2048 = 99.95%` exact, `+26 tok/s` on `reasoning-v1`), kept strictly opt-in (`BASALT_HEAD_SCREEN=1`, default OFF).
+
+- **Clean uncontended solo head-to-head (`fp16 KV`, `spec=8`, `8k`, stock 500 W, ECC ON):**
+  - `turbo2` → `turbo3` (**100% bit-exact 2048/2048 tokens** in both `fp16` and `fp8`):
+    - `code-v1`: avg `474.9` → **`505.1 tok/s` (+6.4%)**, max wall `560.1` → **`583.3 tok/s`**
+    - `reasoning-v1`: avg `422.6` → **`447.6 tok/s` (+5.9%)**, max wall `451.1` → **`472.9 tok/s`**
+    - DSpark draft block latency: `0.497 / 0.405 ms` → **`0.425 / 0.390 ms` (-14.5% mean)**
+
+### `pinned-20261128-turbo4` (`turbo4.patch`, `turbo4_delta_from_turbo3.patch`)
+1. **Rank-64 Loop Controller Fast Path (`glue.cu`):** Inkling-2-Mini has `gate_rank = 64` (not `128`), so `ctrl_up_opt_kernel` never fired; added single-`uint4` `ctrl_up_opt_rank64_kernel<RMAX>` (`28–39` regs, 0 spills, 6 CTAs/SM).
+2. **All 40 SWA Visits Capped by `min(window, full_keys)` (`session.cpp`):** Drops all 48 attention visits to `SPLITS=4` when `pos < 512`.
+3. **Batch-Mode DSMEM `attn_fused_kernel` (`prep.cuh`, `attn.cu`):** Added `ring_override` + per-row `seg_ref(a.seg)` and removed the batch exclusion for `rows <= 8` (16 SM120 instantiations, 0 spills, bitwise equal to solo).
+4. **DSpark `w1` (`102.9 MB`) in VRAM (`dspark.cpp`):** Places `dspark.markov.w1.weight` in VRAM when `>= 1 GiB` free, eliminating 8 serialized PCIe round-trips per draft block (host fallback preserved).
+5. **In-Graph 100% Exact Greedy LM Head (`session.cpp`, `sampler.cu`):** Runs full exact `q8_0_mmvq_rows` + `sampler_greedy_cluster_kernel` + D2H `pick_h_` copy inside the captured CUDA graph for plain `T=0`, skipping monotonic `softcap` (`30*tanh(x/30)`, lazily applied by `ensure_logits()` if logprobs/resample/copy_logits is ever requested) and removing a redundant second `cudaStreamSynchronize`.
+6. **`DraftPolicy` Capture-Spike Filter & Router `nt <= 2` Occupancy (`draft_policy.cpp`, `router.cu`):** Filters cold/capture spikes (`> 50 ms` or `> 2.5×` EMA) and uses `router_logits_opt_kernel<3, 1, 2>` (128 CTAs vs 64 CTAs on 188 SMs) for `nt <= 2`.
+
+- **ABBA Head-to-Head (`turbo4` vs `turbo3`, 100% bit-exact `2048/2048` tokens in both `fp16` and `fp8`):**
+  - `fp16 KV` (`code-v1`): avg `510.0` → **`522.4 tok/s` (+2.4%)**, max `535.0` → **`551.4 tok/s`**, verify median `6.820` → **`6.676 ms` (-0.144 ms)**, draft median `0.565` → **`0.553 ms`**.
+  - `fp16 KV` (`reasoning-v1`): avg `376.8` → **`385.6 tok/s` (+2.3%)**, max `403.5` → **`413.4 tok/s`**.
+  - `fp8 KV` (production format): `code-v1` `444.0` → **`470.2 tok/s` (+5.9%)**, `reasoning-v1` `394.2` → **`403.1 tok/s` (+2.3%)**.
+  - *(Measured under ~17% background desktop NVENC load; clean uncontended LocalMaxxing submission pending desktop idle.)*
+- **Rejected `turbo4` experiments (measured & flipped to opt-in):**
+  - Fused NVFP4 `native_gu_swiglu_q8_1_kernel` (`BASALT_GU_SWIGLU_FUSE=1`): 36 CTAs × 128 regs (2 blocks/SM) lost `-0.34 ms/window` vs the separate 288-CTA `native_gu_multi_kernel` + PDL `swiglu` path.
+  - `ctrl_down_kernel<1>` (`BASALT_CTRL_DOWN_O1=1`): doubled input activation bandwidth vs `O=2` (`-0.29 ms/window`).
+  - PDL launch attribute on `sampler_greedy_cluster_kernel`: 64 × 1024-thread cluster blocks launched early on `pdl_launch_dependents()` at the start of `native_q80_mma_kernel`, stealing SMs from the 492 MB LM head (`-0.12 ms/window`).
+- **All 6 GPU Parity Suites Passed (`0 failures`):** `inkling2_kernels_parity`, `inkling2_dspark_parity`, `q80_screen_parity`, `gqa_attn_parity`, `sampler_parity`, `native_grouped_parity`.
+
+### Surgical GSPO RSI (`rse-v2` Blind Holdout Win)
+- `rse_looper` surgical FP32-master GSPO (`lr=1e-5`, `max_rel=0.012`, chunked CE, 385 controller/attention/router weights, 0 expert weights altered) beat Original on the 96-problem blind holdout (`64 blind_dsr_hard + 32 ab_math`): **71/96 (74.0%)** vs **68/96 (70.8%, +3.2pp)**, `4/4` tools, matched `4.2%` repetition, `-10.9%` shorter completions (`849.3` vs `952.9` avg tokens).
+
 ## Files
 
-- `turbo2.patch` — full bit-exact source diff over upstream Basalt (`graphfix` + `turbo` + `turbo2` solo kernels + `DraftPolicy`)
+- `turbo4.patch`, `turbo4_delta_from_turbo3.patch`, `turbo3.patch`, `EXPERIMENTAL_HEAD_SCREEN.md` — bit-exact `turbo3`/`turbo4` source patches and opt-in head-screen notes
+- `turbo2.patch` — earlier `pinned-20261127-turbo2` bit-exact source diff over upstream Basalt
 - `turbo.patch` — earlier `pinned-20261127-turbo` diff
 - `chart1_leaderboard_and_kernels.png`, `chart2_rsi_fpsolve.png` — benchmark & RSI FP-Solve charts
 - `receipts/localmaxxing/*.json` — verified LocalMaxxing run receipts (`552.6`, `513.5`, `494.6`, `467.1` tok/s)

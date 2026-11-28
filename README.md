@@ -25,9 +25,10 @@ Built and promoted a **100% cross-build bit-exact** custom Basalt 0.5.6 build (`
 - **#1 `reasoning-v1` Verified:** **513.5 tok/s** (`fp16 KV`, 188/255 DSpark, [cmwzqhm7g000grv01t8z2axgq](https://www.localmaxxing.com/en/speed-tests/cmwzqhm7g000grv01t8z2axgq)) — **+24.9 tok/s** ahead of the fastest RTX 5090 (`488.6`) and **+47.7 tok/s** ahead of RTX PRO 6000 Server 600W (`465.8`).
 - **FP8-KV Verified:** **494.6 tok/s** (`code-v1`, [cmwzptydq0007rv01ilvkhn1z](https://www.localmaxxing.com/en/speed-tests/cmwzptydq0007rv01ilvkhn1z)) & **467.1 tok/s** (`reasoning-v1`, [cmwzptz4z000arv01ozwma02c](https://www.localmaxxing.com/en/speed-tests/cmwzptz4z000arv01ozwma02c)).
 - **12×262K Production Multi-Slot (`fp8 KV`):** **936.6 tok/s** across 12 slots (`batch_identity.py`, 100% cross-build bit-exact vs `gf_q8.json`, 0 kernel/DSpark parity failures) + **-25–29%** multi-slot TTFT from `BGEN` admission reuse.
-- **Zero-Backprop RSI `FP-Solve` Loop Tuneup:** 111 s staged closed-form solve across all 12 loop layers (168 matrices, 0 expert weights altered) rescued 4-pass loop reasoning from `2/12` math / `83.3%` loops / `0/4` tools → **`9/12` math / `0%` loops / `4/4` tools** while holding 3-pass at `11/12` math + `4/4` tools and preserving DSpark tap cosine similarity `> 0.995`.
+- **November 28 Update — `pinned-20261127-turbo3` & `pinned-20261128-turbo4` (100% Bit-Exact):** Stacked two more bit-exact SM120 optimization passes on top of `turbo2` (`turbo3`: **+6.4% `code-v1` / +5.9% `reasoning-v1`**, **583.3 tok/s** wall solo uncontended; `turbo4`: an additional **+2.4% `fp16` / +5.9% `fp8`** and **-0.144 ms/window** median verify over `turbo3`, 0 failures across all 6 GPU parity suites, live in production on 12×262K).
+- **Zero-Backprop RSI `FP-Solve` & GSPO `rse-v2`:** 111 s staged closed-form `FP-Solve` rescued 4-pass loop reasoning (`2/12 → 9/12` math, `83.3% → 0%` loops, `0/4 → 4/4` tools); surgical FP32-master GSPO (`rse-v2`) beat Original on a 96-problem blind holdout (**71/96 = 74.0%** vs `68/96 = 70.8%`, `4/4` tools, matched `4.2%` repetition, `-10.9%` shorter completions).
 
-[Full results, `turbo2.patch`, charts, and raw receipts](research/inkling2-mini-basalt-20261127/RESULTS.md).
+[Full results, `turbo2`/`turbo3`/`turbo4` patches, charts, and raw receipts](research/inkling2-mini-basalt-20261127/RESULTS.md).
 <!-- inkling2-mini-basalt-20261127:end -->
 
 
