@@ -1,7 +1,7 @@
 <!-- project-home:start -->
-![One RTX PRO 6000 Blackwell Inference Lab banner](https://raw.githubusercontent.com/lEWFkRAD/qwen38-rtx-pro-6000/4dab99b278192df51555461843b7adeebac20668/assets/qwen38-pro6000-hero.png)
+![One RTX PRO 6000 Blackwell Inference Lab banner](https://raw.githubusercontent.com/lEWFkRAD/rtx-pro-6000-inference-lab/4dab99b278192df51555461843b7adeebac20668/assets/qwen38-pro6000-hero.png)
 
-**[One RTX PRO 6000 · Blackwell Inference Lab](https://lewfkrad.github.io/qwen38-rtx-pro-6000/)** · [Documentation](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/README.md)
+**[One RTX PRO 6000 · Blackwell Inference Lab](https://lewfkrad.github.io/rtx-pro-6000-inference-lab/)** · [Documentation](https://github.com/lEWFkRAD/rtx-pro-6000-inference-lab/blob/Cloud1/README.md)
 
 Single-GPU Blackwell inference reports, bit-exact CUDA kernel patches, speculative decoding & zero-backprop RSI experiments, and reproducible benchmark receipts across **Inkling-2-Mini**, **Qwen3.8**, and custom Basalt/Strata builds.
 
@@ -90,7 +90,7 @@ inspect artifact metadata and see the recorded provenance without starting a
 model from the browser. The dashboard uses Python's standard library, binds to
 loopback and refreshes every two seconds.
 
-[GitHub prerelease](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/releases/tag/strata-lens-v0.1.0-preview.1) ·
+[GitHub prerelease](https://github.com/lEWFkRAD/rtx-pro-6000-inference-lab/releases/tag/strata-lens-v0.1.0-preview.1) ·
 [Full release write-up](research/strata-lens/RELEASE.md) ·
 [Quickstart and capture guide](research/strata-lens/README.md) ·
 [Credits and provenance](research/strata-lens/CREDITS.md)
