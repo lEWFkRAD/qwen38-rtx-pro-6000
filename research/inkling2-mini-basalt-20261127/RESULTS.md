@@ -192,23 +192,23 @@ Diagnosing why short-prompt prefill (`M = 240–295` tokens, ~32 GiB weight traf
 ![turbo5 Prefill/TTFT Drop & 188-SM CTA Grid Saturation](chart7_turbo5_prefill_ttft.png)
 ![turbo5 SM120 Register Cut & Occupancy Jump](chart8_turbo5_sm120_resources.png)
 
-### `turbo5` LocalMaxxing Dry-Run Validated Receipts (`valid: true, verified: true, issues: []`, Stock 500 W, FP16 KV, ECC OFF)
+### `turbo5` Verified LocalMaxxing Submissions (`APPROVED`, `verifiedRun: true`, `verificationIssues: []`, Stock 500 W, FP16 KV, ECC OFF)
 
-*(Note: Both `turbo5` runs below passed `lmx speed-test dry-run` with `valid: true, verified: true, issues: []` and are staged for leaderboard submission; live production `inkling-basalt-pinned.service` is already cut over to `pinned-20261128-turbo5` with `90,101 / 97,887 MiB` VRAM used, `7,218 MiB` free, and canary `'OK'`.)*
+Both `turbo5` runs cleared server-side canonical verification and are **LIVE #1 Overall** (`code-v1`) and **LIVE #1 Reasoning** (`reasoning-v1`) on LocalMaxxing. Live 12×262K production (`inkling-basalt-pinned.service`) is now running **`pinned-20261128-turbo5` + `Inkling-2-Mini-Uncensored-Onyx-RSI-v3-DSparkDistill-NVFP4-q8coda.basalt`** (`17.1 GiB` placed on GPU incl. VRAM embeddings, `90,453 / 97,887 MiB` used, `6,867 MiB` free, cold-start canary `395.1 tok/s` at `10/12 = 83.3%` DSpark, exact `'OK'` response).
 
-| Suite (`256` tok) | Build | Decode p50 (max) | Client PP | Engine PP | Client TTFT | Engine PP ms | DSpark Accept | Receipt |
+| Suite (`256` tok) | Build | Decode p50 (max) | Client PP | Engine PP | Client TTFT | Engine PP ms | DSpark Accept | Live Submission |
 |---|---|---:|---:|---:|---:|---:|---:|---|
-| **`code-v1`** | `turbo4` (ECC ON, Live #1) | 571.3 (575.4) | 3,136.9 | 3,838.7 | 77.14 ms | 62.0 ms | 196/243 | `cmx02xkd9` |
-| **`code-v1`** | **`turbo5`** (`r2`, Dry-Run) | **599.6 (608.7)** | **3,697.7 (+17.9%)** | **5,072.2 (+32.1%)** | **65.72 ms (-11.42)** | **48.5 ms (-13.5)** | 199/247 | `turbo5_fp16_code-v1_599.6_dryrun.json` |
-| **`reasoning-v1`** | `turbo4` (ECC OFF, Live #1) | 528.2 (532.8) | 3,778.2 | 4,933.3 | 78.34 ms | 60.0 ms | 190/259 | `cmx0gxgwt` |
-| **`reasoning-v1`** | **`turbo5`** (`r3`, Dry-Run) | **565.9 (580.5)** | **4,435.6 (+17.4%)** | **5,935.6 (+20.3%)** | **66.22 ms (-12.12)** | **49.7 ms (-10.3)** | 190/249 | `turbo5_fp16_reasoning-v1_565.9_dryrun.json` |
+| **`code-v1`** | `turbo4` (ECC ON, prior #1) | 571.3 (575.4) | 3,136.9 | 3,838.7 | 77.14 ms | 62.0 ms | 196/243 | [cmx02xkd9005enp01vnscl239](https://www.localmaxxing.com/en/speed-tests/cmx02xkd9005enp01vnscl239) |
+| **`code-v1`** | **`turbo5`** (`r2`, **#1 Overall Live**) | **599.6 (608.7)** | **3,697.7 (+17.9%)** | **5,072.2 (+32.1%)** | **65.72 ms (-11.42)** | **48.5 ms (-13.5)** | 199/247 | [cmx0nz61z00d9mz0197hyvlpf](https://www.localmaxxing.com/en/speed-tests/cmx0nz61z00d9mz0197hyvlpf) |
+| **`reasoning-v1`** | `turbo4` (ECC OFF, prior #1) | 528.2 (532.8) | 3,778.2 | 4,933.3 | 78.34 ms | 60.0 ms | 190/259 | [cmx0gxgwt00hznp012nbiul6l](https://www.localmaxxing.com/en/speed-tests/cmx0gxgwt00hznp012nbiul6l) |
+| **`reasoning-v1`** | **`turbo5`** (`r3`, **#1 Reasoning Live**) | **565.9 (580.5)** | **4,435.6 (+17.4%)** | **5,935.6 (+20.3%)** | **66.22 ms (-12.12)** | **49.7 ms (-10.3)** | 190/249 | [cmx0nzhf300dcmz01unqsgufm](https://www.localmaxxing.com/en/speed-tests/cmx0nzhf300dcmz01unqsgufm) |
 
 ## Files
 
 - `Inkling-2-Mini-RTX-PRO-6000-Hillclimb-Report-2026-11-28.pdf` — 8-page publication monograph covering the entire hillclimb (`Stock Basalt 0.5.6 → turbo5`), SM120 resource audits, ECC study, rejected ledger, RSI, and SHA-256 registry
 - `turbo5_delta_from_turbo4.patch` — bit-exact `pinned-20261128-turbo5` source delta over `turbo4` (`sha256: 2da1389dfc1a34291d81bf630cd24aaedcb61e8144664d43dd1e4b14796b5a33`)
 - `chart6_full_hillclimb_leaderboard.png`, `chart7_turbo5_prefill_ttft.png`, `chart8_turbo5_sm120_resources.png` — 300-DPI `turbo5` hillclimb, prefill/TTFT CTA saturation, and SM120 register/occupancy charts
-- `receipts/localmaxxing/turbo5_fp16_{code-v1_599.6,reasoning-v1_565.9}_dryrun.json` — LocalMaxxing dry-run validated `turbo5` JSON receipts (`valid: true, verified: true, issues: []`)
+- `receipts/localmaxxing/turbo5_fp16_{code-v1_599.6,reasoning-v1_565.9}.json` — APPROVED & Verified LocalMaxxing `turbo5` JSON receipts (`cmx0nz61z00d9mz0197hyvlpf`, `cmx0nzhf300dcmz01unqsgufm`)
 - `Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-20261128.pdf` — 4-page technical PDF covering the full RSI-v3 + Q8-coda + DSpark self-distillation hillclimb
 - `chart3_rsi_v3_hillclimb.png`, `chart4_rsi_v3_frontier_gate.png`, `chart5_dspark_distill.png` — RSI-v3 hillclimb, frontier/gate screen, and DSpark self-distillation figures
 - `receipts/rsi/phase1_q8_and_parity.json`, `receipts/rsi/onyx_basalt_rsi_v3_report.json`, `receipts/rsi/dspark_distill_report.json` — raw Phase 1–3 JSON benchmark & training receipts

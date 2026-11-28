@@ -15,7 +15,8 @@
     "savedRunPathAbsolute": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-0.5.6-16slot/runs/thinkingmachines-Inkling-2-Mini/20261128T155034Z.json",
     "savedRunPathRelative": "runs/thinkingmachines-Inkling-2-Mini/20261128T155034Z.json",
     "status": "ready_for_api_validation",
-    "submissionStatus": "ready",
+    "submissionId": "cmx0nz61z00d9mz0197hyvlpf",
+    "submissionStatus": "approved",
     "submitCommand": "lmx speed-test submit /home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/turbo5_verify/lmx_t5_code-v1_r2.json"
   },
   "batchSize": 1,
@@ -87,6 +88,7 @@
   },
   "hardwareSource": "file",
   "hfId": "thinkingmachines/Inkling-2-Mini",
+  "id": "cmx0nz61z00d9mz0197hyvlpf",
   "metricSource": "remote_endpoint",
   "modelResolution": {
     "candidates": [
@@ -190,6 +192,9 @@
       "ttftMs": 65.74
     }
   ],
+  "submissionId": "cmx0nz61z00d9mz0197hyvlpf",
+  "submissionStatus": "approved",
+  "submittedAt": "2026-11-28T17:08:19.175Z",
   "timingSource": "client_observed_http",
   "tokSOut": 599.6,
   "tokSOutSource": "inter_token",
