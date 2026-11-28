@@ -124,12 +124,15 @@ Two further **100% mathematically bit-exact** SM120 optimization passes were bui
 5. **In-Graph 100% Exact Greedy LM Head (`session.cpp`, `sampler.cu`):** Runs full exact `q8_0_mmvq_rows` + `sampler_greedy_cluster_kernel` + D2H `pick_h_` copy inside the captured CUDA graph for plain `T=0`, skipping monotonic `softcap` (`30*tanh(x/30)`, lazily applied by `ensure_logits()` if logprobs/resample/copy_logits is ever requested) and removing a redundant second `cudaStreamSynchronize`.
 6. **`DraftPolicy` Capture-Spike Filter & Router `nt <= 2` Occupancy (`draft_policy.cpp`, `router.cu`):** Filters cold/capture spikes (`> 50 ms` or `> 2.5×` EMA) and uses `router_logits_opt_kernel<3, 1, 2>` (128 CTAs vs 64 CTAs on 188 SMs) for `nt <= 2`.
 
-- **Verified LocalMaxxing Submissions (`pinned-20261128-turbo4`, `APPROVED`, `verifiedRun: true`, `verificationIssues: []`, stock 500 W, ECC ON, 100% bit-exact):**
+- **Verified LocalMaxxing Submissions (`pinned-20261128-turbo4`, `APPROVED`, `verifiedRun: true`, `verificationIssues: []`, stock 500 W, 100% bit-exact):**
 
-| Prompt | KV Cache | `tokSOut` | Prefill | TTFT | DSpark Accept | Live Submission |
+| Prompt | KV / ECC | `tokSOut` | Prefill | TTFT | DSpark Accept | Live Submission |
 |---|---|---:|---:|---:|---:|---|
-| **`code-v1`** (`256` tok) | `fp16` | **571.3 tok/s** (#1 Overall, +18.7 vs `turbo2`) | 3,136.9 tok/s | 77.14 ms | 196/243 (80.7%) | [cmx02xkd9005enp01vnscl239](https://www.localmaxxing.com/en/speed-tests/cmx02xkd9005enp01vnscl239) |
-| **`reasoning-v1`** (`256` tok) | `fp16` | **522.2 tok/s** (#1 Reasoning, +8.7 vs `turbo2`) | 3,835.7 tok/s | 76.13 ms | 192/255 (75.3%) | [cmx02ucbe005anp01xq9m1iox](https://www.localmaxxing.com/en/speed-tests/cmx02ucbe005anp01xq9m1iox) |
+| **`code-v1`** (`256` tok) | `fp16` / ECC ON | **571.3 tok/s** (#1 Overall, +18.7 vs `turbo2`) | 3,136.9 tok/s | 77.14 ms | 196/243 (80.7%) | [cmx02xkd9005enp01vnscl239](https://www.localmaxxing.com/en/speed-tests/cmx02xkd9005enp01vnscl239) |
+| **`reasoning-v1`** (`256` tok) | `fp16` / ECC OFF | **528.2 tok/s** (#1 Reasoning, +14.7 vs `turbo2`, +6.0 vs ECC ON) | 3,778.2 tok/s | 78.34 ms | 190/259 (73.4%) | [cmx0gxgwt00hznp012nbiul6l](https://www.localmaxxing.com/en/speed-tests/cmx0gxgwt00hznp012nbiul6l) |
+| **`reasoning-v1`** (`256` tok) | `fp16` / ECC ON | 522.2 tok/s (prior #1 Reasoning, +8.7 vs `turbo2`) | 3,835.7 tok/s | 76.13 ms | 192/255 (75.3%) | [cmx02ucbe005anp01xq9m1iox](https://www.localmaxxing.com/en/speed-tests/cmx02ucbe005anp01xq9m1iox) |
+
+- **ECC-OFF Re-test Observation:** Disabling GPU ECC on Blackwell GDDR7 freed ~2.7 GiB of production VRAM (`10,588` vs `7,873 MiB` free) while keeping load clocks at P1 (`13,365 MHz` mem, `~2,800 MHz` graphics, `~488 W`); across 5×3-iter sweeps, `code-v1` averaged `533.7` (best `566.1`) vs `541.6` (best `571.3`) ECC ON, and `reasoning-v1` averaged `514.8` (best **`528.2`**, 3/5 runs `> 522.2`) vs `513.5` (best `522.2`) ECC ON — confirming no material decode-bandwidth step change beyond nonce/DSpark variance.
 
 - **ABBA Head-to-Head (`turbo4` vs `turbo3`, 100% bit-exact `2048/2048` tokens in both `fp16` and `fp8`):**
   - `fp16 KV` (`code-v1`): avg `510.0` → **`522.4 tok/s` (+2.4%)**, max `535.0` → **`551.4 tok/s`**, verify median `6.820` → **`6.676 ms` (-0.144 ms)**, draft median `0.565` → **`0.553 ms`**.

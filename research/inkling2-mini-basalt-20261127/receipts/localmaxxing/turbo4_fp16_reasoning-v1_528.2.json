@@ -1,0 +1,210 @@
+{
+  "agentFeedback": {
+    "benchmarkStatus": "completed",
+    "canApiValidate": true,
+    "canSubmit": true,
+    "engine": "strata",
+    "message": "Speed-test payload is ready for API validation.",
+    "mode": "remote",
+    "nextCommand": "lmx speed-test dry-run /home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/ecc_off_bench/lmx_turbo4_eccoff_reasoning-v1_r3.json",
+    "outputPath": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/ecc_off_bench/lmx_turbo4_eccoff_reasoning-v1_r3.json",
+    "outputPathAbsolute": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/ecc_off_bench/lmx_turbo4_eccoff_reasoning-v1_r3.json",
+    "requiresMetrics": false,
+    "runPersisted": true,
+    "savedRunPath": "runs/thinkingmachines-Inkling-2-Mini/20261128T073045Z.json",
+    "savedRunPathAbsolute": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-0.5.6-16slot/runs/thinkingmachines-Inkling-2-Mini/20261128T073045Z.json",
+    "savedRunPathRelative": "runs/thinkingmachines-Inkling-2-Mini/20261128T073045Z.json",
+    "status": "ready_for_api_validation",
+    "submissionId": "cmx0gxgwt00hznp012nbiul6l",
+    "submissionStatus": "approved",
+    "submitCommand": "lmx speed-test submit /home/jeffrey-watts/.gemini/antigravity-cli/brain/9da07814-ec9f-4112-a9ee-429a292d8bf6/scratch/ecc_off_bench/lmx_turbo4_eccoff_reasoning-v1_r3.json"
+  },
+  "batchSize": 1,
+  "benchmarkMode": "remote",
+  "detectedEngines": [],
+  "engineBuild": "sm120 cuda13.0 turbo4 +ctrl-r64 +swa-s4 +batch-attn-cluster +dspark-w1-vram +in-graph-greedy +router-nt2 +ecc-off",
+  "engineFlags": {
+    "baseUrl": "http://127.0.0.1:8019",
+    "canonicalPromptId": "reasoning-v1",
+    "concurrency": 1,
+    "iterations": 3,
+    "maxTokens": 256,
+    "mode": "remote",
+    "prefixCacheBust": "leading_nonce_per_request",
+    "promptFile": "",
+    "promptSource": "canonical:reasoning-v1",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "specAcceptanceRate": 0.7336,
+    "specAcceptedTokens": 190,
+    "specDecoding": true,
+    "specDraftTokens": 259,
+    "stream": true,
+    "timeoutSeconds": 600,
+    "warmup": 1
+  },
+  "engineName": "strata",
+  "engineRepository": "https://github.com/lEWFkRAD/rtx-pro-6000-inference-lab",
+  "engineTimingsRaw": {
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 252,
+      "draft_n_accepted": 188,
+      "predicted_ms": 499.2,
+      "predicted_n": 256,
+      "predicted_per_second": 512.8,
+      "predicted_per_token_ms": 1.95,
+      "prompt_ms": 60,
+      "prompt_n": 296,
+      "prompt_per_second": 4933.3,
+      "prompt_per_token_ms": 0.203
+    },
+    "usage": {
+      "completion_tokens": 256,
+      "prompt_tokens": 296,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 552
+    }
+  },
+  "engineVersion": "0.5.6",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "thinkingmachines/Inkling-2-Mini",
+  "id": "cmx0gxgwt00hznp012nbiul6l",
+  "metricSource": "remote_endpoint",
+  "modelResolution": {
+    "candidates": [
+      {
+        "benchmarkCount": 85,
+        "displayName": "Inkling-2-Mini",
+        "family": "Opt",
+        "hfId": "thinkingmachines/Inkling-2-Mini",
+        "params": 26
+      }
+    ],
+    "declaredBaseModel": "thinkingmachines/Inkling-2-Mini",
+    "hfId": "thinkingmachines/Inkling-2-Mini",
+    "loadedFilename": "Inkling-2-Mini-NVFP4-q8.basalt",
+    "searchCommand": "lmx model search thinkingmachines/Inkling-2-Mini",
+    "searchQuery": "thinkingmachines/Inkling-2-Mini",
+    "searchQuerySource": "served_model",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "status": "matched"
+  },
+  "modelRevision": "main",
+  "outputSample": "The user wants me to answer four parts carefully. Let me work through each.\n\nPart 1: 7 members, budget 412 dollars. Motor driver costs 18.50, microcontroller 23.75, each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\nLet me compute.\nEach member wants one motor driver and one microcontroller: cost per member = 18.50 + 23.75 = 42.25. For 7 members: 7 * 42.25 = 295.75.\nShared spool: 27.90.\nTotal spent before batteries: 295.75 + 27.90 = 323.65.\nBudget 412.00. Remainder = 412.00 - 323.65 = 88.35.\nThey split the remainder evenly on batteries priced at 6.35 each. Hmm. \"split the remainder evenly on batteries\" — interpret: the remainder is divided evenly among",
+  "outputSha256": "37cad72ea76f18b4c180d06c530df48f14791fad8f5d6e030bade5fcf2191f0a",
+  "outputText": "The user wants me to answer four parts carefully. Let me work through each.\n\nPart 1: 7 members, budget 412 dollars. Motor driver costs 18.50, microcontroller 23.75, each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\nLet me compute.\nEach member wants one motor driver and one microcontroller: cost per member = 18.50 + 23.75 = 42.25. For 7 members: 7 * 42.25 = 295.75.\nShared spool: 27.90.\nTotal spent before batteries: 295.75 + 27.90 = 323.65.\nBudget 412.00. Remainder = 412.00 - 323.65 = 88.35.\nThey split the remainder evenly on batteries priced at 6.35 each. Hmm. \"split the remainder evenly on batteries\" — interpret: the remainder is divided evenly among",
+  "outputTokens": 256,
+  "prefillTokens": 0,
+  "prompt": "You are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+  "promptSample": "[LocalMaxxing cache-bust nonce: c9ffe8a85ab606b0833a36c38371d3f5]\nYou are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+  "promptSha256": "9000edaadb16fc77ab78b39917245a03d4d7585c3ba770cb045a47a0e0683445",
+  "promptTokens": 295,
+  "provenance": {
+    "benchmarkMode": "remote",
+    "cli": "localmaxxing-go",
+    "createdAt": "2026-11-28T07:30:45Z",
+    "metricSource": "remote_endpoint",
+    "timingSource": "client_observed_http",
+    "ttftSource": "stream_first_token"
+  },
+  "quantization": "NVFP4",
+  "quantizationResolution": {
+    "cli": "NVFP4",
+    "filename": "NVFP4",
+    "modelPath": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-NVFP4-q8.basalt",
+    "status": "matched",
+    "trusted": "NVFP4",
+    "trustedSource": "filename"
+  },
+  "sampleStats": {
+    "tokSOut": {
+      "count": 3,
+      "max": 540.4,
+      "mean": 527.6,
+      "min": 514.2,
+      "p50": 528.2,
+      "stddev": 13.11
+    },
+    "tokSTotal": {
+      "count": 3,
+      "max": 998,
+      "mean": 979.1,
+      "min": 956.7,
+      "p50": 982.6,
+      "stddev": 20.87
+    },
+    "ttftMs": {
+      "count": 3,
+      "max": 79.3,
+      "mean": 78.05,
+      "min": 76.5,
+      "p50": 78.34,
+      "stddev": 1.42
+    }
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "outputTokens": 256,
+      "promptTokens": 293,
+      "request": 1,
+      "tokSOut": 514.2,
+      "tokSPrefill": 3829.9,
+      "ttftMs": 76.5
+    },
+    {
+      "iteration": 2,
+      "outputTokens": 256,
+      "promptTokens": 295,
+      "request": 1,
+      "tokSOut": 540.4,
+      "tokSPrefill": 3720.2,
+      "ttftMs": 79.3
+    },
+    {
+      "iteration": 3,
+      "outputTokens": 256,
+      "promptTokens": 296,
+      "request": 1,
+      "tokSOut": 528.2,
+      "tokSPrefill": 3778.2,
+      "ttftMs": 78.34
+    }
+  ],
+  "submissionId": "cmx0gxgwt00hznp012nbiul6l",
+  "submissionStatus": "approved",
+  "submittedAt": "2026-11-28T13:51:02.621Z",
+  "timingSource": "client_observed_http",
+  "tokSOut": 528.2,
+  "tokSOutSource": "inter_token",
+  "tokSPrefill": 3778.2,
+  "tokSPrefillSource": "estimated_from_ttft",
+  "tokSTotal": 982.6,
+  "tokenSources": {
+    "output": "endpoint_usage",
+    "prompt": "endpoint_usage"
+  },
+  "ttftMs": 78.34,
+  "ttftSource": "stream_first_token"
+}
