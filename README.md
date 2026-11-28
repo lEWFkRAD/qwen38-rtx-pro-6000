@@ -13,19 +13,18 @@ Independent single-GPU inference engineering, bit-exact CUDA kernel tuning,
 speculative decoding, zero-backprop loop-dynamics RSI, and benchmark receipts
 on one **NVIDIA RTX PRO 6000 Blackwell Workstation Edition (96 GB)** — spanning
 **Inkling-2-Mini** (`thinkingmachines/Inkling-2-Mini`, #1 Verified Overall on
-LocalMaxxing at **552.6 tok/s**), **Qwen3.8-Flash-Next** (#1 and #2 Verified on
+LocalMaxxing at **571.3 tok/s** and #1 Reasoning at **522.2 tok/s**), **Qwen3.8-Flash-Next** (#1 and #2 Verified on
 LocalMaxxing), and custom Basalt / Strata serving stacks.
 
 
 <!-- inkling2-mini-basalt-20261127:start -->
-## November 27 — Inkling 2 Mini #1 Overall on LocalMaxxing (552.6 tok/s) + Basalt 12×262K bit-exact `turbo2` + RSI FP-Solve
+## November 28 — Inkling 2 Mini #1 Overall on LocalMaxxing (571.3 tok/s) + Basalt 12×262K bit-exact `turbo4` + RSI GSPO `rse-v2`
 
-Built and promoted a **100% cross-build bit-exact** custom Basalt 0.5.6 build (`pinned-20261127-turbo2`) on one **NVIDIA RTX PRO 6000 Blackwell Workstation Edition (96 GB, stock 500 W, ECC ON)**, claiming **#1 Overall Verified** on LocalMaxxing.com for `thinkingmachines/Inkling-2-Mini`:
-- **#1 Overall & #1 `code-v1` Verified:** **552.6 tok/s** (`fp16 KV`, 196/246 DSpark, [cmwzqhlba000drv01oxl1qyx4](https://www.localmaxxing.com/en/speed-tests/cmwzqhlba000drv01oxl1qyx4)) — **+26.4 tok/s** ahead of `#2` RTX 5090 (`526.2`) and **+53.4 tok/s** ahead of `#4` RTX PRO 6000 Server 600W (`499.2`).
-- **#1 `reasoning-v1` Verified:** **513.5 tok/s** (`fp16 KV`, 188/255 DSpark, [cmwzqhm7g000grv01t8z2axgq](https://www.localmaxxing.com/en/speed-tests/cmwzqhm7g000grv01t8z2axgq)) — **+24.9 tok/s** ahead of the fastest RTX 5090 (`488.6`) and **+47.7 tok/s** ahead of RTX PRO 6000 Server 600W (`465.8`).
-- **FP8-KV Verified:** **494.6 tok/s** (`code-v1`, [cmwzptydq0007rv01ilvkhn1z](https://www.localmaxxing.com/en/speed-tests/cmwzptydq0007rv01ilvkhn1z)) & **467.1 tok/s** (`reasoning-v1`, [cmwzptz4z000arv01ozwma02c](https://www.localmaxxing.com/en/speed-tests/cmwzptz4z000arv01ozwma02c)).
-- **12×262K Production Multi-Slot (`fp8 KV`):** **936.6 tok/s** across 12 slots (`batch_identity.py`, 100% cross-build bit-exact vs `gf_q8.json`, 0 kernel/DSpark parity failures) + **-25–29%** multi-slot TTFT from `BGEN` admission reuse.
-- **November 28 Update — `pinned-20261127-turbo3` & `pinned-20261128-turbo4` (100% Bit-Exact):** Stacked two more bit-exact SM120 optimization passes on top of `turbo2` (`turbo3`: **+6.4% `code-v1` / +5.9% `reasoning-v1`**, **583.3 tok/s** wall solo uncontended; `turbo4`: an additional **+2.4% `fp16` / +5.9% `fp8`** and **-0.144 ms/window** median verify over `turbo3`, 0 failures across all 6 GPU parity suites, live in production on 12×262K).
+Built and promoted a **100% cross-build bit-exact** custom Basalt 0.5.6 build (`pinned-20261128-turbo4`, building on `graphfix` → `turbo` → `turbo2` → `turbo3`) on one **NVIDIA RTX PRO 6000 Blackwell Workstation Edition (96 GB, stock 500 W, ECC ON)**, extending **#1 Overall Verified** and **#1 Reasoning Verified** on LocalMaxxing.com for `thinkingmachines/Inkling-2-Mini`:
+- **#1 Overall & #1 `code-v1` Verified (`turbo4`):** **571.3 tok/s** (`fp16 KV`, 201/249 DSpark, `77.14 ms` TTFT, [cmx02xkd9005enp01vnscl239](https://www.localmaxxing.com/en/speed-tests/cmx02xkd9005enp01vnscl239)) — **+18.7 tok/s** over our prior `turbo2` #1 (`552.6`), **+45.1 tok/s** ahead of `#2` RTX 5090 (`526.2`), and **+72.1 tok/s** ahead of RTX PRO 6000 Server 600 W (`499.2`).
+- **#1 `reasoning-v1` Verified (`turbo4`):** **522.2 tok/s** (`fp16 KV`, 192/255 DSpark, `76.13 ms` TTFT, [cmx02ucbe005anp01xq9m1iox](https://www.localmaxxing.com/en/speed-tests/cmx02ucbe005anp01xq9m1iox)) — **+8.7 tok/s** over our prior `turbo2` #1 (`513.5`), **+33.6 tok/s** ahead of the fastest RTX 5090 (`488.6`), and **+56.4 tok/s** ahead of RTX PRO 6000 Server 600 W (`465.8`).
+- **Prior `turbo2` Verified Benchmarks:** `552.6 tok/s` `code-v1` ([cmwzqhlba000drv01oxl1qyx4](https://www.localmaxxing.com/en/speed-tests/cmwzqhlba000drv01oxl1qyx4)), `513.5 tok/s` `reasoning-v1` ([cmwzqhm7g000grv01t8z2axgq](https://www.localmaxxing.com/en/speed-tests/cmwzqhm7g000grv01t8z2axgq)), plus FP8-KV `494.6` / `467.1 tok/s` ([cmwzptydq0007rv01ilvkhn1z](https://www.localmaxxing.com/en/speed-tests/cmwzptydq0007rv01ilvkhn1z), [cmwzptz4z000arv01ozwma02c](https://www.localmaxxing.com/en/speed-tests/cmwzptz4z000arv01ozwma02c)).
+- **12×262K Production Multi-Slot (`fp8 KV`):** **936.6 tok/s** across 12 slots (`batch_identity.py`, 100% cross-build bit-exact vs `gf_q8.json`, 0 failures across all 6 GPU parity suites) + **-25–29%** multi-slot TTFT from `BGEN` admission reuse + batch-mode DSMEM `attn_fused_kernel` in `turbo4`.
 - **Zero-Backprop RSI `FP-Solve` & GSPO `rse-v2`:** 111 s staged closed-form `FP-Solve` rescued 4-pass loop reasoning (`2/12 → 9/12` math, `83.3% → 0%` loops, `0/4 → 4/4` tools); surgical FP32-master GSPO (`rse-v2`) beat Original on a 96-problem blind holdout (**71/96 = 74.0%** vs `68/96 = 70.8%`, `4/4` tools, matched `4.2%` repetition, `-10.9%` shorter completions).
 
 [Full results, `turbo2`/`turbo3`/`turbo4` patches, charts, and raw receipts](research/inkling2-mini-basalt-20261127/RESULTS.md).

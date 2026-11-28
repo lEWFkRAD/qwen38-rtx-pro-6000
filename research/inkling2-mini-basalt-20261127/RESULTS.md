@@ -124,11 +124,17 @@ Two further **100% mathematically bit-exact** SM120 optimization passes were bui
 5. **In-Graph 100% Exact Greedy LM Head (`session.cpp`, `sampler.cu`):** Runs full exact `q8_0_mmvq_rows` + `sampler_greedy_cluster_kernel` + D2H `pick_h_` copy inside the captured CUDA graph for plain `T=0`, skipping monotonic `softcap` (`30*tanh(x/30)`, lazily applied by `ensure_logits()` if logprobs/resample/copy_logits is ever requested) and removing a redundant second `cudaStreamSynchronize`.
 6. **`DraftPolicy` Capture-Spike Filter & Router `nt <= 2` Occupancy (`draft_policy.cpp`, `router.cu`):** Filters cold/capture spikes (`> 50 ms` or `> 2.5×` EMA) and uses `router_logits_opt_kernel<3, 1, 2>` (128 CTAs vs 64 CTAs on 188 SMs) for `nt <= 2`.
 
+- **Verified LocalMaxxing Submissions (`pinned-20261128-turbo4`, `APPROVED`, `verifiedRun: true`, `verificationIssues: []`, stock 500 W, ECC ON, 100% bit-exact):**
+
+| Prompt | KV Cache | `tokSOut` | Prefill | TTFT | DSpark Accept | Live Submission |
+|---|---|---:|---:|---:|---:|---|
+| **`code-v1`** (`256` tok) | `fp16` | **571.3 tok/s** (#1 Overall, +18.7 vs `turbo2`) | 3,136.9 tok/s | 77.14 ms | 196/243 (80.7%) | [cmx02xkd9005enp01vnscl239](https://www.localmaxxing.com/en/speed-tests/cmx02xkd9005enp01vnscl239) |
+| **`reasoning-v1`** (`256` tok) | `fp16` | **522.2 tok/s** (#1 Reasoning, +8.7 vs `turbo2`) | 3,835.7 tok/s | 76.13 ms | 192/255 (75.3%) | [cmx02ucbe005anp01xq9m1iox](https://www.localmaxxing.com/en/speed-tests/cmx02ucbe005anp01xq9m1iox) |
+
 - **ABBA Head-to-Head (`turbo4` vs `turbo3`, 100% bit-exact `2048/2048` tokens in both `fp16` and `fp8`):**
   - `fp16 KV` (`code-v1`): avg `510.0` → **`522.4 tok/s` (+2.4%)**, max `535.0` → **`551.4 tok/s`**, verify median `6.820` → **`6.676 ms` (-0.144 ms)**, draft median `0.565` → **`0.553 ms`**.
   - `fp16 KV` (`reasoning-v1`): avg `376.8` → **`385.6 tok/s` (+2.3%)**, max `403.5` → **`413.4 tok/s`**.
   - `fp8 KV` (production format): `code-v1` `444.0` → **`470.2 tok/s` (+5.9%)**, `reasoning-v1` `394.2` → **`403.1 tok/s` (+2.3%)**.
-  - *(Measured under ~17% background desktop NVENC load; clean uncontended LocalMaxxing submission pending desktop idle.)*
 - **Rejected `turbo4` experiments (measured & flipped to opt-in):**
   - Fused NVFP4 `native_gu_swiglu_q8_1_kernel` (`BASALT_GU_SWIGLU_FUSE=1`): 36 CTAs × 128 regs (2 blocks/SM) lost `-0.34 ms/window` vs the separate 288-CTA `native_gu_multi_kernel` + PDL `swiglu` path.
   - `ctrl_down_kernel<1>` (`BASALT_CTRL_DOWN_O1=1`): doubled input activation bandwidth vs `O=2` (`-0.29 ms/window`).

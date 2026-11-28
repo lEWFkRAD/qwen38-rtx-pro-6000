@@ -1,0 +1,210 @@
+{
+  "agentFeedback": {
+    "benchmarkStatus": "completed",
+    "canApiValidate": true,
+    "canSubmit": true,
+    "engine": "strata",
+    "message": "Speed-test payload is ready for API validation.",
+    "mode": "remote",
+    "nextCommand": "lmx speed-test dry-run /home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_turbo4_code_clean_r1.json",
+    "outputPath": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_turbo4_code_clean_r1.json",
+    "outputPathAbsolute": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_turbo4_code_clean_r1.json",
+    "requiresMetrics": false,
+    "runPersisted": true,
+    "savedRunPath": "runs/thinkingmachines-Inkling-2-Mini/20261128T071828Z.json",
+    "savedRunPathAbsolute": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/basalt-0.5.6-16slot/runs/thinkingmachines-Inkling-2-Mini/20261128T071828Z.json",
+    "savedRunPathRelative": "runs/thinkingmachines-Inkling-2-Mini/20261128T071828Z.json",
+    "status": "ready_for_api_validation",
+    "submissionId": "cmx02xkd9005enp01vnscl239",
+    "submissionStatus": "approved",
+    "submitCommand": "lmx speed-test submit /home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_turbo4_code_clean_r1.json"
+  },
+  "batchSize": 1,
+  "benchmarkMode": "remote",
+  "detectedEngines": [],
+  "engineBuild": "sm120 cuda13.0 turbo4 +ctrl-r64 +swa-s4 +batch-attn-cluster +dspark-w1-vram +in-graph-greedy +router-nt2",
+  "engineFlags": {
+    "baseUrl": "http://127.0.0.1:8019",
+    "canonicalPromptId": "code-v1",
+    "concurrency": 1,
+    "iterations": 3,
+    "maxTokens": 256,
+    "mode": "remote",
+    "prefixCacheBust": "leading_nonce_per_request",
+    "promptFile": "",
+    "promptSource": "canonical:code-v1",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "specAcceptanceRate": 0.8066,
+    "specAcceptedTokens": 196,
+    "specDecoding": true,
+    "specDraftTokens": 243,
+    "stream": true,
+    "timeoutSeconds": 600,
+    "warmup": 1
+  },
+  "engineName": "strata",
+  "engineRepository": "https://github.com/lEWFkRAD/rtx-pro-6000-inference-lab",
+  "engineTimingsRaw": {
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 249,
+      "draft_n_accepted": 201,
+      "predicted_ms": 453.7,
+      "predicted_n": 256,
+      "predicted_per_second": 564.2,
+      "predicted_per_token_ms": 1.772,
+      "prompt_ms": 62,
+      "prompt_n": 238,
+      "prompt_per_second": 3838.7,
+      "prompt_per_token_ms": 0.261
+    },
+    "usage": {
+      "completion_tokens": 256,
+      "prompt_tokens": 238,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 494
+    }
+  },
+  "engineVersion": "0.5.6",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "thinkingmachines/Inkling-2-Mini",
+  "id": "cmx02xkd9005enp01vnscl239",
+  "metricSource": "remote_endpoint",
+  "modelResolution": {
+    "candidates": [
+      {
+        "benchmarkCount": 83,
+        "displayName": "Inkling-2-Mini",
+        "family": "Opt",
+        "hfId": "thinkingmachines/Inkling-2-Mini",
+        "params": 26
+      }
+    ],
+    "declaredBaseModel": "thinkingmachines/Inkling-2-Mini",
+    "hfId": "thinkingmachines/Inkling-2-Mini",
+    "loadedFilename": "Inkling-2-Mini-NVFP4-q8.basalt",
+    "searchCommand": "lmx model search thinkingmachines/Inkling-2-Mini",
+    "searchQuery": "thinkingmachines/Inkling-2-Mini",
+    "searchQuerySource": "served_model",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "status": "matched"
+  },
+  "modelRevision": "main",
+  "outputSample": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nThen explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\n\nLEVELS = (\"DEBUG\", \"INFO\", \"WARN\", \"ERROR\")\n\ndef parse_ts(s):\n    # handle trailing Z\n    if isinstance(s",
+  "outputSha256": "189ec9dbbf5fd8bbb763554f0b5b8d0cfb95b29a435103f1d1da28ed6b957999",
+  "outputText": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nThen explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\n\nLEVELS = (\"DEBUG\", \"INFO\", \"WARN\", \"ERROR\")\n\ndef parse_ts(s):\n    # handle trailing Z\n    if isinstance(s",
+  "outputTokens": 256,
+  "prefillTokens": 0,
+  "prompt": "Implement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSample": "[LocalMaxxing cache-bust nonce: d19e5fd10bcb513a599b241840144934]\nImplement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSha256": "a737db738bd4e37881d1737f8dc51cae0295eff9ece6551d39826ce8ed43a690",
+  "promptTokens": 240,
+  "provenance": {
+    "benchmarkMode": "remote",
+    "cli": "localmaxxing-go",
+    "createdAt": "2026-11-28T07:18:28Z",
+    "metricSource": "remote_endpoint",
+    "timingSource": "client_observed_http",
+    "ttftSource": "stream_first_token"
+  },
+  "quantization": "NVFP4",
+  "quantizationResolution": {
+    "cli": "NVFP4",
+    "filename": "NVFP4",
+    "modelPath": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-NVFP4-q8.basalt",
+    "status": "matched",
+    "trusted": "NVFP4",
+    "trustedSource": "filename"
+  },
+  "sampleStats": {
+    "tokSOut": {
+      "count": 3,
+      "max": 581.1,
+      "mean": 561.07,
+      "min": 530.8,
+      "p50": 571.3,
+      "stddev": 26.67
+    },
+    "tokSTotal": {
+      "count": 3,
+      "max": 954.2,
+      "mean": 932.5,
+      "min": 894.7,
+      "p50": 948.6,
+      "stddev": 32.86
+    },
+    "ttftMs": {
+      "count": 3,
+      "max": 78.61,
+      "mean": 77.42,
+      "min": 76.51,
+      "p50": 77.14,
+      "stddev": 1.08
+    }
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "outputTokens": 256,
+      "promptTokens": 243,
+      "request": 1,
+      "tokSOut": 530.8,
+      "tokSPrefill": 3150.2,
+      "ttftMs": 77.14
+    },
+    {
+      "iteration": 2,
+      "outputTokens": 256,
+      "promptTokens": 240,
+      "request": 1,
+      "tokSOut": 571.3,
+      "tokSPrefill": 3136.9,
+      "ttftMs": 76.51
+    },
+    {
+      "iteration": 3,
+      "outputTokens": 256,
+      "promptTokens": 238,
+      "request": 1,
+      "tokSOut": 581.1,
+      "tokSPrefill": 3027.6,
+      "ttftMs": 78.61
+    }
+  ],
+  "submissionId": "cmx02xkd9005enp01vnscl239",
+  "submissionStatus": "approved",
+  "submittedAt": "2026-11-28T07:19:12.477Z",
+  "timingSource": "client_observed_http",
+  "tokSOut": 571.3,
+  "tokSOutSource": "inter_token",
+  "tokSPrefill": 3136.9,
+  "tokSPrefillSource": "estimated_from_ttft",
+  "tokSTotal": 948.6,
+  "tokenSources": {
+    "output": "endpoint_usage",
+    "prompt": "endpoint_usage"
+  },
+  "ttftMs": 77.14,
+  "ttftSource": "stream_first_token"
+}
