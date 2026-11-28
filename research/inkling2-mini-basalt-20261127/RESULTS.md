@@ -144,11 +144,40 @@ Two further **100% mathematically bit-exact** SM120 optimization passes were bui
   - PDL launch attribute on `sampler_greedy_cluster_kernel`: 64 × 1024-thread cluster blocks launched early on `pdl_launch_dependents()` at the start of `native_q80_mma_kernel`, stealing SMs from the 492 MB LM head (`-0.12 ms/window`).
 - **All 6 GPU Parity Suites Passed (`0 failures`):** `inkling2_kernels_parity`, `inkling2_dspark_parity`, `q80_screen_parity`, `gqa_attn_parity`, `sampler_parity`, `native_grouped_parity`.
 
-### Surgical GSPO RSI (`rse-v2` Blind Holdout Win)
-- `rse_looper` surgical FP32-master GSPO (`lr=1e-5`, `max_rel=0.012`, chunked CE, 385 controller/attention/router weights, 0 expert weights altered) beat Original on the 96-problem blind holdout (`64 blind_dsr_hard + 32 ab_math`): **71/96 (74.0%)** vs **68/96 (70.8%, +3.2pp)**, `4/4` tools, matched `4.2%` repetition, `-10.9%` shorter completions (`849.3` vs `952.9` avg tokens).
+### Surgical GSPO RSI (`rse-v2` → `RSI-v3`) & On-Policy DSpark Self-Distillation (Live in Production)
+
+Full 4-page technical PDF: [`Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-20261128.pdf`](Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-20261128.pdf).
+
+1. **Forensic Fixes & Q8_0 Coda Recovery (`Phase 1`):**
+   - **Hidden MXFP8 Coda Bug:** `convert.py` repacked untouched coda layers `20–23` as `type 46` (`MXFP8`, `15.67 GB`) instead of the stock pack's `type 8` (`Q8_0`, `15.80 GB`), causing a `~15%` throughput loss unrelated to RSI. Patching only edited `gguf` tensors verbatim onto `NVFP4-q8.basalt` (`basalt_patch.py`, 100% SHA-256 bit-exact on `gguf` vs `convert.py`) recovered **+16.8% multi-slot speed** (`99.5 → 116.2 tok/s`, live aggregate `684 → 786.5 tok/s`).
+   - **Softcap Alignment:** Restored missing `final_logit_softcapping = 30.0` (`30*tanh(z/30)`) in `_chunked_avg_sequence_logprob`.
+   - **Hard-Frontier Expansion:** Filtered `171` trivially solved (`4/4`) training problems and raised sampling to `K=6` @ `3072` tokens (expanding Gen 1's active frontier to **186 items** vs `52–84` in `v2`), added conciseness reward (`+0.15` for wins `< 1200` tok) + `kl_beta = 0.02`, and froze prelude `L0–L5` (`326` BF16/FP32 tensors edited, **0 MoE experts modified**, preserving DSpark Visit 5 at `cos = 1.0000`).
+
+2. **`RSI-v3` Blind96 Sweep (`Phase 2`):**
+   - Improved on **both** the 96-problem composite gate (`80/96 → 82/96`, `1.0%` rep) and strictly unseen **Blind96** (`64 blind_dsr_hard + 32 ab_math` + 4 Hermes tools): **78/96 (81.2%, +6.2 pp vs Original 72/96, +7.2 pp vs `v2plus` 71/96)**, **`0.0%` repetition**, `4/4` tools, `13` length caps (down from `19`), and `793.7` avg tokens (`-16.7%`).
+
+3. **22.9-Second On-Policy DSpark Self-Distillation (`Phase 3`, 100% Lossless):**
+   - Verified an exact PyTorch DSpark replica (`Inkling2DSpark`, 54 tensors, 317.9M params) against Basalt's `--diag-dump dspark.bin`: **`mean_logit_cos = 0.999766`**, `mean_hblk_cos = 0.993893`, `39/42 (92.9%)` top-1 match vs NVFP4 runtime drafter.
+   - Generated `210` diverse on-policy trajectories (`138,149` tokens across math, coding/systems, and general/tools — strictly disjoint from Blind96), extracted exact `[5, 23, 41, 48]` target taps + top-16 softcapped teacher probs (`73s`), and trained 4 epochs in **`22.9s`** with NVFP4-aware differential LRs (`8e-5` on F32/BF16/Q8_0 head/ctx/norms, `2.5e-5` + `1e-4` L2 anchor on NVFP4 block projections).
+   - **Real `turbo4` A/B (100% lossless exact outputs):** multi-slot `b8` DSpark **`85.8% → 87.8%` (+2.0 pp, `w_dl = 1.998`)**, per-request decode `109.8 → 117.6 tok/s` (+7.1%), live aggregate median **`724 → 821 tok/s` (+13.4%, beating Original's `812.5 tok/s`)**, Blind96 wall time **`91.0s`** (**-14.7s vs Original**), and `solo_fp16` DSpark `63.8% → 65.9%` (+2.1 pp; Ep 2 hit `68.5%`, +4.7 pp). Promoted to 12×262K production (`Inkling-2-Mini-Uncensored-Onyx-RSI-v3-DSparkDistill-NVFP4-q8coda.basalt`, cold-start `READY` canary `392.8 tok/s`, `23/30 = 76.7%` DSpark, `dl=2.7`).
+
+![RSI-v3 Blind96 Hillclimb & Speed Recovery](chart3_rsi_v3_hillclimb.png)
+![RSI-v3 Frontier Expansion & Composite Gate Screen](chart4_rsi_v3_frontier_gate.png)
+![On-Policy DSpark Self-Distillation Curve & turbo4 A/B](chart5_dspark_distill.png)
+
+| Configuration (`turbo4`, FP8 KV, `spec=8`) | Blind96 Math | Tools | Rep % | 2048 Caps | Avg Tok | Wall Time | `b8` Req t/s | Live Med t/s | `b8` DSpark (`w_dl`) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Original** (`NVFP4-q8`) | 72/96 (75.0%) | 4/4 | 4.2% | 19 | 952.9 | 105.7s | 119.1 | 812.5 | 88.3% (1.997) |
+| **`RSI-v2plus`** (`Q8-coda` fixed) | 71/96 (74.0%) | 4/4 | 3.1% | 22 | 877.8 | 100.1s | 116.7 | 747.0 | 86.6% (1.966) |
+| **`RSI-v2`** (`Q8-coda` fixed) | 77/96 (80.2%) | 4/4 | 4.2% | 17 | 866.2 | 99.0s | 116.2 | 786.5 | 86.9% (1.944) |
+| **`RSI-v3`** (stock DSpark) | **78/96 (81.2%)** | **4/4** | **0.0%** | **13** | **793.7** | 95.8s | 109.8 | 724.0 | 85.8% (1.985) |
+| **`RSI-v3 + Distilled DSpark` (PROD)** | **78/96 (81.2%)** | **4/4** | **0.0%** | **13** | **793.7** | **91.0s** | **117.6** | **821.0** | **87.8% (1.998)** |
 
 ## Files
 
+- `Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-20261128.pdf` — 4-page technical PDF covering the full RSI-v3 + Q8-coda + DSpark self-distillation hillclimb
+- `chart3_rsi_v3_hillclimb.png`, `chart4_rsi_v3_frontier_gate.png`, `chart5_dspark_distill.png` — RSI-v3 hillclimb, frontier/gate screen, and DSpark self-distillation figures
+- `receipts/rsi/phase1_q8_and_parity.json`, `receipts/rsi/onyx_basalt_rsi_v3_report.json`, `receipts/rsi/dspark_distill_report.json` — raw Phase 1–3 JSON benchmark & training receipts
 - `turbo4.patch`, `turbo4_delta_from_turbo3.patch`, `turbo3.patch`, `EXPERIMENTAL_HEAD_SCREEN.md` — bit-exact `turbo3`/`turbo4` source patches and opt-in head-screen notes
 - `turbo2.patch` — earlier `pinned-20261127-turbo2` bit-exact source diff over upstream Basalt
 - `turbo.patch` — earlier `pinned-20261127-turbo` diff

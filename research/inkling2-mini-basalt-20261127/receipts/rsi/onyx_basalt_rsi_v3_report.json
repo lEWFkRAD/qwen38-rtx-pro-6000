@@ -1,0 +1,516 @@
+{
+  "version": "v3_finish",
+  "known_baselines_gate96": {
+    "original": {
+      "math_correct": 80,
+      "math_total": 96,
+      "rep_pct": 4.2,
+      "dspark_accept_pct": 87.4
+    },
+    "v2_q8": {
+      "math_correct": 77,
+      "math_total": 96,
+      "rep_pct": 6.2,
+      "dspark_accept_pct": 87.3
+    },
+    "v3_g1_s10": {
+      "math_correct": 82,
+      "math_total": 96,
+      "rep_pct": 1.0,
+      "dspark_accept_pct": 84.8,
+      "avg_tok": 815.7
+    }
+  },
+  "g2_stats": {
+    "n_problems": 72,
+    "best_of_k_solved": 64,
+    "best_of_k_rate": 88.89,
+    "all_solved": 49,
+    "active_frontier_groups": 15,
+    "deep_loop_rescue_groups": 0,
+    "pass1_avg_rate": 80.79
+  },
+  "gate96_screen": {
+    "v3_g2_s10": {
+      "tag": "gate_v3_g2_s10",
+      "elapsed_sec": 105.9,
+      "math_correct": 78,
+      "math_total": 96,
+      "math_acc_pct": 81.2,
+      "tool_correct": 4,
+      "tool_total": 4,
+      "rep_pct": 1.0,
+      "avg_completion_tokens": 899.6,
+      "avg_tok_s": 112.0,
+      "dspark_accept_pct": 87.4,
+      "drafts_accepted": 41442,
+      "drafts_offered": 47406,
+      "log_stats": {
+        "n_done": 100,
+        "n_stop": 82,
+        "n_length": 18,
+        "sum_tg": 86936,
+        "w_acc_pct": 87.64,
+        "w_dl": 1.924,
+        "live_total_med_tps": 822.5,
+        "live_total_p90_tps": 861
+      }
+    },
+    "soup_v3_g1_g2": {
+      "tag": "gate_soup_v3_g1_g2",
+      "elapsed_sec": 97.8,
+      "math_correct": 79,
+      "math_total": 96,
+      "math_acc_pct": 82.3,
+      "tool_correct": 4,
+      "tool_total": 4,
+      "rep_pct": 2.1,
+      "avg_completion_tokens": 832.2,
+      "avg_tok_s": 112.7,
+      "dspark_accept_pct": 86.7,
+      "drafts_accepted": 38150,
+      "drafts_offered": 43998,
+      "log_stats": {
+        "n_done": 100,
+        "n_stop": 85,
+        "n_length": 15,
+        "sum_tg": 80376,
+        "w_acc_pct": 87.06,
+        "w_dl": 1.926,
+        "live_total_med_tps": 825.0,
+        "live_total_p90_tps": 858
+      }
+    },
+    "soup_v2_v3g1": {
+      "tag": "gate_soup_v2_v3g1",
+      "elapsed_sec": 97.1,
+      "math_correct": 80,
+      "math_total": 96,
+      "math_acc_pct": 83.3,
+      "tool_correct": 4,
+      "tool_total": 4,
+      "rep_pct": 1.0,
+      "avg_completion_tokens": 823.6,
+      "avg_tok_s": 112.4,
+      "dspark_accept_pct": 86.6,
+      "drafts_accepted": 37839,
+      "drafts_offered": 43716,
+      "log_stats": {
+        "n_done": 100,
+        "n_stop": 86,
+        "n_length": 14,
+        "sum_tg": 79603,
+        "w_acc_pct": 86.9,
+        "w_dl": 1.926,
+        "live_total_med_tps": 731,
+        "live_total_p90_tps": 843
+      }
+    },
+    "soup_v2_v3g1_g2": {
+      "tag": "gate_soup_v2_v3g1_g2",
+      "elapsed_sec": 99.1,
+      "math_correct": 81,
+      "math_total": 96,
+      "math_acc_pct": 84.4,
+      "tool_correct": 4,
+      "tool_total": 4,
+      "rep_pct": 4.2,
+      "avg_completion_tokens": 851.9,
+      "avg_tok_s": 112.2,
+      "dspark_accept_pct": 88.1,
+      "drafts_accepted": 39334,
+      "drafts_offered": 44638,
+      "log_stats": {
+        "n_done": 100,
+        "n_stop": 85,
+        "n_length": 15,
+        "sum_tg": 82340,
+        "w_acc_pct": 88.3,
+        "w_dl": 1.94,
+        "live_total_med_tps": 813.0,
+        "live_total_p90_tps": 861
+      }
+    }
+  },
+  "blind96_evals": {
+    "v3_g1_s10": {
+      "blind96": {
+        "tag": "blind96_v3_g1_s10",
+        "elapsed_sec": 93.6,
+        "math_correct": 78,
+        "math_total": 96,
+        "math_acc_pct": 81.2,
+        "tool_correct": 4,
+        "tool_total": 4,
+        "rep_pct": 0.0,
+        "avg_completion_tokens": 793.7,
+        "avg_tok_s": 112.8,
+        "dspark_accept_pct": 85.8,
+        "drafts_accepted": 37057,
+        "drafts_offered": 43194,
+        "log_stats": {
+          "n_done": 100,
+          "n_stop": 87,
+          "n_length": 13,
+          "sum_tg": 76645,
+          "w_acc_pct": 86.42,
+          "w_dl": 1.983,
+          "live_total_med_tps": 722.5,
+          "live_total_p90_tps": 860
+        }
+      },
+      "solo_fp8": {
+        "per_prompt": {
+          "code_python": {
+            "med_tok_s": 379.2,
+            "mean_tok_s": 378.9,
+            "accept_pct": 58.72,
+            "draft_accepted": 441,
+            "draft_offered": 751,
+            "reps": [
+              {
+                "tok_s": 386.5,
+                "draft_accepted": 156,
+                "draft_offered": 270,
+                "accept_pct": 57.78,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 379.2,
+                "draft_accepted": 144,
+                "draft_offered": 234,
+                "accept_pct": 61.54,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 371.1,
+                "draft_accepted": 141,
+                "draft_offered": 247,
+                "accept_pct": 57.09,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "code_cpp": {
+            "med_tok_s": 382.9,
+            "mean_tok_s": 390.3,
+            "accept_pct": 62.08,
+            "draft_accepted": 442,
+            "draft_offered": 712,
+            "reps": [
+              {
+                "tok_s": 412.6,
+                "draft_accepted": 153,
+                "draft_offered": 222,
+                "accept_pct": 68.92,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 382.9,
+                "draft_accepted": 146,
+                "draft_offered": 239,
+                "accept_pct": 61.09,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 375.5,
+                "draft_accepted": 143,
+                "draft_offered": 251,
+                "accept_pct": 56.97,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "reasoning_logic": {
+            "med_tok_s": 478.3,
+            "mean_tok_s": 470.1,
+            "accept_pct": 70.18,
+            "draft_accepted": 520,
+            "draft_offered": 741,
+            "reps": [
+              {
+                "tok_s": 449.2,
+                "draft_accepted": 168,
+                "draft_offered": 250,
+                "accept_pct": 67.2,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 478.3,
+                "draft_accepted": 176,
+                "draft_offered": 245,
+                "accept_pct": 71.84,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 482.9,
+                "draft_accepted": 176,
+                "draft_offered": 246,
+                "accept_pct": 71.54,
+                "predicted_n": 256
+              }
+            ]
+          }
+        },
+        "overall_mean_tok_s": 413.1,
+        "overall_accept_pct": 63.66,
+        "draft_accepted": 1403,
+        "draft_offered": 2204
+      }
+    },
+    "soup_v2_v3g1_g2": {
+      "blind96": {
+        "tag": "blind96_soup_v2_v3g1_g2",
+        "elapsed_sec": 104.8,
+        "math_correct": 76,
+        "math_total": 96,
+        "math_acc_pct": 79.2,
+        "tool_correct": 4,
+        "tool_total": 4,
+        "rep_pct": 1.0,
+        "avg_completion_tokens": 903.6,
+        "avg_tok_s": 114.0,
+        "dspark_accept_pct": 87.3,
+        "drafts_accepted": 41995,
+        "drafts_offered": 48089,
+        "log_stats": {
+          "n_done": 100,
+          "n_stop": 84,
+          "n_length": 16,
+          "sum_tg": 87297,
+          "w_acc_pct": 87.6,
+          "w_dl": 1.954,
+          "live_total_med_tps": 823,
+          "live_total_p90_tps": 873
+        }
+      },
+      "solo_fp8": {
+        "per_prompt": {
+          "code_python": {
+            "med_tok_s": 366.3,
+            "mean_tok_s": 372.6,
+            "accept_pct": 56.45,
+            "draft_accepted": 433,
+            "draft_offered": 767,
+            "reps": [
+              {
+                "tok_s": 366.3,
+                "draft_accepted": 144,
+                "draft_offered": 269,
+                "accept_pct": 53.53,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 394.5,
+                "draft_accepted": 152,
+                "draft_offered": 241,
+                "accept_pct": 63.07,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 356.9,
+                "draft_accepted": 137,
+                "draft_offered": 257,
+                "accept_pct": 53.31,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "code_cpp": {
+            "med_tok_s": 375.1,
+            "mean_tok_s": 386.1,
+            "accept_pct": 57.09,
+            "draft_accepted": 451,
+            "draft_offered": 790,
+            "reps": [
+              {
+                "tok_s": 375.1,
+                "draft_accepted": 146,
+                "draft_offered": 258,
+                "accept_pct": 56.59,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 420.5,
+                "draft_accepted": 164,
+                "draft_offered": 264,
+                "accept_pct": 62.12,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 362.6,
+                "draft_accepted": 141,
+                "draft_offered": 268,
+                "accept_pct": 52.61,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "reasoning_logic": {
+            "med_tok_s": 469.6,
+            "mean_tok_s": 472.5,
+            "accept_pct": 68.57,
+            "draft_accepted": 528,
+            "draft_offered": 770,
+            "reps": [
+              {
+                "tok_s": 469.6,
+                "draft_accepted": 175,
+                "draft_offered": 254,
+                "accept_pct": 68.9,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 460.4,
+                "draft_accepted": 172,
+                "draft_offered": 259,
+                "accept_pct": 66.41,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 487.5,
+                "draft_accepted": 181,
+                "draft_offered": 257,
+                "accept_pct": 70.43,
+                "predicted_n": 256
+              }
+            ]
+          }
+        },
+        "overall_mean_tok_s": 410.4,
+        "overall_accept_pct": 60.68,
+        "draft_accepted": 1412,
+        "draft_offered": 2327
+      }
+    }
+  },
+  "winner": {
+    "tag": "v3_g1_s10",
+    "out_basalt": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-Uncensored-Onyx-RSI-v3-NVFP4-q8coda.basalt",
+    "out_delta": "/home/jeffrey-watts/models/Inkling-2-Mini-Uncensored-Onyx-RSI-v3-delta",
+    "blind96": {
+      "tag": "blind96_v3_g1_s10",
+      "elapsed_sec": 93.6,
+      "math_correct": 78,
+      "math_total": 96,
+      "math_acc_pct": 81.2,
+      "tool_correct": 4,
+      "tool_total": 4,
+      "rep_pct": 0.0,
+      "avg_completion_tokens": 793.7,
+      "avg_tok_s": 112.8,
+      "dspark_accept_pct": 85.8,
+      "drafts_accepted": 37057,
+      "drafts_offered": 43194,
+      "log_stats": {
+        "n_done": 100,
+        "n_stop": 87,
+        "n_length": 13,
+        "sum_tg": 76645,
+        "w_acc_pct": 86.42,
+        "w_dl": 1.983,
+        "live_total_med_tps": 722.5,
+        "live_total_p90_tps": 860
+      }
+    },
+    "solo_fp8": {
+      "per_prompt": {
+        "code_python": {
+          "med_tok_s": 379.2,
+          "mean_tok_s": 378.9,
+          "accept_pct": 58.72,
+          "draft_accepted": 441,
+          "draft_offered": 751,
+          "reps": [
+            {
+              "tok_s": 386.5,
+              "draft_accepted": 156,
+              "draft_offered": 270,
+              "accept_pct": 57.78,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 379.2,
+              "draft_accepted": 144,
+              "draft_offered": 234,
+              "accept_pct": 61.54,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 371.1,
+              "draft_accepted": 141,
+              "draft_offered": 247,
+              "accept_pct": 57.09,
+              "predicted_n": 256
+            }
+          ]
+        },
+        "code_cpp": {
+          "med_tok_s": 382.9,
+          "mean_tok_s": 390.3,
+          "accept_pct": 62.08,
+          "draft_accepted": 442,
+          "draft_offered": 712,
+          "reps": [
+            {
+              "tok_s": 412.6,
+              "draft_accepted": 153,
+              "draft_offered": 222,
+              "accept_pct": 68.92,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 382.9,
+              "draft_accepted": 146,
+              "draft_offered": 239,
+              "accept_pct": 61.09,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 375.5,
+              "draft_accepted": 143,
+              "draft_offered": 251,
+              "accept_pct": 56.97,
+              "predicted_n": 256
+            }
+          ]
+        },
+        "reasoning_logic": {
+          "med_tok_s": 478.3,
+          "mean_tok_s": 470.1,
+          "accept_pct": 70.18,
+          "draft_accepted": 520,
+          "draft_offered": 741,
+          "reps": [
+            {
+              "tok_s": 449.2,
+              "draft_accepted": 168,
+              "draft_offered": 250,
+              "accept_pct": 67.2,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 478.3,
+              "draft_accepted": 176,
+              "draft_offered": 245,
+              "accept_pct": 71.84,
+              "predicted_n": 256
+            },
+            {
+              "tok_s": 482.9,
+              "draft_accepted": 176,
+              "draft_offered": 246,
+              "accept_pct": 71.54,
+              "predicted_n": 256
+            }
+          ]
+        }
+      },
+      "overall_mean_tok_s": 413.1,
+      "overall_accept_pct": 63.66,
+      "draft_accepted": 1403,
+      "draft_offered": 2204
+    }
+  },
+  "elapsed_sec": 1795.1
+}

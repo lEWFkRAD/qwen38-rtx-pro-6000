@@ -1,0 +1,384 @@
+{
+  "engine": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/pinned-20261128-turbo4/basalt-engine",
+  "parity": null,
+  "benchmarks": {
+    "original": {
+      "model": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-Uncensored-NVFP4-q8.basalt",
+      "blind96_b8": {
+        "tag": "original_blind96",
+        "elapsed_sec": 105.7,
+        "math_correct": 72,
+        "math_total": 96,
+        "math_acc_pct": 75.0,
+        "tool_correct": 4,
+        "tool_total": 4,
+        "rep_pct": 4.2,
+        "avg_completion_tokens": 952.9,
+        "avg_tok_s": 119.1,
+        "dspark_accept_pct": 88.3,
+        "drafts_accepted": 44876,
+        "drafts_offered": 50818
+      },
+      "blind96_b8_log": {
+        "n_done": 100,
+        "n_stop": 81,
+        "n_length": 19,
+        "sum_tg": 91942,
+        "w_acc_pct": 88.86,
+        "w_dl": 1.997,
+        "live_total_med_tps": 812.5,
+        "live_total_p90_tps": 918
+      },
+      "solo_fp8": {
+        "per_prompt": {
+          "code_python": {
+            "med_tok_s": 383.2,
+            "mean_tok_s": 382.9,
+            "accept_pct": 55.03,
+            "draft_accepted": 432,
+            "draft_offered": 785,
+            "reps": [
+              {
+                "tok_s": 383.2,
+                "draft_accepted": 145,
+                "draft_offered": 265,
+                "accept_pct": 54.72,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 380.2,
+                "draft_accepted": 144,
+                "draft_offered": 263,
+                "accept_pct": 54.75,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 385.2,
+                "draft_accepted": 143,
+                "draft_offered": 257,
+                "accept_pct": 55.64,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "code_cpp": {
+            "med_tok_s": 444.3,
+            "mean_tok_s": 424.2,
+            "accept_pct": 62.01,
+            "draft_accepted": 475,
+            "draft_offered": 766,
+            "reps": [
+              {
+                "tok_s": 444.3,
+                "draft_accepted": 164,
+                "draft_offered": 249,
+                "accept_pct": 65.86,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 381.5,
+                "draft_accepted": 146,
+                "draft_offered": 265,
+                "accept_pct": 55.09,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 446.7,
+                "draft_accepted": 165,
+                "draft_offered": 252,
+                "accept_pct": 65.48,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "reasoning_logic": {
+            "med_tok_s": 472.9,
+            "mean_tok_s": 474.7,
+            "accept_pct": 70.53,
+            "draft_accepted": 517,
+            "draft_offered": 733,
+            "reps": [
+              {
+                "tok_s": 452.6,
+                "draft_accepted": 175,
+                "draft_offered": 257,
+                "accept_pct": 68.09,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 498.5,
+                "draft_accepted": 173,
+                "draft_offered": 231,
+                "accept_pct": 74.89,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 472.9,
+                "draft_accepted": 169,
+                "draft_offered": 245,
+                "accept_pct": 68.98,
+                "predicted_n": 256
+              }
+            ]
+          }
+        },
+        "overall_mean_tok_s": 427.2,
+        "overall_accept_pct": 62.35,
+        "draft_accepted": 1424,
+        "draft_offered": 2284
+      }
+    },
+    "v2_q8coda": {
+      "model": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-Uncensored-Onyx-RSI-v2-NVFP4-q8coda.basalt",
+      "blind96_b8": {
+        "tag": "v2_q8coda_blind96",
+        "elapsed_sec": 99.0,
+        "math_correct": 77,
+        "math_total": 96,
+        "math_acc_pct": 80.2,
+        "tool_correct": 4,
+        "tool_total": 4,
+        "rep_pct": 4.2,
+        "avg_completion_tokens": 866.2,
+        "avg_tok_s": 116.2,
+        "dspark_accept_pct": 86.9,
+        "drafts_accepted": 40195,
+        "drafts_offered": 46270
+      },
+      "blind96_b8_log": {
+        "n_done": 100,
+        "n_stop": 83,
+        "n_length": 17,
+        "sum_tg": 83731,
+        "w_acc_pct": 87.53,
+        "w_dl": 1.944,
+        "live_total_med_tps": 786.5,
+        "live_total_p90_tps": 874
+      },
+      "solo_fp8": {
+        "per_prompt": {
+          "code_python": {
+            "med_tok_s": 447.6,
+            "mean_tok_s": 441.0,
+            "accept_pct": 64.46,
+            "draft_accepted": 488,
+            "draft_offered": 757,
+            "reps": [
+              {
+                "tok_s": 420.2,
+                "draft_accepted": 157,
+                "draft_offered": 257,
+                "accept_pct": 61.09,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 455.1,
+                "draft_accepted": 166,
+                "draft_offered": 247,
+                "accept_pct": 67.21,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 447.6,
+                "draft_accepted": 165,
+                "draft_offered": 253,
+                "accept_pct": 65.22,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "code_cpp": {
+            "med_tok_s": 427.2,
+            "mean_tok_s": 430.2,
+            "accept_pct": 65.03,
+            "draft_accepted": 476,
+            "draft_offered": 732,
+            "reps": [
+              {
+                "tok_s": 438.7,
+                "draft_accepted": 161,
+                "draft_offered": 242,
+                "accept_pct": 66.53,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 427.2,
+                "draft_accepted": 159,
+                "draft_offered": 250,
+                "accept_pct": 63.6,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 424.8,
+                "draft_accepted": 156,
+                "draft_offered": 240,
+                "accept_pct": 65.0,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "reasoning_logic": {
+            "med_tok_s": 452.8,
+            "mean_tok_s": 451.6,
+            "accept_pct": 67.26,
+            "draft_accepted": 491,
+            "draft_offered": 730,
+            "reps": [
+              {
+                "tok_s": 477.1,
+                "draft_accepted": 168,
+                "draft_offered": 229,
+                "accept_pct": 73.36,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 452.8,
+                "draft_accepted": 165,
+                "draft_offered": 252,
+                "accept_pct": 65.48,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 424.9,
+                "draft_accepted": 158,
+                "draft_offered": 249,
+                "accept_pct": 63.45,
+                "predicted_n": 256
+              }
+            ]
+          }
+        },
+        "overall_mean_tok_s": 440.9,
+        "overall_accept_pct": 65.57,
+        "draft_accepted": 1455,
+        "draft_offered": 2219
+      }
+    },
+    "v2plus_q8coda": {
+      "model": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-Uncensored-Onyx-RSI-v2plus-NVFP4-q8coda.basalt",
+      "blind96_b8": {
+        "tag": "v2plus_q8coda_blind96",
+        "elapsed_sec": 100.1,
+        "math_correct": 71,
+        "math_total": 96,
+        "math_acc_pct": 74.0,
+        "tool_correct": 4,
+        "tool_total": 4,
+        "rep_pct": 3.1,
+        "avg_completion_tokens": 877.8,
+        "avg_tok_s": 116.7,
+        "dspark_accept_pct": 86.6,
+        "drafts_accepted": 40898,
+        "drafts_offered": 47234
+      },
+      "blind96_b8_log": {
+        "n_done": 100,
+        "n_stop": 78,
+        "n_length": 22,
+        "sum_tg": 84738,
+        "w_acc_pct": 86.9,
+        "w_dl": 1.966,
+        "live_total_med_tps": 747,
+        "live_total_p90_tps": 876
+      },
+      "solo_fp8": {
+        "per_prompt": {
+          "code_python": {
+            "med_tok_s": 436.0,
+            "mean_tok_s": 446.5,
+            "accept_pct": 66.14,
+            "draft_accepted": 504,
+            "draft_offered": 762,
+            "reps": [
+              {
+                "tok_s": 436.0,
+                "draft_accepted": 166,
+                "draft_offered": 252,
+                "accept_pct": 65.87,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 468.7,
+                "draft_accepted": 168,
+                "draft_offered": 240,
+                "accept_pct": 70.0,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 434.9,
+                "draft_accepted": 170,
+                "draft_offered": 270,
+                "accept_pct": 62.96,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "code_cpp": {
+            "med_tok_s": 424.8,
+            "mean_tok_s": 422.1,
+            "accept_pct": 63.33,
+            "draft_accepted": 475,
+            "draft_offered": 750,
+            "reps": [
+              {
+                "tok_s": 424.8,
+                "draft_accepted": 159,
+                "draft_offered": 256,
+                "accept_pct": 62.11,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 414.6,
+                "draft_accepted": 157,
+                "draft_offered": 253,
+                "accept_pct": 62.06,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 427.0,
+                "draft_accepted": 159,
+                "draft_offered": 241,
+                "accept_pct": 65.98,
+                "predicted_n": 256
+              }
+            ]
+          },
+          "reasoning_logic": {
+            "med_tok_s": 468.3,
+            "mean_tok_s": 476.7,
+            "accept_pct": 70.97,
+            "draft_accepted": 506,
+            "draft_offered": 713,
+            "reps": [
+              {
+                "tok_s": 460.4,
+                "draft_accepted": 166,
+                "draft_offered": 244,
+                "accept_pct": 68.03,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 468.3,
+                "draft_accepted": 166,
+                "draft_offered": 237,
+                "accept_pct": 70.04,
+                "predicted_n": 256
+              },
+              {
+                "tok_s": 501.3,
+                "draft_accepted": 174,
+                "draft_offered": 232,
+                "accept_pct": 75.0,
+                "predicted_n": 256
+              }
+            ]
+          }
+        },
+        "overall_mean_tok_s": 448.4,
+        "overall_accept_pct": 66.74,
+        "draft_accepted": 1485,
+        "draft_offered": 2225
+      }
+    }
+  }
+}
