@@ -1,17 +1,20 @@
 <!-- project-home:start -->
-![qwen38-rtx-pro-6000 project banner](https://raw.githubusercontent.com/lEWFkRAD/qwen38-rtx-pro-6000/4dab99b278192df51555461843b7adeebac20668/assets/qwen38-pro6000-hero.png)
+![One RTX PRO 6000 Blackwell Inference Lab banner](https://raw.githubusercontent.com/lEWFkRAD/qwen38-rtx-pro-6000/4dab99b278192df51555461843b7adeebac20668/assets/qwen38-pro6000-hero.png)
 
-**[Qwen3.8 · One RTX PRO 6000 project homepage](https://lewfkrad.github.io/qwen38-rtx-pro-6000/)** · [Documentation](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/README.md)
+**[One RTX PRO 6000 · Blackwell Inference Lab](https://lewfkrad.github.io/qwen38-rtx-pro-6000/)** · [Documentation](https://github.com/lEWFkRAD/qwen38-rtx-pro-6000/blob/Cloud1/README.md)
 
-Single-GPU inference reports, reproducibility artifacts, and experimental inspection tools.
+Single-GPU Blackwell inference reports, bit-exact CUDA kernel patches, speculative decoding & zero-backprop RSI experiments, and reproducible benchmark receipts across **Inkling-2-Mini**, **Qwen3.8**, and custom Basalt/Strata builds.
 
 <!-- project-home:end -->
 
-# Qwen3.8 on a single RTX PRO 6000
+# One RTX PRO 6000 · Blackwell Inference Lab
 
-Independent deployment reports, reproducibility artifacts, and benchmark
-receipts for running large Qwen3.8 models and related inference experiments on one
-NVIDIA RTX PRO 6000 Blackwell Workstation Edition.
+Independent single-GPU inference engineering, bit-exact CUDA kernel tuning,
+speculative decoding, zero-backprop loop-dynamics RSI, and benchmark receipts
+on one **NVIDIA RTX PRO 6000 Blackwell Workstation Edition (96 GB)** — spanning
+**Inkling-2-Mini** (`thinkingmachines/Inkling-2-Mini`, #1 Verified Overall on
+LocalMaxxing at **552.6 tok/s**), **Qwen3.8-Flash-Next** (#1 and #2 Verified on
+LocalMaxxing), and custom Basalt / Strata serving stacks.
 
 
 <!-- inkling2-mini-basalt-20261127:start -->
