@@ -173,8 +173,42 @@ Full 4-page technical PDF: [`Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-202611
 | **`RSI-v3`** (stock DSpark) | **78/96 (81.2%)** | **4/4** | **0.0%** | **13** | **793.7** | 95.8s | 109.8 | 724.0 | 85.8% (1.985) |
 | **`RSI-v3 + Distilled DSpark` (PROD)** | **78/96 (81.2%)** | **4/4** | **0.0%** | **13** | **793.7** | **91.0s** | **117.6** | **821.0** | **87.8% (1.998)** |
 
+## Update — November 28: `pinned-20261128-turbo5` (Bit-Exact SM120 Prefill/TTFT Suite + Auto-VRAM Embeddings: 599.6 / 565.9 tok/s, 65.7 / 66.2 ms TTFT)
+
+Full 8-page technical monograph covering the entire hillclimb (`Stock Basalt 0.5.6 → turbo5`): [`Inkling-2-Mini-RTX-PRO-6000-Hillclimb-Report-2026-11-28.pdf`](Inkling-2-Mini-RTX-PRO-6000-Hillclimb-Report-2026-11-28.pdf).
+
+Diagnosing why short-prompt prefill (`M = 240–295` tokens, ~32 GiB weight traffic across 48 looped layer visits) took `60–62 ms` inside `turbo4` (`77–78 ms` client TTFT) exposed four compounding SM120 bottlenecks: severe 188-SM grid starvation (`15–64` CTAs launched per visit), heavy register spills (`248–254` regs/thr on NVFP4 MoE prefill, `168` on Q8 GEMM), ~128 unmerged host norm+GEMM launches + per-call `CUtensorMap` encoding, and host-mapped PCIe zero-copy `token_embd.weight` (`0.86 GiB`).
+
+**`pinned-20261128-turbo5`** (`basalt-engine` `sha256: 7ee7d480099177977f2d0f056ff793ab256a869670774d9185ace649467c9ec7`, delta patch `turbo5_delta_from_turbo4.patch` `sha256: 2da1389dfc1a34291d81bf630cd24aaedcb61e8144664d43dd1e4b14796b5a33`, **LIVE** on `inkling-basalt-pinned.service`) resolves all four with **0 SM120 local/stack spills** (`cuobjdump --dump-resource-usage`: `STACK: 0, LOCAL: 0` on every kernel) and **0 failures** across `inkling2_prompt_parity`, `q8_gemm_test`, and `inkling2_kernels_parity`:
+
+1. **NVFP4 MoE Small-M Prefill (`moe_fp4::gemm_kernel_128_smallM`):** Compact `M_TILE=32, K_TILE=128` kernel with `#pragma unroll` dynamic `nmt` skip (eliminating an initial `128 B` stack spill). Drops registers `248–254 → 104–111`, lifting occupancy **4.0×** (`128 → 512` active threads/SM, 2 CTAs/SM), bitwise equal to legacy (`861.6` vs `887.1 us` at `R=256`).
+2. **Q8 GEMM `BT=32` + 256-Entry `TmaDesc` Cache + 3-Act Q/K/V Fusion:** Thread-local `TmaDesc` cache removes per-call host descriptor encoding; `q8::gemm_kernel_t<32,1,4>` compiles to `118` regs (vs `168`, 3 CTAs/SM); fused `rms_norm_q8_planes_3x_prompt` + `q8::gemm_multi_act` cuts `128` launches/prompt and expands K/V grid `64 → 548+` CTAs.
+3. **Parallel-Warp 3-Stream Loop Controllers (`ctrl_down_prompt_opt/3x`, `ctrl_up_blend_prompt_3x`):** Parallel `dest`/`msg` warps halve the K-loop with zero cross-warp sync (`116–118` regs, 3 CTAs/SM, **12×** CTA grid `15 → 180`), unified across all `rows` for 0-ULP parity.
+4. **16-Row FP8 Prompt Attention (`attn_prompt_kernel<FP8, 16>`):** `96` thr/CTA, `210–228` regs, 2 CTAs/SM, expanding attention grid **3.8×** (`32–40 → 120–152` CTAs) with bitwise identical output hashes.
+5. **Small-T Router GEMM (`f32_rows_dot_small_kernel`, `16×16`):** `64` threads (`2×2`/thr), `47` regs, **7.5×** CTA grid (`16 → 120`), `58.9 → 42.7 us`, `0/512` router mismatches.
+6. **Automatic VRAM Placement of `token_embd.weight` (`0.86 GiB`, `BASALT_EMBD_VRAM`):** Places BF16 embeddings in GDDR7 whenever `>= 2 GiB` headroom remains (funded by ECC OFF's `+2.7 GiB` headroom), eliminating PCIe zero-copy stalls on both prefill gathers and every speculative verify/draft boundary — delivering a simultaneous **+28 to +38 tok/s** decode jump.
+
+![Full Single-GPU Hillclimb Progression & Competitive Standings](chart6_full_hillclimb_leaderboard.png)
+![turbo5 Prefill/TTFT Drop & 188-SM CTA Grid Saturation](chart7_turbo5_prefill_ttft.png)
+![turbo5 SM120 Register Cut & Occupancy Jump](chart8_turbo5_sm120_resources.png)
+
+### `turbo5` LocalMaxxing Dry-Run Validated Receipts (`valid: true, verified: true, issues: []`, Stock 500 W, FP16 KV, ECC OFF)
+
+*(Note: Both `turbo5` runs below passed `lmx speed-test dry-run` with `valid: true, verified: true, issues: []` and are staged for leaderboard submission; live production `inkling-basalt-pinned.service` is already cut over to `pinned-20261128-turbo5` with `90,101 / 97,887 MiB` VRAM used, `7,218 MiB` free, and canary `'OK'`.)*
+
+| Suite (`256` tok) | Build | Decode p50 (max) | Client PP | Engine PP | Client TTFT | Engine PP ms | DSpark Accept | Receipt |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| **`code-v1`** | `turbo4` (ECC ON, Live #1) | 571.3 (575.4) | 3,136.9 | 3,838.7 | 77.14 ms | 62.0 ms | 196/243 | `cmx02xkd9` |
+| **`code-v1`** | **`turbo5`** (`r2`, Dry-Run) | **599.6 (608.7)** | **3,697.7 (+17.9%)** | **5,072.2 (+32.1%)** | **65.72 ms (-11.42)** | **48.5 ms (-13.5)** | 199/247 | `turbo5_fp16_code-v1_599.6_dryrun.json` |
+| **`reasoning-v1`** | `turbo4` (ECC OFF, Live #1) | 528.2 (532.8) | 3,778.2 | 4,933.3 | 78.34 ms | 60.0 ms | 190/259 | `cmx0gxgwt` |
+| **`reasoning-v1`** | **`turbo5`** (`r3`, Dry-Run) | **565.9 (580.5)** | **4,435.6 (+17.4%)** | **5,935.6 (+20.3%)** | **66.22 ms (-12.12)** | **49.7 ms (-10.3)** | 190/249 | `turbo5_fp16_reasoning-v1_565.9_dryrun.json` |
+
 ## Files
 
+- `Inkling-2-Mini-RTX-PRO-6000-Hillclimb-Report-2026-11-28.pdf` — 8-page publication monograph covering the entire hillclimb (`Stock Basalt 0.5.6 → turbo5`), SM120 resource audits, ECC study, rejected ledger, RSI, and SHA-256 registry
+- `turbo5_delta_from_turbo4.patch` — bit-exact `pinned-20261128-turbo5` source delta over `turbo4` (`sha256: 2da1389dfc1a34291d81bf630cd24aaedcb61e8144664d43dd1e4b14796b5a33`)
+- `chart6_full_hillclimb_leaderboard.png`, `chart7_turbo5_prefill_ttft.png`, `chart8_turbo5_sm120_resources.png` — 300-DPI `turbo5` hillclimb, prefill/TTFT CTA saturation, and SM120 register/occupancy charts
+- `receipts/localmaxxing/turbo5_fp16_{code-v1_599.6,reasoning-v1_565.9}_dryrun.json` — LocalMaxxing dry-run validated `turbo5` JSON receipts (`valid: true, verified: true, issues: []`)
 - `Inkling2-Mini-RSI-v3-DSpark-Hillclimb-Report-20261128.pdf` — 4-page technical PDF covering the full RSI-v3 + Q8-coda + DSpark self-distillation hillclimb
 - `chart3_rsi_v3_hillclimb.png`, `chart4_rsi_v3_frontier_gate.png`, `chart5_dspark_distill.png` — RSI-v3 hillclimb, frontier/gate screen, and DSpark self-distillation figures
 - `receipts/rsi/phase1_q8_and_parity.json`, `receipts/rsi/onyx_basalt_rsi_v3_report.json`, `receipts/rsi/dspark_distill_report.json` — raw Phase 1–3 JSON benchmark & training receipts
