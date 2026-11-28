@@ -1,0 +1,725 @@
+{
+  "stage": "done",
+  "message": "Complete! FP-Solve 111s, 4-pass rescued (2/12 -> 9/12, 0% loops, 4/4 tools), 3-pass held 11/12 + 4/4 tools.",
+  "basalt_state": "online (READY)",
+  "solve_mode": "staged",
+  "lam_keep": 6.0,
+  "layers_done": 12,
+  "layers_total": 12,
+  "elapsed_sec": 815.4,
+  "before_3pass": {
+    "num_passes": 3,
+    "elapsed_sec": 141.2,
+    "math_correct": 11,
+    "math_total": 12,
+    "math_acc_pct": 91.7,
+    "math_rep_pct": 0.0,
+    "math_completed": 11,
+    "tool_correct": 4,
+    "tool_total": 4,
+    "tool_rep_pct": 0.0,
+    "math_rows": [
+      {
+        "id": "m01",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": false
+      },
+      {
+        "id": "m02",
+        "tokens": 213,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "85",
+        "repetition": false
+      },
+      {
+        "id": "m03",
+        "tokens": 228,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "\\frac{1}{9}",
+        "repetition": false
+      },
+      {
+        "id": "m04",
+        "tokens": 661,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "400",
+        "repetition": false
+      },
+      {
+        "id": "m05",
+        "tokens": 210,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "39",
+        "repetition": false
+      },
+      {
+        "id": "m06",
+        "tokens": 171,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "1",
+        "repetition": false
+      },
+      {
+        "id": "m07",
+        "tokens": 247,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "72",
+        "repetition": false
+      },
+      {
+        "id": "m08",
+        "tokens": 299,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "-15",
+        "repetition": false
+      },
+      {
+        "id": "m09",
+        "tokens": 209,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "48",
+        "repetition": false
+      },
+      {
+        "id": "m10",
+        "tokens": 172,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "30",
+        "repetition": false
+      },
+      {
+        "id": "m11",
+        "tokens": 344,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "5",
+        "repetition": false
+      },
+      {
+        "id": "m12",
+        "tokens": 170,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "80",
+        "repetition": false
+      }
+    ],
+    "tool_rows": [
+      {
+        "id": "t01",
+        "tokens": 82,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "get_weather",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t02",
+        "tokens": 103,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "run_sql",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t03",
+        "tokens": 221,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "schedule_job",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t04",
+        "tokens": 121,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "send_alert",
+        "correct": true,
+        "repetition": false
+      }
+    ]
+  },
+  "before_4pass": {
+    "num_passes": 4,
+    "elapsed_sec": 176.5,
+    "math_correct": 2,
+    "math_total": 12,
+    "math_acc_pct": 16.7,
+    "math_rep_pct": 83.3,
+    "math_completed": 4,
+    "tool_correct": 0,
+    "tool_total": 4,
+    "tool_rep_pct": 25.0,
+    "math_rows": [
+      {
+        "id": "m01",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m02",
+        "tokens": 768,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": false,
+        "pred": "7",
+        "repetition": true
+      },
+      {
+        "id": "m03",
+        "tokens": 768,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": false,
+        "pred": "1",
+        "repetition": true
+      },
+      {
+        "id": "m04",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m05",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m06",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m07",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m08",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m09",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m10",
+        "tokens": 190,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "30",
+        "repetition": false
+      },
+      {
+        "id": "m11",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": true
+      },
+      {
+        "id": "m12",
+        "tokens": 326,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "80",
+        "repetition": false
+      }
+    ],
+    "tool_rows": [
+      {
+        "id": "t01",
+        "tokens": 256,
+        "completed": false,
+        "valid_json_call": false,
+        "tool_name": null,
+        "correct": false,
+        "repetition": false
+      },
+      {
+        "id": "t02",
+        "tokens": 256,
+        "completed": false,
+        "valid_json_call": false,
+        "tool_name": null,
+        "correct": false,
+        "repetition": false
+      },
+      {
+        "id": "t03",
+        "tokens": 256,
+        "completed": false,
+        "valid_json_call": false,
+        "tool_name": null,
+        "correct": false,
+        "repetition": false
+      },
+      {
+        "id": "t04",
+        "tokens": 256,
+        "completed": false,
+        "valid_json_call": false,
+        "tool_name": null,
+        "correct": false,
+        "repetition": true
+      }
+    ]
+  },
+  "layer_idx": 17,
+  "matrices_done": 168,
+  "matrices_total": 168,
+  "mean_rel": 0.24877347359154045,
+  "forward_passes": 438,
+  "fpsolve": {
+    "n_matrices": 168,
+    "solve_mode": "staged",
+    "forward_passes": 438,
+    "mean_rel": 0.24877347359154045,
+    "max_rel": 0.25,
+    "dspark_visit_drift": {
+      "5": {
+        "cosine_sim": 1.0,
+        "rel_l2_drift": 0.0
+      },
+      "23": {
+        "cosine_sim": 0.996349,
+        "rel_l2_drift": 0.090523
+      },
+      "41": {
+        "cosine_sim": 0.995719,
+        "rel_l2_drift": 0.085376
+      }
+    },
+    "elapsed_sec": 111.0
+  },
+  "after_3pass": {
+    "num_passes": 3,
+    "elapsed_sec": 137.6,
+    "math_correct": 11,
+    "math_total": 12,
+    "math_acc_pct": 91.7,
+    "math_rep_pct": 0.0,
+    "math_completed": 11,
+    "tool_correct": 4,
+    "tool_total": 4,
+    "tool_rep_pct": 0.0,
+    "math_rows": [
+      {
+        "id": "m01",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": false
+      },
+      {
+        "id": "m02",
+        "tokens": 278,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "85",
+        "repetition": false
+      },
+      {
+        "id": "m03",
+        "tokens": 239,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "\\frac{1}{9}",
+        "repetition": false
+      },
+      {
+        "id": "m04",
+        "tokens": 444,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "400",
+        "repetition": false
+      },
+      {
+        "id": "m05",
+        "tokens": 216,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "39",
+        "repetition": false
+      },
+      {
+        "id": "m06",
+        "tokens": 222,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "1",
+        "repetition": false
+      },
+      {
+        "id": "m07",
+        "tokens": 223,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "72\\text{ mph}",
+        "repetition": false
+      },
+      {
+        "id": "m08",
+        "tokens": 283,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "-15",
+        "repetition": false
+      },
+      {
+        "id": "m09",
+        "tokens": 290,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "48",
+        "repetition": false
+      },
+      {
+        "id": "m10",
+        "tokens": 170,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "30",
+        "repetition": false
+      },
+      {
+        "id": "m11",
+        "tokens": 322,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "5",
+        "repetition": false
+      },
+      {
+        "id": "m12",
+        "tokens": 201,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "\\$80",
+        "repetition": false
+      }
+    ],
+    "tool_rows": [
+      {
+        "id": "t01",
+        "tokens": 105,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "get_weather",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t02",
+        "tokens": 212,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "run_sql",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t03",
+        "tokens": 178,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "schedule_job",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t04",
+        "tokens": 171,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "send_alert",
+        "correct": true,
+        "repetition": false
+      }
+    ]
+  },
+  "after_4pass": {
+    "num_passes": 4,
+    "elapsed_sec": 178.1,
+    "math_correct": 9,
+    "math_total": 12,
+    "math_acc_pct": 75.0,
+    "math_rep_pct": 0.0,
+    "math_completed": 10,
+    "tool_correct": 4,
+    "tool_total": 4,
+    "tool_rep_pct": 0.0,
+    "math_rows": [
+      {
+        "id": "m01",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": false
+      },
+      {
+        "id": "m02",
+        "tokens": 290,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "85",
+        "repetition": false
+      },
+      {
+        "id": "m03",
+        "tokens": 205,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "\\frac{1}{9}",
+        "repetition": false
+      },
+      {
+        "id": "m04",
+        "tokens": 768,
+        "completed": false,
+        "thinking_closed": false,
+        "has_eos": false,
+        "correct": false,
+        "pred": null,
+        "repetition": false
+      },
+      {
+        "id": "m05",
+        "tokens": 242,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "39",
+        "repetition": false
+      },
+      {
+        "id": "m06",
+        "tokens": 171,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "1",
+        "repetition": false
+      },
+      {
+        "id": "m07",
+        "tokens": 319,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "72",
+        "repetition": false
+      },
+      {
+        "id": "m08",
+        "tokens": 302,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": false,
+        "pred": "-35",
+        "repetition": false
+      },
+      {
+        "id": "m09",
+        "tokens": 173,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "48",
+        "repetition": false
+      },
+      {
+        "id": "m10",
+        "tokens": 163,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "30",
+        "repetition": false
+      },
+      {
+        "id": "m11",
+        "tokens": 334,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "5",
+        "repetition": false
+      },
+      {
+        "id": "m12",
+        "tokens": 166,
+        "completed": true,
+        "thinking_closed": true,
+        "has_eos": false,
+        "correct": true,
+        "pred": "80",
+        "repetition": false
+      }
+    ],
+    "tool_rows": [
+      {
+        "id": "t01",
+        "tokens": 87,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "get_weather",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t02",
+        "tokens": 145,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "run_sql",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t03",
+        "tokens": 176,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "schedule_job",
+        "correct": true,
+        "repetition": false
+      },
+      {
+        "id": "t04",
+        "tokens": 113,
+        "completed": true,
+        "valid_json_call": true,
+        "tool_name": "send_alert",
+        "correct": true,
+        "repetition": false
+      }
+    ]
+  }
+}

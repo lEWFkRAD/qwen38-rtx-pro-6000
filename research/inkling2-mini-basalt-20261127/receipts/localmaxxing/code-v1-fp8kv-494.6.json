@@ -1,0 +1,210 @@
+{
+  "agentFeedback": {
+    "benchmarkStatus": "completed",
+    "canApiValidate": true,
+    "canSubmit": true,
+    "engine": "strata",
+    "message": "Speed-test payload is ready for API validation.",
+    "mode": "remote",
+    "nextCommand": "lmx speed-test dry-run /home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_opt4_code-v1_1795827977671499598.json",
+    "outputPath": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_opt4_code-v1_1795827977671499598.json",
+    "outputPathAbsolute": "/home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_opt4_code-v1_1795827977671499598.json",
+    "requiresMetrics": false,
+    "runPersisted": true,
+    "savedRunPath": "runs/thinkingmachines-Inkling-2-Mini/20261128T010620Z.json",
+    "savedRunPathAbsolute": "/home/jeffrey-watts/runs/thinkingmachines-Inkling-2-Mini/20261128T010620Z.json",
+    "savedRunPathRelative": "runs/thinkingmachines-Inkling-2-Mini/20261128T010620Z.json",
+    "status": "ready_for_api_validation",
+    "submissionId": "cmwzptydq0007rv01ilvkhn1z",
+    "submissionStatus": "approved",
+    "submitCommand": "lmx speed-test submit /home/jeffrey-watts/.gemini/antigravity-cli/brain/e6a750c3-2e46-481a-add2-7de8435e9c0d/scratch/solo_bench/lmx_opt4_code-v1_1795827977671499598.json"
+  },
+  "batchSize": 1,
+  "benchmarkMode": "remote",
+  "detectedEngines": [],
+  "engineBuild": "sm120 cuda13.0 +q8p-2row-mma5 +router-direct +ctrl-opt +nvfp4-nc8",
+  "engineFlags": {
+    "baseUrl": "http://127.0.0.1:8019",
+    "canonicalPromptId": "code-v1",
+    "concurrency": 1,
+    "iterations": 3,
+    "maxTokens": 256,
+    "mode": "remote",
+    "prefixCacheBust": "leading_nonce_per_request",
+    "promptFile": "",
+    "promptSource": "canonical:code-v1",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "specAcceptanceRate": 0.8205,
+    "specAcceptedTokens": 192,
+    "specDecoding": true,
+    "specDraftTokens": 234,
+    "stream": true,
+    "timeoutSeconds": 600,
+    "warmup": 1
+  },
+  "engineName": "strata",
+  "engineRepository": "https://github.com/lEWFkRAD/qwen38-rtx-pro-6000",
+  "engineTimingsRaw": {
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 231,
+      "draft_n_accepted": 194,
+      "predicted_ms": 528.4,
+      "predicted_n": 256,
+      "predicted_per_second": 484.5,
+      "predicted_per_token_ms": 2.064,
+      "prompt_ms": 66.3,
+      "prompt_n": 241,
+      "prompt_per_second": 3635,
+      "prompt_per_token_ms": 0.275
+    },
+    "usage": {
+      "completion_tokens": 256,
+      "prompt_tokens": 241,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 497
+    }
+  },
+  "engineVersion": "0.5.6",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "cpuThreads": 24,
+    "gpuCount": 1,
+    "gpuName": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpus": [
+      {
+        "name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "vramGb": 95.6
+      }
+    ],
+    "hwClass": "DISCRETE_GPU",
+    "os": "Ubuntu 24.04.5 LTS",
+    "ramGb": 64,
+    "totalVramGb": 95.6,
+    "vramGb": 95.6
+  },
+  "hardwareSource": "file",
+  "hfId": "thinkingmachines/Inkling-2-Mini",
+  "id": "cmwzptydq0007rv01ilvkhn1z",
+  "metricSource": "remote_endpoint",
+  "modelResolution": {
+    "candidates": [
+      {
+        "benchmarkCount": 77,
+        "displayName": "Inkling-2-Mini",
+        "family": "Opt",
+        "hfId": "thinkingmachines/Inkling-2-Mini",
+        "params": 26
+      }
+    ],
+    "declaredBaseModel": "thinkingmachines/Inkling-2-Mini",
+    "hfId": "thinkingmachines/Inkling-2-Mini",
+    "loadedFilename": "Inkling-2-Mini-NVFP4-q8.basalt",
+    "searchCommand": "lmx model search thinkingmachines/Inkling-2-Mini",
+    "searchQuery": "thinkingmachines/Inkling-2-Mini",
+    "searchQuerySource": "served_model",
+    "servedModel": "thinkingmachines/Inkling-2-Mini",
+    "servedModelSource": "v1_models",
+    "status": "matched"
+  },
+  "modelRevision": "main",
+  "outputSample": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nAfter code, explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\n\nLEVELS = (\"DEBUG\", \"INFO\", \"WARN\", \"ERROR\")\n\ndef parse_ts(s):\n    # handle trailing Z\n    if isinstance",
+  "outputSha256": "61fdff714d8dda67744dd1c8c5dad7005556d5777dcc42b4dd2e5af57aa7184b",
+  "outputText": "The user wants a small CLI tool in Python called `logtally`. Requirements:\n- Reads newline-delimited JSON log records from stdin.\n- Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), optional `latency_ms` (number).\n- Prints per service: count of records by level and p50 and p95 of latency_ms (ignore records without latency).\n- Malformed lines counted and reported at end, never crash.\n- Support `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Standard library only.\n\nAfter code, explain in 2-3 sentences how percentiles computed and why, then list three edge cases a unit test suite should cover.\n\nLet me design:\n\n```python\n#!/usr/bin/env python3\nimport argparse\nimport json\nimport sys\nfrom datetime import datetime, timezone\n\nLEVELS = (\"DEBUG\", \"INFO\", \"WARN\", \"ERROR\")\n\ndef parse_ts(s):\n    # handle trailing Z\n    if isinstance",
+  "outputTokens": 256,
+  "prefillTokens": 0,
+  "prompt": "Implement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSample": "[LocalMaxxing cache-bust nonce: d70988abbb9ed77fa4e49c55bb3178cc]\nImplement a small command-line tool in Python called `logtally`.\n\nRequirements:\n- It reads newline-delimited JSON log records from stdin. Each record has `ts` (ISO-8601 string), `level` (one of DEBUG, INFO, WARN, ERROR), `service` (string), and optional `latency_ms` (number).\n- It prints, per service, the count of records by level and the p50 and p95 of `latency_ms` (ignore records without latency).\n- Malformed lines must be counted and reported at the end, never crash the program.\n- Support a `--since \u003cISO timestamp\u003e` flag that drops earlier records.\n- Use only the standard library.\n\nAfter the code, explain in two or three sentences how you computed percentiles and why you chose that method, then list three edge cases a unit test suite should cover.",
+  "promptSha256": "a737db738bd4e37881d1737f8dc51cae0295eff9ece6551d39826ce8ed43a690",
+  "promptTokens": 241,
+  "provenance": {
+    "benchmarkMode": "remote",
+    "cli": "localmaxxing-go",
+    "createdAt": "2026-11-28T01:06:20Z",
+    "metricSource": "remote_endpoint",
+    "timingSource": "client_observed_http",
+    "ttftSource": "stream_first_token"
+  },
+  "quantization": "NVFP4",
+  "quantizationResolution": {
+    "cli": "NVFP4",
+    "filename": "NVFP4",
+    "modelPath": "/home/jeffrey-watts/model-tests/basalt-inkling-20261121/models/Inkling-2-Mini-NVFP4-q8.basalt",
+    "status": "matched",
+    "trusted": "NVFP4",
+    "trustedSource": "filename"
+  },
+  "sampleStats": {
+    "tokSOut": {
+      "count": 3,
+      "max": 518,
+      "mean": 485,
+      "min": 442.4,
+      "p50": 494.6,
+      "stddev": 38.7
+    },
+    "tokSTotal": {
+      "count": 3,
+      "max": 869.2,
+      "mean": 821.27,
+      "min": 761.8,
+      "p50": 832.8,
+      "stddev": 54.62
+    },
+    "ttftMs": {
+      "count": 3,
+      "max": 81.02,
+      "mean": 80.06,
+      "min": 79.29,
+      "p50": 79.86,
+      "stddev": 0.88
+    }
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "outputTokens": 256,
+      "promptTokens": 244,
+      "request": 1,
+      "tokSOut": 442.4,
+      "tokSPrefill": 3055.3,
+      "ttftMs": 79.86
+    },
+    {
+      "iteration": 2,
+      "outputTokens": 256,
+      "promptTokens": 241,
+      "request": 1,
+      "tokSOut": 518,
+      "tokSPrefill": 3039.3,
+      "ttftMs": 79.29
+    },
+    {
+      "iteration": 3,
+      "outputTokens": 256,
+      "promptTokens": 241,
+      "request": 1,
+      "tokSOut": 494.6,
+      "tokSPrefill": 2974.5,
+      "ttftMs": 81.02
+    }
+  ],
+  "submissionId": "cmwzptydq0007rv01ilvkhn1z",
+  "submissionStatus": "approved",
+  "submittedAt": "2026-11-28T01:12:29.006Z",
+  "timingSource": "client_observed_http",
+  "tokSOut": 494.6,
+  "tokSOutSource": "inter_token",
+  "tokSPrefill": 3039.3,
+  "tokSPrefillSource": "estimated_from_ttft",
+  "tokSTotal": 832.8,
+  "tokenSources": {
+    "output": "endpoint_usage",
+    "prompt": "endpoint_usage"
+  },
+  "ttftMs": 79.86,
+  "ttftSource": "stream_first_token"
+}

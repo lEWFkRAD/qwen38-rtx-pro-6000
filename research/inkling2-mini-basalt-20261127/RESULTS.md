@@ -61,9 +61,53 @@ Deterministic outputs (`--disable-thinking --temperature 0`) matched identically
 - Single-stream `DsparkHook::draft_batch()` without per-session stream forks: serialized 1-CTA Markov/head-pick and attention across sessions.
 - Clamping `per = 1` draft at `c=8`: cut mean verified window length `dl` from `1.80 → 1.60` (-2.1% HTTP throughput).
 
+## Update — `pinned-20261127-turbo2`: Bit-Exact Solo Kernel Suite (#1 Overall on LocalMaxxing: 552.6 tok/s) + RSI FP-Solve
+
+Building directly on `pinned-20261127-turbo`, **`pinned-20261127-turbo2`** (`sha256: 9064330c58bff0f3f701567961c38d95edf6860299b50fa6410e1711c8d73885`, diff in `turbo2.patch`) adds five **100% cross-build bit-exact** CUDA kernel and draft-policy optimizations targeting solo and multi-slot decode latency:
+
+1. **Q8-plane projections (`native_mmvq.cu`):** 2-rows-per-block `small_q8p_body` reusing `Q81Block` activation loads with PDL weight prefetch (`NPRE = 2` for `NC = 1..3`, `NPRE = 1` for `NC = 4`, `NPRE = 0` for non-MMA `NC >= 5`), plus lowering bit-exact INT8 Tensor Core `native_q8p_mma_kernel` (`pre[3]` PDL) to `NC >= 5` for `n_out >= 4096` (`proj` 2304→8664 verified `bitdiff_vs_nc1 = 0`).
+2. **MoE Router (`router.cu`):** 2-row-per-block `router_logits_opt_kernel<3, 2, NT_MAX>` (`NT_MAX = 2` on decode `T = 3..32`, `NT_MAX = 8` otherwise; -11% to -41.5%) + atomic-free `router_select_direct_kernel<128>` (0 atomics, 2 `__syncthreads()`, PDL bias preload; -28.8%).
+3. **Loop Controllers (`glue.cu`):** tight-`RMAX` `O = 2` `ctrl_down_kernel` dispatch (-7% to -24%) + 128-bit `uint4` `ctrl_up_opt_kernel<RMAX>` for rank-128 controllers (-2.4% to -5.2%).
+4. **NVFP4 MoE Single-Pass Width (`iq_kernels.cu`):** expands `kGuNc` / `kDnNc` from `6` to `8` for NVFP4 (`TG/TD == 40`), avoiding redundant 2-pass expert weight reads on `T = 7..8` verify windows.
+5. **All-VRAM `DraftPolicy` Prior (`draft_policy.cpp`):** calibrates `kShape` (`1.0 → 2.15`) to measured Blackwell all-VRAM window scaling instead of the default CPU-offload curve (`1.0 → 3.60`).
+
+![LocalMaxxing Verified Leaderboard & Per-Window Latency](chart1_leaderboard_and_kernels.png)
+
+### Verified LocalMaxxing Submissions (`thinkingmachines/Inkling-2-Mini`, stock `Inkling-2-Mini-NVFP4-q8.basalt`)
+
+All four runs cleared server-side canonical verification (`APPROVED`, `verifiedRun: true`, `verificationIssues: []`) on one **RTX PRO 6000 Blackwell Workstation Edition** (stock 500 W, ECC ON, CUDA P1 13,365 MHz memory clock):
+
+| Prompt | KV Cache | `tokSOut` | Prefill | TTFT | DSpark Accept | Live Submission |
+|---|---|---:|---:|---:|---:|---|
+| **`code-v1`** (`256` tok) | `fp16` | **552.6 tok/s** (#1 Overall) | 3,040.2 tok/s | 79.93 ms | 196/246 (79.7%) | [cmwzqhlba000drv01oxl1qyx4](https://www.localmaxxing.com/en/speed-tests/cmwzqhlba000drv01oxl1qyx4) |
+| **`reasoning-v1`** (`256` tok) | `fp16` | **513.5 tok/s** (#1 Reasoning) | 3,931.8 tok/s | 74.77 ms | 188/255 (73.7%) | [cmwzqhm7g000grv01t8z2axgq](https://www.localmaxxing.com/en/speed-tests/cmwzqhm7g000grv01t8z2axgq) |
+| **`code-v1`** (`256` tok) | `fp8` | **494.6 tok/s** | 3,039.3 tok/s | 79.86 ms | 192/234 (82.1%) | [cmwzptydq0007rv01ilvkhn1z](https://www.localmaxxing.com/en/speed-tests/cmwzptydq0007rv01ilvkhn1z) |
+| **`reasoning-v1`** (`256` tok) | `fp8` | **467.1 tok/s** | 3,791.9 tok/s | 77.53 ms | 186/243 (76.5%) | [cmwzptz4z000arv01ozwma02c](https://www.localmaxxing.com/en/speed-tests/cmwzptz4z000arv01ozwma02c) |
+
+- **Cross-build bit-exact gate (`batch_identity.py` vs `gf_q8.json`):** `4 slots = 934.5 tok/s`, `8 slots = 927.0 tok/s`, `12 slots = 936.6 tok/s` — **PASS (100% IDENTICAL)** across every slot and reference; `0 failures` across `inkling2_kernels_parity`, `inkling2_dspark_parity`, `mmvq_multi_parity`, and exhaustive direct-link kernel checks.
+
+### Zero-Backprop RSI Loop-Dynamics Tuneup (`rse_looper` Staged `FP-Solve`)
+
+Alongside the kernel work, we ran our zero-backprop closed-form **Staged `FP-Solve`** loop-dynamics solver (`lam_keep = 6.0`, 438 forward passes, **111.0 s** wall time, 168 loop-controller/attention/gate matrices across all 12 looped layers, **0 MoE expert weights modified**) on `Inkling-2-Mini`:
+
+![RSI FP-Solve 4-Pass Loop Rescue & DSpark Preservation](chart2_rsi_fpsolve.png)
+
+| Mode | Before `FP-Solve` | After `FP-Solve` (111 s, 0 Backprop) | Delta |
+|---|---|---|---|
+| **3-Pass Math** | 11/12 (91.7%, 0.0% loops) | **11/12 (91.7%, 0.0% loops)** | Held 100% (zero regression) |
+| **3-Pass Tool Calling** | 4/4 (100%, 0.0% loops) | **4/4 (100%, 0.0% loops)** | Held 100% |
+| **4-Pass Math** | 2/12 (16.7%, **83.3% rep loops**) | **9/12 (75.0%, 0.0% rep loops)** | **+58.3% acc, -83.3% loops** |
+| **4-Pass Tool Calling** | 0/4 (0.0%, 25.0% loops) | **4/4 (100%, 0.0% loops)** | **+100% tool accuracy** |
+| **DSpark Visit Cosine Sim** | 1.0000 | **Visit 5: 1.0000 · Visit 23: 0.9963 · Visit 41: 0.9957** | Drafter-compatible |
+
 ## Files
 
-- `turbo.patch` — full source diff over upstream Basalt (includes device-indirect `graphfix` + all `turbo` optimizations)
+- `turbo2.patch` — full bit-exact source diff over upstream Basalt (`graphfix` + `turbo` + `turbo2` solo kernels + `DraftPolicy`)
+- `turbo.patch` — earlier `pinned-20261127-turbo` diff
+- `chart1_leaderboard_and_kernels.png`, `chart2_rsi_fpsolve.png` — benchmark & RSI FP-Solve charts
+- `receipts/localmaxxing/*.json` — verified LocalMaxxing run receipts (`552.6`, `513.5`, `494.6`, `467.1` tok/s)
+- `receipts/batch_identity_turbo2.json` — cross-build bit-exact `batch_identity.py` receipt for `turbo2` (4, 8, 12 slots)
+- `receipts/rsi/onyx_live_tuneup_report.json` — full 12-layer Staged `FP-Solve` before/after evaluation receipt
 - `receipts/http_baseline/{c1_t0,c4_t0,c8_t0,c12_t0,c8_t06}.json` — isolated `fixed_cn.py` baseline receipts (`pinned-20261127-graphfix`)
 - `receipts/http_turbo/{c1_t0,c4_t0,c8_t0,c12_t0,c8_t06}.json` — isolated `fixed_cn.py` promoted receipts (`pinned-20261127-turbo`)
 - `receipts/batch_identity_turbo.json` — cross-build bit-exact `batch_identity.py` receipt (4, 8, 12 slots)
